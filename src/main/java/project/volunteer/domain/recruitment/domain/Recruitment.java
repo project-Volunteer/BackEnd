@@ -81,16 +81,12 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "is_published", nullable = false)
     private Boolean isPublished;
 
-    @Column(name = "static_image_code", length = 20)
-    private String staticImageCode; //static 이미지 번호(코드)
-
     /**
      * Auditing - 작성자, 수정인 추가 필요
-     * 유저 연관관계 매핑 추가(임시)
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno")
-    private User user;
+    private User writer;
 
     @Builder
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
@@ -121,8 +117,8 @@ public class Recruitment extends BaseTimeEntity {
         this.viewCount = 0;
     }
 
-    public void setUser(User user){
-        this.user = user;
+    public void setWriter(User user){
+        this.writer = user;
     }
 
 }

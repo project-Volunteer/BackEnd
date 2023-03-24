@@ -15,4 +15,12 @@ public enum Week {
     public String getViewName(){
         return viewName;
     }
+
+    public static Week of(String value) {
+        for(Week week : Week.values()){
+            if(week.name().equals(value.toUpperCase()))
+                return week;
+        }
+        throw new IllegalArgumentException("일치하는 주가 없습니다.");
+    }
 }

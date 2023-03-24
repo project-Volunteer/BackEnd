@@ -27,7 +27,7 @@ public class Image extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storageno")
-    private Storage storage;
+    private Storage storage;    //upload
 
     /**
      * Auditing - 생성인, 수정인 추가 필요

@@ -1,5 +1,6 @@
 package project.volunteer.domain.repeatPeriod.domain;
 
+import lombok.Data;
 import lombok.Getter;
 
 @Getter
@@ -14,5 +15,13 @@ public enum Day {
 
     public String getViewName(){
         return viewName;
+    }
+
+    public static Day of(String value){
+        for(Day day : Day.values()){
+            if(day.name().equals(value.toUpperCase()))
+                return day;
+        }
+        throw new IllegalArgumentException("일치하는 요일이 없습니다.");
     }
 }
