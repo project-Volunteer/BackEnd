@@ -1,8 +1,9 @@
 package project.volunteer.domain.image.application;
 
-import project.volunteer.domain.image.domain.RealWorkType;
+import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.domain.image.dto.SaveImageDto;
 
 public interface ImageService {
 
-    public void addImage(RealWorkType type, Long no);
+    public Long addImage(SaveImageDto saveImageDto);
 }

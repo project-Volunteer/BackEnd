@@ -1,6 +1,5 @@
 package project.volunteer.domain.recruitment.application;
 
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,11 +31,9 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -94,7 +91,7 @@ class RecruitmentServiceImplTest {
     }
 
     @Test
-    public void 모집글_저장_성공_단기(){
+    public void 모집글_작성_저장_성공_단기(){
 
         //given
         String category = "001";
@@ -129,7 +126,7 @@ class RecruitmentServiceImplTest {
     }
 
     @Test
-    public void 모집글_저장_성공_장기_매주() {
+    public void 모집글_작성_저장_성공_장기_매주() {
         //given
         String category = "001";
         String organizationName ="name";
@@ -170,7 +167,7 @@ class RecruitmentServiceImplTest {
     }
 
     @Test
-    public void 모집글_저장_성공_장기_매월(){
+    public void 모집글_작성_저장_성공_장기_매월(){
         //given
         String category = "001";
         String organizationName ="name";

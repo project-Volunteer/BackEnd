@@ -7,11 +7,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -87,10 +85,10 @@ public class AwsS3Service implements FileService{
 
     private String createStoreFileName(String originalFileName) {
         String storageDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        return UUID.randomUUID().toString() + "_" + storageDate + getFileExtension(originalFileName);
+        return UUID.randomUUID().toString() + "_" + storageDate + getOriginalFileExtension(originalFileName);
     }
 
-    private String getFileExtension(String originalFileName) {
+    private String getOriginalFileExtension(String originalFileName) {
         try {
             return originalFileName.substring(originalFileName.lastIndexOf("."));
         }catch(StringIndexOutOfBoundsException e) {
