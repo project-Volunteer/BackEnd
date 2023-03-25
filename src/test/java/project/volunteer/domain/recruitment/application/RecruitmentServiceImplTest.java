@@ -74,7 +74,6 @@ class RecruitmentServiceImplTest {
         em.flush();
         em.clear();
     }
-
     @BeforeEach
     private void signUpAndSetAuthentication() {
 

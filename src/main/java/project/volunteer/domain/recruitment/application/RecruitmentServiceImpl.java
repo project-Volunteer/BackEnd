@@ -48,7 +48,6 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         recruitment.setWriter(userRepository.findByEmail(SecurityUtil.getLoginUserEmail())
                 .orElseThrow(()-> new NullPointerException("존재하지 않는 회원입니다.")));
 
-        recruitmentRepository.save(recruitment);
-        return recruitment.getRecruitmentNo();
+        return  recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
 }

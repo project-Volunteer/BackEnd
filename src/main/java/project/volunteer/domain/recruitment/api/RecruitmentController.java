@@ -23,13 +23,16 @@ public class RecruitmentController {
 
         Long recruitmentNo = recruitmentService.addRecruitment(new SaveRecruitDto(form));
 
-        if(form.getVolunteeringType().equals(VolunteeringType.LONG.name())) //장기일 경우
+        if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.LONG.name())) //장기일 경우
             repeatPeriodService.addRepeatPeriod(recruitmentNo,
                     new SaveRepeatPeriodDto(form.getPeriod(),form.getWeek(), form.getDays()));
 
 
 
     }
+
+
+
 
 
 }
