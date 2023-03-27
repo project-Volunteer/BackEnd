@@ -8,7 +8,6 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +25,8 @@ public class SaveRecruitDto {
     private Integer volunteerNum;
     private Boolean isIssued;
     private String organizationName;
-    private String country;
+    private String sido;
+    private String sigungu;
     private String details;
     private Float latitude;
     private Float longitude;
@@ -40,7 +40,8 @@ public class SaveRecruitDto {
 
         this.volunteeringCategory = VolunteeringCategory.ofCode(form.getVolunteeringCategory());
         this.organizationName = form.getOrganizationName();
-        this.country = form.getAddress().getCountry();
+        this.sido = form.getAddress().getSido();
+        this.sigungu = form.getAddress().getSigungu();
         this.details = form.getAddress().getDetails();
         this.latitude = form.getAddress().getLatitude();
         this.longitude = form.getAddress().getLongitude();
@@ -57,13 +58,14 @@ public class SaveRecruitDto {
         this.isPublished = form.getIsPublished();
     }
 
-    public SaveRecruitDto(String volunteeringCategory, String organizationName, String country, String details, Float latitude, Float longitude,
+    public SaveRecruitDto(String volunteeringCategory, String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
                           Boolean isIssued, String volunteerType, Integer volunteerNum, String volunteeringType,
                           String startDay, String endDay, String startTime, Integer progressTime, String title, String content, Boolean isPublished) {
 
         this.volunteeringCategory = VolunteeringCategory.ofCode(volunteeringCategory);
         this.organizationName = organizationName;
-        this.country = country;
+        this.sido = sido;
+        this.sigungu = sigungu;
         this.details = details;
         this.latitude = latitude;
         this.longitude = longitude;

@@ -1,6 +1,5 @@
 package project.volunteer.domain.recruitment.application;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,8 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .volunteerNum(saveDto.getVolunteerNum())
                 .isIssued(saveDto.getIsIssued())
                 .organizationName(saveDto.getOrganizationName())
-                .country(saveDto.getCountry())
+                .sido(saveDto.getSido())
+                .sigungu(saveDto.getSigungu())
                 .details(saveDto.getDetails())
                 .latitude(saveDto.getLatitude())
                 .longitude(saveDto.getLongitude())

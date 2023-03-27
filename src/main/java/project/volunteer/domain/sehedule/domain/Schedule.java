@@ -27,8 +27,14 @@ public class Schedule extends BaseTimeEntity {
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
-    @Column(name = "progress_time", columnDefinition = "TINYINT", length = 25, nullable = false)
+    @Column(name = "progress_time", columnDefinition = "TINYINT", nullable = false)
     private Integer progressTime; //(1~24시간)
+
+    @Column(length = 5,nullable = false)
+    private String sido;
+
+    @Column(length = 10, nullable = false)
+    private String sigungu;
 
     @Column(length = 50)
     private String content;
@@ -42,14 +48,17 @@ public class Schedule extends BaseTimeEntity {
     private Recruitment recruitment;
 
     @Builder
-    public Schedule(LocalDate startDay, LocalTime startTime, Integer progressTime, String content) {
+    public Schedule(LocalDate startDay, LocalTime startTime, Integer progressTime, String content, String sido, String sigungu) {
         this.startDay = startDay;
         this.startTime = startTime;
         this.progressTime = progressTime;
         this.content = content;
+        this.sido = sido;
+        this.sigungu = sigungu;
     }
 
     public void setRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
     }
+
 }

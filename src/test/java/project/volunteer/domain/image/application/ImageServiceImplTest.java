@@ -76,7 +76,8 @@ class ImageServiceImplTest {
 
         String category = "001";
         String organizationName ="name";
-        String country = "11011";
+        String sido = "11";
+        String sigungu = "11011";
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
@@ -89,7 +90,7 @@ class ImageServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, country, details, latitude, longitude,
+        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
 

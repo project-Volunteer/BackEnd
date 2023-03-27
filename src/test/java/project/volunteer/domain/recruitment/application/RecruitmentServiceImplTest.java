@@ -96,7 +96,8 @@ class RecruitmentServiceImplTest {
         //given
         String category = "001";
         String organizationName ="name";
-        String country = "11011";
+        String sido = "11";
+        String sigungu = "11011";
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
@@ -106,10 +107,10 @@ class RecruitmentServiceImplTest {
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
         String startTime = "01:01:00";
-        Integer progressTime = 3;
+        Integer progressTime = 5;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, country, details, latitude, longitude,
+        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
 
         //when
@@ -130,7 +131,8 @@ class RecruitmentServiceImplTest {
         //given
         String category = "001";
         String organizationName ="name";
-        String country = "11011";
+        String sido = "11";
+        String sigungu = "11011";
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
@@ -143,7 +145,7 @@ class RecruitmentServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, country, details, latitude, longitude,
+        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido, sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
 
         String period = "week";
@@ -171,7 +173,8 @@ class RecruitmentServiceImplTest {
         //given
         String category = "001";
         String organizationName ="name";
-        String country = "11011";
+        String sido = "11";
+        String sigungu = "11011";
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
@@ -184,7 +187,7 @@ class RecruitmentServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, country, details, latitude, longitude,
+        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido, sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
 
         String period = "month";

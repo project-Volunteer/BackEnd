@@ -48,8 +48,11 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "organization_name", length = 50, nullable = false)
     private String organizationName;
 
+    @Column(length = 5, nullable = false)
+    private String sido;
+
     @Column(length = 10, nullable = false)
-    private String country;
+    private String sigungu;
 
     @Column(length = 50, nullable = false)
     private String details;
@@ -69,7 +72,7 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
-    @Column(name = "progress_time", columnDefinition = "TINYINT", length = 25, nullable = false)
+    @Column(name = "progress_time", columnDefinition = "TINYINT", nullable = false)
     private Integer progressTime; //(1~24시간)
 
     @Column(name = "view_count", nullable = false)
@@ -91,7 +94,7 @@ public class Recruitment extends BaseTimeEntity {
     @Builder
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
                        VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
-                       String organizationName, String country, String details, Float latitude, Float longitude,
+                       String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
                        LocalDate startDay, LocalDate endDay, LocalTime startTime, Integer progressTime,
                        Boolean isPublished) {
 
@@ -103,7 +106,8 @@ public class Recruitment extends BaseTimeEntity {
         this.volunteerNum = volunteerNum;
         this.isIssued = isIssued;
         this.organizationName = organizationName;
-        this.country = country;
+        this.sido = sido;
+        this.sigungu = sigungu;
         this.details = details;
         this.latitude = latitude;
         this.longitude = longitude;

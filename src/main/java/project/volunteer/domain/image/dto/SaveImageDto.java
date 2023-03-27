@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.domain.recruitment.api.form.SaveRecruitPictureForm;
 
 @Getter
 @Setter
@@ -26,5 +27,13 @@ public class SaveImageDto {
         this.imageType = imageType;
         this.staticImageCode = staticImageCode;
         this.uploadImage = uploadImage;
+    }
+
+    public SaveImageDto(RealWorkCode code, Long no, SaveRecruitPictureForm form) {
+        this.code = code;
+        this.no = no;
+        this.imageType = ImageType.of(form.getType());
+        this.staticImageCode = form.getStaticImage();
+        this.uploadImage = form.getUploadImage();
     }
 }

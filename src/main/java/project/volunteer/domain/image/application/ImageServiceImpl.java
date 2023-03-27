@@ -56,8 +56,6 @@ public class ImageServiceImpl implements ImageService{
         }else if(code==RealWorkCode.RECRUITMENT){
             recruitmentRepository.findById(no).orElseThrow(() -> new NullPointerException("존재하지 않은 모집 게시물입니다."));
         }
-
     }
-
 
 }
