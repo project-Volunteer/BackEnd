@@ -21,6 +21,6 @@ public enum Week {
             if(week.name().equals(value.toUpperCase()))
                 return week;
         }
-        throw new IllegalArgumentException("일치하는 주가 없습니다.");
+        throw new IllegalArgumentException("Not found mismatch repeat week. value:"+value);
     }
 }

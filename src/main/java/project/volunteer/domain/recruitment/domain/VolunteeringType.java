@@ -20,6 +20,6 @@ public enum VolunteeringType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("일치하는 봉사 유형이 없습니다");
+        throw new IllegalArgumentException("Not found mismatch Volunteering Type. value:"+value);
     }
 }

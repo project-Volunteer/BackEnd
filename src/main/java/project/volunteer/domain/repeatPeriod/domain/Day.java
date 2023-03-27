@@ -22,6 +22,6 @@ public enum Day {
             if(day.name().equals(value.toUpperCase()))
                 return day;
         }
-        throw new IllegalArgumentException("일치하는 요일이 없습니다.");
+        throw new IllegalArgumentException("Not found mismatch day. value:"+value);
     }
 }

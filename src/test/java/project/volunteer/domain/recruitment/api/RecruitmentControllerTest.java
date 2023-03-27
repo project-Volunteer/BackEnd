@@ -162,7 +162,6 @@ class RecruitmentControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
-
     @Test
     public void 모집글_장기_매주_업로드이미지_등록_성공() throws Exception {
         //given

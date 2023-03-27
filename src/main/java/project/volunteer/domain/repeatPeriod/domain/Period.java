@@ -24,7 +24,7 @@ public enum Period {
                 return period;
             }
         }
-        throw new IllegalArgumentException("일치하는 주기가 없습니다.");
+        throw new IllegalArgumentException("Not found mismatch period. value:"+value);
     }
 
 }

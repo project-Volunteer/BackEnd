@@ -24,7 +24,7 @@ public enum VolunteeringCategory {
                 return category;
             }
         }
-        throw new IllegalArgumentException("일치하는 봉사 카테고리가 없습니다.");
+        throw new IllegalArgumentException("Not found mismatch Volunteering Category. code:"+code);
     }
 
 }

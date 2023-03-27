@@ -14,6 +14,6 @@ public enum ImageType {
             if(type.value==value)
                 return type;
         }
-        throw new IllegalArgumentException("일치하는 이미지 타입이 없습니다.");
+        throw new IllegalArgumentException("Not found mismatch Image type. value:"+value);
     }
 }

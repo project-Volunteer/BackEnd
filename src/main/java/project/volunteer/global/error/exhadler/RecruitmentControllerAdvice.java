@@ -28,4 +28,11 @@ public class RecruitmentControllerAdvice {
         return new BaseErrorResponse(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public BaseErrorResponse IllegalArgumentException(IllegalArgumentException e) {
+        log.error(e.getMessage());
+        return new BaseErrorResponse(e.getMessage());
+    }
+
 }
