@@ -6,5 +6,4 @@ public interface RecruitmentService {
 
     public Long addRecruitment(SaveRecruitDto saveDto);
 
-
 }
