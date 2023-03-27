@@ -23,7 +23,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
         //굳이 한번더 조회해야할까?
         Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
-                .orElseThrow(() -> new NullPointerException("존재하지 않는 모집 게시물입니다."));
+                .orElseThrow(() -> new NullPointerException("Not found recruitment. no:"+recruitmentNo));
 
         Schedule createSchedule = Schedule.builder()
                 .timetable(dto.getTimetable())

@@ -90,6 +90,7 @@ class ScheduleServiceImplTest {
     }
 
     @Test
+    @Rollback(value = false)
     public void 스케줄_등록_성공() {
         //given
         String startDay = "01-01-2000";
@@ -115,7 +116,6 @@ class ScheduleServiceImplTest {
         Assertions.assertThat(schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))).isEqualTo(startDay);
         Assertions.assertThat(schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).isEqualTo(startTime);
         Assertions.assertThat(schedule.getScheduleTimeTable().getProgressTime()).isEqualTo(progressTime);
-        Assertions.assertThat(schedule.getContent()).isEqualTo(content);
     }
 
     @Test

@@ -9,6 +9,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -157,7 +159,8 @@ class RecruitmentControllerTest {
                         .file(getFakeMockMultipartFile()) //정적이미지
                         .params(info)
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
@@ -212,6 +215,103 @@ class RecruitmentControllerTest {
         Recruitment recruitment = recruitmentRepository.findAll().get(0);
         Image image = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.RECRUITMENT, recruitment.getRecruitmentNo()).get();
         fileService.deleteFile(image.getStorage().getFakeImageName());
+    }
+
+    @Test
+    public void 모집글폼_유효성검사_NotEmpty() throws Exception {
+        //given
+        MultiValueMap info = createRecruitmentForm_common();
+        info.add("volunteeringType", ""); // -> null & 빈 값 허용안함
+        info.add("period", period1); //단기
+        info.add("week", week1and2); //단기
+        info.add("days", String.valueOf(days1)); //단기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 모집글폼_유효성검사_Length() throws Exception {
+        //given
+        MultiValueMap info = createRecruitmentForm_common();
+        info.add("volunteeringType", "testtesttest"); // -> length 초과
+        info.add("period", period1); //단기
+        info.add("week", week1and2); //단기
+        info.add("days", String.valueOf(days1)); //단기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 모집글폼_유효성검사_NotNull() throws Exception {
+        //given
+        MultiValueMap info = createRecruitmentForm_common();
+        info.add("volunteeringType",volunteeringType1);
+        info.add("period", null); // -> null 허용하지 않음
+        info.add("week", week1and2); //단기
+        info.add("days", String.valueOf(days1)); //단기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 모집글폼_유효성검사_Range() throws Exception {
+        //given
+        MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
+        info.add("volunteeringCategory", volunteeringCategory);
+        info.add("organizationName", organizationName);
+        info.add("isIssued", String.valueOf(isIssued));
+        info.add("volunteerType", volunteerType);
+        info.add("volunteerNum", String.valueOf(volunteerNum));
+        info.add("startDay", startDay);
+        info.add("endDay", endDay);
+        info.add("startTime", startTime);
+        info.add("progressTime", String.valueOf(25)); // -> range(1,24) 까지 허용
+        info.add("title", title);
+        info.add("content", content);
+        info.add("isPublished", String.valueOf(isPublished));
+        info.add("address.sido", sido);
+        info.add("address.sigungu", sigungu);
+        info.add("address.details", details);
+        info.add("address.latitude", String.valueOf(latitude));
+        info.add("address.longitude", String.valueOf(longitude));
+        info.add("volunteeringType",volunteeringType1);
+        info.add("period", period1);
+        info.add("week", week1and2); //단기
+        info.add("days", String.valueOf(days1)); //단기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest());
     }
 
 }

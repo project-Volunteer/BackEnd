@@ -1,6 +1,7 @@
 package project.volunteer.domain.repeatPeriod.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -9,6 +10,7 @@ import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.repeatPeriod.dto.SaveRepeatPeriodDto;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
 
         //굳이 한번더 조회해야할까?
         Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
-                .orElseThrow(() -> new NullPointerException("존재하지 않는 모집 게시물입니다."));
+                .orElseThrow(() -> new NullPointerException("Not found recruitment. no:"+recruitmentNo));
 
         saveDto.getDays().stream().forEach(day -> {
             RepeatPeriod period = RepeatPeriod.builder().week(saveDto.getWeek()).period(saveDto.getPeriod()).day(day).build();

@@ -26,4 +26,5 @@ public enum Period {
         }
         throw new IllegalArgumentException("일치하는 주기가 없습니다.");
     }
+
 }

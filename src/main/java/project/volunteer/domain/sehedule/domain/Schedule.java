@@ -35,7 +35,7 @@ public class Schedule extends BaseTimeEntity {
     @Column(length = 10, nullable = false)
     private String sigungu;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String details;
 
 
