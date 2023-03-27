@@ -25,7 +25,7 @@ public class RecruitmentController {
     private final RepeatPeriodService repeatPeriodService;
     private final ImageService imageService;
 
-    @PostMapping(value = "/write", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<DataResponse> save(@ModelAttribute SaveRecruitForm form) {
 
         //모집글 정보 저장

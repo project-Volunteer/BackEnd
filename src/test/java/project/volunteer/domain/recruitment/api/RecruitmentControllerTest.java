@@ -54,7 +54,7 @@ class RecruitmentControllerTest {
         em.flush();
         em.clear();
     }
-    private static final String WRITE_URL = "/write";
+    private static final String WRITE_URL = "/recruitment";
     final String volunteeringCategory = "001";
     final String organizationName = "organization";
     final Boolean isIssued = true;
