@@ -26,12 +26,12 @@ public class ScheduleServiceImpl implements ScheduleService{
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 모집 게시물입니다."));
 
         Schedule createSchedule = Schedule.builder()
-                .startDay(dto.getStartDay())
-                .startTime(dto.getStartTime())
-                .progressTime(dto.getProgressTime())
+                .timetable(dto.getTimetable())
                 .content(dto.getContent())
+                .organizationName(dto.getOrganizationName())
                 .sido(dto.getSido())
                 .sigungu(dto.getSigungu())
+                .details(dto.getDetails())
                 .build();
         createSchedule.setRecruitment(recruitment);
 

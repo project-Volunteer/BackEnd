@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
+import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -45,6 +46,9 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "is_issued", nullable = false)
     private Boolean isIssued;
 
+
+
+
     @Column(name = "organization_name", length = 50, nullable = false)
     private String organizationName;
 
@@ -63,17 +67,12 @@ public class Recruitment extends BaseTimeEntity {
     @Column(nullable = false)
     private Float longitude;
 
-    @Column(name = "start_day", nullable = false)
-    private LocalDate startDay;
 
-    @Column(name = "end_day", nullable = false)
-    private LocalDate endDay;
 
-    @Column(name = "start_time", nullable = false)
-    private LocalTime startTime;
 
-    @Column(name = "progress_time", columnDefinition = "TINYINT", nullable = false)
-    private Integer progressTime; //(1~24시간)
+
+    @Embedded
+    private Timetable VolunteeringTimeTable;
 
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;
@@ -95,8 +94,7 @@ public class Recruitment extends BaseTimeEntity {
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
                        VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
                        String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
-                       LocalDate startDay, LocalDate endDay, LocalTime startTime, Integer progressTime,
-                       Boolean isPublished) {
+                       Timetable timetable, Boolean isPublished) {
 
         this.title = title;
         this.content = content;
@@ -111,10 +109,7 @@ public class Recruitment extends BaseTimeEntity {
         this.details = details;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.startDay = startDay;
-        this.endDay = endDay;
-        this.startTime = startTime;
-        this.progressTime = progressTime;
+        this.VolunteeringTimeTable = timetable;
         this.isPublished = isPublished;
 
         this.likeCount = 0;

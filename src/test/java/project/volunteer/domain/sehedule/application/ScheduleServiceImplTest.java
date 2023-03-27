@@ -96,9 +96,12 @@ class ScheduleServiceImplTest {
         String startTime = "01:01:00";
         Integer progressTime = 3;
         String content = "content";
+        String organizationName ="name";
         String sido = "11";
         String sigungu = "11011";
-        SaveScheduleDto dto = new SaveScheduleDto(startDay, startTime, progressTime, sido, sigungu, content);
+        String details = "details";
+        SaveScheduleDto dto = new SaveScheduleDto(startDay,startDay, startTime, progressTime,
+                organizationName, sido, sigungu, details, content);
 
         //when
         scheduleService.addSchedule(saveRecruitmentNo, dto);
@@ -109,9 +112,9 @@ class ScheduleServiceImplTest {
         Assertions.assertThat(schedule.getSido()).isEqualTo(sido);
         Assertions.assertThat(schedule.getSigungu()).isEqualTo(sigungu);
         Assertions.assertThat(schedule.getContent()).isEqualTo(content);
-        Assertions.assertThat(schedule.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))).isEqualTo(startDay);
-        Assertions.assertThat(schedule.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).isEqualTo(startTime);
-        Assertions.assertThat(schedule.getProgressTime()).isEqualTo(progressTime);
+        Assertions.assertThat(schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))).isEqualTo(startDay);
+        Assertions.assertThat(schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).isEqualTo(startTime);
+        Assertions.assertThat(schedule.getScheduleTimeTable().getProgressTime()).isEqualTo(progressTime);
         Assertions.assertThat(schedule.getContent()).isEqualTo(content);
     }
 
@@ -122,9 +125,12 @@ class ScheduleServiceImplTest {
         String startTime = "01:01:00";
         Integer progressTime = 3;
         String content = "content";
+        String organizationName ="name";
         String sido = "11";
         String sigungu = "11011";
-        SaveScheduleDto dto = new SaveScheduleDto(startDay, startTime, progressTime, sido, sigungu, content);
+        String details = "details";
+        SaveScheduleDto dto = new SaveScheduleDto(startDay, startDay,startTime, progressTime,
+                organizationName, sido, sigungu, details, content);
 
         //when & then
         Assertions.assertThatThrownBy(() -> scheduleService.addSchedule(Long.MAX_VALUE, dto))

@@ -36,10 +36,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .details(saveDto.getDetails())
                 .latitude(saveDto.getLatitude())
                 .longitude(saveDto.getLongitude())
-                .startDay(saveDto.getStartDay())
-                .endDay(saveDto.getEndDay())
-                .startTime(saveDto.getStartTime())
-                .progressTime(saveDto.getProgressTime())
+                .timetable(saveDto.getTimetable())
                 .isPublished(saveDto.getIsPublished())
                 .build();
 

@@ -7,6 +7,7 @@ import project.volunteer.domain.recruitment.api.form.SaveRecruitForm;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.global.common.component.Timetable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,10 +31,7 @@ public class SaveRecruitDto {
     private String details;
     private Float latitude;
     private Float longitude;
-    private LocalDate startDay;
-    private LocalDate endDay;
-    private LocalTime startTime;
-    private Integer progressTime; //(1~24시간)
+    private Timetable timetable;
     private Boolean isPublished;
 
     public SaveRecruitDto(SaveRecruitForm form) {
@@ -49,10 +47,12 @@ public class SaveRecruitDto {
         this.volunteerType = VolunteerType.of(form.getVolunteerType());
         this.volunteerNum = form.getVolunteerNum();
         this.volunteeringType = VolunteeringType.of(form.getVolunteeringType());
-        this.startDay = LocalDate.parse(form.getStartDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.endDay = LocalDate.parse(form.getEndDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.startTime = LocalTime.parse(form.getStartTime(), DateTimeFormatter.ofPattern("HH:mm:ss"));
-        this.progressTime = form.getProgressTime();
+        this.timetable = new Timetable(
+                LocalDate.parse(form.getStartDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                LocalDate.parse(form.getEndDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                LocalTime.parse(form.getStartTime(), DateTimeFormatter.ofPattern("HH:mm:ss")),
+                form.getProgressTime()
+                );
         this.title = form.getTitle();
         this.content = form.getContent();
         this.isPublished = form.getIsPublished();
@@ -73,10 +73,12 @@ public class SaveRecruitDto {
         this.volunteerType = VolunteerType.of(volunteerType);
         this.volunteerNum = volunteerNum;
         this.volunteeringType = VolunteeringType.of(volunteeringType);
-        this.startDay = LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.endDay = LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.startTime = LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm:ss"));
-        this.progressTime = progressTime;
+        this.timetable = new Timetable(
+                LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm:ss")),
+                progressTime
+        );
         this.title = title;
         this.content = content;
         this.isPublished = isPublished;
