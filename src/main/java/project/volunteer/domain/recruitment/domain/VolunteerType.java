@@ -1,5 +1,7 @@
 package project.volunteer.domain.recruitment.domain;
 
+import java.util.Arrays;
+
 public enum VolunteerType {
 
     ALL("모두"), ADULT("성인"), TEENAGER("청소년");
@@ -14,11 +16,10 @@ public enum VolunteerType {
     }
 
     public static VolunteerType of(String value){
-        for(VolunteerType type : VolunteerType.values()) {
-            if(type.name().equals(value.toUpperCase())){
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Not found mismatch Volunteer Type. value:"+value);
+
+        return Arrays.stream(VolunteerType.values())
+                .filter(v -> v.name().equals(value.toUpperCase()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match volunteer type=[%s]", value)));
     }
 }

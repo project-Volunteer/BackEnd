@@ -2,6 +2,8 @@ package project.volunteer.domain.recruitment.domain;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum VolunteeringCategory {
 
@@ -19,12 +21,10 @@ public enum VolunteeringCategory {
 
     public static VolunteeringCategory ofCode(String code) {
 
-        for(VolunteeringCategory category : VolunteeringCategory.values()){
-            if(category.code.equals(code)){
-                return category;
-            }
-        }
-        throw new IllegalArgumentException("Not found mismatch Volunteering Category. code:"+code);
+        return Arrays.stream(VolunteeringCategory.values())
+                .filter(v -> v.getCode().equals(code))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match volunteering category=[%s]",code)));
     }
 
 }

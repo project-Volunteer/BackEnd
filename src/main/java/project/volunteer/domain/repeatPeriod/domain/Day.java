@@ -3,6 +3,8 @@ package project.volunteer.domain.repeatPeriod.domain;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum Day {
 
@@ -18,10 +20,10 @@ public enum Day {
     }
 
     public static Day of(String value){
-        for(Day day : Day.values()){
-            if(day.name().equals(value.toUpperCase()))
-                return day;
-        }
-        throw new IllegalArgumentException("Not found mismatch day. value:"+value);
+
+        return Arrays.stream(Day.values())
+                .filter(v -> v.name().equals(value.toUpperCase()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match day=[%s]",value)));
     }
 }

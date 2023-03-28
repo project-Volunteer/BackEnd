@@ -1,5 +1,7 @@
 package project.volunteer.domain.image.domain;
 
+import java.util.Arrays;
+
 public enum ImageType {
     STATIC(0), UPLOAD(1);
 
@@ -10,10 +12,10 @@ public enum ImageType {
     }
 
     public static ImageType of(int value){
-        for(ImageType type : ImageType.values()){
-            if(type.value==value)
-                return type;
-        }
-        throw new IllegalArgumentException("Not found mismatch Image type. value:"+value);
+
+        return Arrays.stream(ImageType.values())
+                .filter(v -> v.value==value)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match image type=[%s]",value)));
     }
 }

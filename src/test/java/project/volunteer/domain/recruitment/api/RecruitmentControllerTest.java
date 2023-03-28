@@ -217,6 +217,43 @@ class RecruitmentControllerTest {
     }
 
     @Test
+    public void 모집글_저장_실패_없은카테고리코드() throws Exception {
+        //given
+        MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
+        info.add("volunteeringCategory", "1000"); // -> 존재하지 않는 카테코리
+        info.add("organizationName", organizationName);
+        info.add("isIssued", String.valueOf(isIssued));
+        info.add("volunteerType", volunteerType);
+        info.add("volunteerNum", String.valueOf(volunteerNum));
+        info.add("startDay", startDay);
+        info.add("endDay", endDay);
+        info.add("startTime", startTime);
+        info.add("progressTime", String.valueOf(23));
+        info.add("title", title);
+        info.add("content", content);
+        info.add("isPublished", String.valueOf(isPublished));
+        info.add("address.sido", sido);
+        info.add("address.sigungu", sigungu);
+        info.add("address.details", details);
+        info.add("address.latitude", String.valueOf(latitude));
+        info.add("address.longitude", String.valueOf(longitude));
+        info.add("volunteeringType",volunteeringType1);
+        info.add("period", period1);
+        info.add("week", week1and2); //단기
+        info.add("days", String.valueOf(days1)); //단기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void 모집글폼_유효성검사_NotEmpty() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();

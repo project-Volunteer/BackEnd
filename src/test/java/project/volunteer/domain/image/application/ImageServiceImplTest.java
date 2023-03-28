@@ -98,12 +98,12 @@ class ImageServiceImplTest {
     }
 
     @Test
-    public void 모집글_이미지_저장_실패_없는PK() {
+    public void 모집글_이미지_저장_실패_없는모집글PK() {
         //given
         SaveImageDto dto = SaveImageDto.builder()
                 .code(RealWorkCode.RECRUITMENT)
                 .imageType(ImageType.STATIC)
-                .no(Long.MAX_VALUE)
+                .no(Long.MAX_VALUE) //-> 없는 모집글 PK
                 .staticImageCode("1")
                 .uploadImage(null)
                 .build();

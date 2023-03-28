@@ -52,10 +52,11 @@ public class ImageServiceImpl implements ImageService{
 
         //더 클린하게 작성할 수 없을까?
         if(code==RealWorkCode.USER) {
-            userRepository.findById(no).orElseThrow(() -> new NullPointerException("Not found user. no:" + no));
+            userRepository.findById(no).orElseThrow(() -> new NullPointerException(String.format("Not found userNo=[%d]",no)));
         }else if(code==RealWorkCode.RECRUITMENT){
-            recruitmentRepository.findById(no).orElseThrow(() -> new NullPointerException("Not found recruitment. no:" + no));
+            recruitmentRepository.findById(no).orElseThrow(() -> new NullPointerException(String.format("Not found recruitmentNo=[%d]",no)));
         }
+
     }
 
 }

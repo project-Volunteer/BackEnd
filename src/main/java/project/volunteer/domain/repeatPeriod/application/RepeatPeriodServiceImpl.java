@@ -24,7 +24,7 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
 
         //굳이 한번더 조회해야할까?
         Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
-                .orElseThrow(() -> new NullPointerException("Not found recruitment. no:"+recruitmentNo));
+                .orElseThrow(() -> new NullPointerException(String.format("Not found recruitmentNo=[%d]",recruitmentNo)));
 
         saveDto.getDays().stream().forEach(day -> {
             RepeatPeriod period = RepeatPeriod.builder().week(saveDto.getWeek()).period(saveDto.getPeriod()).day(day).build();
