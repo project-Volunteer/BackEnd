@@ -2,6 +2,8 @@ package project.volunteer.domain.repeatPeriod.domain;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum Week {
 
@@ -14,5 +16,13 @@ public enum Week {
 
     public String getViewName(){
         return viewName;
+    }
+
+    public static Week of(String value) {
+
+        return Arrays.stream(Week.values())
+                .filter(v -> v.name().equals(value.toUpperCase()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match week=[%s]",value)));
     }
 }

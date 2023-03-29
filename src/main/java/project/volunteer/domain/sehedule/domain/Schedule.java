@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
+import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -20,15 +21,25 @@ public class Schedule extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "scheduleno")
     private Long scheduleNo;
+    @Embedded
+    private Timetable scheduleTimeTable;
 
-    @Column(name = "start_day", nullable = false)
-    private LocalDate startDay;
 
-    @Column(name = "start_time", nullable = false)
-    private LocalTime startTime;
 
-    @Column(name = "progress_time", columnDefinition = "TINYINT", length = 25, nullable = false)
-    private Integer progressTime; //(1~24시간)
+    @Column(name = "organization_name", length = 50, nullable = false)
+    private String organizationName;
+
+    @Column(length = 5,nullable = false)
+    private String sido;
+
+    @Column(length = 10, nullable = false)
+    private String sigungu;
+
+    @Column(length = 50)
+    private String details;
+
+
+
 
     @Column(length = 50)
     private String content;
@@ -42,14 +53,17 @@ public class Schedule extends BaseTimeEntity {
     private Recruitment recruitment;
 
     @Builder
-    public Schedule(LocalDate startDay, LocalTime startTime, Integer progressTime, String content) {
-        this.startDay = startDay;
-        this.startTime = startTime;
-        this.progressTime = progressTime;
+    public Schedule(Timetable timetable, String content,String organizationName,  String sido, String sigungu, String details) {
+        this.scheduleTimeTable = timetable;
         this.content = content;
+        this.organizationName = organizationName;
+        this.sido = sido;
+        this.sigungu = sigungu;
+        this.details = details;
     }
 
     public void setRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
     }
+
 }

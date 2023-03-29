@@ -1,12 +1,16 @@
 package project.volunteer.domain.storage.domain;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
 @Table(name = "vlt_storage")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Storage {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +28,13 @@ public class Storage {
 
     @Column(name = "ext_name", length = 10, nullable = false)
     private String extName; //확장자명
+
+    @Builder
+    public Storage(String imagePath, String fakeImageName, String realImageName, String extName) {
+        this.imagePath = imagePath;
+        this.fakeImageName = fakeImageName;
+        this.realImageName = realImageName;
+        this.extName = extName;
+    }
 
 }

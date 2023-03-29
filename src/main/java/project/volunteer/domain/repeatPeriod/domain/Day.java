@@ -1,6 +1,9 @@
 package project.volunteer.domain.repeatPeriod.domain;
 
+import lombok.Data;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 @Getter
 public enum Day {
@@ -14,5 +17,13 @@ public enum Day {
 
     public String getViewName(){
         return viewName;
+    }
+
+    public static Day of(String value){
+
+        return Arrays.stream(Day.values())
+                .filter(v -> v.name().equals(value.toUpperCase()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match day=[%s]",value)));
     }
 }

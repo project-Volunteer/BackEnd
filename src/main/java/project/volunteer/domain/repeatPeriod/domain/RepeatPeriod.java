@@ -19,7 +19,7 @@ public class RepeatPeriod {
     private Long repeatPeriodNo;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "period", length = 3, nullable = false)
+    @Column(name = "period", length = 10, nullable = false)
     private Period period;
 
     @Enumerated(EnumType.STRING)
@@ -27,7 +27,7 @@ public class RepeatPeriod {
     private Week week;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "day", length = 5, nullable = false)
+    @Column(name = "day", length = 10, nullable = false)
     private Day day;
 
     @ManyToOne(fetch = FetchType.LAZY)

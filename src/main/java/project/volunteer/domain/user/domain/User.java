@@ -1,6 +1,7 @@
 package project.volunteer.domain.user.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
@@ -49,5 +50,19 @@ public class User extends BaseTimeEntity {
     /**
      * Auditing - 생성인, 수정인 추가 필요
      */
+
+    @Builder
+    public User(String name, String nickName, String email, Gender gender, LocalDate birthDay, String picture, Boolean joinAlarmYn,
+                Boolean noticeAlarmYn, Boolean beforeAlarmYn) {
+        this.name = name;
+        this.nickName = nickName;
+        this.email = email;
+        this.gender = gender;
+        this.birthDay = birthDay;
+        this.picture = picture;
+        this.joinAlarmYn = joinAlarmYn;
+        this.noticeAlarmYn = noticeAlarmYn;
+        this.beforeAlarmYn = beforeAlarmYn;
+    }
 
 }

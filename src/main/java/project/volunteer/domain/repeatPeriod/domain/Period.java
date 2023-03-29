@@ -2,6 +2,8 @@ package project.volunteer.domain.repeatPeriod.domain;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum Period {
 
@@ -16,4 +18,13 @@ public enum Period {
     public String getViewName() {
         return viewName;
     }
+
+    public static Period of(String value){
+
+        return Arrays.stream(Period.values())
+                .filter(v -> v.name().equals(value.toUpperCase()))
+                .findAny()
+                .orElseThrow(()-> new IllegalArgumentException(String.format("Not found match period=[%s]", value)));
+    }
+
 }
