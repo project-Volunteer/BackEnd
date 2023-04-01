@@ -19,7 +19,7 @@ import java.time.LocalTime;
 public class Recruitment extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "recruitment_no")
+    @Column(name = "recruitmentno")
     private Long recruitmentNo;
 
     @Column(nullable = false)

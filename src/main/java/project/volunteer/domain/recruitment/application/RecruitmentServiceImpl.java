@@ -46,6 +46,6 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         recruitment.setWriter(userRepository.findByEmail(SecurityUtil.getLoginUserEmail())
                 .orElseThrow(()-> new NullPointerException(String.format("Not found userEmail=[%s]", SecurityUtil.getLoginUserEmail()))));
 
-        return  recruitmentRepository.save(recruitment).getRecruitmentNo();
+        return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
 }

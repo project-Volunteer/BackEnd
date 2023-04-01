@@ -3,7 +3,7 @@ package project.volunteer.domain.recruitment.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.api.form.SaveRecruitForm;
+import project.volunteer.domain.recruitment.api.dto.SaveRecruitForm;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;

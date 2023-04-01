@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.recruitment.api.form.SaveRecruitPictureForm;
+import project.volunteer.domain.recruitment.api.dto.SaveRecruitPictureForm;
 
 @Getter
 @Setter
