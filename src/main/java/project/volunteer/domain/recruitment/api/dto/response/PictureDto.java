@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.api.dto;
+package project.volunteer.domain.recruitment.api.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

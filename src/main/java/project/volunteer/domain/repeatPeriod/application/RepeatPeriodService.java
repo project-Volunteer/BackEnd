@@ -1,6 +1,6 @@
 package project.volunteer.domain.repeatPeriod.application;
 
-import project.volunteer.domain.repeatPeriod.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
 
 public interface RepeatPeriodService {
 

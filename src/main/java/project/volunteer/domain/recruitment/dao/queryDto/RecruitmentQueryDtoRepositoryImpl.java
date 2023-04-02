@@ -20,7 +20,7 @@ import project.volunteer.domain.recruitment.dao.queryDto.dto.QRepeatPeriodQueryD
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RepeatPeriodQueryDto;
 import project.volunteer.domain.recruitment.domain.*;
-import project.volunteer.domain.recruitment.dto.SearchType;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
 import project.volunteer.domain.repeatPeriod.domain.QRepeatPeriod;
 import project.volunteer.domain.storage.domain.QStorage;
 

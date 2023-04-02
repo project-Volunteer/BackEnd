@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.global.util.SecurityUtil;
 

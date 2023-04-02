@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.api.dto;
+package project.volunteer.domain.recruitment.api.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +21,10 @@ public class RepeatPeriodDto {
     public RepeatPeriodDto(List<RepeatPeriodQueryDto> queryDto) {
 
         this.period = (!queryDto.isEmpty())?queryDto.get(0).getPeriod().getViewName() : null;
-        this.week = (!queryDto.isEmpty() && this.period.equals(Period.MONTH)) //매주일때만 반복주 존재(null 아니다)
+
+        this.week = (!queryDto.isEmpty() && this.period.equals(Period.MONTH)) //반복주기가 매달일때만 반복주 존재
                 ?queryDto.get(0).getWeek().getViewName() : null;
+
         this.days = queryDto.stream()
                 .map(dto -> new String(dto.getDay().getViewName()))
                 .collect(Collectors.toList());

@@ -1,9 +1,9 @@
-package project.volunteer.domain.recruitment.dto.response;
+package project.volunteer.domain.recruitment.api.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.api.dto.RecruitmentListDto;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListDto;
 import project.volunteer.global.common.response.BaseResponse;
 
 import java.util.List;

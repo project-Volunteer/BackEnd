@@ -14,7 +14,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.dto.SearchType;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.EntityManager;

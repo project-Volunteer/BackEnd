@@ -1,7 +1,6 @@
 package project.volunteer.domain.image.application;
 
-import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.dto.SaveImageDto;
+import project.volunteer.domain.image.application.dto.SaveImageDto;
 
 public interface ImageService {
 

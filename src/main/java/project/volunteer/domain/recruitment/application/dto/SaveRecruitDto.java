@@ -1,9 +1,9 @@
-package project.volunteer.domain.recruitment.dto;
+package project.volunteer.domain.recruitment.application.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.api.dto.SaveRecruitForm;
+import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitForm;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;

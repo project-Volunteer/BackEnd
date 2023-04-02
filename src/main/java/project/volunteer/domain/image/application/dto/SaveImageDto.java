@@ -1,4 +1,4 @@
-package project.volunteer.domain.image.dto;
+package project.volunteer.domain.image.application.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.recruitment.api.dto.SaveRecruitPictureForm;
+import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitPictureForm;
 
 @Getter
 @Setter

@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.api.dto;
+package project.volunteer.domain.recruitment.api.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.Setter;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Getter
 @Setter

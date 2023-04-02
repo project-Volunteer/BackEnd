@@ -1,4 +1,4 @@
-package project.volunteer.domain.repeatPeriod.dto;
+package project.volunteer.domain.repeatPeriod.application.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -10,21 +10,21 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.dto.SaveImageDto;
-import project.volunteer.domain.recruitment.api.dto.RecruitmentListDto;
-import project.volunteer.domain.recruitment.api.dto.SaveRecruitForm;
+import project.volunteer.domain.image.application.dto.SaveImageDto;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListDto;
+import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitForm;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.dto.SaveRecruitDto;
-import project.volunteer.domain.recruitment.dto.SearchType;
-import project.volunteer.domain.recruitment.dto.response.RecruitmentListResponse;
-import project.volunteer.domain.recruitment.dto.response.SaveRecruitResponse;
+import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListResponse;
+import project.volunteer.domain.recruitment.api.dto.response.SaveRecruitResponse;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
 import project.volunteer.domain.sehedule.application.ScheduleService;
-import project.volunteer.domain.sehedule.dto.SaveScheduleDto;
+import project.volunteer.domain.sehedule.application.dto.SaveScheduleDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +65,7 @@ public class RecruitmentController {
     }
 
     @GetMapping("/recruitment")
-    public ResponseEntity<RecruitmentListResponse> recruitmentList(@PageableDefault(size = 5) Pageable pageable,
+    public ResponseEntity<RecruitmentListResponse> recruitmentList(@PageableDefault(size = 6) Pageable pageable,
                                                                    @RequestParam(required = false) List<String> volunteering_category,
                                                                    @RequestParam(required = false) String sido,
                                                                    @RequestParam(required = false) String sigungu,

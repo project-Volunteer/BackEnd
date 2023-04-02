@@ -1,6 +1,6 @@
 package project.volunteer.domain.sehedule.application;
 
-import project.volunteer.domain.sehedule.dto.SaveScheduleDto;
+import project.volunteer.domain.sehedule.application.dto.SaveScheduleDto;
 
 public interface ScheduleService {
 

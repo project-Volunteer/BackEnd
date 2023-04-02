@@ -3,7 +3,7 @@ package project.volunteer.domain.recruitment.dao.queryDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
-import project.volunteer.domain.recruitment.dto.SearchType;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
 
 //서비스 화면에 맞춰진 Dto 반환 레포지토리
 public interface RecruitmentQueryDtoRepository {

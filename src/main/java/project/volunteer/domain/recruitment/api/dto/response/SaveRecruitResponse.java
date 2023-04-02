@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.dto.response;
+package project.volunteer.domain.recruitment.api.dto.response;
 
 import lombok.*;
 import project.volunteer.global.common.response.BaseResponse;
