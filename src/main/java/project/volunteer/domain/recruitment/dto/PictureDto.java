@@ -1,8 +1,9 @@
-package project.volunteer.domain.recruitment.api.dto.response;
+package project.volunteer.domain.recruitment.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.util.StringUtils;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
@@ -10,6 +11,7 @@ import project.volunteer.domain.image.domain.ImageType;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class PictureDto {
 
     private Integer type;
@@ -18,9 +20,9 @@ public class PictureDto {
 
     public PictureDto(String staticImage, String uploadImage){
 
-        if(!StringUtils.hasText(staticImage))
+        if(StringUtils.hasText(staticImage))
             this.type = ImageType.STATIC.getValue();
-        else if(!StringUtils.hasText(uploadImage))
+        else if(StringUtils.hasText(uploadImage))
             this.type = ImageType.UPLOAD.getValue();
 
         this.staticImage = staticImage;

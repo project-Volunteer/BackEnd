@@ -7,6 +7,7 @@ import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitForm;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
 
 import java.time.LocalDate;
@@ -26,11 +27,7 @@ public class SaveRecruitDto {
     private Integer volunteerNum;
     private Boolean isIssued;
     private String organizationName;
-    private String sido;
-    private String sigungu;
-    private String details;
-    private Float latitude;
-    private Float longitude;
+    private Address address;
     private Timetable timetable;
     private Boolean isPublished;
 
@@ -38,12 +35,10 @@ public class SaveRecruitDto {
 
         this.volunteeringCategory = VolunteeringCategory.ofCode(form.getVolunteeringCategory());
         this.organizationName = form.getOrganizationName();
-        this.sido = form.getAddress().getSido();
-        this.sigungu = form.getAddress().getSigungu();
-        this.details = form.getAddress().getDetails();
-        this.latitude = form.getAddress().getLatitude();
-        this.longitude = form.getAddress().getLongitude();
-        this.isIssued = form.getIsIssued();
+        this.address = new Address(
+                form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
+                form.getAddress().getLatitude(), form.getAddress().getLongitude()
+        );
         this.volunteerType = VolunteerType.of(form.getVolunteerType());
         this.volunteerNum = form.getVolunteerNum();
         this.volunteeringType = VolunteeringType.of(form.getVolunteeringType());
@@ -64,11 +59,7 @@ public class SaveRecruitDto {
 
         this.volunteeringCategory = VolunteeringCategory.ofCode(volunteeringCategory);
         this.organizationName = organizationName;
-        this.sido = sido;
-        this.sigungu = sigungu;
-        this.details = details;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.address = new Address(sido, sigungu, details, latitude, longitude);
         this.isIssued = isIssued;
         this.volunteerType = VolunteerType.of(volunteerType);
         this.volunteerNum = volunteerNum;

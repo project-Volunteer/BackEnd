@@ -6,6 +6,4 @@ public interface RecruitmentService {
 
     public Long addRecruitment(SaveRecruitDto saveDto);
 
-    //public void findListRecruitment(SearchType searchType);
-
 }

@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.api;
 
+import com.amazonaws.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -11,16 +12,16 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.image.application.dto.SaveImageDto;
-import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListDto;
+import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitForm;
+import project.volunteer.domain.recruitment.application.RecruitmentDtoService;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentDto;
 import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
-import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListResponse;
-import project.volunteer.domain.recruitment.api.dto.response.SaveRecruitResponse;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
 import project.volunteer.domain.sehedule.application.ScheduleService;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 public class RecruitmentController {
 
     private final RecruitmentService recruitmentService;
+    private final RecruitmentDtoService recruitmentDtoService;
     private final RepeatPeriodService repeatPeriodService;
     private final ScheduleService scheduleService;
     private final ImageService imageService;
@@ -75,14 +77,20 @@ public class RecruitmentController {
 
         Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentDtos(pageable,
                 new SearchType(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued));
-
         return ResponseEntity.ok(setRecruitmentListResponse(result));
     }
 
     private RecruitmentListResponse setRecruitmentListResponse(Slice<RecruitmentQueryDto> result ) {
         List<RecruitmentListDto> dtos = result.getContent().stream().map(dto -> new RecruitmentListDto(dto)).collect(Collectors.toList());
-        return new RecruitmentListResponse(dtos, result.isLast(),
-                (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo()));
+        return new RecruitmentListResponse("success search recruitment list",
+                dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo()));
+    }
+
+    @GetMapping("/recruitment/{no}")
+    public ResponseEntity<RecruitmentResponse> recruitmentDetails(@PathVariable Long no){
+
+        RecruitmentDto dto = recruitmentDtoService.findRecruitment(no);
+        return ResponseEntity.ok(new RecruitmentResponse("success search recruitment details", dto));
     }
 
 }

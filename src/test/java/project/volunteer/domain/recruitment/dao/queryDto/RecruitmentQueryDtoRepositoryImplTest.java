@@ -15,6 +15,7 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
+import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.EntityManager;
@@ -45,11 +46,8 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String content = "content";
         int volunteerNum = 10;
         String organizationName = "organization";
-        float latitude = 3.2F;
-        float longitude = 3.2F;
         Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), LocalTime.now(), 10);
         Boolean isPublished = true;
-        String details = "details";
 
         //필터링 조건
         VolunteeringCategory category1 = VolunteeringCategory.ADMINSTRATION_ASSISTANCE;
@@ -66,40 +64,38 @@ class RecruitmentQueryDtoRepositoryImplTest {
         Boolean isIssued1 = true;
         Boolean isIssued2 = false;
 
-        String sido1 = "11";
-        String sido2 = "22";
-        String sido3 = "333";
-
-        String sigungu1 = "1111";
-        String sigungu2 = "2222";
-        String sigungu3 = "3333";
-
+        float latitude = 3.2F;
+        float longitude = 3.2F;
+        String details = "details";
+        Address address1 = new Address("11", "1111", details, latitude, longitude);
+        Address address2 = new Address("22", "2222", details, latitude, longitude);
+        Address address3 = new Address("333", "3333", details, latitude, longitude);
 
         for(int i=0;i<5;i++){
             Recruitment create1 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category1) .volunteeringType(volunteeringType1) .volunteerType(volunteerType1)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .sido(sido1) .sigungu(sigungu1)
-                    .details(details) .latitude(latitude) .longitude(longitude) .timetable(timetable) .isPublished(isPublished).build();
+                    .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1)
+                    .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create1);
 
             Recruitment create2 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category2) .volunteeringType(volunteeringType2) .volunteerType(volunteerType2)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .sido(sido2) .sigungu(sigungu2)
-                    .details(details) .latitude(latitude) .longitude(longitude) .timetable(timetable) .isPublished(isPublished).build();
+                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2)
+                    .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create2);
 
             Recruitment create3 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .sido(sido3) .sigungu(sigungu3)
-                    .details(details) .latitude(latitude) .longitude(longitude) .timetable(timetable) .isPublished(isPublished).build();
+                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3)
+                    .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create3);
         }
 
         //임시 저장글(1개)
         Recruitment create4 = Recruitment.builder()
                 .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .sido(sido3) .sigungu(sigungu3)
-                .details(details) .latitude(latitude) .longitude(longitude) .timetable(timetable) .isPublished(Boolean.FALSE).build();
+                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3)
+                .timetable(timetable) .isPublished(Boolean.FALSE).build();
         recruitmentRepository.save(create4);
         clear();
     }

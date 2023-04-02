@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
+import project.volunteer.domain.recruitment.dto.PictureDto;
+import project.volunteer.domain.recruitment.dto.RepeatPeriodDto;
 
 import java.time.format.DateTimeFormatter;
 
@@ -13,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 public class RecruitmentListDto {
 
     private Long no;
-    private PictureDto pictureDto;
+    private PictureDto picture;
     private String title;
     private String sido;
     private String sigungu;
@@ -29,7 +31,7 @@ public class RecruitmentListDto {
 
     public RecruitmentListDto(RecruitmentQueryDto recruitmentDto) {
         this.no = recruitmentDto.getNo();
-        this.pictureDto = new PictureDto(recruitmentDto.getStaticImage(), recruitmentDto.getUploadImage());
+        this.picture = new PictureDto(recruitmentDto.getStaticImage(), recruitmentDto.getUploadImage());
         this.title = recruitmentDto.getTitle();
         this.sido = recruitmentDto.getSido();
         this.sigungu = recruitmentDto.getSigungu();

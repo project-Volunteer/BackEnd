@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
+import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
@@ -46,30 +47,11 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "is_issued", nullable = false)
     private Boolean isIssued;
 
-
-
-
     @Column(name = "organization_name", length = 50, nullable = false)
     private String organizationName;
 
-    @Column(length = 5, nullable = false)
-    private String sido;
-
-    @Column(length = 10, nullable = false)
-    private String sigungu;
-
-    @Column(length = 50, nullable = false)
-    private String details;
-
-    @Column(nullable = false)
-    private Float latitude;
-
-    @Column(nullable = false)
-    private Float longitude;
-
-
-
-
+    @Embedded
+    private Address address;
 
     @Embedded
     private Timetable VolunteeringTimeTable;
@@ -93,7 +75,7 @@ public class Recruitment extends BaseTimeEntity {
     @Builder
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
                        VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
-                       String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
+                       String organizationName, Address address,
                        Timetable timetable, Boolean isPublished) {
 
         this.title = title;
@@ -104,11 +86,7 @@ public class Recruitment extends BaseTimeEntity {
         this.volunteerNum = volunteerNum;
         this.isIssued = isIssued;
         this.organizationName = organizationName;
-        this.sido = sido;
-        this.sigungu = sigungu;
-        this.details = details;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.address = address;
         this.VolunteeringTimeTable = timetable;
         this.isPublished = isPublished;
 

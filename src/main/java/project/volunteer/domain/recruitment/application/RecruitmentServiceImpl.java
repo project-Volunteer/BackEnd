@@ -31,11 +31,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .volunteerNum(saveDto.getVolunteerNum())
                 .isIssued(saveDto.getIsIssued())
                 .organizationName(saveDto.getOrganizationName())
-                .sido(saveDto.getSido())
-                .sigungu(saveDto.getSigungu())
-                .details(saveDto.getDetails())
-                .latitude(saveDto.getLatitude())
-                .longitude(saveDto.getLongitude())
+                .address(saveDto.getAddress())
                 .timetable(saveDto.getTimetable())
                 .isPublished(saveDto.getIsPublished())
                 .build();
@@ -48,4 +44,5 @@ public class RecruitmentServiceImpl implements RecruitmentService{
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
+
 }

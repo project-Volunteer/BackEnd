@@ -14,6 +14,8 @@ import project.volunteer.domain.storage.application.StorageService;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -47,6 +49,7 @@ public class ImageServiceImpl implements ImageService{
         return imageRepository.save(createImage).getImageNo();
     }
 
+
     private void validateNo(Long no, RealWorkCode code) {
 
         //더 클린하게 작성할 수 없을까?
@@ -55,7 +58,6 @@ public class ImageServiceImpl implements ImageService{
         }else if(code==RealWorkCode.RECRUITMENT){
             recruitmentRepository.findById(no).orElseThrow(() -> new NullPointerException(String.format("Not found recruitmentNo=[%d]",no)));
         }
-
     }
 
 }
