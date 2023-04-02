@@ -48,8 +48,10 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         result.getContent().stream()
                 .forEach(dto -> {
                     //각 모집글에 해당 하는 반복주기 엔티티 리스트 조회(반복주기 엔티티는 N 이므로 별도 조회)
-                    List<RepeatPeriodQueryDto> repeatPeriodDto = findRepeatPeriodDto(dto.getNo());
-                    dto.setRepeatPeriodList(repeatPeriodDto);
+                    if(dto.getVolunteeringType().equals(VolunteeringType.LONG)) {
+                        List<RepeatPeriodQueryDto> repeatPeriodDto = findRepeatPeriodDto(dto.getNo());
+                        dto.setRepeatPeriodList(repeatPeriodDto);
+                    }
 
                     //각 모집글에 참여자 리스트 count(참여자 엔티티는 N 이므로 별도 조회)
                     Long currentParticipantNum = countParticipants(dto.getNo());
@@ -57,7 +59,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 } );
 
         /**
-         * 현재 root 쿼리 1번에 컬렉션 쿼리 N번( 반복주기:N + 참여자 수:1) 발생
+         * 현재 root 쿼리 1번 결과만큼(모집글 개수) 쿼리 N번(참여자 수 count 쿼리 + 장기일경우 반복주기 쿼리) 발생
          * 추후 최적화가 필요한 부분
          */
 
@@ -73,7 +75,8 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         //이미지에 저장소가 없을수 있으니 : leftJoin
         List<RecruitmentQueryDto> content = jpaQueryFactory
                 .select(
-                        new QRecruitmentQueryDto(qRecruitment.recruitmentNo, qRecruitment.title, qRecruitment.sido, qRecruitment.sigungu,
+                        new QRecruitmentQueryDto(qRecruitment.recruitmentNo, qRecruitment.title,
+                                qRecruitment.address.sido, qRecruitment.address.sigungu,
                                 qRecruitment.VolunteeringTimeTable.startDay, qRecruitment.VolunteeringTimeTable.endDay, qRecruitment.volunteeringType,
                                 qRecruitment.volunteerType, qRecruitment.isIssued, qRecruitment.volunteerNum, qRecruitment.VolunteeringTimeTable.progressTime,
                                 qImage.staticImageName, qStorage.imagePath))
@@ -126,7 +129,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    //정렬 확장 가능성 열어둠.(해당 로직 정렬 기준이 하나만 가능)
+    //정렬 확장 가능성 열어둠.(해당 로직은 정렬 기준이 하나만 가능)
     private OrderSpecifier setSort(Pageable pageable) {
 
         if(!pageable.getSort().isEmpty()) {
@@ -147,10 +150,10 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         return (!categories.isEmpty())?(qRecruitment.volunteeringCategory.in(categories)):null;
     }
     private BooleanExpression eqSidoCode(String sido) {
-        return (StringUtils.hasText(sido))?(qRecruitment.sido.eq(sido)):null;
+        return (StringUtils.hasText(sido))?(qRecruitment.address.sido.eq(sido)):null;
     }
     private BooleanExpression eqSigunguCode(String sigungu){
-        return (StringUtils.hasText(sigungu))?(qRecruitment.sigungu.eq(sigungu)):null;
+        return (StringUtils.hasText(sigungu))?(qRecruitment.address.sigungu.eq(sigungu)):null;
     }
     private BooleanExpression eqVolunteeringType(VolunteeringType volunteeringType) {
         return (!ObjectUtils.isEmpty(volunteeringType))?

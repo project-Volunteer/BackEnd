@@ -80,17 +80,18 @@ public class RecruitmentController {
         return ResponseEntity.ok(setRecruitmentListResponse(result));
     }
 
-    private RecruitmentListResponse setRecruitmentListResponse(Slice<RecruitmentQueryDto> result ) {
-        List<RecruitmentListDto> dtos = result.getContent().stream().map(dto -> new RecruitmentListDto(dto)).collect(Collectors.toList());
-        return new RecruitmentListResponse("success search recruitment list",
-                dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo()));
-    }
-
     @GetMapping("/recruitment/{no}")
     public ResponseEntity<RecruitmentResponse> recruitmentDetails(@PathVariable Long no){
 
         RecruitmentDto dto = recruitmentDtoService.findRecruitment(no);
         return ResponseEntity.ok(new RecruitmentResponse("success search recruitment details", dto));
+    }
+
+    private RecruitmentListResponse setRecruitmentListResponse(Slice<RecruitmentQueryDto> result ) {
+        List<RecruitmentListDto> dtos = result.getContent().stream().map(dto -> new RecruitmentListDto(dto)).collect(Collectors.toList());
+
+        return new RecruitmentListResponse("success search recruitment list",
+                dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo()));
     }
 
 }
