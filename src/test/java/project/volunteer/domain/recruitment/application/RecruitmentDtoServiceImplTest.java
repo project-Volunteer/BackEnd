@@ -194,5 +194,4 @@ class RecruitmentDtoServiceImplTest {
         System.out.println(recruitment);
     }
 
-
 }

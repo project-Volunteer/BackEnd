@@ -8,12 +8,13 @@ import project.volunteer.domain.recruitment.dto.PictureDto;
 import project.volunteer.domain.recruitment.dto.RepeatPeriodDto;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class RecruitmentListDto {
-
     private Long no;
     private PictureDto picture;
     private String title;
@@ -26,7 +27,7 @@ public class RecruitmentListDto {
     private Integer volunteerNum;
     private Integer currentVolunteerNum;
     private Integer progressTime;
-    private RepeatPeriodDto repeatPeriodDto;
+    private List<String> repeatDay;
     private String volunteerType;
 
     public RecruitmentListDto(RecruitmentQueryDto recruitmentDto) {
@@ -41,7 +42,7 @@ public class RecruitmentListDto {
         this.volunteerNum = recruitmentDto.getVolunteerNum();
         this.currentVolunteerNum = recruitmentDto.getCurrentVolunteerNum().intValue(); //Long 이지만 int 를 실제로 넘을수 없다.(모집 인원수가 int로 정해져있어서)
         this.progressTime = recruitmentDto.getProgressTime();
-        this.repeatPeriodDto = new RepeatPeriodDto(recruitmentDto.getRepeatPeriodList());
+        this.repeatDay = recruitmentDto.getDays().stream().map(d -> d.getViewName()).collect(Collectors.toList());
         this.volunteerType = recruitmentDto.getVolunteerType().getViewName();
     }
 

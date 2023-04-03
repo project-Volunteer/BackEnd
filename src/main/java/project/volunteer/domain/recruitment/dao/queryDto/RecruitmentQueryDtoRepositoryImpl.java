@@ -16,11 +16,10 @@ import project.volunteer.domain.image.domain.QImage;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.participation.domain.QParticipant;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentQueryDto;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.QRepeatPeriodQueryDto;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RepeatPeriodQueryDto;
 import project.volunteer.domain.recruitment.domain.*;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
+import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.QRepeatPeriod;
 import project.volunteer.domain.storage.domain.QStorage;
 
@@ -49,8 +48,8 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .forEach(dto -> {
                     //각 모집글에 해당 하는 반복주기 엔티티 리스트 조회(반복주기 엔티티는 N 이므로 별도 조회)
                     if(dto.getVolunteeringType().equals(VolunteeringType.LONG)) {
-                        List<RepeatPeriodQueryDto> repeatPeriodDto = findRepeatPeriodDto(dto.getNo());
-                        dto.setRepeatPeriodList(repeatPeriodDto);
+                        List<Day> days = findDays(dto.getNo());
+                        dto.setDays(days);
                     }
 
                     //각 모집글에 참여자 리스트 count(참여자 엔티티는 N 이므로 별도 조회)
@@ -101,9 +100,9 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         return checkEndPage(pageable, content);
     }
 
-    private List<RepeatPeriodQueryDto> findRepeatPeriodDto(Long recruitmentNo){
+    private List<Day> findDays(Long recruitmentNo){
         return jpaQueryFactory
-                .select(new QRepeatPeriodQueryDto(qRepeatPeriod.period, qRepeatPeriod.week, qRepeatPeriod.day))
+                .select(qRepeatPeriod.day)
                 .from(qRepeatPeriod)
                 .where(qRepeatPeriod.recruitment.recruitmentNo.eq(recruitmentNo))
                 .fetch();

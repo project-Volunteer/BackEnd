@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.repeatPeriod.domain.Day;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class RecruitmentQueryDto {
     private int progressTime;
 
     private Long currentVolunteerNum; //참여자 매핑 테이블에서 추출
-    private List<RepeatPeriodQueryDto> repeatPeriodList = new ArrayList<>(); //반복 주기 테이블에서 추출
+    private List<Day> days = new ArrayList<>(); //반복 주기 테이블에서 추출
     private String staticImage; //image 테이블에서 추출
     private String uploadImage; //storage 테이블에서 추출
 

@@ -77,7 +77,11 @@ public class RecruitmentController {
 
         Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentDtos(pageable,
                 new SearchType(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued));
-        return ResponseEntity.ok(setRecruitmentListResponse(result));
+
+        //response DTO 변환
+        List<RecruitmentListDto> dtos = result.getContent().stream().map(dto -> new RecruitmentListDto(dto)).collect(Collectors.toList());
+        return ResponseEntity.ok(new RecruitmentListResponse("success search recruitment list",
+                        dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
     }
 
     @GetMapping("/recruitment/{no}")
@@ -85,13 +89,6 @@ public class RecruitmentController {
 
         RecruitmentDto dto = recruitmentDtoService.findRecruitment(no);
         return ResponseEntity.ok(new RecruitmentResponse("success search recruitment details", dto));
-    }
-
-    private RecruitmentListResponse setRecruitmentListResponse(Slice<RecruitmentQueryDto> result ) {
-        List<RecruitmentListDto> dtos = result.getContent().stream().map(dto -> new RecruitmentListDto(dto)).collect(Collectors.toList());
-
-        return new RecruitmentListResponse("success search recruitment list",
-                dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo()));
     }
 
 }
