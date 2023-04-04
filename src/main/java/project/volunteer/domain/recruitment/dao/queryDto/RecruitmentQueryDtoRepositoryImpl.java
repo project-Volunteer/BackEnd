@@ -12,16 +12,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import project.volunteer.domain.image.domain.QImage;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.participation.domain.QParticipant;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentQueryDto;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
 import project.volunteer.domain.recruitment.domain.*;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
 import project.volunteer.domain.repeatPeriod.domain.Day;
-import project.volunteer.domain.repeatPeriod.domain.QRepeatPeriod;
-import project.volunteer.domain.storage.domain.QStorage;
+
+import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
+import static project.volunteer.domain.image.domain.QImage.image;
+import static project.volunteer.domain.storage.domain.QStorage.storage;
+import static project.volunteer.domain.repeatPeriod.domain.QRepeatPeriod.repeatPeriod;
+import static project.volunteer.domain.participation.domain.QParticipant.participant1;
 
 import java.util.List;
 
@@ -30,13 +32,6 @@ import java.util.List;
 public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-
-    //따로 static 으로 분리하기??
-    private final QRecruitment qRecruitment = new QRecruitment("recruitment");
-    private final QImage qImage = new QImage("image");
-    private final QStorage qStorage = new QStorage("storage");
-    private final QRepeatPeriod qRepeatPeriod = new QRepeatPeriod("repeatPeriod");
-    private final QParticipant qParticipant = new QParticipant("participant");
 
     @Override
     public Slice<RecruitmentQueryDto> findRecruitmentDtos(Pageable pageable, SearchType searchType) {
@@ -74,14 +69,14 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         //이미지에 저장소가 없을수 있으니 : leftJoin
         List<RecruitmentQueryDto> content = jpaQueryFactory
                 .select(
-                        new QRecruitmentQueryDto(qRecruitment.recruitmentNo, qRecruitment.title,
-                                qRecruitment.address.sido, qRecruitment.address.sigungu,
-                                qRecruitment.VolunteeringTimeTable.startDay, qRecruitment.VolunteeringTimeTable.endDay, qRecruitment.volunteeringType,
-                                qRecruitment.volunteerType, qRecruitment.isIssued, qRecruitment.volunteerNum, qRecruitment.VolunteeringTimeTable.progressTime,
-                                qImage.staticImageName, qStorage.imagePath))
-                .from(qRecruitment)
-                .leftJoin(qImage).on(qRecruitment.recruitmentNo.eq(qImage.no)) //recruitment, image left join
-                .leftJoin(qImage.storage, qStorage).on(qImage.realWorkCode.eq(RealWorkCode.RECRUITMENT)) //image, storage left join & 사진 타입이 모집글인거만
+                        new QRecruitmentQueryDto(recruitment.recruitmentNo, recruitment.title,
+                                recruitment.address.sido, recruitment.address.sigungu,
+                                recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
+                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, recruitment.VolunteeringTimeTable.progressTime,
+                                image.staticImageName, storage.imagePath))
+                .from(recruitment)
+                .leftJoin(image).on(recruitment.recruitmentNo.eq(image.no)) //recruitment, image left join
+                .leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT)) //image, storage left join & 사진 타입이 모집글인거만
                 .where(
                         containCategory(searchType.getCategory()),
                         eqSidoCode(searchType.getSido()),
@@ -89,7 +84,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                         eqVolunteeringType(searchType.getVolunteeringType()),
                         eqVolunteerType(searchType.getVolunteerType()),
                         eqIsIssued(searchType.getIsIssued()),
-                        qRecruitment.isPublished.eq(Boolean.TRUE) //임시저장된 모집글은 제외
+                        recruitment.isPublished.eq(Boolean.TRUE) //임시저장된 모집글은 제외
                         //추후 삭제된 게시물도 제외 필요.
                 )
                 .offset(pageable.getOffset())
@@ -102,19 +97,19 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
 
     private List<Day> findDays(Long recruitmentNo){
         return jpaQueryFactory
-                .select(qRepeatPeriod.day)
-                .from(qRepeatPeriod)
-                .where(qRepeatPeriod.recruitment.recruitmentNo.eq(recruitmentNo))
+                .select(repeatPeriod.day)
+                .from(repeatPeriod)
+                .where(repeatPeriod.recruitment.recruitmentNo.eq(recruitmentNo))
                 .fetch();
     }
 
     private Long countParticipants(Long recruitmentNo){
         return jpaQueryFactory
-                .select(qParticipant.count())
-                .from(qParticipant)
+                .select(participant1.count())
+                .from(participant1)
                 .where(
-                        qParticipant.recruitment.recruitmentNo.eq(recruitmentNo),
-                        qParticipant.isApproved.eq(Boolean.TRUE)) //참여 승인자만
+                        participant1.recruitment.recruitmentNo.eq(recruitmentNo),
+                        participant1.isApproved.eq(Boolean.TRUE)) //참여 승인자만
                 .fetchOne();
     }
 
@@ -136,34 +131,34 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 Order direction = order.getDirection().isAscending() ? Order.ASC:Order.DESC;
                 switch (order.getProperty()){
                     case "likeCount":
-                        return new OrderSpecifier(direction, qRecruitment.likeCount);
+                        return new OrderSpecifier(direction, recruitment.likeCount);
                     case "viewCount":
-                        return new OrderSpecifier(direction, qRecruitment.viewCount);
+                        return new OrderSpecifier(direction, recruitment.viewCount);
                 }
             }
         }
-        return new OrderSpecifier(Order.ASC, qRecruitment.createdDate); //default: 최신순
+        return new OrderSpecifier(Order.ASC, recruitment.createdDate); //default: 최신순
     }
 
     private BooleanExpression containCategory(List<VolunteeringCategory> categories) {
-        return (!categories.isEmpty())?(qRecruitment.volunteeringCategory.in(categories)):null;
+        return (!categories.isEmpty())?(recruitment.volunteeringCategory.in(categories)):null;
     }
     private BooleanExpression eqSidoCode(String sido) {
-        return (StringUtils.hasText(sido))?(qRecruitment.address.sido.eq(sido)):null;
+        return (StringUtils.hasText(sido))?(recruitment.address.sido.eq(sido)):null;
     }
     private BooleanExpression eqSigunguCode(String sigungu){
-        return (StringUtils.hasText(sigungu))?(qRecruitment.address.sigungu.eq(sigungu)):null;
+        return (StringUtils.hasText(sigungu))?(recruitment.address.sigungu.eq(sigungu)):null;
     }
     private BooleanExpression eqVolunteeringType(VolunteeringType volunteeringType) {
         return (!ObjectUtils.isEmpty(volunteeringType))?
-                (qRecruitment.volunteeringType.eq(volunteeringType)):null;
+                (recruitment.volunteeringType.eq(volunteeringType)):null;
     }
     private BooleanExpression eqVolunteerType(VolunteerType volunteerType) {
         return (!ObjectUtils.isEmpty(volunteerType))?
-                (qRecruitment.volunteerType.eq(volunteerType)):null;
+                (recruitment.volunteerType.eq(volunteerType)):null;
     }
     private BooleanExpression eqIsIssued(Boolean isIssued){
-        return (!ObjectUtils.isEmpty(isIssued))?(qRecruitment.isIssued.eq(isIssued)):null;
+        return (!ObjectUtils.isEmpty(isIssued))?(recruitment.isIssued.eq(isIssued)):null;
     }
 
 }
