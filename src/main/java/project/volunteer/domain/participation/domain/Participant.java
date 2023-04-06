@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.converter.CategoryConverter;
+import project.volunteer.global.common.converter.StateConverter;
 
 import javax.persistence.*;
 @Getter
@@ -26,18 +29,19 @@ public class Participant {
     @JoinColumn(name = "userno")
     private User participant;
 
-    @Column(name = "is_approved")
-    private Boolean isApproved;
+    @Convert(converter = StateConverter.class)
+    @Column(length = 2, nullable = false)
+    private State state;
 
     @Builder
     public Participant(Recruitment recruitment, User participant) {
 
         this.recruitment = recruitment;
         this.participant = participant;
-        this.isApproved = false; //신청했을 때 초기 승인값 false
+        this.state = State.JOIN_REQUEST; //초기는 참가신청 상태
     }
 
-    public void approve() { //승인하기
-        this.isApproved = true;
+    public void approve() { //참가 승인
+        this.state = State.JOIN_APPROVAL;
     }
 }

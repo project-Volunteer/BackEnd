@@ -18,6 +18,7 @@ import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto
 import project.volunteer.domain.recruitment.domain.*;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
 import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.global.common.component.State;
 
 import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
 import static project.volunteer.domain.image.domain.QImage.image;
@@ -109,7 +110,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .from(participant1)
                 .where(
                         participant1.recruitment.recruitmentNo.eq(recruitmentNo),
-                        participant1.isApproved.eq(Boolean.TRUE)) //참여 승인자만
+                        participant1.state.eq(State.JOIN_APPROVAL)) //참여 승인자만
                 .fetchOne();
     }
 

@@ -24,6 +24,7 @@ import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,11 +105,12 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         participants.stream()
                 .forEach(p -> {
                     User participant = p.getParticipant();
+                    Boolean isApproved = (p.getState().equals(State.JOIN_APPROVAL))?true:false;
                     Optional<Image> userUploadImage = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.USER, participant.getUserNo());
                     if(userUploadImage.isPresent()){  //유저 프로필이 업로드 이미지인 경우
-                        dtos.add(new ParticipantDto(participant.getNickName(), userUploadImage.get().getStorage().getImagePath(), p.getIsApproved()));
+                        dtos.add(new ParticipantDto(participant.getNickName(), userUploadImage.get().getStorage().getImagePath(), isApproved));
                     }else {                           //유저 프로필이 기본(oauth image)인 경우
-                        dtos.add(new ParticipantDto(participant.getNickName(), participant.getPicture(), p.getIsApproved()));
+                        dtos.add(new ParticipantDto(participant.getNickName(), participant.getPicture(), isApproved));
                     }
                 });
         return dtos;

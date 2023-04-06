@@ -1,6 +1,7 @@
 package project.volunteer.domain.recruitment.application;
 
 import org.assertj.core.api.Assertions;
+import org.hibernate.validator.constraints.Range;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.SaveImageDto;
