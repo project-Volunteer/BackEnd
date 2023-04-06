@@ -38,12 +38,12 @@ public class RecruitmentDto {
 
     public RecruitmentDto(Recruitment recruitment){
         this.no = recruitment.getRecruitmentNo();
-        this.volunteeringCategory = recruitment.getVolunteeringCategory().getViewName();
+        this.volunteeringCategory = recruitment.getVolunteeringCategory().getDesc();
         this.organizationName = recruitment.getOrganizationName();
         this.address = new AddressDto(recruitment.getAddress());
         this.isIssued = recruitment.getIsIssued();
         this.volunteeringType = recruitment.getVolunteeringType().getViewName();
-        this.volunteerType = recruitment.getVolunteerType().getViewName();
+        this.volunteerType = recruitment.getVolunteerType().getDesc();
         this.volunteerNum = recruitment.getVolunteerNum();
         this.startDay = recruitment.getVolunteeringTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         this.endDay = recruitment.getVolunteeringTimeTable().getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));

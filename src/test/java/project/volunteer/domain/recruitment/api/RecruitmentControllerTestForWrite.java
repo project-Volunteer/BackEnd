@@ -59,7 +59,7 @@ class RecruitmentControllerTestForWrite {
     final String volunteeringCategory = "001";
     final String organizationName = "organization";
     final Boolean isIssued = true;
-    final String volunteerType = "all";
+    final String volunteerType = "1"; //all
     final int volunteerNum = 5;
     final String volunteeringType1 = "short";
     final String volunteeringType2 = "long";

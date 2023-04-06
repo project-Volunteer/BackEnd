@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
+
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.storage.dao.StorageRepository;
 import project.volunteer.domain.storage.domain.Storage;
@@ -25,7 +24,7 @@ public class StorageServiceImpl implements StorageService {
     public Storage addStorage(MultipartFile file, RealWorkCode realWorkCode) {
 
         //이미지 저장소 저장
-        String storageFileName = fileService.uploadFile(file, FileFolder.of(realWorkCode.name()));
+        String storageFileName = fileService.uploadFile(file, FileFolder.of(realWorkCode.getCode()));
         //이미지 path
         String filePath = fileService.getFileUrl(storageFileName);
 

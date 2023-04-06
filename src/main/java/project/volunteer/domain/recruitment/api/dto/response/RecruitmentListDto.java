@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
 import project.volunteer.domain.recruitment.dto.PictureDto;
-import project.volunteer.domain.recruitment.dto.RepeatPeriodDto;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -43,7 +42,7 @@ public class RecruitmentListDto {
         this.currentVolunteerNum = recruitmentDto.getCurrentVolunteerNum().intValue(); //Long 이지만 int 를 실제로 넘을수 없다.(모집 인원수가 int로 정해져있어서)
         this.progressTime = recruitmentDto.getProgressTime();
         this.repeatDay = recruitmentDto.getDays().stream().map(d -> d.getViewName()).collect(Collectors.toList());
-        this.volunteerType = recruitmentDto.getVolunteerType().getViewName();
+        this.volunteerType = recruitmentDto.getVolunteerType().getDesc();
     }
 
 }

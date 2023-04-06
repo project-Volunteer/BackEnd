@@ -8,10 +8,10 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.common.converter.CategoryConverter;
+import project.volunteer.global.common.converter.VolunteerTypeConverter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Getter
 @Entity
@@ -29,16 +29,16 @@ public class Recruitment extends BaseTimeEntity {
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "volunteering_category", length = 30, nullable = false)
+    @Convert(converter = CategoryConverter.class)
+    @Column(name = "volunteering_category", length = 3, nullable = false)
     private VolunteeringCategory volunteeringCategory;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "volunteering_type", length = 5, nullable = false)
     private VolunteeringType volunteeringType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "volunteer_type", length = 10, nullable = false)
+    @Convert(converter = VolunteerTypeConverter.class)
+    @Column(name = "volunteer_type", length = 2, nullable = false)
     private VolunteerType volunteerType;
 
     @Column(name = "volunteer_num", nullable = false)

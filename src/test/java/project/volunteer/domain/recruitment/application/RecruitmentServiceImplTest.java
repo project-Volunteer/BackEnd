@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -93,7 +94,7 @@ class RecruitmentServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "short";
         String startDay = "01-01-2000";
@@ -111,7 +112,7 @@ class RecruitmentServiceImplTest {
 
         //then
         Recruitment find = recruitmentRepository.findById(no).get();
-        assertThat(find.getVolunteeringCategory().getCode()).isEqualTo(category);
+        assertThat(find.getVolunteeringCategory().getLegacyCode()).isEqualTo(category);
         assertThat(find.getOrganizationName()).isEqualTo(organizationName);
         //...
         assertThat(find.getContent()).isEqualTo(content);
@@ -128,7 +129,7 @@ class RecruitmentServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "long";
         String startDay = "01-01-2000";
@@ -170,7 +171,7 @@ class RecruitmentServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "long";
         String startDay = "01-01-2000";

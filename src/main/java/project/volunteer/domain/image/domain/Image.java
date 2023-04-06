@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
+import project.volunteer.global.common.converter.RealWorkCodeConverter;
 
 import javax.persistence.*;
 
@@ -19,8 +20,8 @@ public class Image extends BaseTimeEntity {
     @Column(name = "imageno")
     private Long imageNo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "realwork_code", length = 20, nullable = false)
+    @Convert(converter = RealWorkCodeConverter.class)
+    @Column(name = "realwork_code", length = 2, nullable = false)
     private RealWorkCode realWorkCode; // 타입:log, recruitment, user
 
     @Column(nullable = false)

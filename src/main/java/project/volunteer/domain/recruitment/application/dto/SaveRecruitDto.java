@@ -9,6 +9,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.util.LegacyCodeEnumValueConverterUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,13 +34,14 @@ public class SaveRecruitDto {
 
     public SaveRecruitDto(SaveRecruitForm form) {
 
-        this.volunteeringCategory = VolunteeringCategory.ofCode(form.getVolunteeringCategory());
+        this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, form.getVolunteeringCategory());
         this.organizationName = form.getOrganizationName();
         this.address = new Address(
                 form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
                 form.getAddress().getLatitude(), form.getAddress().getLongitude()
         );
-        this.volunteerType = VolunteerType.of(form.getVolunteerType());
+        this.isIssued = form.getIsIssued();
+        this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, form.getVolunteerType());
         this.volunteerNum = form.getVolunteerNum();
         this.volunteeringType = VolunteeringType.of(form.getVolunteeringType());
         this.timetable = new Timetable(
@@ -57,11 +59,11 @@ public class SaveRecruitDto {
                           Boolean isIssued, String volunteerType, Integer volunteerNum, String volunteeringType,
                           String startDay, String endDay, String startTime, Integer progressTime, String title, String content, Boolean isPublished) {
 
-        this.volunteeringCategory = VolunteeringCategory.ofCode(volunteeringCategory);
+        this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, volunteeringCategory);
         this.organizationName = organizationName;
         this.address = new Address(sido, sigungu, details, latitude, longitude);
         this.isIssued = isIssued;
-        this.volunteerType = VolunteerType.of(volunteerType);
+        this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, volunteerType);
         this.volunteerNum = volunteerNum;
         this.volunteeringType = VolunteeringType.of(volunteeringType);
         this.timetable = new Timetable(

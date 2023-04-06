@@ -102,8 +102,8 @@ class RecruitmentControllerTestForFindAll {
         String category2 = "002";
         String volunteeringType1 = "short";
         String volunteeringType2 = "long";
-        String volunteerType1 = "all";
-        String volunteerType2 = "teenager";
+        String volunteerType1 = "1"; //all
+        String volunteerType2 = "3"; //teenager
         Boolean isIssued1 = true;
         Boolean isIssued2 = false;
         String sido1 = "11";
@@ -199,7 +199,7 @@ class RecruitmentControllerTestForFindAll {
         info.add("sido", "11");
         info.add("sigungu","1111");
         info.add("volunteering_type", "short");
-        info.add("volunteer_type", "all");
+        info.add("volunteer_type", "1"); //all
         info.add("is_issued", "true");
 
         //when & then

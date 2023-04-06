@@ -113,7 +113,7 @@ class RecruitmentDtoServiceImplTest {
         //모집글 저장
         String category = "001";
         String volunteeringType = "long";
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Boolean isIssued = true;
         String sido = "11";
         String sigungu = "1111";

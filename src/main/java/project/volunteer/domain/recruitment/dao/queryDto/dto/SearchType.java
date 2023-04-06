@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.global.util.LegacyCodeEnumValueConverterUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,11 +26,13 @@ public class SearchType {
 
     public SearchType(List<String> category, String sido, String sigungu, String volunteeringType, String volunteerType, Boolean isIssued) {
 
-        this.category = category.stream().map(c -> VolunteeringCategory.ofCode(c)).collect(Collectors.toList());
+        this.category = category.stream()
+                .map(c -> LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, c))
+                .collect(Collectors.toList());
         this.sido = sido;
         this.sigungu = sigungu;
         this.volunteeringType = (StringUtils.hasText(volunteeringType))?(VolunteeringType.of(volunteeringType)):null;
-        this.volunteerType = (StringUtils.hasText(volunteerType))?(VolunteerType.of(volunteerType)):null;
+        this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, volunteerType);
         this.isIssued = isIssued;
     }
 }

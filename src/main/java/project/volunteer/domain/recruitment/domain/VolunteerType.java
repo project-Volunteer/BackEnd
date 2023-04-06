@@ -1,25 +1,26 @@
 package project.volunteer.domain.recruitment.domain;
 
-import java.util.Arrays;
+import lombok.Getter;
+import project.volunteer.global.common.converter.LegacyCodeCommonType;
 
-public enum VolunteerType {
+public enum VolunteerType implements LegacyCodeCommonType {
 
-    ALL("모두"), ADULT("성인"), TEENAGER("청소년");
+    ALL("1", "모두"), ADULT("2", "성인"), TEENAGER("3", "청소년");
 
-    private final String viewName;
-    VolunteerType(String label) {
+    private String code;
+    private String viewName;
+    VolunteerType(String code, String label) {
+        this.code = code;
         this.viewName = label;
     }
 
-    public String getViewName() {
-        return viewName;
+    @Override
+    public String getLegacyCode() {
+        return this.code;
     }
 
-    public static VolunteerType of(String value){
-
-        return Arrays.stream(VolunteerType.values())
-                .filter(v -> v.name().equals(value.toUpperCase()))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match volunteer type=[%s]", value)));
+    @Override
+    public String getDesc() {
+        return this.viewName;
     }
 }

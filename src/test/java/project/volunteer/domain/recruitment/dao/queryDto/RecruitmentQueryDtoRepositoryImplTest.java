@@ -195,7 +195,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String sido = "11";
         String sigungu = "1111";
         String volunteeringType = VolunteeringType.SHORT.name();
-        String volunteerType = VolunteerType.TEENAGER.name();
+        String volunteerType = VolunteerType.TEENAGER.getLegacyCode();
         Boolean isIssued = null;
 
         SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
@@ -217,7 +217,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String sido = "11";
         String sigungu = "1111";
         String volunteeringType = VolunteeringType.SHORT.name();
-        String volunteerType = VolunteerType.ALL.name();
+        String volunteerType = VolunteerType.ALL.getLegacyCode();
         Boolean isIssued = true;
 
         SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);

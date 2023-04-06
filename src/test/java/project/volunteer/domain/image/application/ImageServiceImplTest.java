@@ -9,6 +9,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
@@ -80,7 +81,7 @@ class ImageServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "short";
         String startDay = "01-01-2000";
@@ -136,6 +137,7 @@ class ImageServiceImplTest {
     }
 
     @Test
+    @Rollback(value = false)
     public void 모집글_업로드_이미지_저장_성공() throws IOException {
         //given
         SaveImageDto dto = SaveImageDto.builder()

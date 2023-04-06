@@ -73,7 +73,7 @@ class ScheduleServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "short";
         String startDay = "01-01-2000";
