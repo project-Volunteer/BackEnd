@@ -1,6 +1,7 @@
 package project.volunteer.domain.user.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
@@ -17,9 +18,6 @@ public class User extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userno")
     private Long userNo;
-
-    @Column(length = 5, nullable = false)
-    private String name;
 
     @Column(name = "nick_name", length = 13, nullable = false)
     private String nickName;
@@ -45,9 +43,40 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "beforealarm_yn", nullable = false)
     private Boolean beforeAlarmYn;
+    
+    @Column(length = 100, nullable = false)
+    private String provider;
+    
+    @Column(name = "provider_id", length = 50, nullable = false)
+    private String providerId;
+    
+    @Column(name = "refresh_token", length = 255)
+    private String refreshToken;
 
     /**
      * Auditing - 생성인, 수정인 추가 필요
      */
+    
+    
+    
+    @Builder
+    public User(String nickName, String email, Gender gender, LocalDate birthDay, String picture, Boolean joinAlarmYn,
+                Boolean noticeAlarmYn, Boolean beforeAlarmYn, String provider,String providerId, String refreshToken) {
+        this.nickName = nickName;
+        this.email = email;
+        this.gender = gender;
+        this.birthDay = birthDay;
+        this.picture = picture;
+        this.joinAlarmYn = joinAlarmYn;
+        this.noticeAlarmYn = noticeAlarmYn;
+        this.beforeAlarmYn = beforeAlarmYn;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.refreshToken = refreshToken;
+    }
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 
 }
