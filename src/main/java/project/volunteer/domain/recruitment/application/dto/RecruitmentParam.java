@@ -3,7 +3,7 @@ package project.volunteer.domain.recruitment.application.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitForm;
+import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SaveRecruitDto {
+public class RecruitmentParam {
 
     private String title;
     private String content;
@@ -34,7 +34,7 @@ public class SaveRecruitDto {
     private Timetable timetable;
     private Boolean isPublished;
 
-    public SaveRecruitDto(SaveRecruitForm form) {
+    public RecruitmentParam(RecruitmentRequest form) {
 
         this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, form.getVolunteeringCategory());
         this.organizationName = form.getOrganizationName();
@@ -62,9 +62,9 @@ public class SaveRecruitDto {
         this.isPublished = form.getIsPublished();
     }
 
-    public SaveRecruitDto(String volunteeringCategory, String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
-                          Boolean isIssued, String volunteerType, Integer volunteerNum, String volunteeringType,
-                          String startDay, String endDay, String startTime, Integer progressTime, String title, String content, Boolean isPublished) {
+    public RecruitmentParam(String volunteeringCategory, String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
+                            Boolean isIssued, String volunteerType, Integer volunteerNum, String volunteeringType,
+                            String startDay, String endDay, String startTime, Integer progressTime, String title, String content, Boolean isPublished) {
 
         this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, volunteeringCategory);
         this.organizationName = organizationName;

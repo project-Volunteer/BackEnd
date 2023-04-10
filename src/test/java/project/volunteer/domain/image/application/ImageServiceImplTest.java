@@ -9,15 +9,14 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.application.dto.SaveImageDto;
+import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -90,7 +89,7 @@ class ImageServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido,sigungu, details, latitude, longitude,
+        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
 
@@ -100,7 +99,7 @@ class ImageServiceImplTest {
     @Test
     public void 모집글_이미지_저장_실패_없는모집글PK() {
         //given
-        SaveImageDto dto = SaveImageDto.builder()
+        ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
                 .imageType(ImageType.STATIC)
                 .no(Long.MAX_VALUE) //-> 없는 모집글 PK
@@ -115,7 +114,7 @@ class ImageServiceImplTest {
     @Test
     public void 모집글_정적_이미지_저장_성공() throws IOException {
         //given
-        SaveImageDto dto = SaveImageDto.builder()
+        ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
                 .imageType(ImageType.STATIC)
                 .no(saveRecruitmentNo)
@@ -139,7 +138,7 @@ class ImageServiceImplTest {
     @Test
     public void 모집글_업로드_이미지_저장_성공() throws IOException {
         //given
-        SaveImageDto dto = SaveImageDto.builder()
+        ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
                 .imageType(ImageType.UPLOAD)
                 .no(saveRecruitmentNo)

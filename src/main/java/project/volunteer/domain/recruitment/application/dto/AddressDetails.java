@@ -11,7 +11,7 @@ import project.volunteer.global.common.component.Coordinate;
 @Setter
 @NoArgsConstructor
 @ToString
-public class AddressDto {
+public class AddressDetails {
 
     private String sido;
     private String sigungu;
@@ -19,7 +19,7 @@ public class AddressDto {
     private Float latitude;
     private Float longitude;
 
-    public AddressDto(Address address, Coordinate coordinate){
+    public AddressDetails(Address address, Coordinate coordinate){
         this.sido = address.getSido();
         this.sigungu = address.getSigungu();
         this.details = address.getDetails();

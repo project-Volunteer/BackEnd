@@ -7,11 +7,11 @@ import project.volunteer.global.common.response.BaseResponse;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SaveRecruitResponse extends BaseResponse {
+public class RecruitmentSaveResponse extends BaseResponse {
 
     private Long no;
 
-    public SaveRecruitResponse(String message, Long no) {
+    public RecruitmentSaveResponse(String message, Long no) {
         super(message);
         this.no = no;
     }

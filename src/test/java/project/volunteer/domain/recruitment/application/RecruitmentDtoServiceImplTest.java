@@ -1,7 +1,6 @@
 package project.volunteer.domain.recruitment.application;
 
 import org.assertj.core.api.Assertions;
-import org.hibernate.validator.constraints.Range;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,23 +10,22 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.ImageService;
-import project.volunteer.domain.image.application.dto.SaveImageDto;
+import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.application.dto.ParticipantDto;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentDto;
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.ParticipantDetails;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -129,7 +127,7 @@ class RecruitmentDtoServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido, sigungu, details, latitude, longitude,
+        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
         Long no = recruitmentService.addRecruitment(saveRecruitDto);
 
@@ -137,13 +135,13 @@ class RecruitmentDtoServiceImplTest {
         String period = "month";
         String week = "first";
         List<String> days = List.of("mon","tues");
-        SaveRepeatPeriodDto savePeriodDto = new SaveRepeatPeriodDto(period, week, days);
+        RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
         repeatPeriodService.addRepeatPeriod(no, savePeriodDto);
 
         saveRecruitment = recruitmentRepository.findById(no).get();
 }
     private void addImage(RealWorkCode realWorkCode, Long no) throws IOException {
-        SaveImageDto staticImageDto = SaveImageDto.builder()
+        ImageParam staticImageDto = ImageParam.builder()
                 .code(realWorkCode)
                 .imageType(ImageType.UPLOAD)
                 .no(no)
@@ -185,12 +183,12 @@ class RecruitmentDtoServiceImplTest {
     @Test
     public void 모집글_상세조회_성공(){
         //given & when
-        RecruitmentDto recruitment = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+        RecruitmentDetails recruitment = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
 
         //then
         Assertions.assertThat(recruitment.getCurrentVolunteer().size()).isEqualTo(5); //참여자 5명
         Assertions.assertThat(recruitment.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getValue()); //모집글 이미지=업로드
-        for(ParticipantDto dto : recruitment.getCurrentVolunteer()){
+        for(ParticipantDetails dto : recruitment.getCurrentVolunteer()){
             Assertions.assertThat(dto.getIsApproved()).isFalse();
         }
         System.out.println(recruitment);

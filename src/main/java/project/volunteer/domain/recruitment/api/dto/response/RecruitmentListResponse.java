@@ -11,11 +11,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class RecruitmentListResponse extends BaseResponse {
-    private List<RecruitmentListDto> data;
+    private List<RecruitmentList> data;
     private Boolean isLast;
     private Long lastId;
 
-    public RecruitmentListResponse(String message, List<RecruitmentListDto> data, Boolean isLast, Long lastId){
+    public RecruitmentListResponse(String message, List<RecruitmentList> data, Boolean isLast, Long lastId){
         super(message);
         this.data =data;
         this.isLast = isLast;

@@ -7,18 +7,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.repeatPeriod.domain.Week;
-import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -103,7 +102,7 @@ class RecruitmentServiceImplTest {
         Integer progressTime = 5;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido,sigungu, details, latitude, longitude,
+        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
 
         //when
@@ -138,13 +137,13 @@ class RecruitmentServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido, sigungu, details, latitude, longitude,
+        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
 
         String period = "week";
         String week = "";
         List<String> days = List.of("mon","tues");
-        SaveRepeatPeriodDto savePeriodDto = new SaveRepeatPeriodDto(period, week, days);
+        RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
 
         //when
         Long no = recruitmentService.addRecruitment(saveRecruitDto);
@@ -180,13 +179,13 @@ class RecruitmentServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido, sigungu, details, latitude, longitude,
+        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
 
         String period = "month";
         String week = "first";
         List<String> days = List.of("mon","tues");
-        SaveRepeatPeriodDto savePeriodDto = new SaveRepeatPeriodDto(period, week, days);
+        RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
 
         //when
         Long no = recruitmentService.addRecruitment(saveRecruitDto);

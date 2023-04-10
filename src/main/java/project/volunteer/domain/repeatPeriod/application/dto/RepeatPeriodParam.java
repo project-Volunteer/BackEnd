@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SaveRepeatPeriodDto {
+public class RepeatPeriodParam {
 
     private Period period;
     private Week week;
     private List<Day> days = new ArrayList<>();
 
-    public SaveRepeatPeriodDto(String period, String week, List<String>days) {
+    public RepeatPeriodParam(String period, String week, List<String>days) {
 
         //주기 Enum 변환
         this.period = Period.of(period);

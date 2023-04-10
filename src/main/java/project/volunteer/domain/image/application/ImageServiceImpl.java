@@ -8,13 +8,11 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.application.dto.SaveImageDto;
+import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.storage.application.StorageService;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,7 +27,7 @@ public class ImageServiceImpl implements ImageService{
 
     @Transactional
     @Override
-    public Long addImage(SaveImageDto saveImageDto) {
+    public Long addImage(ImageParam saveImageDto) {
 
         //참조 엔티티 유무 검사필요(user, recruitment, log...)
         validateNo(saveImageDto.getNo(), saveImageDto.getCode());

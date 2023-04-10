@@ -7,7 +7,7 @@ import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.application.dto.SaveScheduleDto;
+import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,7 +18,7 @@ public class ScheduleServiceImpl implements ScheduleService{
     private final RecruitmentRepository recruitmentRepository;
 
     @Override
-    public Long addSchedule(Long recruitmentNo, SaveScheduleDto dto) {
+    public Long addSchedule(Long recruitmentNo, ScheduleParam dto) {
 
         //굳이 한번더 조회해야할까?
         Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)

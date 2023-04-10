@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SaveRecruitAddressForm {
+public class AddressRequest {
 
     @Length(min = 1, max = 5)
     @NotEmpty(message = "필수 입력값입니다.")

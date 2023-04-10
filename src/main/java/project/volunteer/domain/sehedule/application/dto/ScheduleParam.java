@@ -13,15 +13,15 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SaveScheduleDto {
+public class ScheduleParam {
 
     private Timetable timetable;
     private String organizationName;
     private Address address;
     private String content;
 
-    public SaveScheduleDto(String startDay, String endDay, String startTime, int progressTime,
-                           String organizationName, String sido, String sigungu, String details, String content){
+    public ScheduleParam(String startDay, String endDay, String startTime, int progressTime,
+                         String organizationName, String sido, String sigungu, String details, String content){
 
         this.timetable = new Timetable(
                 LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")),

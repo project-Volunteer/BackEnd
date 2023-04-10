@@ -11,10 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.application.dto.SaveScheduleDto;
+import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -82,7 +82,7 @@ class ScheduleServiceImplTest {
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
-        SaveRecruitDto saveRecruitDto = new SaveRecruitDto(category, organizationName, sido,sigungu, details, latitude, longitude,
+        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
 
@@ -101,7 +101,7 @@ class ScheduleServiceImplTest {
         String sido = "11";
         String sigungu = "11011";
         String details = "details";
-        SaveScheduleDto dto = new SaveScheduleDto(startDay,startDay, startTime, progressTime,
+        ScheduleParam dto = new ScheduleParam(startDay,startDay, startTime, progressTime,
                 organizationName, sido, sigungu, details, content);
 
         //when
@@ -129,7 +129,7 @@ class ScheduleServiceImplTest {
         String sido = "11";
         String sigungu = "11011";
         String details = "details";
-        SaveScheduleDto dto = new SaveScheduleDto(startDay, startDay,startTime, progressTime,
+        ScheduleParam dto = new ScheduleParam(startDay, startDay,startTime, progressTime,
                 organizationName, sido, sigungu, details, content);
 
         //when & then

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -20,7 +20,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     private final RecruitmentRepository recruitmentRepository;
 
     @Transactional
-    public Long addRecruitment(SaveRecruitDto saveDto){
+    public Long addRecruitment(RecruitmentParam saveDto){
 
         Recruitment recruitment = Recruitment.builder()
                 .title(saveDto.getTitle())

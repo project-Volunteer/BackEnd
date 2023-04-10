@@ -10,14 +10,14 @@ import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.application.dto.ParticipantDto;
-import project.volunteer.domain.recruitment.application.dto.WriterDto;
+import project.volunteer.domain.recruitment.application.dto.ParticipantDetails;
+import project.volunteer.domain.recruitment.application.dto.WriterDetails;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.dto.PictureDto;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentDto;
+import project.volunteer.domain.recruitment.dto.PictureDetails;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.dto.RepeatPeriodDto;
+import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Period;
@@ -43,21 +43,21 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     private final ParticipantRepository participantRepository;
 
     @Override
-    public RecruitmentDto findRecruitment(Long no) {
+    public RecruitmentDetails findRecruitment(Long no) {
 
         //모집글 정보 + 모집글 작성자 정보 -> 쿼리1번
         Recruitment findRecruitment = recruitmentRepository.findEGWriterByRecruitmentNo(no).orElseThrow(()
                 -> new NullPointerException(String.format("Not found recruitmentNo=[%d]", no)));
         User writer = findRecruitment.getWriter();
         //1. 모집글 정보 dto 생성
-        RecruitmentDto dto = new RecruitmentDto(findRecruitment);
+        RecruitmentDetails dto = new RecruitmentDetails(findRecruitment);
 
         //모집글 이미지(image + storage) -> 쿼리 1번
         //모집글 이미지는 반드시 존재!
         Optional<Image> recruitmentImage = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.RECRUITMENT, no);
         //2. 모집글 이미지 dto 세팅
         if(recruitmentImage.isPresent())
-            dto.setPicture(new PictureDto(recruitmentImage.get().getStaticImageName(), recruitmentImage.get().getStorage().getImagePath()));
+            dto.setPicture(new PictureDetails(recruitmentImage.get().getStaticImageName(), recruitmentImage.get().getStorage().getImagePath()));
 
         //작성자 프로필 이미지(image + storage) -> 쿼리 1번
         //upload 이미지이므로 존재할 수도 있고, 없을수 있음.!
@@ -65,8 +65,8 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         //3. 모집글 작성자 dto 세팅
         dto.setAuthor(createWriterDto(writer, userUploadImage));
 
-        //"장기"일 경우 반복주기 검색 -> 쿼리 1번
-        if(findRecruitment.getVolunteeringType().equals(VolunteeringType.LONG)){
+        //"정기"일 경우 반복주기 검색 -> 쿼리 1번
+        if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){
             List<RepeatPeriod> repeatPeriodDto = repeatPeriodRepository.findByRecruitment_RecruitmentNo(no);
             //4. 반복주기 dto 세팅
             dto.setRepeatPeriod(createRepeatPeriodDto(repeatPeriodDto));
@@ -82,35 +82,35 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         return dto;
     }
 
-    private WriterDto createWriterDto(User writer, Optional<Image> userUploadImage) {
-        WriterDto author  = null;
+    private WriterDetails createWriterDto(User writer, Optional<Image> userUploadImage) {
+        WriterDetails author  = null;
         if(userUploadImage.isPresent()){ //유저 프로필이 업로드 이미지인 경우
-            author = new WriterDto(writer.getNickName(), userUploadImage.get().getStorage().getImagePath());
+            author = new WriterDetails(writer.getNickName(), userUploadImage.get().getStorage().getImagePath());
         }else{                           //oauth 기본 프로필인 경우
-            author = new WriterDto(writer.getNickName(), writer.getPicture());
+            author = new WriterDetails(writer.getNickName(), writer.getPicture());
         }
        return author;
     }
 
-    private RepeatPeriodDto createRepeatPeriodDto(List<RepeatPeriod> repeatPeriods){
+    private RepeatPeriodDetails createRepeatPeriodDto(List<RepeatPeriod> repeatPeriods){
         Period period = repeatPeriods.get(0).getPeriod();
         Week week = (period.equals(Period.MONTH))?(repeatPeriods.get(0).getWeek()):null;
         List<Day> days = repeatPeriods.stream().map(r -> r.getDay()).collect(Collectors.toList());
-        return new RepeatPeriodDto(period, week, days);
+        return new RepeatPeriodDetails(period, week, days);
     }
 
-    private List<ParticipantDto> createParticipantsDto(List<Participant> participants) {
+    private List<ParticipantDetails> createParticipantsDto(List<Participant> participants) {
 
-        List<ParticipantDto> dtos = new ArrayList<>();
+        List<ParticipantDetails> dtos = new ArrayList<>();
         participants.stream()
                 .forEach(p -> {
                     User participant = p.getParticipant();
                     Boolean isApproved = (p.getState().equals(State.JOIN_APPROVAL))?true:false;
                     Optional<Image> userUploadImage = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.USER, participant.getUserNo());
                     if(userUploadImage.isPresent()){  //유저 프로필이 업로드 이미지인 경우
-                        dtos.add(new ParticipantDto(participant.getNickName(), userUploadImage.get().getStorage().getImagePath(), isApproved));
+                        dtos.add(new ParticipantDetails(participant.getNickName(), userUploadImage.get().getStorage().getImagePath(), isApproved));
                     }else {                           //유저 프로필이 기본(oauth image)인 경우
-                        dtos.add(new ParticipantDto(participant.getNickName(), participant.getPicture(), isApproved));
+                        dtos.add(new ParticipantDetails(participant.getNickName(), participant.getPicture(), isApproved));
                     }
                 });
         return dtos;

@@ -19,16 +19,16 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.application.dto.SaveImageDto;
+import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -131,19 +131,19 @@ class RecruitmentControllerTestForFindAll {
             //모집글 저장
             //no1: 단기 + static 이미지 + 참여자 1명(승인)   -> 총 5개 저장
             //no2: 장기 + upload 이미지 + 참여자 1명(미승인)  -> 총 5개 저장
-            SaveRecruitDto saveRecruitDto1 = new SaveRecruitDto(category1, organizationName, sido1, sigungu1, details, latitude, longitude,
+            RecruitmentParam saveRecruitDto1 = new RecruitmentParam(category1, organizationName, sido1, sigungu1, details, latitude, longitude,
                     isIssued1, volunteerType1, volunteerNum, volunteeringType1, startDay, endDay, startTime, progressTime, title, content, isPublished);
-            SaveRecruitDto saveRecruitDto2 = new SaveRecruitDto(category2, organizationName, sido2, sigungu2, details, latitude, longitude,
+            RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2, details, latitude, longitude,
                     isIssued2, volunteerType2, volunteerNum, volunteeringType2, startDay, endDay, startTime, progressTime, title, content, isPublished);
             Long no1 = recruitmentService.addRecruitment(saveRecruitDto1);
             Long no2 = recruitmentService.addRecruitment(saveRecruitDto2);
 
             //반복 주기 저장
-            SaveRepeatPeriodDto savePeriodDto = new SaveRepeatPeriodDto(period, week, days);
+            RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
             repeatPeriodService.addRepeatPeriod(no2, savePeriodDto);
 
             //이미지 저장
-            SaveImageDto staticImageDto = SaveImageDto.builder()
+            ImageParam staticImageDto = ImageParam.builder()
                     .code(RealWorkCode.RECRUITMENT)
                     .imageType(ImageType.STATIC)
                     .no(no1)
@@ -152,7 +152,7 @@ class RecruitmentControllerTestForFindAll {
                     .build();
             Long saveId1 = imageService.addImage(staticImageDto);
 
-            SaveImageDto uploadImageDto = SaveImageDto.builder()
+            ImageParam uploadImageDto = ImageParam.builder()
                     .code(RealWorkCode.RECRUITMENT)
                     .imageType(ImageType.UPLOAD)
                     .no(no2)

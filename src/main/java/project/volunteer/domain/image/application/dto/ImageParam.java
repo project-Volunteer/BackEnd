@@ -7,12 +7,12 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitPictureForm;
+import project.volunteer.domain.recruitment.api.dto.request.PictureRequest;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class SaveImageDto {
+public class ImageParam {
 
     private RealWorkCode code; //log, recruitment, user...
     private Long no; //log, recruitment, user... 고유 번호
@@ -21,7 +21,7 @@ public class SaveImageDto {
     private MultipartFile uploadImage; //upload
 
     @Builder
-    public SaveImageDto(RealWorkCode code, Long no, ImageType imageType, String staticImageCode, MultipartFile uploadImage) {
+    public ImageParam(RealWorkCode code, Long no, ImageType imageType, String staticImageCode, MultipartFile uploadImage) {
         this.code = code;
         this.no = no;
         this.imageType = imageType;
@@ -29,7 +29,7 @@ public class SaveImageDto {
         this.uploadImage = uploadImage;
     }
 
-    public SaveImageDto(RealWorkCode code, Long no, SaveRecruitPictureForm form) {
+    public ImageParam(RealWorkCode code, Long no, PictureRequest form) {
         this.code = code;
         this.no = no;
         this.imageType = ImageType.of(form.getType());

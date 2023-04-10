@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecruitmentQueryDto {
+public class RecruitmentListQuery {
 
     private Long no;
     private String title;
@@ -35,9 +35,9 @@ public class RecruitmentQueryDto {
     private String uploadImage; //storage 테이블에서 추출
 
     @QueryProjection
-    public RecruitmentQueryDto(Long no, String title, String sido, String sigungu, LocalDate startDay, LocalDate endDay, VolunteeringType volunteeringType,
-                               VolunteerType volunteerType, Boolean isIssued, int volunteerNum, int progressTime,
-                               String staticImage, String uploadImage){
+    public RecruitmentListQuery(Long no, String title, String sido, String sigungu, LocalDate startDay, LocalDate endDay, VolunteeringType volunteeringType,
+                                VolunteerType volunteerType, Boolean isIssued, int volunteerNum, int progressTime,
+                                String staticImage, String uploadImage){
         this.no  = no;
         this.title = title;
         this.sido = sido;
