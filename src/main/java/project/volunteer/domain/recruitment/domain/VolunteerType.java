@@ -1,6 +1,5 @@
 package project.volunteer.domain.recruitment.domain;
 
-import lombok.Getter;
 import project.volunteer.global.common.converter.LegacyCodeCommonType;
 
 public enum VolunteerType implements LegacyCodeCommonType {

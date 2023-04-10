@@ -40,7 +40,7 @@ public class RecruitmentDto {
         this.no = recruitment.getRecruitmentNo();
         this.volunteeringCategory = recruitment.getVolunteeringCategory().getDesc();
         this.organizationName = recruitment.getOrganizationName();
-        this.address = new AddressDto(recruitment.getAddress());
+        this.address = new AddressDto(recruitment.getAddress(), recruitment.getCoordinate());
         this.isIssued = recruitment.getIsIssued();
         this.volunteeringType = recruitment.getVolunteeringType().getViewName();
         this.volunteerType = recruitment.getVolunteerType().getDesc();

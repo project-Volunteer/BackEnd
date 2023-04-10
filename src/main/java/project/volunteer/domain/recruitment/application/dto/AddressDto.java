@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 
 @Getter
 @Setter
@@ -18,11 +19,11 @@ public class AddressDto {
     private Float latitude;
     private Float longitude;
 
-    public AddressDto(Address address){
+    public AddressDto(Address address, Coordinate coordinate){
         this.sido = address.getSido();
         this.sigungu = address.getSigungu();
         this.details = address.getDetails();
-        this.latitude = address.getLatitude();
-        this.longitude = address.getLongitude();
+        this.latitude = coordinate.getLatitude();
+        this.longitude = coordinate.getLongitude();
     }
 }

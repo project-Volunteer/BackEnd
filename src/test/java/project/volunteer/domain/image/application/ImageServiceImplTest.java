@@ -137,7 +137,6 @@ class ImageServiceImplTest {
     }
 
     @Test
-    @Rollback(value = false)
     public void 모집글_업로드_이미지_저장_성공() throws IOException {
         //given
         SaveImageDto dto = SaveImageDto.builder()

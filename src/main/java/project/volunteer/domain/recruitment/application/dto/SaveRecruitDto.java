@@ -8,6 +8,7 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.util.LegacyCodeEnumValueConverterUtils;
 
@@ -29,6 +30,7 @@ public class SaveRecruitDto {
     private Boolean isIssued;
     private String organizationName;
     private Address address;
+    private Coordinate coordinate;
     private Timetable timetable;
     private Boolean isPublished;
 
@@ -36,10 +38,15 @@ public class SaveRecruitDto {
 
         this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, form.getVolunteeringCategory());
         this.organizationName = form.getOrganizationName();
-        this.address = new Address(
-                form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
-                form.getAddress().getLatitude(), form.getAddress().getLongitude()
-        );
+        this.address = Address.builder()
+                .sido(form.getAddress().getSido())
+                .sigungu(form.getAddress().getSigungu())
+                .details(form.getAddress().getDetails())
+                .build();
+        this.coordinate = Coordinate.builder()
+                .latitude(form.getAddress().getLatitude())
+                .longitude(form.getAddress().getLongitude())
+                .build();
         this.isIssued = form.getIsIssued();
         this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, form.getVolunteerType());
         this.volunteerNum = form.getVolunteerNum();
@@ -61,7 +68,10 @@ public class SaveRecruitDto {
 
         this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, volunteeringCategory);
         this.organizationName = organizationName;
-        this.address = new Address(sido, sigungu, details, latitude, longitude);
+        this.address = Address.builder()
+                .sido(sido).sigungu(sigungu).details(details).build();
+        this.coordinate = Coordinate.builder()
+                .latitude(latitude).longitude(longitude).build();
         this.isIssued = isIssued;
         this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, volunteerType);
         this.volunteerNum = volunteerNum;

@@ -3,6 +3,7 @@ package project.volunteer.domain.sehedule.application.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
 
 import java.time.LocalDate;
@@ -16,9 +17,7 @@ public class SaveScheduleDto {
 
     private Timetable timetable;
     private String organizationName;
-    private String sido;
-    private String sigungu;
-    private String details;
+    private Address address;
     private String content;
 
     public SaveScheduleDto(String startDay, String endDay, String startTime, int progressTime,
@@ -30,10 +29,12 @@ public class SaveScheduleDto {
                 LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm:ss")),
                 progressTime
         );
-        this.sido = sido;
-        this.sigungu = sigungu;
+        this.address = Address.builder()
+                .sido(sido)
+                .sigungu(sigungu)
+                .details(details)
+                .build();
         this.organizationName = organizationName;
-        this.details = details;
         this.content = content;
     }
 

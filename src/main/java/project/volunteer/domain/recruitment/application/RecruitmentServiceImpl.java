@@ -32,6 +32,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .isIssued(saveDto.getIsIssued())
                 .organizationName(saveDto.getOrganizationName())
                 .address(saveDto.getAddress())
+                .coordinate(saveDto.getCoordinate())
                 .timetable(saveDto.getTimetable())
                 .isPublished(saveDto.getIsPublished())
                 .build();

@@ -16,6 +16,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.EntityManager;
@@ -64,29 +65,28 @@ class RecruitmentQueryDtoRepositoryImplTest {
         Boolean isIssued1 = true;
         Boolean isIssued2 = false;
 
-        float latitude = 3.2F;
-        float longitude = 3.2F;
+        Coordinate coordinate = new Coordinate(3.2F, 3.2F);
         String details = "details";
-        Address address1 = new Address("11", "1111", details, latitude, longitude);
-        Address address2 = new Address("22", "2222", details, latitude, longitude);
-        Address address3 = new Address("333", "3333", details, latitude, longitude);
+        Address address1 = new Address("11", "1111", details);
+        Address address2 = new Address("22", "2222", details);
+        Address address3 = new Address("333", "3333", details);
 
         for(int i=0;i<5;i++){
             Recruitment create1 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category1) .volunteeringType(volunteeringType1) .volunteerType(volunteerType1)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1)
+                    .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create1);
 
             Recruitment create2 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category2) .volunteeringType(volunteeringType2) .volunteerType(volunteerType2)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2)
+                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create2);
 
             Recruitment create3 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3)
+                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create3);
         }
@@ -94,7 +94,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         //임시 저장글(1개)
         Recruitment create4 = Recruitment.builder()
                 .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3)
+                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                 .timetable(timetable) .isPublished(Boolean.FALSE).build();
         recruitmentRepository.save(create4);
         clear();

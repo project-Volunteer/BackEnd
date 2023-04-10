@@ -28,9 +28,7 @@ public class ScheduleServiceImpl implements ScheduleService{
                 .timetable(dto.getTimetable())
                 .content(dto.getContent())
                 .organizationName(dto.getOrganizationName())
-                .sido(dto.getSido())
-                .sigungu(dto.getSigungu())
-                .details(dto.getDetails())
+                .address(dto.getAddress())
                 .build();
         createSchedule.setRecruitment(recruitment);
 

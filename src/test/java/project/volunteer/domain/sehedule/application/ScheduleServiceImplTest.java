@@ -110,8 +110,8 @@ class ScheduleServiceImplTest {
 
         //then
         Schedule schedule = scheduleRepository.findByRecruitment_RecruitmentNo(saveRecruitmentNo).get();
-        Assertions.assertThat(schedule.getSido()).isEqualTo(sido);
-        Assertions.assertThat(schedule.getSigungu()).isEqualTo(sigungu);
+        Assertions.assertThat(schedule.getAddress().getSido()).isEqualTo(sido);
+        Assertions.assertThat(schedule.getAddress().getSigungu()).isEqualTo(sigungu);
         Assertions.assertThat(schedule.getContent()).isEqualTo(content);
         Assertions.assertThat(schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))).isEqualTo(startDay);
         Assertions.assertThat(schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).isEqualTo(startTime);
