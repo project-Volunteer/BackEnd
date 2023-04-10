@@ -1,4 +1,4 @@
-package project.volunteer.domain.image.dto;
+package project.volunteer.domain.image.application.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.recruitment.api.form.SaveRecruitPictureForm;
+import project.volunteer.domain.recruitment.api.dto.request.SaveRecruitPictureForm;
 
 @Getter
 @Setter
@@ -33,7 +33,9 @@ public class SaveImageDto {
         this.code = code;
         this.no = no;
         this.imageType = ImageType.of(form.getType());
-        this.staticImageCode = form.getStaticImage();
+        //업로드 이미지일 경우 "staticImageCode" 컬럼은 null
+        this.staticImageCode = (this.imageType.name().equals(ImageType.UPLOAD.name()))
+                ?null: form.getStaticImage();
         this.uploadImage = form.getUploadImage();
     }
 }

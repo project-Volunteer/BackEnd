@@ -1,9 +1,8 @@
-package project.volunteer.domain.repeatPeriod.dto;
+package project.volunteer.domain.repeatPeriod.application.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.api.form.SaveRecruitForm;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.Week;

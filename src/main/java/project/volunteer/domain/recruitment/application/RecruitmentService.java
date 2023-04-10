@@ -1,6 +1,6 @@
 package project.volunteer.domain.recruitment.application;
 
-import project.volunteer.domain.recruitment.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
 
 public interface RecruitmentService {
 

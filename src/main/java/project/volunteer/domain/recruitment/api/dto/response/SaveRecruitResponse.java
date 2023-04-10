@@ -1,11 +1,10 @@
-package project.volunteer.domain.recruitment.dto.response;
+package project.volunteer.domain.recruitment.api.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.volunteer.global.common.response.BaseResponse;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SaveRecruitResponse extends BaseResponse {

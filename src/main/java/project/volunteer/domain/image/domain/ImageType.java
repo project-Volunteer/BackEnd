@@ -11,6 +11,10 @@ public enum ImageType {
         this.value = value;
     }
 
+    public int getValue() {
+        return this.value;
+    }
+
     public static ImageType of(int value){
 
         return Arrays.stream(ImageType.values())

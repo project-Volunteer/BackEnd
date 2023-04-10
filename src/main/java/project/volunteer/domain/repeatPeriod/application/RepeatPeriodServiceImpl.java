@@ -8,7 +8,9 @@ import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.repeatPeriod.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -32,4 +34,5 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
             repeatPeriodRepository.save(period);
         });
     }
+
 }

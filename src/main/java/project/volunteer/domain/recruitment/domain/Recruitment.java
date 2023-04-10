@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
+import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.common.converter.CategoryConverter;
+import project.volunteer.global.common.converter.VolunteerTypeConverter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Getter
 @Entity
@@ -19,7 +20,7 @@ import java.time.LocalTime;
 public class Recruitment extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "recruitment_no")
+    @Column(name = "recruitmentno")
     private Long recruitmentNo;
 
     @Column(nullable = false)
@@ -28,16 +29,16 @@ public class Recruitment extends BaseTimeEntity {
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "volunteering_category", length = 30, nullable = false)
+    @Convert(converter = CategoryConverter.class)
+    @Column(name = "volunteering_category", length = 3, nullable = false)
     private VolunteeringCategory volunteeringCategory;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "volunteering_type", length = 5, nullable = false)
     private VolunteeringType volunteeringType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "volunteer_type", length = 10, nullable = false)
+    @Convert(converter = VolunteerTypeConverter.class)
+    @Column(name = "volunteer_type", length = 2, nullable = false)
     private VolunteerType volunteerType;
 
     @Column(name = "volunteer_num", nullable = false)
@@ -46,30 +47,11 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "is_issued", nullable = false)
     private Boolean isIssued;
 
-
-
-
     @Column(name = "organization_name", length = 50, nullable = false)
     private String organizationName;
 
-    @Column(length = 5, nullable = false)
-    private String sido;
-
-    @Column(length = 10, nullable = false)
-    private String sigungu;
-
-    @Column(length = 50, nullable = false)
-    private String details;
-
-    @Column(nullable = false)
-    private Float latitude;
-
-    @Column(nullable = false)
-    private Float longitude;
-
-
-
-
+    @Embedded
+    private Address address;
 
     @Embedded
     private Timetable VolunteeringTimeTable;
@@ -93,7 +75,7 @@ public class Recruitment extends BaseTimeEntity {
     @Builder
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
                        VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
-                       String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
+                       String organizationName, Address address,
                        Timetable timetable, Boolean isPublished) {
 
         this.title = title;
@@ -104,11 +86,7 @@ public class Recruitment extends BaseTimeEntity {
         this.volunteerNum = volunteerNum;
         this.isIssued = isIssued;
         this.organizationName = organizationName;
-        this.sido = sido;
-        this.sigungu = sigungu;
-        this.details = details;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.address = address;
         this.VolunteeringTimeTable = timetable;
         this.isPublished = isPublished;
 

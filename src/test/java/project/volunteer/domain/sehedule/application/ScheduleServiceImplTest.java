@@ -11,10 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
-import project.volunteer.domain.recruitment.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.dto.SaveScheduleDto;
+import project.volunteer.domain.sehedule.application.dto.SaveScheduleDto;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -73,7 +73,7 @@ class ScheduleServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "short";
         String startDay = "01-01-2000";

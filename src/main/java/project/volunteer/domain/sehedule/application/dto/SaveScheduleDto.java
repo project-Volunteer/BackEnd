@@ -1,4 +1,4 @@
-package project.volunteer.domain.sehedule.dto;
+package project.volunteer.domain.sehedule.application.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

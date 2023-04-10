@@ -1,14 +1,13 @@
 package project.volunteer.domain.sehedule.application;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.dto.SaveScheduleDto;
+import project.volunteer.domain.sehedule.application.dto.SaveScheduleDto;
 
 @Service
 @Transactional(readOnly = true)

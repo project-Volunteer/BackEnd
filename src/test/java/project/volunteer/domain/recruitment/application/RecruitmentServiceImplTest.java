@@ -1,31 +1,24 @@
 package project.volunteer.domain.recruitment.application;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.repeatPeriod.domain.Week;
-import project.volunteer.domain.repeatPeriod.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -101,7 +94,7 @@ class RecruitmentServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "short";
         String startDay = "01-01-2000";
@@ -119,7 +112,7 @@ class RecruitmentServiceImplTest {
 
         //then
         Recruitment find = recruitmentRepository.findById(no).get();
-        assertThat(find.getVolunteeringCategory().getCode()).isEqualTo(category);
+        assertThat(find.getVolunteeringCategory().getLegacyCode()).isEqualTo(category);
         assertThat(find.getOrganizationName()).isEqualTo(organizationName);
         //...
         assertThat(find.getContent()).isEqualTo(content);
@@ -136,7 +129,7 @@ class RecruitmentServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "long";
         String startDay = "01-01-2000";
@@ -178,7 +171,7 @@ class RecruitmentServiceImplTest {
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
         Boolean isIssued = true;
-        String volunteerType = "all";
+        String volunteerType = "1"; //all
         Integer volunteerNum = 5;
         String volunteeringType = "long";
         String startDay = "01-01-2000";

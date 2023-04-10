@@ -2,18 +2,19 @@ package project.volunteer.domain.image.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.dto.SaveImageDto;
+import project.volunteer.domain.image.application.dto.SaveImageDto;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.storage.application.StorageService;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -48,6 +49,7 @@ public class ImageServiceImpl implements ImageService{
         return imageRepository.save(createImage).getImageNo();
     }
 
+
     private void validateNo(Long no, RealWorkCode code) {
 
         //더 클린하게 작성할 수 없을까?
@@ -56,7 +58,6 @@ public class ImageServiceImpl implements ImageService{
         }else if(code==RealWorkCode.RECRUITMENT){
             recruitmentRepository.findById(no).orElseThrow(() -> new NullPointerException(String.format("Not found recruitmentNo=[%d]",no)));
         }
-
     }
 
 }

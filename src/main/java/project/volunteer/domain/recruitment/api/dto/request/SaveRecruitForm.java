@@ -1,9 +1,8 @@
-package project.volunteer.domain.recruitment.api.form;
+package project.volunteer.domain.recruitment.api.dto.request;
 
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;

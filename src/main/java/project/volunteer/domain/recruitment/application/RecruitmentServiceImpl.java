@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -31,11 +31,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .volunteerNum(saveDto.getVolunteerNum())
                 .isIssued(saveDto.getIsIssued())
                 .organizationName(saveDto.getOrganizationName())
-                .sido(saveDto.getSido())
-                .sigungu(saveDto.getSigungu())
-                .details(saveDto.getDetails())
-                .latitude(saveDto.getLatitude())
-                .longitude(saveDto.getLongitude())
+                .address(saveDto.getAddress())
                 .timetable(saveDto.getTimetable())
                 .isPublished(saveDto.getIsPublished())
                 .build();
@@ -46,6 +42,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         recruitment.setWriter(userRepository.findByEmail(SecurityUtil.getLoginUserEmail())
                 .orElseThrow(()-> new NullPointerException(String.format("Not found userEmail=[%s]", SecurityUtil.getLoginUserEmail()))));
 
-        return  recruitmentRepository.save(recruitment).getRecruitmentNo();
+        return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
+
 }
