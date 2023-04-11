@@ -25,10 +25,9 @@ public class JwtServiceImpl implements JwtService {
 		JwtToken createToken = jwtProvider.createJwtToken(userNo, nickName);
 		Optional<User> findUser = refreshTokenService.findByUserNo(userNo);
 		
-		// 리프레시 토큰이 없으면 추가
-		if (findUser.get().getRefreshToken() == null) {
-			refreshTokenService.updateRefreshToken(userNo, createToken.getRefreshToken());
-		}
+		// 리프레시 토큰 갱신
+		refreshTokenService.updateRefreshToken(userNo, createToken.getRefreshToken());
+		
 		return createToken;
 	}
 	

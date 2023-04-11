@@ -12,7 +12,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class MailSendServiceImpl implements MailSendService{
 	@Autowired
@@ -30,12 +32,11 @@ public class MailSendServiceImpl implements MailSendService{
 			
 			result.put("authCode", authCode);
 		} catch (MailSendException e) {
-			e.printStackTrace();
+			log.error("MailSendException {}", e.getMessage(), e);
 			result.put("resultMessage", "Failed to send mail");
 		} catch(MessagingException e) {
-			e.printStackTrace();
+			log.error("MessagingException {}", e.getMessage(), e);
 			result.put("resultMessage", "Failed to send mail");
-			
 		}
 		return result;
 	}

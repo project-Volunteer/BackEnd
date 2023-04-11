@@ -24,7 +24,6 @@ public class UserSignupServiceImpl implements UserSignupService {
 	public void addUser(UserSignupDTO userSignupDTO) {
 		Gender gender = (userSignupDTO.getGender() > 0) ? Gender.M : Gender.W;
 		LocalDate birthday = LocalDate.parse(userSignupDTO.getBirthday());
-		
 		User user = User.builder()
 					.nickName(userSignupDTO.getNickName())
 					.email(userSignupDTO.getEmail())

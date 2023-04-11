@@ -1,11 +1,16 @@
 package project.volunteer.domain.signup.application;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import project.volunteer.domain.signup.api.dto.response.KakaoUserInfoResponse;
 
 @Slf4j
@@ -23,56 +29,40 @@ public class KakaoLoginServiceImpl implements KakaoLoginService{
 	private String secretkey; 
 	
 	public String getKakaoAccessToken(String code) throws JsonProcessingException {
-		// HTTP Header 생성
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-		headers.add("Accept", "application/json");
+		// 카카오에 보낼 api
+		WebClient webClient = WebClient.builder()
+				.baseUrl("https://kauth.kakao.com")
+				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.build();
+		// 카카오 서버에 요청 보내기 & 응답 받기
+		JSONObject response = webClient.post()
+				.uri(uriBuilder -> uriBuilder.path("/oauth/token")
+						.queryParam("grant_type", "authorization_code")
+						.queryParam("client_id", "2b87a8fac130b0d32824ea99c3cff012")
+						.queryParam("redirect_uri", "http://localhost:8888/oauth/callback/kakao")
+						.queryParam("client_secret", secretkey).queryParam("code", code).build())
+				.retrieve().bodyToMono(JSONObject.class).block();
 
-		// HTTP Body 생성
-		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-		body.add("grant_type", "authorization_code");
-		body.add("client_id", "2b87a8fac130b0d32824ea99c3cff012");
-		body.add("client_secret", secretkey);
-		body.add("redirect_uri", "http://localhost:8888/oauth/callback/kakao");
-		body.add("code", code);
-
-		// HTTP 요청 보내기
-		HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(body, headers);
-		RestTemplate rt = new RestTemplate();
-		ResponseEntity<String> response = rt.exchange(
-				"https://kauth.kakao.com/oauth/token", 
-				HttpMethod.POST,
-				kakaoTokenRequest, 
-				String.class);
-
-		// HTTP 응답 (JSON) -> 액세스 토큰 파싱
-		String responseBody = response.getBody();
-		log.info("getKakaoAccessToken() : " +responseBody);
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(responseBody);
-		return jsonNode.get("access_token").asText();
+		return (String) response.get("access_token");
 	}
 
 	public KakaoUserInfoResponse getKakaoUserInfo(String accessToken) throws JsonProcessingException {
-		// HTTP Header 생성
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer " + accessToken);
-		headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+		// 카카오에 요청 보내기 및 응답 받기
+		WebClient webClient = WebClient.builder()
+				.baseUrl("https://kapi.kakao.com")
+				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.build();
 
-		// HTTP 요청 보내기
-		HttpEntity<MultiValueMap<String, Object>> kakaoUserInfoRequest = new HttpEntity<>(headers);
-		RestTemplate rt = new RestTemplate();
-		ResponseEntity<String> response = rt.exchange("https://kapi.kakao.com/v2/user/me", HttpMethod.POST, kakaoUserInfoRequest, String.class);
+		JSONObject response = webClient.post()
+				.uri(uriBuilder -> uriBuilder.path("/v2/user/me").build())
+				.header("Authorization", "Bearer " + accessToken)
+				.retrieve().bodyToMono(JSONObject.class).block();
+		
+		String providerId = response.getAsString("id");
 
-		// responseBody에 있는 정보를 꺼냄
-		String responseBody = response.getBody();
-		log.info("getKakaoUserInfo() : " +responseBody);
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(responseBody);
-
-		String providerId = jsonNode.get("id").asText();
-		String nickname = jsonNode.get("properties").get("nickname").asText();
-		String profile = jsonNode.get("properties").get("profile_image").asText();
+		Map<String, Object> kakaoMap = (HashMap<String, Object>) response.get("properties");
+		String nickname = (String) kakaoMap.get("nickname");
+		String profile = (String) kakaoMap.get("profile_image");
 		
 		KakaoUserInfoResponse kakaoUserInfoResponse = new KakaoUserInfoResponse();
 		kakaoUserInfoResponse.setProviderId(providerId);
