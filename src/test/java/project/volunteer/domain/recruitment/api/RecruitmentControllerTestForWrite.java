@@ -119,14 +119,13 @@ class RecruitmentControllerTestForWrite {
     @BeforeEach
     public void init() {
         //유저 로그인
-        final String name = "name";
         final String nickname = "nickname";
         final String email = "email@gmail.com";
         final Gender gender = Gender.M;
         final LocalDate birth = LocalDate.now();
         final String picture = "picture";
         final Boolean alarm = true;
-        userRepository.save(User.builder().name(name).nickName(nickname)
+        userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
 

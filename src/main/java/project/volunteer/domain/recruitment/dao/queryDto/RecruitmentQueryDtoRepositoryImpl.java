@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentQueryDto;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentListQuery;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.*;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
@@ -70,7 +70,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         //이미지에 저장소가 없을수 있으니 : leftJoin
         List<RecruitmentListQuery> content = jpaQueryFactory
                 .select(
-                        new QRecruitmentQueryDto(recruitment.recruitmentNo, recruitment.title,
+                        new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.title,
                                 recruitment.address.sido, recruitment.address.sigungu,
                                 recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
                                 recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, recruitment.VolunteeringTimeTable.progressTime,

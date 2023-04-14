@@ -52,14 +52,13 @@ class ImageServiceImplTest {
     @BeforeEach
     private void signUpAndSetAuthenticationAndSaveRecruitment() {
 
-        String name = "name";
         String nickname = "nickname";
         String email = "email@gmail.com";
         Gender gender = Gender.M;
         LocalDate birth = LocalDate.now();
         String picture = "picture";
         Boolean alarm = true;
-        userRepository.save(User.builder().name(name).nickName(nickname)
+        userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
 

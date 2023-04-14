@@ -24,6 +24,7 @@ import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.sehedule.application.ScheduleService;
+import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,18 +46,19 @@ public class RecruitmentController {
         //모집글 정보 저장
         Long recruitmentNo = recruitmentService.addRecruitment(new RecruitmentParam(form));
 
-        //정기일 경우, 반복 주기 저장
+        //정기일 경우
         if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())) {
-            repeatPeriodService.addRepeatPeriod(recruitmentNo,
-                    new RepeatPeriodParam(form.getPeriod(), form.getWeek(), form.getDays()));
+            RepeatPeriodParam periodParam = new RepeatPeriodParam(form.getPeriod(), form.getWeek(), form.getDays());
+            //반복 주기 저장
+            repeatPeriodService.addRepeatPeriod(recruitmentNo, periodParam);
+
+            //스케줄 자동 할당
+            scheduleService.addRegSchedule(recruitmentNo,
+                    new ScheduleParamReg(form.getStartDay(), form.getEndDay(), form.getStartTime(), form.getProgressTime(),
+                            form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
+                            form.getContent(), periodParam));
         }
-        //단기일 경우, 스케쥴 자동 할당
-//        else {
-//            scheduleService.addSchedule(recruitmentNo,
-//                    new SaveScheduleDto(form.getStartDay(), form.getEndDay(), form.getStartTime(), form.getProgressTime(),
-//                            form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(),form.getAddress().getDetails(),
-//                            null));
-//        }
+
         //이미지 저장
         imageService.addImage(
                 new ImageParam(RealWorkCode.RECRUITMENT, recruitmentNo, form.getPicture()));

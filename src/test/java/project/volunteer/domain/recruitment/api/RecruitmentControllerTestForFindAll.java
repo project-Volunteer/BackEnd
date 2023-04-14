@@ -77,14 +77,13 @@ class RecruitmentControllerTestForFindAll {
     @BeforeEach
     public void init() throws IOException {
         //유저 임시 로그인
-        final String name = "name";
         final String nickname = "nickname";
         final String email = "email@gmail.com";
         final Gender gender = Gender.M;
         final LocalDate birth = LocalDate.now();
         final String picture = "picture";
         final Boolean alarm = true;
-        User saveUser = userRepository.save(User.builder().name(name).nickName(nickname)
+        User saveUser = userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
         SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();

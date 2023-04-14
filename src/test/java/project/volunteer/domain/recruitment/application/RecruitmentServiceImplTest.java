@@ -52,7 +52,6 @@ class RecruitmentServiceImplTest {
     @Autowired
     UserRepository userRepository;
 
-    private static final String name = "name";
     private static final String nickname = "nickname";
     private static final String email = "email@gmail.com";
     private static final Gender gender = Gender.M;
@@ -66,7 +65,7 @@ class RecruitmentServiceImplTest {
     @BeforeEach
     private void signUpAndSetAuthentication() {
 
-        userRepository.save(User.builder().name(name).nickName(nickname)
+        userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
 

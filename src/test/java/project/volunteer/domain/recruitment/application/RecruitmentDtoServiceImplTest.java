@@ -88,14 +88,13 @@ class RecruitmentDtoServiceImplTest {
         }
     }
     private Long initLogin(){
-        final String name = "name";
         final String nickname = "nickname";
         final String email = "email@gmail.com";
         final Gender gender = Gender.M;
         final LocalDate birth = LocalDate.now();
         final String picture = "picture";
         final Boolean alarm = true;
-        User saveUser = userRepository.save(User.builder().name(name).nickName(nickname)
+        User saveUser = userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
         SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
@@ -156,7 +155,6 @@ class RecruitmentDtoServiceImplTest {
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
     private void initParticipant() throws IOException {
-        String name = "name";
         String email = "email@naver.com";
         Gender gender = Gender.M;
         LocalDate birth = LocalDate.now();
@@ -166,7 +164,7 @@ class RecruitmentDtoServiceImplTest {
         for (int i=0;i<5;i++){
             //임시 사용자 회원가입
             String nickname = "nickname"+i;
-            User saveUser = userRepository.save(User.builder().name(name).nickName(nickname)
+            User saveUser = userRepository.save(User.builder().nickName(nickname)
                     .email(email).gender(gender).birthDay(birth).picture(picture)
                     .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
 
