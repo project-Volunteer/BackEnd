@@ -18,14 +18,6 @@ public enum Day {
         this.viewName = label;
     }
 
-    public static Day of(String value){
-
-        return Arrays.stream(Day.values())
-                .filter(v -> v.name().equals(value.toUpperCase()))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match day=[%s]",value)));
-    }
-
     public static Day ofValue(int value){
         return Arrays.stream(Day.values())
                 .filter(v -> v.getValue().equals(value))

@@ -29,6 +29,7 @@ public class RecruitmentDetails {
     private WriterDetails author;
     private String startDay;
     private String endDay;
+    private String hourFormat;
     private String startTime;
     private Integer progressTime;
     private RepeatPeriodDetails repeatPeriod;
@@ -47,7 +48,8 @@ public class RecruitmentDetails {
         this.volunteerNum = recruitment.getVolunteerNum();
         this.startDay = recruitment.getVolunteeringTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         this.endDay = recruitment.getVolunteeringTimeTable().getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.startTime = recruitment.getVolunteeringTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
+        this.hourFormat = recruitment.getVolunteeringTimeTable().getHourFormat().getViewName();
+        this.startTime = recruitment.getVolunteeringTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH-mm"));
         this.progressTime = recruitment.getVolunteeringTimeTable().getProgressTime();
         this.title = recruitment.getTitle();
         this.content = recruitment.getContent();

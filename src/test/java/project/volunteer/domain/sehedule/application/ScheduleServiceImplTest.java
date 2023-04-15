@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -18,6 +20,7 @@ import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.HourFormat;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -54,12 +57,13 @@ class ScheduleServiceImplTest {
         String volunteeringType = "reg";
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
+                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay,hourFormat, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
         clear();
     }
@@ -87,14 +91,15 @@ class ScheduleServiceImplTest {
 
         //given
         String startDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String content = "content";
         String organizationName ="name";
         String sido = "11";
         String sigungu = "11011";
         String details = "details";
-        ScheduleParam dto = new ScheduleParam(startDay,startDay, startTime, progressTime,
+        ScheduleParam dto = new ScheduleParam(startDay,startDay, hourFormat, startTime, progressTime,
                 organizationName, sido, sigungu, details, content);
 
         //when
@@ -107,7 +112,7 @@ class ScheduleServiceImplTest {
         Assertions.assertThat(schedule.getAddress().getSigungu()).isEqualTo(sigungu);
         Assertions.assertThat(schedule.getContent()).isEqualTo(content);
         Assertions.assertThat(schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))).isEqualTo(startDay);
-        Assertions.assertThat(schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).isEqualTo(startTime);
+        Assertions.assertThat(schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))).isEqualTo(startTime);
         Assertions.assertThat(schedule.getScheduleTimeTable().getProgressTime()).isEqualTo(progressTime);
     }
 
@@ -119,14 +124,15 @@ class ScheduleServiceImplTest {
 
         //given
         String startDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String content = "content";
         String organizationName ="name";
         String sido = "11";
         String sigungu = "11011";
         String details = "details";
-        ScheduleParam dto = new ScheduleParam(startDay, startDay,startTime, progressTime,
+        ScheduleParam dto = new ScheduleParam(startDay, startDay,hourFormat, startTime, progressTime,
                 organizationName, sido, sigungu, details, content);
 
         //when & then
@@ -143,7 +149,8 @@ class ScheduleServiceImplTest {
         //given
         String startDay = "12-01-2022";
         String endDay = "02-01-2023";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String content = "content";
         String organizationName ="name";
@@ -151,12 +158,13 @@ class ScheduleServiceImplTest {
         String sigungu = "11011";
         String details = "details";
         String period = "month"; //매달
-        String week = "five";
-        List<String> days = List.of("mon", "tues");
+        int week = Week.FOUR.getValue();
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
         RepeatPeriodParam periodParam = new RepeatPeriodParam(period, week, days);
         ScheduleParamReg reg = ScheduleParamReg.builder()
                 .startDay(startDay)
                 .endDay(endDay)
+                .hourFormat(hourFormat)
                 .startTime(startTime)
                 .progressTime(progressTime)
                 .organizationName(organizationName)
@@ -180,7 +188,8 @@ class ScheduleServiceImplTest {
         //given
         String startDay = "12-01-2022";
         String endDay = "01-10-2023";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String content = "content";
         String organizationName ="name";
@@ -188,12 +197,13 @@ class ScheduleServiceImplTest {
         String sigungu = "11011";
         String details = "details";
         String period = "week"; //매주
-        String week = "";
-        List<String> days = List.of("mon", "tues");
+        int week = 0;
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
         RepeatPeriodParam periodParam = new RepeatPeriodParam(period, week, days);
         ScheduleParamReg reg = ScheduleParamReg.builder()
                 .startDay(startDay)
                 .endDay(endDay)
+                .hourFormat(hourFormat)
                 .startTime(startTime)
                 .progressTime(progressTime)
                 .organizationName(organizationName)

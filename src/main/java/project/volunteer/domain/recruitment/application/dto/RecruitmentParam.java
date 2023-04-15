@@ -9,6 +9,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.util.LegacyCodeEnumValueConverterUtils;
 
@@ -51,12 +52,14 @@ public class RecruitmentParam {
         this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, form.getVolunteerType());
         this.volunteerNum = form.getVolunteerNum();
         this.volunteeringType = VolunteeringType.of(form.getVolunteeringType());
-        this.timetable = new Timetable(
-                LocalDate.parse(form.getStartDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")),
-                LocalDate.parse(form.getEndDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")),
-                LocalTime.parse(form.getStartTime(), DateTimeFormatter.ofPattern("HH:mm:ss")),
-                form.getProgressTime()
-                );
+        this.timetable = Timetable.builder()
+                .startDay(LocalDate.parse(form.getStartDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")))
+                .endDay(LocalDate.parse(form.getEndDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")))
+                .hourFormat(HourFormat.ofName(form.getHourFormat()))
+                .startTime(LocalTime.parse(form.getStartTime(), DateTimeFormatter.ofPattern("HH:mm")))
+                .progressTime(form.getProgressTime())
+                .build();
+
         this.title = form.getTitle();
         this.content = form.getContent();
         this.isPublished = form.getIsPublished();
@@ -64,7 +67,7 @@ public class RecruitmentParam {
 
     public RecruitmentParam(String volunteeringCategory, String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,
                             Boolean isIssued, String volunteerType, Integer volunteerNum, String volunteeringType,
-                            String startDay, String endDay, String startTime, Integer progressTime, String title, String content, Boolean isPublished) {
+                            String startDay, String endDay, String hourFormat, String startTime, Integer progressTime, String title, String content, Boolean isPublished) {
 
         this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, volunteeringCategory);
         this.organizationName = organizationName;
@@ -76,12 +79,13 @@ public class RecruitmentParam {
         this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, volunteerType);
         this.volunteerNum = volunteerNum;
         this.volunteeringType = VolunteeringType.of(volunteeringType);
-        this.timetable = new Timetable(
-                LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")),
-                LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")),
-                LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm:ss")),
-                progressTime
-        );
+        this.timetable = Timetable.builder()
+                .startDay(LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
+                .endDay(LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
+                .hourFormat(HourFormat.ofName(hourFormat))
+                .startTime(LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm")))
+                .progressTime(progressTime)
+                .build();
         this.title = title;
         this.content = content;
         this.isPublished = isPublished;

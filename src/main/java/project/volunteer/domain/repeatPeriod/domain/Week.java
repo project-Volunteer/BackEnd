@@ -17,11 +17,11 @@ public enum Week {
         this.viewName = label;
     }
 
-    public static Week of(String value) {
-
+    public static Week ofValue(int value){
         return Arrays.stream(Week.values())
-                .filter(v -> v.name().equals(value.toUpperCase()))
+                .filter(v -> v.getValue().equals(value))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match week=[%s]",value)));
     }
+
 }

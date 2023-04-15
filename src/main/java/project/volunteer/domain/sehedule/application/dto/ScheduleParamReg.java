@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
 
 import java.time.LocalDate;
@@ -24,15 +25,16 @@ public class ScheduleParamReg {
     private String content;
 
     @Builder
-    public ScheduleParamReg(String startDay, String endDay, String startTime, int progressTime,
+    public ScheduleParamReg(String startDay, String endDay, String hourFormat, String startTime, int progressTime,
                             String organizationName, String sido, String sigungu, String details, String content,
                             RepeatPeriodParam periodParam){
-        this.timetable = new Timetable(
-                LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")),
-                LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")),
-                LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm:ss")),
-                progressTime
-        );
+        this.timetable = Timetable.builder()
+                .startDay(LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
+                .endDay(LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
+                .hourFormat(HourFormat.ofName(hourFormat))
+                .startTime(LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm")))
+                .progressTime(progressTime)
+                .build();
         this.address = Address.builder()
                 .sido(sido)
                 .sigungu(sigungu)

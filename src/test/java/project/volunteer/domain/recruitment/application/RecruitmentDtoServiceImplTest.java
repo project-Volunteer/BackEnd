@@ -26,10 +26,13 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
@@ -88,18 +91,19 @@ class RecruitmentDtoServiceImplTest {
         Integer volunteerNum = 5;
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
+                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
         Long no = recruitmentService.addRecruitment(saveRecruitDto);
 
         //모집글 반복주기 저장(장기-매달)
         String period = "month";
-        String week = "first";
-        List<String> days = List.of("mon", "tues");
+        int week = Week.FIRST.getValue();
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
         RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
         repeatPeriodService.addRepeatPeriod(no, savePeriodDto);
 

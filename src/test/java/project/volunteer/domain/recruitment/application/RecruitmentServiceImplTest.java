@@ -21,6 +21,7 @@ import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.HourFormat;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -87,12 +88,13 @@ class RecruitmentServiceImplTest {
         String volunteeringType = VolunteeringType.IRREG.name();
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 5;
         String title = "title", content = "content";
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
+                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
 
         //when
         Long no = recruitmentService.addRecruitment(saveRecruitDto);
@@ -123,16 +125,17 @@ class RecruitmentServiceImplTest {
         String volunteeringType = VolunteeringType.REG.name();
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
+                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
 
         String period = "week";
-        String week = "";
-        List<String> days = List.of("mon","tues");
+        int week = 0;
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
         RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
 
         //when
@@ -166,16 +169,17 @@ class RecruitmentServiceImplTest {
         String volunteeringType = VolunteeringType.REG.name();
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
+                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
 
         String period = "month";
-        String week = "first";
-        List<String> days = List.of("mon","tues");
+        int week = Week.FIRST.getValue();
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
         RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
 
         //when

@@ -29,10 +29,12 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
@@ -95,15 +97,16 @@ class RecruitmentControllerTestForFindAll {
         Integer volunteerNum = 5;
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
 
         //반복 주기 데이터
         String period = "week";
-        String week = "";
-        List<String> days = List.of("mon","tues");
+        int week = 0;
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
 
         for(int i=0;i<5;i++){
 
@@ -111,9 +114,9 @@ class RecruitmentControllerTestForFindAll {
             //no1: 단기 + static 이미지 + 참여자 1명(승인)   -> 총 5개 저장
             //no2: 장기 + upload 이미지 + 참여자 1명(미승인)  -> 총 5개 저장
             RecruitmentParam saveRecruitDto1 = new RecruitmentParam(category1, organizationName, sido1, sigungu1, details, latitude, longitude,
-                    isIssued1, volunteerType1, volunteerNum, volunteeringType1, startDay, endDay, startTime, progressTime, title, content, isPublished);
+                    isIssued1, volunteerType1, volunteerNum, volunteeringType1, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
             RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2, details, latitude, longitude,
-                    isIssued2, volunteerType2, volunteerNum, volunteeringType2, startDay, endDay, startTime, progressTime, title, content, isPublished);
+                    isIssued2, volunteerType2, volunteerNum, volunteeringType2, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
             Long no1 = recruitmentService.addRecruitment(saveRecruitDto1);
             Long no2 = recruitmentService.addRecruitment(saveRecruitDto2);
 

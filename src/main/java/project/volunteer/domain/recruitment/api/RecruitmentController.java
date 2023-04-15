@@ -54,7 +54,7 @@ public class RecruitmentController {
 
             //스케줄 자동 할당
             scheduleService.addRegSchedule(recruitmentNo,
-                    new ScheduleParamReg(form.getStartDay(), form.getEndDay(), form.getStartTime(), form.getProgressTime(),
+                    new ScheduleParamReg(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
                             form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
                             form.getContent(), periodParam));
         }

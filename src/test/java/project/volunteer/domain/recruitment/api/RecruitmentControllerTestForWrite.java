@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -18,9 +19,12 @@ import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
@@ -28,7 +32,6 @@ import javax.persistence.PersistenceContext;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -65,7 +68,8 @@ class RecruitmentControllerTestForWrite {
     final String volunteeringType2 = VolunteeringType.REG.name();
     final String startDay = "01-01-2000";
     final String endDay = "01-01-2000";
-    final String startTime = "10:00:00";
+    final String hourFormat = HourFormat.AM.name();
+    final String startTime = "10:00";
     final int progressTime = 10;
     final String title = "title";
     final String content = "content";
@@ -73,10 +77,9 @@ class RecruitmentControllerTestForWrite {
     final String period1 =""; //비정기
     final String period2 = "week"; //정기-매주
     final String period3 = "month"; //정기-매달
-    final String week1and2 = ""; //비정기, 정기-매주
-    final String week3 = "first"; //정기-매달
-    final List<String> days1 = new ArrayList<>(); //비정기
-    final List<String> days2 = List.of("mon","tues"); //정기-매주, 정기-매달
+    final int week1and2 = 0; //비정기, 정기-매주
+    final int week3 = Week.FIRST.getValue(); //정기-매달
+    final List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue()); //정기-매주, 정기-매달
     final String sido = "11";
     final String sigungu = "11011";
     final String details = "details";
@@ -103,6 +106,7 @@ class RecruitmentControllerTestForWrite {
         info.add("volunteerNum", String.valueOf(volunteerNum));
         info.add("startDay", startDay);
         info.add("endDay", endDay);
+        info.add("hourFormat", hourFormat);
         info.add("startTime", startTime);
         info.add("progressTime", String.valueOf(progressTime));
         info.add("title", title);
@@ -138,8 +142,8 @@ class RecruitmentControllerTestForWrite {
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType", volunteeringType1); //비정기
         info.add("period", period1); //비정기
-        info.add("week", week1and2); //비정기
-        info.add("days", String.valueOf(days1)); //비정기
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -159,9 +163,9 @@ class RecruitmentControllerTestForWrite {
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType", volunteeringType2); //정기
         info.add("period", period2); //정기-매주
-        info.add("week", week1and2); //정기-매주
-        info.add("days[0]", days2.get(0)); //정기-매주
-        info.add("days[1]", days2.get(1)); //정기-매주
+        info.add("week", String.valueOf(week1and2)); //정기-매주
+        info.add("days[0]", String.valueOf(days.get(0))); //정기-매주
+        info.add("days[1]", String.valueOf(days.get(1))); //정기-매주
         info.add("picture.type", String.valueOf(type2)); //업로드 이미지
         info.add("picture.staticImage", staticImage2); //업로드 이미지
 
@@ -187,9 +191,9 @@ class RecruitmentControllerTestForWrite {
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType", volunteeringType2); //정기
         info.add("period", period3); //정기-매달
-        info.add("week", week3); //정기-매달
-        info.add("days[0]", days2.get(0)); //정기-매달
-        info.add("days[1]", days2.get(1)); //정기-매달
+        info.add("week", String.valueOf(week3)); //정기-매달
+        info.add("days[0]", String.valueOf(days.get(0))); //정기-매달
+        info.add("days[1]", String.valueOf(days.get(1))); //정기-매달
         info.add("picture.type", String.valueOf(type2)); //업로드 이미지
         info.add("picture.staticImage", staticImage2); //업로드 이미지
 
@@ -232,8 +236,8 @@ class RecruitmentControllerTestForWrite {
         info.add("address.longitude", String.valueOf(longitude));
         info.add("volunteeringType",volunteeringType1);
         info.add("period", period1);
-        info.add("week", week1and2); //비정기
-        info.add("days", String.valueOf(days1)); //비정기
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -253,8 +257,8 @@ class RecruitmentControllerTestForWrite {
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType", ""); // -> null & 빈 값 허용안함
         info.add("period", period1); //비정기
-        info.add("week", week1and2); //비정기
-        info.add("days", String.valueOf(days1)); //비정기
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -274,8 +278,8 @@ class RecruitmentControllerTestForWrite {
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType", "testtesttest"); // -> length 초과
         info.add("period", period1); //비정기
-        info.add("week", week1and2); //비정기
-        info.add("days", String.valueOf(days1)); //비정기
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days",""); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -295,8 +299,8 @@ class RecruitmentControllerTestForWrite {
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType",volunteeringType1);
         info.add("period", null); // -> null 허용하지 않음
-        info.add("week", week1and2); //비정기
-        info.add("days", String.valueOf(days1)); //비정기
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -333,8 +337,8 @@ class RecruitmentControllerTestForWrite {
         info.add("address.longitude", String.valueOf(longitude));
         info.add("volunteeringType",volunteeringType1);
         info.add("period", period1);
-        info.add("week", week1and2); //정기
-        info.add("days", String.valueOf(days1)); //정기
+        info.add("week", String.valueOf(week1and2)); //정기
+        info.add("days", ""); //정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 

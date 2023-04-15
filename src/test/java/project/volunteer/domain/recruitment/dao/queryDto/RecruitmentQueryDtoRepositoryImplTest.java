@@ -17,6 +17,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.EntityManager;
@@ -47,7 +48,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String content = "content";
         int volunteerNum = 10;
         String organizationName = "organization";
-        Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), LocalTime.now(), 10);
+        Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Boolean isPublished = true;
 
         //필터링 조건

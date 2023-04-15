@@ -72,6 +72,7 @@ public class ScheduleServiceImpl implements ScheduleService{
                     Timetable timetable = Timetable.builder()
                             .startDay(date)
                             .endDay(date)
+                            .hourFormat(dto.getTimetable().getHourFormat())
                             .startTime(dto.getTimetable().getStartTime())
                             .progressTime(dto.getTimetable().getProgressTime())
                             .build();

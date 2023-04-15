@@ -45,6 +45,10 @@ public class RecruitmentRequest {
     @NotEmpty(message = "필수 입력값입니다.")
     private String endDay;
 
+    @Length(max = 2)
+    @NotEmpty(message = "필수 입력값입니다.")
+    private String hourFormat;
+
     @NotEmpty(message = "필수 입력값입니다.")
     private String startTime;
 
@@ -55,12 +59,12 @@ public class RecruitmentRequest {
     @NotNull(message = "널을 허용하지 않습니다.")
     private String period;
 
-    @Length(max = 10)
+    @Range(min = 0, max = 5)
     @NotNull(message = "널을 허용하지 않습니다.")
-    private String week;
+    private Integer week;
 
     @NotNull(message = "널을 허용하지 않습니다.")
-    private List<String> days;
+    private List<Integer> days;
 
     private PictureRequest picture;
 
