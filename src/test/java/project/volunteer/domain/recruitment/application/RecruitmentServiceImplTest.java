@@ -4,13 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.Day;
@@ -24,7 +24,6 @@ import project.volunteer.domain.user.domain.User;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -52,38 +51,29 @@ class RecruitmentServiceImplTest {
     @Autowired
     UserRepository userRepository;
 
-    private static final String nickname = "nickname";
-    private static final String email = "email@gmail.com";
-    private static final Gender gender = Gender.M;
-    private static final LocalDate birth = LocalDate.now();
-    private static final String picture = "picture";
-    private static final Boolean alarm = true;
     private void clear() {
         em.flush();
         em.clear();
     }
     @BeforeEach
-    private void signUpAndSetAuthentication() {
+    private void initUser() {
+        final String nickname = "nickname";
+        final String email = "email@gmail.com";
+        final Gender gender = Gender.M;
+        final LocalDate birth = LocalDate.now();
+        final String picture = "picture";
+        final Boolean alarm = true;
 
         userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
-
-        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
-        emptyContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(
-                                email,"temp",new ArrayList<>())
-                       , null
-                )
-        );
-        SecurityContextHolder.setContext(emptyContext);
+                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
+                .provider("kakao").providerId("1234").build());
         clear();
     }
 
     @Test
-    public void 모집글_작성_저장_성공_단기(){
-
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    public void 모집글_작성_저장_성공_비정기(){
         //given
         String category = "001";
         String organizationName ="name";
@@ -94,7 +84,7 @@ class RecruitmentServiceImplTest {
         Boolean isIssued = true;
         String volunteerType = "1"; //all
         Integer volunteerNum = 5;
-        String volunteeringType = "short";
+        String volunteeringType = VolunteeringType.IRREG.name();
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
         String startTime = "01:01:00";
@@ -118,7 +108,8 @@ class RecruitmentServiceImplTest {
     }
 
     @Test
-    public void 모집글_작성_저장_성공_장기_매주() {
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    public void 모집글_작성_저장_성공_정기_매주() {
         //given
         String category = "001";
         String organizationName ="name";
@@ -129,7 +120,7 @@ class RecruitmentServiceImplTest {
         Boolean isIssued = true;
         String volunteerType = "1"; //all
         Integer volunteerNum = 5;
-        String volunteeringType = "long";
+        String volunteeringType = VolunteeringType.REG.name();
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
         String startTime = "01:01:00";
@@ -160,7 +151,8 @@ class RecruitmentServiceImplTest {
     }
 
     @Test
-    public void 모집글_작성_저장_성공_장기_매월(){
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    public void 모집글_작성_저장_성공_정기_매월(){
         //given
         String category = "001";
         String organizationName ="name";
@@ -171,7 +163,7 @@ class RecruitmentServiceImplTest {
         Boolean isIssued = true;
         String volunteerType = "1"; //all
         Integer volunteerNum = 5;
-        String volunteeringType = "long";
+        String volunteeringType = VolunteeringType.REG.name();
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
         String startTime = "01:01:00";

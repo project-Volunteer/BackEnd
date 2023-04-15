@@ -40,8 +40,8 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         //1. SecurityUtil 를 통해서 사용자 정보 가져오기 및 예외 처리
         //2. 연관관계 세팅
         //추후 수정 필요 (임시)
-        recruitment.setWriter(userRepository.findByEmail(SecurityUtil.getLoginUserEmail())
-                .orElseThrow(()-> new NullPointerException(String.format("Not found userEmail=[%s]", SecurityUtil.getLoginUserEmail()))));
+        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserNo())
+                .orElseThrow(()-> new NullPointerException(String.format("Not found userEmail=[%s]", SecurityUtil.getLoginUserNo()))));
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }

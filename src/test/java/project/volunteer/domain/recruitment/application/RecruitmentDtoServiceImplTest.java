@@ -7,9 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
@@ -24,6 +23,7 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.storage.domain.Storage;
@@ -56,16 +56,13 @@ class RecruitmentDtoServiceImplTest {
     @Autowired RecruitmentRepository recruitmentRepository;
 
     private Recruitment saveRecruitment;
+    private Long userNo;
     private List<Long> deleteImageNo = new ArrayList<>();
     private void clear() {
         em.flush();
         em.clear();
     }
-    @BeforeEach
-    public void init() throws IOException {
-        //작성자 임시 로그인
-        Long userNo = initLogin();
-
+    private void setMockUpData() throws IOException {
         //모집글 저장 및 반복 주기 저장
         addRecruitment();
 
@@ -76,49 +73,18 @@ class RecruitmentDtoServiceImplTest {
 
         //유저 임시 회원가입, 이미지 업로드, 참여자 등록
         initParticipant();
-
-        clear();
     }
-    @AfterEach
-    public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
-        for(Long id : deleteImageNo){
-            Image image = imageRepository.findById(id).get();
-            Storage storage = image.getStorage();
-            fileService.deleteFile(storage.getFakeImageName());
-        }
-    }
-    private Long initLogin(){
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-        User saveUser = userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
-        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
-        emptyContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(
-                                email,"temp",new ArrayList<>())
-                        , null
-                )
-        );
-        SecurityContextHolder.setContext(emptyContext);
-        return saveUser.getUserNo();
-    }
-    private void addRecruitment(){
+    private void addRecruitment() {
         //모집글 저장
         String category = "001";
-        String volunteeringType = "long";
+        String volunteeringType = VolunteeringType.REG.name();
         String volunteerType = "1"; //all
         Boolean isIssued = true;
         String sido = "11";
         String sigungu = "1111";
-        String organizationName ="name";
+        String organizationName = "name";
         String details = "details";
-        Float latitude = 3.2F , longitude = 3.2F;
+        Float latitude = 3.2F, longitude = 3.2F;
         Integer volunteerNum = 5;
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
@@ -133,12 +99,12 @@ class RecruitmentDtoServiceImplTest {
         //모집글 반복주기 저장(장기-매달)
         String period = "month";
         String week = "first";
-        List<String> days = List.of("mon","tues");
+        List<String> days = List.of("mon", "tues");
         RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
         repeatPeriodService.addRepeatPeriod(no, savePeriodDto);
 
         saveRecruitment = recruitmentRepository.findById(no).get();
-}
+    }
     private void addImage(RealWorkCode realWorkCode, Long no) throws IOException {
         ImageParam staticImageDto = ImageParam.builder()
                 .code(realWorkCode)
@@ -166,7 +132,8 @@ class RecruitmentDtoServiceImplTest {
             String nickname = "nickname"+i;
             User saveUser = userRepository.save(User.builder().nickName(nickname)
                     .email(email).gender(gender).birthDay(birth).picture(picture)
-                    .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
+                    .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
+                    .provider("kakao").providerId("1234").build());
 
             //임시 사용자 이미지 업로드
             if(i%2==0)
@@ -177,9 +144,35 @@ class RecruitmentDtoServiceImplTest {
             participantRepository.save(participant);
         }
     }
-
+    @BeforeEach
+    public void initUser() throws IOException {
+        final String nickname = "nickname";
+        final String email = "email@gmail.com";
+        final Gender gender = Gender.M;
+        final LocalDate birth = LocalDate.now();
+        final String picture = "picture";
+        final Boolean alarm = true;
+        userNo = userRepository.save(User.builder().nickName(nickname)
+                        .email(email).gender(gender).birthDay(birth).picture(picture)
+                        .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
+                        .provider("kakao").providerId("1234").build())
+                .getUserNo();
+        clear();
+    }
+    @AfterEach
+    public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
+        for(Long id : deleteImageNo){
+            Image image = imageRepository.findById(id).get();
+            Storage storage = image.getStorage();
+            fileService.deleteFile(storage.getFakeImageName());
+        }
+    }
     @Test
-    public void 모집글_상세조회_성공(){
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    public void 모집글_상세조회_성공() throws IOException {
+        //init
+        setMockUpData();
+
         //given & when
         RecruitmentDetails recruitment = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
 

@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,6 +17,7 @@ import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -62,8 +61,8 @@ class RecruitmentControllerTestForWrite {
     final Boolean isIssued = true;
     final String volunteerType = "1"; //all
     final int volunteerNum = 5;
-    final String volunteeringType1 = "short";
-    final String volunteeringType2 = "long";
+    final String volunteeringType1 = VolunteeringType.IRREG.name();
+    final String volunteeringType2 = VolunteeringType.REG.name();
     final String startDay = "01-01-2000";
     final String endDay = "01-01-2000";
     final String startTime = "10:00:00";
@@ -71,13 +70,13 @@ class RecruitmentControllerTestForWrite {
     final String title = "title";
     final String content = "content";
     final Boolean isPublished = true;
-    final String period1 =""; //단기
-    final String period2 = "week"; //장기-매주
-    final String period3 = "month"; //장기-매달
-    final String week1and2 = ""; //단기, 장기-매주
-    final String week3 = "first"; //장기-매달
-    final List<String> days1 = new ArrayList<>(); //단기
-    final List<String> days2 = List.of("mon","tues"); //장기-매주, 장기-매달
+    final String period1 =""; //비정기
+    final String period2 = "week"; //정기-매주
+    final String period3 = "month"; //정기-매달
+    final String week1and2 = ""; //비정기, 정기-매주
+    final String week3 = "first"; //정기-매달
+    final List<String> days1 = new ArrayList<>(); //비정기
+    final List<String> days2 = List.of("mon","tues"); //정기-매주, 정기-매달
     final String sido = "11";
     final String sigungu = "11011";
     final String details = "details";
@@ -127,28 +126,20 @@ class RecruitmentControllerTestForWrite {
         final Boolean alarm = true;
         userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
-
-        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
-        emptyContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(
-                                email,"temp",new ArrayList<>())
-                        , null
-                )
-        );
-        SecurityContextHolder.setContext(emptyContext);
+                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
+                .provider("kakao").providerId("1234").build());
         clear();
     }
 
     @Test
-    public void 모집글_단기_정적이미지_등록_성공() throws Exception {
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    public void 모집글_비정기_정적이미지_등록_성공() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();
-        info.add("volunteeringType", volunteeringType1); //단기
-        info.add("period", period1); //단기
-        info.add("week", week1and2); //단기
-        info.add("days", String.valueOf(days1)); //단기
+        info.add("volunteeringType", volunteeringType1); //비정기
+        info.add("period", period1); //비정기
+        info.add("week", week1and2); //비정기
+        info.add("days", String.valueOf(days1)); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -162,14 +153,15 @@ class RecruitmentControllerTestForWrite {
                 .andDo(print());
     }
     @Test
-    public void 모집글_장기_매주_업로드이미지_등록_성공() throws Exception {
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_정기_매주_업로드이미지_등록_성공() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();
-        info.add("volunteeringType", volunteeringType2); //장기
-        info.add("period", period2); //장기-매주
-        info.add("week", week1and2); //장기-매주
-        info.add("days[0]", days2.get(0)); //장기-매주
-        info.add("days[1]", days2.get(1)); //장기-매주
+        info.add("volunteeringType", volunteeringType2); //정기
+        info.add("period", period2); //정기-매주
+        info.add("week", week1and2); //정기-매주
+        info.add("days[0]", days2.get(0)); //정기-매주
+        info.add("days[1]", days2.get(1)); //정기-매주
         info.add("picture.type", String.valueOf(type2)); //업로드 이미지
         info.add("picture.staticImage", staticImage2); //업로드 이미지
 
@@ -189,14 +181,15 @@ class RecruitmentControllerTestForWrite {
     }
 
     @Test
-    public void 모집글_장기_매달_업로드이미지_등록_성공() throws Exception {
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_정기_매달_업로드이미지_등록_성공() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();
-        info.add("volunteeringType", volunteeringType2); //장기
-        info.add("period", period3); //장기-매달
-        info.add("week", week3); //장기-매달
-        info.add("days[0]", days2.get(0)); //장기-매달
-        info.add("days[1]", days2.get(1)); //장기-매달
+        info.add("volunteeringType", volunteeringType2); //정기
+        info.add("period", period3); //정기-매달
+        info.add("week", week3); //정기-매달
+        info.add("days[0]", days2.get(0)); //정기-매달
+        info.add("days[1]", days2.get(1)); //정기-매달
         info.add("picture.type", String.valueOf(type2)); //업로드 이미지
         info.add("picture.staticImage", staticImage2); //업로드 이미지
 
@@ -216,6 +209,7 @@ class RecruitmentControllerTestForWrite {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_저장_실패_없은카테고리코드() throws Exception {
         //given
         MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
@@ -238,8 +232,8 @@ class RecruitmentControllerTestForWrite {
         info.add("address.longitude", String.valueOf(longitude));
         info.add("volunteeringType",volunteeringType1);
         info.add("period", period1);
-        info.add("week", week1and2); //단기
-        info.add("days", String.valueOf(days1)); //단기
+        info.add("week", week1and2); //비정기
+        info.add("days", String.valueOf(days1)); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -253,13 +247,14 @@ class RecruitmentControllerTestForWrite {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글폼_유효성검사_NotEmpty() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType", ""); // -> null & 빈 값 허용안함
-        info.add("period", period1); //단기
-        info.add("week", week1and2); //단기
-        info.add("days", String.valueOf(days1)); //단기
+        info.add("period", period1); //비정기
+        info.add("week", week1and2); //비정기
+        info.add("days", String.valueOf(days1)); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -273,13 +268,14 @@ class RecruitmentControllerTestForWrite {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글폼_유효성검사_Length() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType", "testtesttest"); // -> length 초과
-        info.add("period", period1); //단기
-        info.add("week", week1and2); //단기
-        info.add("days", String.valueOf(days1)); //단기
+        info.add("period", period1); //비정기
+        info.add("week", week1and2); //비정기
+        info.add("days", String.valueOf(days1)); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -293,13 +289,14 @@ class RecruitmentControllerTestForWrite {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글폼_유효성검사_NotNull() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();
         info.add("volunteeringType",volunteeringType1);
         info.add("period", null); // -> null 허용하지 않음
-        info.add("week", week1and2); //단기
-        info.add("days", String.valueOf(days1)); //단기
+        info.add("week", week1and2); //비정기
+        info.add("days", String.valueOf(days1)); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -313,6 +310,7 @@ class RecruitmentControllerTestForWrite {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글폼_유효성검사_Range() throws Exception {
         //given
         MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
@@ -335,8 +333,8 @@ class RecruitmentControllerTestForWrite {
         info.add("address.longitude", String.valueOf(longitude));
         info.add("volunteeringType",volunteeringType1);
         info.add("period", period1);
-        info.add("week", week1and2); //단기
-        info.add("days", String.valueOf(days1)); //단기
+        info.add("week", week1and2); //정기
+        info.add("days", String.valueOf(days1)); //정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 

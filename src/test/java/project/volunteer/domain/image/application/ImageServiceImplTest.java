@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
@@ -17,6 +16,7 @@ import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -27,7 +27,6 @@ import javax.persistence.EntityManager;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 @SpringBootTest
 @Transactional
@@ -49,29 +48,7 @@ class ImageServiceImplTest {
         return new MockMultipartFile(
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
-    @BeforeEach
-    private void signUpAndSetAuthenticationAndSaveRecruitment() {
-
-        String nickname = "nickname";
-        String email = "email@gmail.com";
-        Gender gender = Gender.M;
-        LocalDate birth = LocalDate.now();
-        String picture = "picture";
-        Boolean alarm = true;
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
-
-        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
-        emptyContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(
-                                email,"temp",new ArrayList<>())
-                        , null
-                )
-        );
-        SecurityContextHolder.setContext(emptyContext);
-
+    private void setDate(){
         String category = "001";
         String organizationName ="name";
         String sido = "11";
@@ -81,7 +58,7 @@ class ImageServiceImplTest {
         Boolean isIssued = true;
         String volunteerType = "1"; //all
         Integer volunteerNum = 5;
-        String volunteeringType = "short";
+        String volunteeringType = VolunteeringType.IRREG.name();
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
         String startTime = "01:01:00";
@@ -91,12 +68,30 @@ class ImageServiceImplTest {
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
+        clear();
+    }
+    @BeforeEach
+    private void initUser() {
 
+        String nickname = "nickname";
+        String email = "email@gmail.com";
+        Gender gender = Gender.M;
+        LocalDate birth = LocalDate.now();
+        String picture = "picture";
+        Boolean alarm = true;
+        userRepository.save(User.builder().nickName(nickname)
+                .email(email).gender(gender).birthDay(birth).picture(picture)
+                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
+                .provider("kakao").providerId("1234").build());
         clear();
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_이미지_저장_실패_없는모집글PK() {
+        //init
+        setDate();
+
         //given
         ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
@@ -111,7 +106,11 @@ class ImageServiceImplTest {
                 .isInstanceOf(NullPointerException.class);
     }
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_정적_이미지_저장_성공() throws IOException {
+        //init
+        setDate();
+
         //given
         ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
@@ -135,7 +134,11 @@ class ImageServiceImplTest {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_업로드_이미지_저장_성공() throws IOException {
+        //init
+        setDate();
+
         //given
         ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)

@@ -5,10 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
@@ -20,17 +18,11 @@ import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import java.sql.Time;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -48,31 +40,7 @@ class ScheduleServiceImplTest {
         em.flush();
         em.clear();
     }
-    @BeforeEach
-    private void signUpAndSetAuthenticationAndSaveRecruitment() {
-
-        //임시 유저 회원가입 및 인증
-        String nickname = "nickname";
-        String email = "email@gmail.com";
-        Gender gender = Gender.M;
-        LocalDate birth = LocalDate.now();
-        String picture = "picture";
-        Boolean alarm = true;
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
-
-        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
-        emptyContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(
-                                email,"temp",new ArrayList<>())
-                        , null
-                )
-        );
-        SecurityContextHolder.setContext(emptyContext);
-
+    private void setMockUpData(){
         //임시 모집글 등록
         String category = "001";
         String organizationName ="name";
@@ -93,13 +61,30 @@ class ScheduleServiceImplTest {
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
-
+        clear();
+    }
+    @BeforeEach
+    private void initUser() {
+        //임시 유저 회원가입 및 인증
+        String nickname = "nickname";
+        String email = "email@gmail.com";
+        Gender gender = Gender.M;
+        LocalDate birth = LocalDate.now();
+        String picture = "picture";
+        Boolean alarm = true;
+        userRepository.save(User.builder().nickName(nickname)
+                .email(email).gender(gender).birthDay(birth).picture(picture)
+                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
+                .provider("kakao").providerId("1234").build());
         clear();
     }
 
     @Test
-    @Rollback(value = false)
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 스케줄_등록_성공() {
+        //init
+        setMockUpData();
+
         //given
         String startDay = "01-01-2000";
         String startTime = "01:01:00";
@@ -127,7 +112,11 @@ class ScheduleServiceImplTest {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 스케줄_등록_실패_없는모집글() {
+        //init
+        setMockUpData();
+
         //given
         String startDay = "01-01-2000";
         String startTime = "01:01:00";
@@ -146,7 +135,11 @@ class ScheduleServiceImplTest {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 정기모집글_스케줄_자동생성_매달_성공(){
+        //init
+        setMockUpData();
+
         //given
         String startDay = "12-01-2022";
         String endDay = "02-01-2023";
@@ -179,7 +172,11 @@ class ScheduleServiceImplTest {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 정기모집글_스케줄_자동생성_매주_성공(){
+        //init
+        setMockUpData();
+
         //given
         String startDay = "12-01-2022";
         String endDay = "01-10-2023";
