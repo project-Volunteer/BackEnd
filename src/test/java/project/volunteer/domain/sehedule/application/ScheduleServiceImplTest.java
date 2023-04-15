@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
@@ -180,14 +181,15 @@ class ScheduleServiceImplTest {
     }
 
     @Test
+    @Rollback(value = false)
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 정기모집글_스케줄_자동생성_매주_성공(){
         //init
         setMockUpData();
 
         //given
-        String startDay = "12-01-2022";
-        String endDay = "01-10-2023";
+        String startDay = "01-06-2023";
+        String endDay = "02-01-2023";
         String hourFormat = HourFormat.AM.name();
         String startTime = "01:01";
         Integer progressTime = 3;
@@ -198,7 +200,7 @@ class ScheduleServiceImplTest {
         String details = "details";
         String period = "week"; //매주
         int week = 0;
-        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
+        List<Integer> days = List.of(Day.SAT.getValue(), Day.MON.getValue());
         RepeatPeriodParam periodParam = new RepeatPeriodParam(period, week, days);
         ScheduleParamReg reg = ScheduleParamReg.builder()
                 .startDay(startDay)

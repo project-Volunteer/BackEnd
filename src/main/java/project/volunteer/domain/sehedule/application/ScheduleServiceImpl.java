@@ -100,24 +100,14 @@ public class ScheduleServiceImpl implements ScheduleService{
                .map(day -> DateUtil.findNearestDayOfWeek(startDay, day))
                .collect(Collectors.toList());
        List<LocalDate> newSchedule = new ArrayList<>();
-       List<LocalDate> removeList  = new ArrayList<>();
 
-       while(!init.isEmpty()){
-           for(LocalDate date : init){
-               if(!DateUtil.isBefore(date, endDay)) {
-                   removeList.add(date);
-               }else {
-                   //스케줄 예정 날짜로 추가
-                   LocalDate newScheduleDate = LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
-                   newSchedule.add(newScheduleDate);
-                   //한주 증가(업데이트)
-                   init.set(init.indexOf(date),  DateUtil.nextWeek(date));
-               }
-           }
-           //마감 날짜 이후인 스케줄 일정 삭제
-           if(!removeList.isEmpty()) {
-               removeList.stream().forEach(date -> init.remove(date));
-               removeList.clear();
+       //마감 날짜까지 반복
+       for(int index=0; index<init.size(); index++){
+           LocalDate startScheduleDate = init.get(index);
+           for(LocalDate start=startScheduleDate; DateUtil.isBefore(start, endDay); start=DateUtil.nextWeek(start)){
+               //스케줄 예정 날짜로 추가
+               LocalDate newScheduleDate = LocalDate.of(start.getYear(), start.getMonthValue(), start.getDayOfMonth());
+               newSchedule.add(newScheduleDate);
            }
        }
        return newSchedule;
