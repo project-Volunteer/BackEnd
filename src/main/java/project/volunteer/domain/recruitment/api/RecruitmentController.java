@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -63,7 +64,8 @@ public class RecruitmentController {
         imageService.addImage(
                 new ImageParam(RealWorkCode.RECRUITMENT, recruitmentNo, form.getPicture()));
 
-        return ResponseEntity.ok(new RecruitmentSaveResponse("success save recruitment",recruitmentNo));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new RecruitmentSaveResponse("success save recruitment",recruitmentNo));
     }
 
     @GetMapping("/recruitment")

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -153,7 +154,7 @@ class RecruitmentControllerTestForWrite {
                         .file(getFakeMockMultipartFile()) //정적이미지
                         .params(info)
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print());
     }
     @Test
@@ -175,7 +176,7 @@ class RecruitmentControllerTestForWrite {
                         .file(getRealMockMultipartFile()) //업로드 이미지
                         .params(info)
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         //finally(s3 업로드 이미지 삭제)
         //테스트 코드에서 저장한 모집글 게시물은 하나니깐 전체 조회해도 반드시 하나만 나올것이다. (좋지 않은 코드 같은데...)
@@ -203,7 +204,7 @@ class RecruitmentControllerTestForWrite {
                                 .file(getRealMockMultipartFile()) //업로드 이미지
                                 .params(info)
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         //finally(s3 업로드 이미지 삭제)
         //테스트 코드에서 저장한 모집글 게시물은 하나니깐 전체 조회해도 반드시 하나만 나올것이다. (좋지 않은 코드 같은데...)
