@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @ToString
-public class RepeatPeriodDto {
+public class RepeatPeriodDetails {
 
     private String period;
     private String week;
     private List<String> days;
 
-    public RepeatPeriodDto(Period period, Week week, List<Day> days){
+    public RepeatPeriodDetails(Period period, Week week, List<Day> days){
         this.period = period.getViewName();
         this.week = week.getViewName();
         this.days = days.stream()

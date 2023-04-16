@@ -7,22 +7,21 @@ import java.util.Arrays;
 @Getter
 public enum Week {
 
-    FIRST("첫째주"), SECOND("둘째주"), THIRD("셋째주"), FOUR("넷째주"), FIVE("다섯째주"), SIX("여섯째주");
+    FIRST(1,"첫째주"), SECOND(2,"둘째주"), THIRD(3, "셋째주"), FOUR(4, "넷째주"),
+    FIVE(5,"다섯째주"), SIX(6,"여섯째주");
 
+    private final Integer value;
     private final String viewName;
-    Week(String label) {
+    Week(int value, String label) {
+        this.value = value;
         this.viewName = label;
     }
 
-    public String getViewName(){
-        return viewName;
-    }
-
-    public static Week of(String value) {
-
+    public static Week ofValue(int value){
         return Arrays.stream(Week.values())
-                .filter(v -> v.name().equals(value.toUpperCase()))
+                .filter(v -> v.getValue().equals(value))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match week=[%s]",value)));
     }
+
 }

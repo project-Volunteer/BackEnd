@@ -3,8 +3,8 @@ package project.volunteer.domain.recruitment.api.dto.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
-import project.volunteer.domain.recruitment.dto.PictureDto;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
+import project.volunteer.domain.recruitment.dto.PictureDetails;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecruitmentListDto {
+public class RecruitmentList {
     private Long no;
-    private PictureDto picture;
+    private PictureDetails picture;
     private String title;
     private String sido;
     private String sigungu;
@@ -29,9 +29,9 @@ public class RecruitmentListDto {
     private List<String> repeatDay;
     private String volunteerType;
 
-    public RecruitmentListDto(RecruitmentQueryDto recruitmentDto) {
+    public RecruitmentList(RecruitmentListQuery recruitmentDto) {
         this.no = recruitmentDto.getNo();
-        this.picture = new PictureDto(recruitmentDto.getStaticImage(), recruitmentDto.getUploadImage());
+        this.picture = new PictureDetails(recruitmentDto.getStaticImage(), recruitmentDto.getUploadImage());
         this.title = recruitmentDto.getTitle();
         this.sido = recruitmentDto.getSido();
         this.sigungu = recruitmentDto.getSigungu();

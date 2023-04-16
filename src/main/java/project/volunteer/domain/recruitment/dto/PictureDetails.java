@@ -5,20 +5,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.util.StringUtils;
-import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class PictureDto {
+public class PictureDetails {
 
     private Integer type;
     private String staticImage;
     private String uploadImage;
 
-    public PictureDto(String staticImage, String uploadImage){
+    public PictureDetails(String staticImage, String uploadImage){
 
         if(StringUtils.hasText(staticImage))
             this.type = ImageType.STATIC.getValue();

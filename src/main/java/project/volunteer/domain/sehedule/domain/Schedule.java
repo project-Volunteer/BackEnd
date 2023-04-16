@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
+import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
@@ -23,24 +24,10 @@ public class Schedule extends BaseTimeEntity {
     private Long scheduleNo;
     @Embedded
     private Timetable scheduleTimeTable;
-
-
-
     @Column(name = "organization_name", length = 50, nullable = false)
     private String organizationName;
-
-    @Column(length = 5,nullable = false)
-    private String sido;
-
-    @Column(length = 10, nullable = false)
-    private String sigungu;
-
-    @Column(length = 50)
-    private String details;
-
-
-
-
+    @Embedded
+    private Address address;
     @Column(length = 50)
     private String content;
 
@@ -53,13 +40,11 @@ public class Schedule extends BaseTimeEntity {
     private Recruitment recruitment;
 
     @Builder
-    public Schedule(Timetable timetable, String content,String organizationName,  String sido, String sigungu, String details) {
+    public Schedule(Timetable timetable, String content,String organizationName,  Address address) {
         this.scheduleTimeTable = timetable;
         this.content = content;
         this.organizationName = organizationName;
-        this.sido = sido;
-        this.sigungu = sigungu;
-        this.details = details;
+        this.address = address;
     }
 
     public void setRecruitment(Recruitment recruitment) {

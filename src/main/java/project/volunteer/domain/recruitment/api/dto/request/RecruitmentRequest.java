@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaveRecruitForm {
+public class RecruitmentRequest {
 
     @Length(min=1, max = 30)
     @NotEmpty(message = "필수 입력값입니다.")
@@ -23,7 +23,7 @@ public class SaveRecruitForm {
     @NotEmpty(message = "필수 입력값입니다.")
     private String organizationName;
 
-    private SaveRecruitAddressForm address;
+    private AddressRequest address;
 
     @NotNull(message = "널을 허용하지 않습니다.")
     private Boolean isIssued;
@@ -45,6 +45,10 @@ public class SaveRecruitForm {
     @NotEmpty(message = "필수 입력값입니다.")
     private String endDay;
 
+    @Length(max = 2)
+    @NotEmpty(message = "필수 입력값입니다.")
+    private String hourFormat;
+
     @NotEmpty(message = "필수 입력값입니다.")
     private String startTime;
 
@@ -55,14 +59,14 @@ public class SaveRecruitForm {
     @NotNull(message = "널을 허용하지 않습니다.")
     private String period;
 
-    @Length(max = 10)
+    @Range(min = 0, max = 5)
     @NotNull(message = "널을 허용하지 않습니다.")
-    private String week;
+    private Integer week;
 
     @NotNull(message = "널을 허용하지 않습니다.")
-    private List<String> days;
+    private List<Integer> days;
 
-    private SaveRecruitPictureForm picture;
+    private PictureRequest picture;
 
     @Length(min = 1, max = 255)
     @NotEmpty(message = "필수 입력값입니다.")

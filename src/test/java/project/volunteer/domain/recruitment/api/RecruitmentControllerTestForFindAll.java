@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,20 +18,23 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.application.dto.SaveImageDto;
+import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
@@ -65,6 +67,7 @@ class RecruitmentControllerTestForFindAll {
     @Autowired MockMvc mockMvc;
 
     private static final String FINDALL_URL = "/recruitment";
+    private static User saveUser;
     private List<Long> deletePlanS3ImageNo = new ArrayList<>();
     private void clear() {
         em.flush();
@@ -74,34 +77,12 @@ class RecruitmentControllerTestForFindAll {
         return new MockMultipartFile(
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
-    @BeforeEach
-    public void init() throws IOException {
-        //유저 임시 로그인
-        final String name = "name";
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-        User saveUser = userRepository.save(User.builder().name(name).nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
-        SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
-        emptyContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(
-                                email,"temp",new ArrayList<>())
-                        , null
-                )
-        );
-        SecurityContextHolder.setContext(emptyContext);
-
+    private void setData() throws IOException {
         //모집글 데이터
         String category1 = "001";
         String category2 = "002";
-        String volunteeringType1 = "short";
-        String volunteeringType2 = "long";
+        String volunteeringType1 = VolunteeringType.IRREG.name();
+        String volunteeringType2 = VolunteeringType.REG.name();
         String volunteerType1 = "1"; //all
         String volunteerType2 = "3"; //teenager
         Boolean isIssued1 = true;
@@ -116,34 +97,35 @@ class RecruitmentControllerTestForFindAll {
         Integer volunteerNum = 5;
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
-        String startTime = "01:01:00";
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
         Integer progressTime = 3;
         String title = "title", content = "content";
         Boolean isPublished = true;
 
         //반복 주기 데이터
         String period = "week";
-        String week = "";
-        List<String> days = List.of("mon","tues");
+        int week = 0;
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
 
         for(int i=0;i<5;i++){
 
             //모집글 저장
             //no1: 단기 + static 이미지 + 참여자 1명(승인)   -> 총 5개 저장
             //no2: 장기 + upload 이미지 + 참여자 1명(미승인)  -> 총 5개 저장
-            SaveRecruitDto saveRecruitDto1 = new SaveRecruitDto(category1, organizationName, sido1, sigungu1, details, latitude, longitude,
-                    isIssued1, volunteerType1, volunteerNum, volunteeringType1, startDay, endDay, startTime, progressTime, title, content, isPublished);
-            SaveRecruitDto saveRecruitDto2 = new SaveRecruitDto(category2, organizationName, sido2, sigungu2, details, latitude, longitude,
-                    isIssued2, volunteerType2, volunteerNum, volunteeringType2, startDay, endDay, startTime, progressTime, title, content, isPublished);
+            RecruitmentParam saveRecruitDto1 = new RecruitmentParam(category1, organizationName, sido1, sigungu1, details, latitude, longitude,
+                    isIssued1, volunteerType1, volunteerNum, volunteeringType1, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
+            RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2, details, latitude, longitude,
+                    isIssued2, volunteerType2, volunteerNum, volunteeringType2, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
             Long no1 = recruitmentService.addRecruitment(saveRecruitDto1);
             Long no2 = recruitmentService.addRecruitment(saveRecruitDto2);
 
             //반복 주기 저장
-            SaveRepeatPeriodDto savePeriodDto = new SaveRepeatPeriodDto(period, week, days);
+            RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
             repeatPeriodService.addRepeatPeriod(no2, savePeriodDto);
 
             //이미지 저장
-            SaveImageDto staticImageDto = SaveImageDto.builder()
+            ImageParam staticImageDto = ImageParam.builder()
                     .code(RealWorkCode.RECRUITMENT)
                     .imageType(ImageType.STATIC)
                     .no(no1)
@@ -152,7 +134,7 @@ class RecruitmentControllerTestForFindAll {
                     .build();
             Long saveId1 = imageService.addImage(staticImageDto);
 
-            SaveImageDto uploadImageDto = SaveImageDto.builder()
+            ImageParam uploadImageDto = ImageParam.builder()
                     .code(RealWorkCode.RECRUITMENT)
                     .imageType(ImageType.UPLOAD)
                     .no(no2)
@@ -180,6 +162,21 @@ class RecruitmentControllerTestForFindAll {
         }
         clear();
     }
+    @BeforeEach
+    public void initUser(){
+        //유저 임시 로그인
+        final String nickname = "nickname";
+        final String email = "email@gmail.com";
+        final Gender gender = Gender.M;
+        final LocalDate birth = LocalDate.now();
+        final String picture = "picture";
+        final Boolean alarm = true;
+        saveUser = userRepository.save(User.builder().nickName(nickname)
+                .email(email).gender(gender).birthDay(birth).picture(picture)
+                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
+                .provider("kakao").providerId("1234").build());
+        clear();
+    }
     @AfterEach
     public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
         for(Long id : deletePlanS3ImageNo){
@@ -190,7 +187,10 @@ class RecruitmentControllerTestForFindAll {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_전체조회_모든필터링_성공() throws Exception {
+        //init
+        setData();
 
         //given: 페이지 & 필터링 조건
         MultiValueMap<String,String> info = new LinkedMultiValueMap();
@@ -198,7 +198,7 @@ class RecruitmentControllerTestForFindAll {
         info.add("volunteering_category", "001");
         info.add("sido", "11");
         info.add("sigungu","1111");
-        info.add("volunteering_type", "short");
+        info.add("volunteering_type", VolunteeringType.IRREG.name());
         info.add("volunteer_type", "1"); //all
         info.add("is_issued", "true");
 
@@ -210,7 +210,10 @@ class RecruitmentControllerTestForFindAll {
     }
 
     @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_전체조회_다중카테고리필터링_성공() throws Exception {
+        //init
+        setData();
 
         //given: 페이지 & 필터링 조건
         MultiValueMap<String,String> info = new LinkedMultiValueMap();

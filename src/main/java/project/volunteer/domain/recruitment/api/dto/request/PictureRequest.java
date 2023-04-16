@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaveRecruitPictureForm {
+public class PictureRequest {
 
     @Min(0)
     private Integer type; //0(static),1(upload)

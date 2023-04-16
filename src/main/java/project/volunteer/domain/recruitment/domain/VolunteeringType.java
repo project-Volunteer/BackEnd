@@ -1,10 +1,13 @@
 package project.volunteer.domain.recruitment.domain;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
+@Getter
 public enum VolunteeringType {
 
-    LONG("장기"), SHORT("단기");
+    REG("정기"), IRREG("비정기");
 
     private final String viewName;
     VolunteeringType(String label) {

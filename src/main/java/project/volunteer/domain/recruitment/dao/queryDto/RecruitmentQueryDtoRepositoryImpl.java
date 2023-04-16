@@ -13,10 +13,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentQueryDto;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentListQuery;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.*;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.global.common.component.State;
 
@@ -35,15 +35,15 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<RecruitmentQueryDto> findRecruitmentDtos(Pageable pageable, SearchType searchType) {
+    public Slice<RecruitmentListQuery> findRecruitmentDtos(Pageable pageable, RecruitmentCond searchType) {
 
         //전체 모집글,이미지,저장소 join 조회(Slice 처리)
-        Slice<RecruitmentQueryDto> result = findRecruitmentJoinImageBySearchType(pageable, searchType);
+        Slice<RecruitmentListQuery> result = findRecruitmentJoinImageBySearchType(pageable, searchType);
 
         result.getContent().stream()
                 .forEach(dto -> {
                     //각 모집글에 해당 하는 반복주기 엔티티 리스트 조회(반복주기 엔티티는 N 이므로 별도 조회)
-                    if(dto.getVolunteeringType().equals(VolunteeringType.LONG)) {
+                    if(dto.getVolunteeringType().equals(VolunteeringType.REG)) {
                         List<Day> days = findDays(dto.getNo());
                         dto.setDays(days);
                     }
@@ -63,14 +63,14 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
 
     //offset 기반 Slice -> 추후 no offset 으로 성능 최적화 가능
     @Override
-    public Slice<RecruitmentQueryDto> findRecruitmentJoinImageBySearchType(Pageable pageable, SearchType searchType) {
+    public Slice<RecruitmentListQuery> findRecruitmentJoinImageBySearchType(Pageable pageable, RecruitmentCond searchType) {
 
         //모집글&이미지&저장소 모두 1:1이니 한번에 받아오기
         //모집글에 반드시 이미지가 존재?(static, upload) : innerJoin, leftJoin
         //이미지에 저장소가 없을수 있으니 : leftJoin
-        List<RecruitmentQueryDto> content = jpaQueryFactory
+        List<RecruitmentListQuery> content = jpaQueryFactory
                 .select(
-                        new QRecruitmentQueryDto(recruitment.recruitmentNo, recruitment.title,
+                        new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.title,
                                 recruitment.address.sido, recruitment.address.sigungu,
                                 recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
                                 recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, recruitment.VolunteeringTimeTable.progressTime,
@@ -114,7 +114,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .fetchOne();
     }
 
-    private Slice<RecruitmentQueryDto> checkEndPage(Pageable pageable, List<RecruitmentQueryDto> content) {
+    private Slice<RecruitmentListQuery> checkEndPage(Pageable pageable, List<RecruitmentListQuery> content) {
         boolean hasNext = false;
 
         if(content.size() > pageable.getPageSize()){ //다음 페이지가 존재하는 경우

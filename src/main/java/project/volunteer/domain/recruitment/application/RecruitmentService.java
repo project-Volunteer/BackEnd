@@ -1,9 +1,9 @@
 package project.volunteer.domain.recruitment.application;
 
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 
 public interface RecruitmentService {
 
-    public Long addRecruitment(SaveRecruitDto saveDto);
+    public Long addRecruitment(RecruitmentParam saveDto);
 
 }

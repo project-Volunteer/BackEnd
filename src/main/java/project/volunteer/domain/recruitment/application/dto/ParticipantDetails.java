@@ -7,8 +7,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class WriterDto {
+public class ParticipantDetails {
 
-    private String nickname;
+    private String nickName;
     private String imageUrl;
+    private Boolean isApproved;
+
 }

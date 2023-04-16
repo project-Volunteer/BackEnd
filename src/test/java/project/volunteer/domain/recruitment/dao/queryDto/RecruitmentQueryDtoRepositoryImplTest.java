@@ -9,13 +9,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentQueryDto;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.SearchType;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
+import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.EntityManager;
@@ -46,7 +48,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String content = "content";
         int volunteerNum = 10;
         String organizationName = "organization";
-        Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), LocalTime.now(), 10);
+        Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Boolean isPublished = true;
 
         //필터링 조건
@@ -54,8 +56,8 @@ class RecruitmentQueryDtoRepositoryImplTest {
         VolunteeringCategory category2 = VolunteeringCategory.CULTURAL_EVENT;
         VolunteeringCategory category3 = VolunteeringCategory.DISASTER;
 
-        VolunteeringType volunteeringType1 = VolunteeringType.SHORT;
-        VolunteeringType volunteeringType2 = VolunteeringType.LONG;
+        VolunteeringType volunteeringType1 = VolunteeringType.IRREG;
+        VolunteeringType volunteeringType2 = VolunteeringType.REG;
 
         VolunteerType volunteerType1 = VolunteerType.ALL;
         VolunteerType volunteerType2 = VolunteerType.TEENAGER;
@@ -64,29 +66,28 @@ class RecruitmentQueryDtoRepositoryImplTest {
         Boolean isIssued1 = true;
         Boolean isIssued2 = false;
 
-        float latitude = 3.2F;
-        float longitude = 3.2F;
+        Coordinate coordinate = new Coordinate(3.2F, 3.2F);
         String details = "details";
-        Address address1 = new Address("11", "1111", details, latitude, longitude);
-        Address address2 = new Address("22", "2222", details, latitude, longitude);
-        Address address3 = new Address("333", "3333", details, latitude, longitude);
+        Address address1 = new Address("11", "1111", details);
+        Address address2 = new Address("22", "2222", details);
+        Address address3 = new Address("333", "3333", details);
 
         for(int i=0;i<5;i++){
             Recruitment create1 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category1) .volunteeringType(volunteeringType1) .volunteerType(volunteerType1)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1)
+                    .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create1);
 
             Recruitment create2 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category2) .volunteeringType(volunteeringType2) .volunteerType(volunteerType2)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2)
+                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create2);
 
             Recruitment create3 = Recruitment.builder()
                     .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3)
+                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create3);
         }
@@ -94,7 +95,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         //임시 저장글(1개)
         Recruitment create4 = Recruitment.builder()
                 .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3)
+                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                 .timetable(timetable) .isPublished(Boolean.FALSE).build();
         recruitmentRepository.save(create4);
         clear();
@@ -110,11 +111,11 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String volunteerType = null;
         Boolean isIssued = null;
 
-        SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+        RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
         PageRequest page = PageRequest.of(0, 10); //첫페이지 10개
 
         //when
-        Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
 
         //then
         Assertions.assertThat(result.getContent().size()).isEqualTo(10);
@@ -132,11 +133,11 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String volunteerType = null;
         Boolean isIssued = null;
 
-        SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+        RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
         PageRequest page = PageRequest.of(0, 5); //첫페이지 5개
 
         //when
-        Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
 
         //then
         Assertions.assertThat(result.getContent().size()).isEqualTo(5);
@@ -154,11 +155,11 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String volunteerType = null;
         Boolean isIssued = null;
 
-        SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+        RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
         PageRequest page = PageRequest.of(0, 5); //첫페이지 5개
 
         //when
-        Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
 
         //then
         Assertions.assertThat(result.getContent().size()).isEqualTo(0);
@@ -172,15 +173,15 @@ class RecruitmentQueryDtoRepositoryImplTest {
         List<String> category = Arrays.asList("001");
         String sido = "11";
         String sigungu = "1111";
-        String volunteeringType = VolunteeringType.SHORT.name();
+        String volunteeringType = VolunteeringType.IRREG.name();
         String volunteerType = null;
         Boolean isIssued = null;
 
-        SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+        RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
         PageRequest page = PageRequest.of(1, 3); //두번째 페이지 size=3
 
         //when
-        Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
 
         //then
         Assertions.assertThat(result.getContent().size()).isEqualTo(2);
@@ -194,15 +195,15 @@ class RecruitmentQueryDtoRepositoryImplTest {
         List<String> category = Arrays.asList("001");
         String sido = "11";
         String sigungu = "1111";
-        String volunteeringType = VolunteeringType.SHORT.name();
+        String volunteeringType = VolunteeringType.IRREG.name();
         String volunteerType = VolunteerType.TEENAGER.getLegacyCode();
         Boolean isIssued = null;
 
-        SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+        RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
         PageRequest page = PageRequest.of(0, 5);
 
         //when
-        Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
 
         //then
         Assertions.assertThat(result.getContent().size()).isEqualTo(0);
@@ -216,15 +217,15 @@ class RecruitmentQueryDtoRepositoryImplTest {
         List<String> category = Arrays.asList("001");
         String sido = "11";
         String sigungu = "1111";
-        String volunteeringType = VolunteeringType.SHORT.name();
+        String volunteeringType = VolunteeringType.IRREG.name();
         String volunteerType = VolunteerType.ALL.getLegacyCode();
         Boolean isIssued = true;
 
-        SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+        RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
         PageRequest page = PageRequest.of(0, 4);
 
         //when
-        Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
 
         //then
         Assertions.assertThat(result.getContent().size()).isEqualTo(4);
@@ -243,11 +244,11 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String volunteerType =null;
         Boolean isIssued = null;
 
-        SearchType searchType = new SearchType(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+        RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
         PageRequest page = PageRequest.of(0, 15);
 
         //when
-        Slice<RecruitmentQueryDto> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(page, searchType);
 
         //then
         Assertions.assertThat(result.getContent().size()).isEqualTo(15);

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.application.dto.SaveRecruitDto;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -20,7 +20,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     private final RecruitmentRepository recruitmentRepository;
 
     @Transactional
-    public Long addRecruitment(SaveRecruitDto saveDto){
+    public Long addRecruitment(RecruitmentParam saveDto){
 
         Recruitment recruitment = Recruitment.builder()
                 .title(saveDto.getTitle())
@@ -32,6 +32,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .isIssued(saveDto.getIsIssued())
                 .organizationName(saveDto.getOrganizationName())
                 .address(saveDto.getAddress())
+                .coordinate(saveDto.getCoordinate())
                 .timetable(saveDto.getTimetable())
                 .isPublished(saveDto.getIsPublished())
                 .build();
@@ -39,8 +40,8 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         //1. SecurityUtil 를 통해서 사용자 정보 가져오기 및 예외 처리
         //2. 연관관계 세팅
         //추후 수정 필요 (임시)
-        recruitment.setWriter(userRepository.findByEmail(SecurityUtil.getLoginUserEmail())
-                .orElseThrow(()-> new NullPointerException(String.format("Not found userEmail=[%s]", SecurityUtil.getLoginUserEmail()))));
+        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserNo())
+                .orElseThrow(()-> new NullPointerException(String.format("Not found userEmail=[%s]", SecurityUtil.getLoginUserNo()))));
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }

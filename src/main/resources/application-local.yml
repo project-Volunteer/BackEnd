@@ -5,9 +5,9 @@ server:
 spring:
   datasource:
     diver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/volunteer?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/volunteer?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
-    password: mysql
+    password: 1234
 
   jpa:
     hibernate:

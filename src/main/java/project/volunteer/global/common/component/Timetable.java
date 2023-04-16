@@ -1,14 +1,18 @@
 package project.volunteer.global.common.component;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +24,10 @@ public class Timetable {
 
     @Column(name = "end_day", nullable = false)
     private LocalDate endDay;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "hour_format", length = 2, nullable = false)
+    private HourFormat hourFormat;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;

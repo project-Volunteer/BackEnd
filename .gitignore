@@ -37,4 +37,7 @@ out/
 .vscode/
 
 ### project ignore ###
-*.yml
+application-aws.yml
+application-local.yml
+application-oauth.yml
+application-smtp.yml

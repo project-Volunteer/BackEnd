@@ -1,6 +1,6 @@
 package project.volunteer.global.common.component;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,6 @@ import javax.persistence.Embeddable;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Embeddable
 public class Address {
 
@@ -22,10 +21,10 @@ public class Address {
     @Column(length = 50, nullable = false)
     private String details;
 
-    @Column(nullable = false)
-    private Float latitude;
-
-    @Column(nullable = false)
-    private Float longitude;
-
+    @Builder
+    public Address(String sido, String sigungu, String details){
+        this.sido = sido;
+        this.sigungu = sigungu;
+        this.details = details;
+    }
 }

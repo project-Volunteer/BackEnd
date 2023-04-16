@@ -8,9 +8,7 @@ import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
-
-import java.util.List;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 
 @Slf4j
 @Service
@@ -22,7 +20,7 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
     private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Transactional
-    public void addRepeatPeriod(Long recruitmentNo, SaveRepeatPeriodDto saveDto) {
+    public void addRepeatPeriod(Long recruitmentNo, RepeatPeriodParam saveDto) {
 
         //굳이 한번더 조회해야할까?
         Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)

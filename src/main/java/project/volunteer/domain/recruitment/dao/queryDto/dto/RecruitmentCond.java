@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SearchType {
+public class RecruitmentCond {
 
     private List<VolunteeringCategory> category;
     private String sido;
@@ -24,7 +24,7 @@ public class SearchType {
     private VolunteerType volunteerType;
     private Boolean isIssued;
 
-    public SearchType(List<String> category, String sido, String sigungu, String volunteeringType, String volunteerType, Boolean isIssued) {
+    public RecruitmentCond(List<String> category, String sido, String sigungu, String volunteeringType, String volunteerType, Boolean isIssued) {
 
         this.category = category.stream()
                 .map(c -> LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, c))

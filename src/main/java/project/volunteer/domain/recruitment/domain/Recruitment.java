@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.common.converter.CategoryConverter;
 import project.volunteer.global.common.converter.VolunteerTypeConverter;
@@ -54,6 +55,9 @@ public class Recruitment extends BaseTimeEntity {
     private Address address;
 
     @Embedded
+    private Coordinate coordinate;
+
+    @Embedded
     private Timetable VolunteeringTimeTable;
 
     @Column(name = "view_count", nullable = false)
@@ -75,7 +79,7 @@ public class Recruitment extends BaseTimeEntity {
     @Builder
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
                        VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
-                       String organizationName, Address address,
+                       String organizationName, Address address, Coordinate coordinate,
                        Timetable timetable, Boolean isPublished) {
 
         this.title = title;
@@ -87,6 +91,7 @@ public class Recruitment extends BaseTimeEntity {
         this.isIssued = isIssued;
         this.organizationName = organizationName;
         this.address = address;
+        this.coordinate = coordinate;
         this.VolunteeringTimeTable = timetable;
         this.isPublished = isPublished;
 

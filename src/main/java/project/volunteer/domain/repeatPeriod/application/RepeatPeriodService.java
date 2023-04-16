@@ -1,12 +1,9 @@
 package project.volunteer.domain.repeatPeriod.application;
 
-import project.volunteer.domain.repeatPeriod.application.dto.SaveRepeatPeriodDto;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-
-import java.util.List;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 
 public interface RepeatPeriodService {
 
-    public void addRepeatPeriod(Long recruitmentNo, SaveRepeatPeriodDto saveDto);
+    public void addRepeatPeriod(Long recruitmentNo, RepeatPeriodParam saveDto);
 
 }
