@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.signup.api.dto.response.KakaoUserInfoResponse;
 import project.volunteer.domain.signup.application.KakaoLoginService;
 import project.volunteer.domain.signup.application.MailSendService;
@@ -69,7 +69,7 @@ public class SignupController {
 	
 	@ResponseBody
 	@PostMapping("/signup/user")
-	public ResponseEntity<Map<String, String>> signup(@RequestBody @Validated UserSignupDTO userSignupDTO ) {
+	public ResponseEntity<Map<String, String>> signup(@RequestBody @Validated UserSignupRequest userSignupDTO ) {
 		// DB 등록 JPA 활용
 		userSignupService.addUser(userSignupDTO);
 		

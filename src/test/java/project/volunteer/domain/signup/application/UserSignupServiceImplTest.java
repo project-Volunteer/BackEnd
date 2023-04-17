@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.signup.application.UserSignupService;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -19,7 +19,7 @@ class UserSignupServiceImplTest {
 	@Test
 	void 회원가입_성공() {
 		// given
-		UserSignupDTO userSignupDTO = new UserSignupDTO();
+		UserSignupRequest userSignupDTO = new UserSignupRequest();
 		userSignupDTO.setGender(1);
 		userSignupDTO.setBirthday("2000-11-11");
 		userSignupDTO.setNickName("nickName");

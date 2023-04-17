@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class SaveUserInfoDTO {
+public class UserSave {
     private String nickName;
     private String profile;
     private String email;
@@ -12,7 +12,7 @@ public class SaveUserInfoDTO {
     private int gender;
     
     @Builder
-    public SaveUserInfoDTO(String nickName, String profile, String email, String birthday, int gender) {
+    public UserSave(String nickName, String profile, String email, String birthday, int gender) {
         this.nickName = nickName;
         this.profile = profile;
         this.email = email;

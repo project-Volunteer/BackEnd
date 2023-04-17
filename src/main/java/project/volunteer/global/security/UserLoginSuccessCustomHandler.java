@@ -16,8 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.signup.api.dto.response.SaveUserResponse;
-import project.volunteer.domain.signup.dto.SaveUserInfoDTO;
+import project.volunteer.domain.signup.api.dto.response.UserSaveResponse;
+import project.volunteer.domain.signup.dto.UserSave;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.jwt.application.JwtService;
 import project.volunteer.global.jwt.dto.JwtToken;
@@ -45,7 +45,7 @@ public class UserLoginSuccessCustomHandler implements AuthenticationSuccessHandl
 		
 		
 		// 3. response용 Dto 생성
-		SaveUserInfoDTO userInfo = SaveUserInfoDTO.builder()
+		UserSave userInfo = UserSave.builder()
 									.email(loginUser.getEmail())
 									.nickName(loginUser.getNickName())
 									.profile(loginUser.getPicture())
@@ -53,7 +53,7 @@ public class UserLoginSuccessCustomHandler implements AuthenticationSuccessHandl
 									.birthday(loginUser.getBirthDay().toString())
 									.build();
 		
-		SaveUserResponse body = new SaveUserResponse(userInfo);
+		UserSaveResponse body = new UserSaveResponse(userInfo);
 		
 		// 4. response
 		String res = objectMapper.writeValueAsString(body);

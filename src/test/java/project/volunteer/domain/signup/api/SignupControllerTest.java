@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.user.domain.Gender;
 
 @SpringBootTest
@@ -81,7 +81,7 @@ class SignupControllerTest {
 
 	@Test
 	public void 회원가입_성공() throws Exception {
-		UserSignupDTO userSignupDTO = new UserSignupDTO();
+		UserSignupRequest userSignupDTO = new UserSignupRequest();
 		userSignupDTO.setProviderId("123456");
 		userSignupDTO.setNickName("nickName");
 		userSignupDTO.setProfile("profile");

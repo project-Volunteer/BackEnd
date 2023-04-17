@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -21,7 +21,7 @@ public class UserSignupServiceImpl implements UserSignupService {
 	private final PasswordEncoder passwordEncoder;
 	
 	@Override
-	public void addUser(UserSignupDTO userSignupDTO) {
+	public void addUser(UserSignupRequest userSignupDTO) {
 		Gender gender = (userSignupDTO.getGender() > 0) ? Gender.M : Gender.W;
 		LocalDate birthday = LocalDate.parse(userSignupDTO.getBirthday());
 		User user = User.builder()

@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class UserSignupDTO {
+public class UserSignupRequest {
 	@NotBlank(message = "필수 입력값입니다.")
 	private String nickName;
 	@NotBlank(message = "필수 입력값입니다.")
@@ -33,9 +33,9 @@ public class UserSignupDTO {
     private String provider;
 	private String providerId;
 	
-	public UserSignupDTO() {}
+	public UserSignupRequest() {}
 	
-	public UserSignupDTO(String nickName, String profile, String email, String birthday, int gender,
+	public UserSignupRequest(String nickName, String profile, String email, String birthday, int gender,
 			Boolean beforealarm_yn, Boolean joinAlarmYn, Boolean noticeAlarmYn, Boolean beforeAlarmYn, String provider,
 			String providerId) {
 		this.nickName = nickName;
