@@ -1,4 +1,4 @@
-package project.volunteer.domain.jwt.application;
+package project.volunteer.global.jwt.application;
 
 import java.util.Optional;
 

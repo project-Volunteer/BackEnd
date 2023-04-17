@@ -1,4 +1,4 @@
-package project.volunteer.domain.security.filter;
+package project.volunteer.global.security.filter;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.StringUtils;
 
-import project.volunteer.domain.jwt.util.JwtProvider;
+import project.volunteer.global.jwt.util.JwtProvider;
 
 //jwt 인증 처리 커스텀 필터
 public class JwtAuthenticationFilter extends BasicAuthenticationFilter {

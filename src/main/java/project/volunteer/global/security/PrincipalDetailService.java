@@ -1,4 +1,4 @@
-package project.volunteer.domain.security;
+package project.volunteer.global.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,4 +1,4 @@
-package project.volunteer.domain.jwt.application;
+package project.volunteer.global.jwt.application;
 
 import java.util.Optional;
 
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.jwt.dto.JwtToken;
-import project.volunteer.domain.jwt.util.JwtProvider;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.jwt.dto.JwtToken;
+import project.volunteer.global.jwt.util.JwtProvider;
 
 /**
  * jwt 토큰과 관련된 기능을 포함한 서비스

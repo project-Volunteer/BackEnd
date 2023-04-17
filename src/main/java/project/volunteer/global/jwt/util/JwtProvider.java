@@ -1,4 +1,4 @@
-package project.volunteer.domain.jwt.util;
+package project.volunteer.global.jwt.util;
 
 import java.security.Key;
 import java.util.Date;
@@ -18,10 +18,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.jwt.dto.JwtToken;
-import project.volunteer.domain.security.PrincipalDetails;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.jwt.dto.JwtToken;
+import project.volunteer.global.security.PrincipalDetails;
 
 /**
  * 토큰과 관련된 기능

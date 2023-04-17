@@ -1,4 +1,4 @@
-package project.volunteer.domain.security;
+package project.volunteer.global.security;
 
 import java.util.ArrayList;
 import java.util.Collection;

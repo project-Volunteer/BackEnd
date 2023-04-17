@@ -1,4 +1,4 @@
-package project.volunteer.domain.jwt;
+package project.volunteer.global.jwt;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -8,8 +8,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.jwt.application.RefreshTokenService;
-import project.volunteer.domain.jwt.util.JwtProvider;
+import project.volunteer.global.jwt.application.RefreshTokenService;
+import project.volunteer.global.jwt.util.JwtProvider;
 
 @RequiredArgsConstructor
 public class RefreshTokenAuthInterceptor implements HandlerInterceptor {

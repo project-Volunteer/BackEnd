@@ -15,14 +15,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.jwt.util.JwtProvider;
-import project.volunteer.domain.security.UserLoginSuccessCustomHandler;
-import project.volunteer.domain.security.failhandler.JwtAccessDeniedHandler;
-import project.volunteer.domain.security.failhandler.JwtAuthenticationEntryPoint;
-import project.volunteer.domain.security.failhandler.UserLoginFailureCustomHandler;
-import project.volunteer.domain.security.filter.JwtAuthenticationFilter;
-import project.volunteer.domain.security.filter.UsernamePasswordAuthenticationCustomFilter;
 import project.volunteer.domain.signup.application.KakaoLoginService;
+import project.volunteer.global.jwt.util.JwtProvider;
+import project.volunteer.global.security.UserLoginSuccessCustomHandler;
+import project.volunteer.global.security.failhandler.JwtAccessDeniedHandler;
+import project.volunteer.global.security.failhandler.JwtAuthenticationEntryPoint;
+import project.volunteer.global.security.failhandler.UserLoginFailureCustomHandler;
+import project.volunteer.global.security.filter.JwtAuthenticationFilter;
+import project.volunteer.global.security.filter.UsernamePasswordAuthenticationCustomFilter;
 
 @Configuration
 @EnableWebSecurity

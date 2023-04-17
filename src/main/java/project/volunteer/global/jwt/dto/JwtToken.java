@@ -1,4 +1,4 @@
-package project.volunteer.domain.jwt.dto;
+package project.volunteer.global.jwt.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

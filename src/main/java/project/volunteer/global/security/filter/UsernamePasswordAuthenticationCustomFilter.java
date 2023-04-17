@@ -1,4 +1,4 @@
-package project.volunteer.domain.security.filter;
+package project.volunteer.global.security.filter;
 
 import java.io.IOException;
 import java.util.Map;
@@ -18,10 +18,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.security.UserLoginSuccessCustomHandler;
-import project.volunteer.domain.security.failhandler.UserLoginFailureCustomHandler;
 import project.volunteer.domain.signup.api.dto.response.KakaoUserInfoResponse;
 import project.volunteer.domain.signup.application.KakaoLoginService;
+import project.volunteer.global.security.UserLoginSuccessCustomHandler;
+import project.volunteer.global.security.failhandler.UserLoginFailureCustomHandler;
 
 
 @Slf4j

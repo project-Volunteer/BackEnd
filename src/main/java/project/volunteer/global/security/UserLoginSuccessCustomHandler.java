@@ -1,4 +1,4 @@
-package project.volunteer.domain.security;
+package project.volunteer.global.security;
 
 import java.io.IOException;
 import java.util.function.Predicate;
@@ -16,11 +16,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.jwt.application.JwtService;
-import project.volunteer.domain.jwt.dto.JwtToken;
 import project.volunteer.domain.signup.api.dto.response.SaveUserResponse;
 import project.volunteer.domain.signup.dto.SaveUserInfoDTO;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.jwt.application.JwtService;
+import project.volunteer.global.jwt.dto.JwtToken;
 
 //"UsernamePasswordCustomFilter" 가 정상적으로 성공할 경우 호출되는 커스텀 Handler => 여기서 JWT 토큰을 반환해준다.
 @Slf4j

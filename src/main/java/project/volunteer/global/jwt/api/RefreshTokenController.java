@@ -1,12 +1,12 @@
-package project.volunteer.domain.jwt.api;
+package project.volunteer.global.jwt.api;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.jwt.application.JwtService;
-import project.volunteer.domain.jwt.dto.JwtToken;
+import project.volunteer.global.jwt.application.JwtService;
+import project.volunteer.global.jwt.dto.JwtToken;
 
 @RequiredArgsConstructor
 @RestController

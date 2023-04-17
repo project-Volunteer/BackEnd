@@ -1,6 +1,6 @@
-package project.volunteer.domain.jwt.application;
+package project.volunteer.global.jwt.application;
 
-import project.volunteer.domain.jwt.dto.JwtToken;
+import project.volunteer.global.jwt.dto.JwtToken;
 
 public interface JwtService {
 	public JwtToken login(Long userNo, String nickName);

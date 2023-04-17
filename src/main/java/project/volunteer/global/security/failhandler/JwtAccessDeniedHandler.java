@@ -1,4 +1,4 @@
-package project.volunteer.domain.security.failhandler;
+package project.volunteer.global.security.failhandler;
 
 import java.io.IOException;
 
