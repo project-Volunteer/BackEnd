@@ -97,7 +97,7 @@ class RecruitmentDtoServiceImplTest {
         final LocalDate birth = LocalDate.now();
         final String picture = "picture";
         final Boolean alarm = true;
-        User saveUser = userRepository.save(User.builder().name(name).nickName(nickname)
+        User saveUser = userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
         SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
@@ -168,7 +168,7 @@ class RecruitmentDtoServiceImplTest {
         for (int i=0;i<5;i++){
             //임시 사용자 회원가입
             String nickname = "nickname"+i;
-            User saveUser = userRepository.save(User.builder().name(name).nickName(nickname)
+            User saveUser = userRepository.save(User.builder().nickName(nickname)
                     .email(email).gender(gender).birthDay(birth).picture(picture)
                     .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
 

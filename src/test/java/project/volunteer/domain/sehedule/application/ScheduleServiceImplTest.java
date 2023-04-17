@@ -51,7 +51,7 @@ class ScheduleServiceImplTest {
         LocalDate birth = LocalDate.now();
         String picture = "picture";
         Boolean alarm = true;
-        userRepository.save(User.builder().name(name).nickName(nickname)
+        userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
 

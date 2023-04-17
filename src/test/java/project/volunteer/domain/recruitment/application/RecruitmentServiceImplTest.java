@@ -67,7 +67,7 @@ class RecruitmentServiceImplTest {
     @BeforeEach
     private void signUpAndSetAuthentication() {
 
-        userRepository.save(User.builder().name(name).nickName(nickname)
+        userRepository.save(User.builder().nickName(nickname)
                 .email(email).gender(gender).birthDay(birth).picture(picture)
                 .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm).build());
 
