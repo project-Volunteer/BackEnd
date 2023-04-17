@@ -37,4 +37,5 @@ out/
 .vscode/
 
 ### project ignore ###
+application-local.yml
 *.yml
