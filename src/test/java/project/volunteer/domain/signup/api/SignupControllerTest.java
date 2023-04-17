@@ -91,6 +91,6 @@ class SignupControllerTest {
 
 		mockMvc.perform(post("/signup/user").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(userSignupDTO)))
-				.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+				.andExpect(MockMvcResultMatchers.status().isCreated()).andDo(MockMvcResultHandlers.print());
 	}
 }

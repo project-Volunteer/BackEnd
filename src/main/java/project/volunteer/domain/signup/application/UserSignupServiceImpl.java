@@ -21,17 +21,19 @@ public class UserSignupServiceImpl implements UserSignupService {
 	private final PasswordEncoder passwordEncoder;
 	
 	@Override
-	public void addUser(UserSignupRequest userSignupDTO) {
-		Gender gender = (userSignupDTO.getGender() > 0) ? Gender.M : Gender.W;
-		LocalDate birthday = LocalDate.parse(userSignupDTO.getBirthday());
+	public void addUser(UserSignupRequest userSignupRequest) {
+		Gender gender = (userSignupRequest.getGender() > 0) ? Gender.M : Gender.W;
+		LocalDate birthday = LocalDate.parse(userSignupRequest.getBirthday());
 		User user = User.builder()
-					.nickName(userSignupDTO.getNickName())
-					.email(userSignupDTO.getEmail())
+					.id("kakao_"+userSignupRequest.getProviderId())
+					.password(passwordEncoder.encode("kakao"))
+					.nickName(userSignupRequest.getNickName())
+					.email(userSignupRequest.getEmail())
 					.gender(gender)
 					.birthDay(birthday)
-					.picture(userSignupDTO.getProfile())
-					.provider(passwordEncoder.encode("kakao"))
-					.providerId(userSignupDTO.getProviderId())
+					.picture(userSignupRequest.getProfile())
+					.provider("kakao")
+					.providerId(userSignupRequest.getProviderId())
 					.noticeAlarmYn(true)
 				    .joinAlarmYn(true)
 				    .noticeAlarmYn(true)

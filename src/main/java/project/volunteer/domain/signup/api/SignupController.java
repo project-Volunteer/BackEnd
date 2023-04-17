@@ -69,9 +69,9 @@ public class SignupController {
 	
 	@ResponseBody
 	@PostMapping("/signup/user")
-	public ResponseEntity<Map<String, String>> signup(@RequestBody @Validated UserSignupRequest userSignupDTO ) {
+	public ResponseEntity<Map<String, String>> signup(@RequestBody @Validated UserSignupRequest userSignupRequest ) {
 		// DB 등록 JPA 활용
-		userSignupService.addUser(userSignupDTO);
+		userSignupService.addUser(userSignupRequest);
 		
 		Map<String, String> message = new HashMap<String, String>();
 		message.put("message", "success");
