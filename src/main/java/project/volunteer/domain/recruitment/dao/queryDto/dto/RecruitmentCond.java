@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.dao.queryDto.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class RecruitmentCond {
     private VolunteerType volunteerType;
     private Boolean isIssued;
 
+    @Builder
     public RecruitmentCond(List<String> category, String sido, String sigungu, String volunteeringType, String volunteerType, Boolean isIssued) {
 
         this.category = Optional.ofNullable(category)

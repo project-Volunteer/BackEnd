@@ -96,6 +96,24 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         return checkEndPage(pageable, content);
     }
 
+    @Override
+    public Long findRecruitmentCountBySearchType(RecruitmentCond searchType) {
+        return jpaQueryFactory
+                .select(recruitment.count())
+                .from(recruitment)
+                .where(
+                        containCategory(searchType.getCategory()),
+                        eqSidoCode(searchType.getSido()),
+                        eqSigunguCode(searchType.getSigungu()),
+                        eqVolunteeringType(searchType.getVolunteeringType()),
+                        eqVolunteerType(searchType.getVolunteerType()),
+                        eqIsIssued(searchType.getIsIssued()),
+                        recruitment.isPublished.eq(Boolean.TRUE) //임시저장된 모집글은 제외
+                        //추후 삭제된 게시물 제외 필요.
+                )
+                .fetchOne();
+    }
+
     private List<Day> findDays(Long recruitmentNo){
         return jpaQueryFactory
                 .select(repeatPeriod.day)
