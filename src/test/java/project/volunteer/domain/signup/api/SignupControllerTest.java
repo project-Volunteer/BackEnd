@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.time.LocalDate;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +88,8 @@ class SignupControllerTest {
 		userSignupDTO.setNickName("nickName");
 		userSignupDTO.setProfile("profile");
 		userSignupDTO.setEmail("email@naver.com");
-		userSignupDTO.setBirthday("2000-11-22");
-		userSignupDTO.setGender(1);
+		userSignupDTO.setBirthday(LocalDate.parse("2000-11-22"));
+		userSignupDTO.setGender(Gender.M);
 
 		mockMvc.perform(post("/signup/user").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(userSignupDTO)))

@@ -15,9 +15,9 @@ public class PrincipalDetailService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String providerId) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
     	// 로그인 인증 로직
-        return userRepository.findByProviderId(providerId)
+        return userRepository.findById(id)
                 .map(m -> new PrincipalDetails(m))
                 .orElseThrow( () -> new UsernameNotFoundException("존재하지 않은 사용자 입니다."));
     }

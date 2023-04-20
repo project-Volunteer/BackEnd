@@ -1,5 +1,7 @@
 package project.volunteer.domain.signup.api.dto.request;
 
+import java.time.LocalDate;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Max;
@@ -8,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 import lombok.Data;
+import project.volunteer.domain.user.domain.Gender;
 
 @Data
 public class UserSignupRequest {
@@ -20,12 +23,9 @@ public class UserSignupRequest {
     @Email(message = "이메일 형식에 맞지 않습니다.")
 	private String email;
 	
-	@Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message = "날짜 포맷이 맞지 않습니다.")
-	private String birthday;
+	private LocalDate birthday;
 	
-	@Min(0)
-	@Max(1)
-	private int gender;
+	private Gender gender;
 	private Boolean beforealarm_yn;
     private Boolean joinAlarmYn;
     private Boolean noticeAlarmYn;
@@ -41,8 +41,8 @@ public class UserSignupRequest {
 		this.nickName = nickName;
 		this.profile = profile;
 		this.email = email;
-		this.birthday = birthday;
-		this.gender = gender;
+		this.birthday =  LocalDate.parse(birthday);
+		this.gender = gender > 0 ? Gender.M : Gender.W;;
 		this.beforealarm_yn = beforealarm_yn;
 		this.joinAlarmYn = joinAlarmYn;
 		this.noticeAlarmYn = noticeAlarmYn;

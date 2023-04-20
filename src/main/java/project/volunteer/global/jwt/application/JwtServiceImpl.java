@@ -20,9 +20,9 @@ public class JwtServiceImpl implements JwtService {
 	private final JwtProvider jwtProvider;
 
 	// 토큰 생성 및 리프레시토큰 DB 저장
-	public JwtToken login(Long userNo, String nickName) {
+	public JwtToken login(Long userNo) {
 		// 토큰 생성
-		JwtToken createToken = jwtProvider.createJwtToken(userNo, nickName);
+		JwtToken createToken = jwtProvider.createJwtToken(userNo);
 		Optional<User> findUser = refreshTokenService.findByUserNo(userNo);
 		
 		// 리프레시 토큰 갱신
@@ -37,7 +37,6 @@ public class JwtServiceImpl implements JwtService {
 		// 리프레쉬 토큰에서 userNo 추출
 		Claims claims = jwtProvider.parseClaims(refreshToken);
 		Long userNo = Long.valueOf(claims.get("userNo").toString());
-		
 		
 		// User 검색
 		Optional<User> findUser = refreshTokenService.findByUserNo(userNo);

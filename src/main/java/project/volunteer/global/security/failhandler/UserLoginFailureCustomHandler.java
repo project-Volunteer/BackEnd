@@ -15,14 +15,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import project.volunteer.global.common.response.BaseResponse;
 
 //"UsernamePasswordCustomFilter" 에서 로그인 실패시 실행되는 커스텀 Handler
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserLoginFailureCustomHandler implements AuthenticationFailureHandler {
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
 	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,AuthenticationException exception) throws IOException, ServletException {
+	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, 
+			AuthenticationException exception) throws IOException, ServletException {
+		
+		log.error("로그인 실패");
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		response.getWriter().write(objectMapper.writeValueAsString(new BaseResponse("login fail")));
 	}
 }

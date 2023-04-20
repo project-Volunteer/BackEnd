@@ -49,6 +49,10 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "beforealarm_yn", nullable = false)
     private Boolean beforeAlarmYn;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10, nullable = false)
+    private Role role;
     
     @Column(length = 50, nullable = false)
     private String provider;
@@ -65,7 +69,7 @@ public class User extends BaseTimeEntity {
     
     @Builder
     public User(String id, String password, String nickName, String email, Gender gender, LocalDate birthDay, String picture, Boolean joinAlarmYn,
-                Boolean noticeAlarmYn, Boolean beforeAlarmYn, String provider,String providerId, String refreshToken) {
+                Boolean noticeAlarmYn, Boolean beforeAlarmYn, Role role, String provider,String providerId, String refreshToken) {
         this.id = id;
         this.password = password;
         this.nickName = nickName;
@@ -76,6 +80,7 @@ public class User extends BaseTimeEntity {
         this.joinAlarmYn = joinAlarmYn;
         this.noticeAlarmYn = noticeAlarmYn;
         this.beforeAlarmYn = beforeAlarmYn;
+        this.role = role;
         this.provider = provider;
         this.providerId = providerId;
         this.refreshToken = refreshToken;

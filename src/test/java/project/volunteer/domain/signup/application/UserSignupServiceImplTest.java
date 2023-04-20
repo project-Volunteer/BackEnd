@@ -20,8 +20,8 @@ class UserSignupServiceImplTest {
 	void 회원가입_성공() {
 		// given
 		UserSignupRequest userSignupDTO = new UserSignupRequest();
-		userSignupDTO.setGender(1);
-		userSignupDTO.setBirthday("2000-11-11");
+		userSignupDTO.setGender(Gender.M);
+		userSignupDTO.setBirthday(LocalDate.parse("2000-11-22"));
 		userSignupDTO.setNickName("nickName");
 		userSignupDTO.setEmail("jw_passion@naver.com");
 		userSignupDTO.setProfile("profile");

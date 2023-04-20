@@ -33,7 +33,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 		String accessToken = getToken(request);
 
 		// 2. 엑세스 토큰 유효성 검사(헤더에 토큰이 있는지, 유효성 및 유효기간 검사)
-		if (StringUtils.hasText(accessToken) && jwtProvider.validationToken(accessToken)) {
+		if (StringUtils.hasText(accessToken) 
+				&& jwtProvider.validationToken(accessToken) 
+				&& jwtProvider.getExpiration(accessToken) > 0 ) {
 			// 3. 엑세스 토큰으로 인증 정보 추출
 			Authentication authentication = jwtProvider.getAuthentication(accessToken);
 

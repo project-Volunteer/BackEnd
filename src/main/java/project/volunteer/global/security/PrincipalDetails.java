@@ -22,19 +22,19 @@ public class PrincipalDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		// role 따로 없어 하나만 강제 추가
-		authorities.add(new SimpleGrantedAuthority("USER"));
+		String role = user.getRole().name();
+		authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
 		return authorities;
 	}
 
 	@Override
 	public String getPassword() {
-		return user.getProvider();
+		return user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return user.getProviderId();
+		return user.getId();
 	}
 
 	@Override

@@ -1,10 +1,10 @@
-package project.volunteer.domain.signup.dto;
+package project.volunteer.global.security.dto;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class UserSave {
+public class UserLoginInfo {
     private String nickName;
     private String profile;
     private String email;
@@ -12,7 +12,7 @@ public class UserSave {
     private int gender;
     
     @Builder
-    public UserSave(String nickName, String profile, String email, String birthday, int gender) {
+    public UserLoginInfo(String nickName, String profile, String email, String birthday, int gender) {
         this.nickName = nickName;
         this.profile = profile;
         this.email = email;
