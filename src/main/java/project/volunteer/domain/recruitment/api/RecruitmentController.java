@@ -93,4 +93,23 @@ public class RecruitmentController {
         return ResponseEntity.ok(new RecruitmentDetailsResponse("success search recruitment details", dto));
     }
 
+    @GetMapping("/recruitment/count")
+    public ResponseEntity<RecruitmentCountResponse> recruitmentListCount(@RequestParam(required = false) List<String> volunteering_category,
+                                                                         @RequestParam(required = false) String sido,
+                                                                         @RequestParam(required = false) String sigungu,
+                                                                         @RequestParam(required = false) String volunteering_type,
+                                                                         @RequestParam(required = false) String volunteer_type,
+                                                                         @RequestParam(required = false) Boolean is_issued){
+        Long recruitmentsCount = recruitmentQueryDtoRepository.findRecruitmentCountBySearchType(
+                RecruitmentCond.builder()
+                        .category(volunteering_category)
+                        .sido(sido)
+                        .sigungu(sigungu)
+                        .volunteeringType(volunteering_type)
+                        .volunteerType(volunteer_type)
+                        .isIssued(is_issued)
+                        .build());
+        return ResponseEntity.ok(new RecruitmentCountResponse("success count recruitment list", recruitmentsCount));
+    }
+
 }

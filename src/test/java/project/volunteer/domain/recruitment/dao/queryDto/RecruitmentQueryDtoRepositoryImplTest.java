@@ -235,8 +235,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
 
     @Test
     public void 모집글_전체조회_임시저장글제외_Slice(){
-        //givenE
-
+        //given
         List<String> category = new ArrayList<>();
         String sido = null;
         String sigungu = null;
@@ -254,6 +253,42 @@ class RecruitmentQueryDtoRepositoryImplTest {
         Assertions.assertThat(result.getContent().size()).isEqualTo(15);
         Assertions.assertThat(result.hasNext()).isFalse();
         Assertions.assertThat(result.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    public void 모집글_전체조회_모든필터링_카운트(){
+        //given
+        List<String> category = Arrays.asList("001");
+        String sido = "11";
+        String sigungu = "1111";
+        String volunteeringType = VolunteeringType.IRREG.name();
+        String volunteerType = VolunteerType.ALL.getLegacyCode();
+        Boolean isIssued = true;
+        RecruitmentCond cond = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+
+        //then
+        Long count = recruitmentQueryDtoRepository.findRecruitmentCountBySearchType(cond);
+
+        //then
+        Assertions.assertThat(count).isEqualTo(5);
+    }
+
+    @Test
+    public void 모집글_전체조회_빈필터링_카운트(){
+        //given
+        List<String> category = null;
+        String sido = null;
+        String sigungu = null;
+        String volunteeringType = null;
+        String volunteerType =null;
+        Boolean isIssued = null;
+        RecruitmentCond cond = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
+
+        //when
+        Long count = recruitmentQueryDtoRepository.findRecruitmentCountBySearchType(cond);
+
+        //then
+        Assertions.assertThat(count).isEqualTo(15);
     }
 
 }
