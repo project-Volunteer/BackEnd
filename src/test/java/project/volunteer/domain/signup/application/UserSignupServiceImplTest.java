@@ -2,6 +2,7 @@ package project.volunteer.domain.signup.application;
 
 import java.time.LocalDate;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,9 +29,11 @@ class UserSignupServiceImplTest {
 		userSignupDTO.setProviderId("123456789");
 		
 		// when
-		userSignupService.addUser(userSignupDTO);
+		Long userNo = userSignupService.addUser(userSignupDTO);
 		
 		// then
+		System.out.println("userNo = " + userNo);
+		Assertions.assertThat(userNo).isNotNull();
 		
 	}
 

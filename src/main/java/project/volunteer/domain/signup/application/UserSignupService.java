@@ -4,6 +4,6 @@ import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 
 public interface UserSignupService {
 
-	void addUser(UserSignupRequest userSignup);
+	Long addUser(UserSignupRequest userSignup);
 
 }

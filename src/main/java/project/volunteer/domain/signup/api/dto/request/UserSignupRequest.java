@@ -14,9 +14,9 @@ import project.volunteer.domain.user.domain.Gender;
 
 @Data
 public class UserSignupRequest {
-	@NotBlank(message = "필수 입력값입니다.")
+	@NotBlank(message = "필수 입력 값입니다.")
 	private String nickName;
-	@NotBlank(message = "필수 입력값입니다.")
+	@NotBlank(message = "필수 입력 값입니다.")
 	private String profile;
 	
 	@NotBlank(message = "필수 입력 값입니다.")
@@ -24,7 +24,6 @@ public class UserSignupRequest {
 	private String email;
 	
 	private LocalDate birthday;
-	
 	private Gender gender;
 	private Boolean beforealarm_yn;
     private Boolean joinAlarmYn;
@@ -42,7 +41,7 @@ public class UserSignupRequest {
 		this.profile = profile;
 		this.email = email;
 		this.birthday =  LocalDate.parse(birthday);
-		this.gender = gender > 0 ? Gender.M : Gender.W;;
+		this.gender = gender > 0 ? Gender.M : Gender.W;
 		this.beforealarm_yn = beforealarm_yn;
 		this.joinAlarmYn = joinAlarmYn;
 		this.noticeAlarmYn = noticeAlarmYn;

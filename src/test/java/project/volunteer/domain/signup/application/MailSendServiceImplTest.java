@@ -2,11 +2,16 @@ package project.volunteer.domain.signup.application;
 
 import java.util.Map;
 
+import javax.mail.MessagingException;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import project.volunteer.domain.signup.api.dto.response.MailSendResultResponse;
 import project.volunteer.domain.signup.application.MailSendService;
 
 @SpringBootTest
@@ -16,17 +21,17 @@ class MailSendServiceImplTest {
 	MailSendService mailSendService;
 	
 	@Test
-	void mail_발송성공() {
+	void mail_발송성공() throws MessagingException {
 		// given
 		String toAddress="jw_passion@naver.com";
 		String subject="Volunteer Sign Auth code";
 		String authCode="123456";
 		
 		// when
-		Map<String, String> result = mailSendService.sendEmail(toAddress, subject, authCode);
+		ResponseEntity<MailSendResultResponse> result = mailSendService.sendEmail(toAddress, subject, authCode);
 		
 		// then
-		Assertions.assertThat(result).containsKeys("authCode");
+		Assertions.assertThat(result.getBody().getMessage()).contains("success");
 	}
 	
 
@@ -36,12 +41,12 @@ class MailSendServiceImplTest {
 		String toAddress="jw_passion";
 		String subject="Volunteer Sign Auth code";
 		String authCode="123456";
-		
+
 		// when
-		Map<String, String> result = mailSendService.sendEmail(toAddress, subject, authCode);
+		ResponseEntity<MailSendResultResponse> result = mailSendService.sendEmail(toAddress, subject, authCode);
 		
 		// then
-		Assertions.assertThat(result).containsKeys("resultMessage");
+		Assertions.assertThat(result.getBody().getMessage()).contains("Fail");
 	}
 
 }

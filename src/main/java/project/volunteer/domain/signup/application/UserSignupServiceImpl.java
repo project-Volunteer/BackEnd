@@ -19,7 +19,7 @@ public class UserSignupServiceImpl implements UserSignupService {
 	private final PasswordEncoder passwordEncoder;
 	
 	@Override
-	public void addUser(UserSignupRequest userSignupRequest) {
+	public Long addUser(UserSignupRequest userSignupRequest) {
 		User user = User.builder()
 					.id("kakao_"+userSignupRequest.getProviderId())
 					.password(passwordEncoder.encode("kakao"))
@@ -36,6 +36,7 @@ public class UserSignupServiceImpl implements UserSignupService {
 				    .noticeAlarmYn(true)
 				    .beforeAlarmYn(true)
 					.build();
-		userRepository.save(user);
+		
+		return userRepository.save(user).getUserNo();
 	}
 }

@@ -1,9 +1,11 @@
 package project.volunteer.domain.signup.application;
 
-import java.util.Map;
-
 import javax.mail.MessagingException;
 
+import org.springframework.http.ResponseEntity;
+
+import project.volunteer.domain.signup.api.dto.response.MailSendResultResponse;
+
 public interface MailSendService {
-	public Map<String, String> sendEmail(String toAddress, String subject, String body);
+	public ResponseEntity<MailSendResultResponse> sendEmail(String toAddress, String subject, String body);
 }
