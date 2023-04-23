@@ -21,23 +21,28 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	
 	// 리프레시 토큰 저장
 	@Transactional
-	public void updateRefreshToken(Long userNo, String refreshToken) {
-		Optional<User> findUser = userRepository.findByUserNo(userNo);
+	public void updateRefreshToken(String userId, String refreshToken) {
+		Optional<User> findUser = userRepository.findById(userId);
 		findUser.get().setRefreshToken(refreshToken);
 	}
 
 	// 회원 정보 조회
-	public Optional<User> findByUserNo(Long userNo) {
-		return userRepository.findByUserNo(userNo);
+	public Optional<User> findById(String userId) {
+		return userRepository.findById(userId);
 	}
 
 	// 리프레시 토큰 검증
-	public void validRefreshTokenValue(Long userNo, String refreshToken) throws IllegalAccessException {
-		Optional<User> findUser = userRepository.findByUserNo(userNo);
+	public void validRefreshTokenValue(String userId, String refreshToken) throws IllegalAccessException {
+		Optional<User> findUser = userRepository.findById(userId);
         String dbRefreshToken = findUser.map(t -> new String(t.getRefreshToken())).orElseThrow(() -> new NullPointerException());
 
         if(!refreshToken.equals(dbRefreshToken))
             throw new IllegalAccessException();
     }
+
+	@Override
+	public Optional<User> findByRefreshToken(String refreshToken) {
+		return userRepository.findByRefreshToken(refreshToken);
+	}
 	
 }

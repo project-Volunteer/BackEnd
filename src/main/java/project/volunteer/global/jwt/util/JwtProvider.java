@@ -50,18 +50,18 @@ public class JwtProvider {
 	}
 
 	// 토큰 생성
-	public JwtToken createJwtToken(Long userNo) {
+	public JwtToken createJwtToken(String userId) {
 		// 엑세스 토큰
 		String accessToken = ACCESS_PREFIX_STRING
 				+ Jwts.builder()
-				.setSubject(String.valueOf(userNo))
-				.claim("userNo", userNo)
+				.setSubject(String.valueOf(userId))
+				.claim("userId", userId)
 				.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidityInMilliseconds))
 				.signWith(key, SignatureAlgorithm.HS512).compact();
 
 		// 리프레시 토큰
 		String refreshToken = Jwts.builder()
-				.setSubject(String.valueOf(userNo) + "_refresh")
+				.setSubject(String.valueOf(userId) + "_refresh")
 				.setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidityInMilliseconds))
 				.signWith(key, SignatureAlgorithm.HS512).compact();
 
@@ -69,10 +69,10 @@ public class JwtProvider {
 	}
 
 	// access token 만 생성 -> refresh 토큰 요청이 왔을때 사용됨
-	public String createAccessToken(Long userNo, String nickname) {
+	public String createAccessToken(String userId) {
 		return ACCESS_PREFIX_STRING + Jwts.builder()
-				.setSubject(String.valueOf(userNo))
-				.claim("userNo", userNo)
+				.setSubject(String.valueOf(userId))
+				.claim("userId", userId)
 				.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidityInMilliseconds))
 				.signWith(key, SignatureAlgorithm.HS512).compact();
 	}
@@ -83,12 +83,12 @@ public class JwtProvider {
 		Claims claims = parseClaims(accessToken);
 
 		// 1. 토큰안에 필요한 Claims가 있는지 확인
-		if (claims.get("userNo") == null)
+		if (claims.get("userId") == null)
 			return null;
 
 		// 2. DB 에 사용자가 있는지 확인 -> 탈퇴했을 경우를 위해서
-		Long userNo = Long.valueOf(claims.get("userNo").toString());
-		Optional<User> findUser = userRepository.findByUserNo(userNo);
+		String userId = claims.get("userId").toString();
+		Optional<User> findUser = userRepository.findById(userId);
 		if (findUser.isEmpty())
 			return null;
 

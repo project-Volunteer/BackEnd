@@ -5,7 +5,8 @@ import java.util.Optional;
 import project.volunteer.domain.user.domain.User;
 
 public interface RefreshTokenService {
-	public void updateRefreshToken(Long userNo, String refreshToken);
-	public Optional<User> findByUserNo(Long userNo);
-	public void validRefreshTokenValue(Long userNo, String refreshToken) throws IllegalAccessException;
+	public void updateRefreshToken(String userId, String refreshToken);
+	public Optional<User> findById(String userId);
+	public Optional<User> findByRefreshToken(String refreshToken);
+	public void validRefreshTokenValue(String userId, String refreshToken) throws IllegalAccessException;
 }
