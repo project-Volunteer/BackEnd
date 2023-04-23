@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.global.common.response.BaseResponse;
+import project.volunteer.global.error.response.BaseErrorResponse;
 
 //"UsernamePasswordCustomFilter" 에서 로그인 실패시 실행되는 커스텀 Handler
 @Slf4j
@@ -30,6 +30,6 @@ public class UserLoginFailureCustomHandler implements AuthenticationFailureHandl
 		
 		log.error("로그인 실패");
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
-		response.getWriter().write(objectMapper.writeValueAsString(new BaseResponse("login fail")));
+		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("login fail")));
 	}
 }

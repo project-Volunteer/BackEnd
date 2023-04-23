@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.global.common.response.BaseResponse;
+import project.volunteer.global.error.response.BaseErrorResponse;
 
 @Slf4j
 @Component
@@ -30,6 +30,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
 		log.error("권한이 없는 사용자 접근");
 		response.setStatus(HttpStatus.FORBIDDEN.value());
-		response.getWriter().write(objectMapper.writeValueAsString(new BaseResponse("not acceptable fail")));
+		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("not acceptable fail")));
 	}
 }

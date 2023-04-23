@@ -54,10 +54,10 @@ public class UsernamePasswordAuthenticationCustomFilter extends AbstractAuthenti
 		String kakaoAccessToken = kakaoLoginService.getKakaoAccessToken((String)map.get("authorizationCode"));
 		
 		// 3. accessToken으로 사용자 정보 및 kakao USER 고유 키 받아오기
-		KakaoUserInfoResponse kakaoCodeDTO = kakaoLoginService.getKakaoUserInfo(kakaoAccessToken);
+		String providerId = kakaoLoginService.getKakaoProviderId(kakaoAccessToken);
 		
 		// 4. usernamePasswordAuthenticationToken 생성을 위한 로그인아이디 및 비밀번호 설정
-		String id = "kakao_" + kakaoCodeDTO.getProviderId();
+		String id = "kakao_" + providerId;
 		String password = "kakao";
 
 		// 5. 카카오 고유 ID와 암호화된 kakao String을 기반으로 AuthenticationToken 생성

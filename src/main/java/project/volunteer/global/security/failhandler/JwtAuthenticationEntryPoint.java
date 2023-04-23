@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.global.common.response.BaseResponse;
+import project.volunteer.global.error.response.BaseErrorResponse;
 
 //Spring Security 에서 인증되지 않은 사용자의 리소스에 대한 접근 처리는 AuthenticationEntryPoint 가 담당
 @Slf4j
@@ -30,6 +30,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 		log.error("JWT 토큰 인증 실패");
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
-		response.getWriter().write(objectMapper.writeValueAsString(new BaseResponse("jwt token authentication fail")));
+		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("jwt token authentication fail")));
 	}
 }

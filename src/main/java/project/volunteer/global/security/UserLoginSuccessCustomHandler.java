@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import project.volunteer.global.jwt.application.JwtService;
 import project.volunteer.global.jwt.dto.JwtToken;
 import project.volunteer.global.security.dto.UserLoginInfo;
 import project.volunteer.global.security.dto.UserLoginResponse;
+import project.volunteer.global.util.ResponseUtil;
 
 //"UsernamePasswordCustomFilter" 가 정상적으로 성공할 경우 호출되는 커스텀 Handler => 여기서 JWT 토큰을 반환해준다.
 @Slf4j
@@ -30,8 +32,8 @@ import project.volunteer.global.security.dto.UserLoginResponse;
 public class UserLoginSuccessCustomHandler implements AuthenticationSuccessHandler {
 
 	private final JwtService jwtService;
-	private final ObjectMapper objectMapper;
-
+	private final ResponseUtil responseUtil;
+	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
@@ -42,8 +44,7 @@ public class UserLoginSuccessCustomHandler implements AuthenticationSuccessHandl
 		User loginUser = ((PrincipalDetails) authentication.getPrincipal()).getUser();
 
 		// 2. 토큰 생성(사용자 고유번호와 별명으로 생성)
-		JwtToken jwtToken = jwtService.login(loginUser.getUserNo());
-		
+		JwtToken jwtToken = jwtService.login(loginUser.getId());
 		
 		// 3. response용 Dto 생성
 		UserLoginInfo userInfo = UserLoginInfo.builder()
@@ -55,18 +56,8 @@ public class UserLoginSuccessCustomHandler implements AuthenticationSuccessHandl
 									.build();
 		
 		// 4. response
-		// refresh 토큰은 cookie로, accesstoken은 json 페이로드로 전송
-		Cookie cookie = new Cookie("refreshToken", jwtToken.getRefreshToken());
-		// xss 공격 방어(direct로 브라우저에서 쿠키에 접근할 수 없도록 제한)
-		cookie.setHttpOnly(true);
-		// https가 아닌 통신에서는 쿠키를 전송하지 않음
-		cookie.setSecure(true);
-		response.addCookie(cookie);
-
-		String res = objectMapper.writeValueAsString(new UserLoginResponse(userInfo, jwtToken.getAccessToken()));
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		response.setStatus(HttpStatus.OK.value());
-		response.getWriter().write(res);
+		responseUtil.setJwtTokenResponseParam(response, jwtToken, userInfo, "success login");
 	}
+
+	
 }
