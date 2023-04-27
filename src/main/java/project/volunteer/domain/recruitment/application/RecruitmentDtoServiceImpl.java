@@ -46,7 +46,7 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     public RecruitmentDetails findRecruitment(Long no) {
 
         //모집글 정보 + 모집글 작성자 정보 -> 쿼리1번
-        Recruitment findRecruitment = recruitmentRepository.findEGWriterByRecruitmentNo(no).orElseThrow(()
+        Recruitment findRecruitment = recruitmentRepository.findEGWriterAndRecruitment(no).orElseThrow(()
                 -> new NullPointerException(String.format("Not found recruitmentNo=[%d]", no)));
         User writer = findRecruitment.getWriter();
         //1. 모집글 정보 dto 생성

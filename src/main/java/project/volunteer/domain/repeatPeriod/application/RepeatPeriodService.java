@@ -6,4 +6,6 @@ public interface RepeatPeriodService {
 
     public void addRepeatPeriod(Long recruitmentNo, RepeatPeriodParam saveDto);
 
+    public void deleteRepeatPeriod(Long recruitmentNo);
+
 }

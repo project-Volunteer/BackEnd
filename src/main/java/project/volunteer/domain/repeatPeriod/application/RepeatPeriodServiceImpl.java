@@ -10,6 +10,8 @@ import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -31,6 +33,15 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
             period.setRecruitment(recruitment);
             repeatPeriodRepository.save(period);
         });
+    }
+
+    @Override
+    @Transactional
+    public void deleteRepeatPeriod(Long recruitmentNo) {
+
+        List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
+        findPeriod.stream()
+                .forEach(p -> p.setDeleted());
     }
 
 }

@@ -46,4 +46,16 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
 
+    @Override
+    @Transactional
+    public void deleteRecruitment(Long deleteNo) {
+
+        Recruitment findRecruitment =
+                recruitmentRepository.findById(deleteNo).orElseThrow(
+                        () -> new NullPointerException(String.format("[%d]는 존재하지 않는 모집글 입니다.", deleteNo)));
+
+        //지연 로딩 활용
+        findRecruitment.setDeleted();
+    }
+
 }

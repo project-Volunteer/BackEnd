@@ -98,6 +98,15 @@ class RecruitmentQueryDtoRepositoryImplTest {
                 .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                 .timetable(timetable) .isPublished(Boolean.FALSE).build();
         recruitmentRepository.save(create4);
+
+        //삭제 게시물(1개)
+        Recruitment create5 = Recruitment.builder()
+                .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
+                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
+                .timetable(timetable) .isPublished(isPublished).build();
+        create5.setDeleted();
+        recruitmentRepository.save(create5);
+
         clear();
     }
 

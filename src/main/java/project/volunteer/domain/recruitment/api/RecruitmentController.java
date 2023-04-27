@@ -3,6 +3,7 @@ package project.volunteer.domain.recruitment.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -86,13 +87,6 @@ public class RecruitmentController {
                         dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
     }
 
-    @GetMapping("/recruitment/{no}")
-    public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
-
-        RecruitmentDetails dto = recruitmentDtoService.findRecruitment(no);
-        return ResponseEntity.ok(new RecruitmentDetailsResponse("success search recruitment details", dto));
-    }
-
     @GetMapping("/recruitment/count")
     public ResponseEntity<RecruitmentCountResponse> recruitmentListCount(@RequestParam(required = false) List<String> volunteering_category,
                                                                          @RequestParam(required = false) String sido,
@@ -112,4 +106,34 @@ public class RecruitmentController {
         return ResponseEntity.ok(new RecruitmentCountResponse("success count recruitment list", recruitmentsCount));
     }
 
+    @GetMapping("/recruitment/{no}")
+    public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
+
+        RecruitmentDetails dto = recruitmentDtoService.findRecruitment(no);
+        return ResponseEntity.ok(new RecruitmentDetailsResponse("success search recruitment details", dto));
+    }
+
+    @DeleteMapping("/recruitment/{no}")
+    public ResponseEntity recruitmentDelete(@PathVariable Long no) {
+
+        //반복 주기 삭제 -> 정기일때만 실행시키기??!
+        repeatPeriodService.deleteRepeatPeriod(no);
+
+        //봉사 참여자 리스트 삭제 필요
+
+        //스케줄 삭제 필요
+
+        //스케줄 참여자 리스트 삭제 필요
+
+        //공지사항 삭제 필요
+
+        //공지사항 확인 리스트 삭제 필요
+
+        //이미지 삭제 필요
+
+        //모집글 삭제
+        recruitmentService.deleteRecruitment(no);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

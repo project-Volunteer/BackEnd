@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.application;
 
+import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -187,6 +188,30 @@ class RecruitmentDtoServiceImplTest {
             Assertions.assertThat(dto.getIsApproved()).isFalse();
         }
         System.out.println(recruitment);
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_상세조회_실패_삭제된게시물() throws IOException {
+        //given
+        setMockUpData();
+        saveRecruitment.setDeleted(); //삭제 게시물로 만들기
+
+        //when & then
+        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_상세조회_실패_임시게시물() throws IOException {
+        //given
+        setMockUpData();
+        saveRecruitment.setIsPublished(false); //임시 게시물로 만들기
+
+        //when & then
+        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
+                .isInstanceOf(NullPointerException.class);
     }
 
 }

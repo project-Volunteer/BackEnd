@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.global.common.component.IsDeleted;
 
 import javax.persistence.*;
 
@@ -34,14 +35,24 @@ public class RepeatPeriod {
     @JoinColumn(name = "recruitmentno")
     private Recruitment recruitment;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_deleted", length = 1, nullable = false)
+    private IsDeleted isDeleted;
+
     @Builder
     public RepeatPeriod(Period period, Week week, Day day) {
         this.period = period;
         this.week = week;
         this.day = day;
+
+        this.isDeleted = IsDeleted.N;
     }
 
     public void setRecruitment(Recruitment recruitment){
         this.recruitment = recruitment;
+    }
+
+    public void setDeleted(){
+        this.isDeleted=IsDeleted.Y;
     }
 }
