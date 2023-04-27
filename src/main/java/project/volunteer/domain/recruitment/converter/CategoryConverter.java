@@ -1,6 +1,7 @@
-package project.volunteer.global.common.converter;
+package project.volunteer.domain.recruitment.converter;
 
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
+import project.volunteer.global.common.converter.AbstractLegacyEnumAttributeConverter;
 
 import javax.persistence.Converter;
 

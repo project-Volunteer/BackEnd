@@ -9,8 +9,8 @@ import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.Timetable;
-import project.volunteer.global.common.converter.CategoryConverter;
-import project.volunteer.global.common.converter.VolunteerTypeConverter;
+import project.volunteer.domain.recruitment.converter.CategoryConverter;
+import project.volunteer.domain.recruitment.converter.VolunteerTypeConverter;
 
 import javax.persistence.*;
 
