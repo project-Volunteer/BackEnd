@@ -47,6 +47,19 @@ public class ImageServiceImpl implements ImageService{
         return imageRepository.save(createImage).getImageNo();
     }
 
+    @Override
+    @Transactional
+    public void deleteImage(RealWorkCode code, Long no) {
+
+        validateNo(no, code);
+        Image image = imageRepository.findByRealWorkCodeAndNo(code, no)
+                .orElseThrow(() ->
+                        new NullPointerException(String.format("[%s]타입의 [%d] PK에 해당하는 이미지가 없습니다.", code.name(), no)));
+        image.setDeleted();
+        /**
+         * 추후 이미지의 용량이 많이 쌓일 경우 Spring batch 를 통해서 해결해보기!
+         */
+    }
 
     private void validateNo(Long no, RealWorkCode code) {
 

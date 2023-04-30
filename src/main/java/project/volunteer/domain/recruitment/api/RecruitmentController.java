@@ -129,7 +129,8 @@ public class RecruitmentController {
 
         //공지사항 확인 리스트 삭제 필요
 
-        //이미지 삭제 필요
+        //이미지 삭제
+        imageService.deleteImage(RealWorkCode.RECRUITMENT, no);
 
         //모집글 삭제
         recruitmentService.deleteRecruitment(no);

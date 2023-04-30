@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.domain.image.converter.RealWorkCodeConverter;
+import project.volunteer.global.common.component.IsDeleted;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Getter
 @Entity
@@ -34,6 +36,10 @@ public class Image extends BaseTimeEntity {
     @JoinColumn(name = "storageno")
     private Storage storage; //upload
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_deleted", length = 1, nullable = false)
+    private IsDeleted isDeleted;
+
     /**
      * Auditing - 생성인, 수정인 추가 필요
      */
@@ -43,9 +49,16 @@ public class Image extends BaseTimeEntity {
         this.realWorkCode = realWorkCode;
         this.no = no;
         this.staticImageName = staticImageName;
+        this.isDeleted = IsDeleted.N;
     }
 
     public void setStorage(Storage storage) {
         this.storage = storage;
+    }
+
+    public void setDeleted(){
+        this.isDeleted=IsDeleted.Y;
+        //업로드 이미지 일경우
+        Optional.of(storage).ifPresent(s -> s.setDeleted());
     }
 }

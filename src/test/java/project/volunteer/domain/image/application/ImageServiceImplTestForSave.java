@@ -31,7 +31,7 @@ import java.time.LocalDate;
 
 @SpringBootTest
 @Transactional
-class ImageServiceImplTest {
+class ImageServiceImplTestForSave {
 
     @Autowired EntityManager em;
     @Autowired UserRepository userRepository;
@@ -49,7 +49,7 @@ class ImageServiceImplTest {
         return new MockMultipartFile(
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
-    private void setDate(){
+    private void setRecruitment(){
         String category = "001";
         String organizationName ="name";
         String sido = "11";
@@ -92,7 +92,7 @@ class ImageServiceImplTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_이미지_저장_실패_없는모집글PK() {
         //init
-        setDate();
+        setRecruitment();
 
         //given
         ImageParam dto = ImageParam.builder()
@@ -111,7 +111,7 @@ class ImageServiceImplTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_정적_이미지_저장_성공() throws IOException {
         //init
-        setDate();
+        setRecruitment();
 
         //given
         ImageParam dto = ImageParam.builder()
@@ -139,7 +139,7 @@ class ImageServiceImplTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
     public void 모집글_업로드_이미지_저장_성공() throws IOException {
         //init
-        setDate();
+        setRecruitment();
 
         //given
         ImageParam dto = ImageParam.builder()

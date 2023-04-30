@@ -58,8 +58,9 @@ class RecruitmentControllerTestForEdit {
     @Autowired FileService fileService;
     @Autowired RepeatPeriodService repeatPeriodService;
     @Autowired MockMvc mockMvc;
+
     private Long saveRecruitmentNo;
-    private List<Long> deleteImageNo = new ArrayList<>();
+    private Long deleteImageNo;
     private final String DELETE_URL = "/recruitment/";
     @BeforeEach
     public void initUser(){
@@ -78,8 +79,8 @@ class RecruitmentControllerTestForEdit {
     }
     @AfterEach
     public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
-        for(Long id : deleteImageNo){
-            Image image = imageRepository.findById(id).get();
+        if(deleteImageNo != null) {
+            Image image = imageRepository.findById(deleteImageNo).get();
             Storage storage = image.getStorage();
             fileService.deleteFile(storage.getFakeImageName());
         }
@@ -126,8 +127,7 @@ class RecruitmentControllerTestForEdit {
                 .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
-        Long imageNo = imageService.addImage(staticImageDto);
-        deleteImageNo.add(imageNo);
+        deleteImageNo = imageService.addImage(staticImageDto);
     }
     private MockMultipartFile getMockMultipartFile() throws IOException {
         return new MockMultipartFile(
@@ -150,11 +150,26 @@ class RecruitmentControllerTestForEdit {
     @DisplayName("모집글 and 반복주기 삭제 테스트")
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Rollback(value = false)
     public void 모집글_반복주기_삭제_성공() throws Exception {
         //given
         setRecruitment();
         setRepeatPeriod();
+
+        //when & then
+        mockMvc.perform(delete(DELETE_URL+saveRecruitmentNo))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("모집글 and 반복 주기 and 모집글이미지 삭제 테스트")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Rollback(value = false)
+    public void 모집글_반복주기_모집글이미지_삭제_성공() throws Exception {
+        //given
+        setRecruitment();
+        setRepeatPeriod();
+        addImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
 
         //when & then
         mockMvc.perform(delete(DELETE_URL+saveRecruitmentNo))
