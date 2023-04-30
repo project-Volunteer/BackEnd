@@ -3,7 +3,6 @@ package project.volunteer.domain.recruitment.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -116,25 +115,19 @@ public class RecruitmentController {
     @DeleteMapping("/recruitment/{no}")
     public ResponseEntity recruitmentDelete(@PathVariable Long no) {
 
-        //반복 주기 삭제 -> 정기일때만 실행시키기??!
-        repeatPeriodService.deleteRepeatPeriod(no);
-
-        //봉사 참여자 리스트 삭제 필요
-
-        //스케줄 삭제 필요
-
-        //스케줄 참여자 리스트 삭제 필요
-
-        //공지사항 삭제 필요
-
-        //공지사항 확인 리스트 삭제 필요
-
-        //이미지 삭제
-        imageService.deleteImage(RealWorkCode.RECRUITMENT, no);
-
-        //모집글 삭제
+        //모집글 관련 엔티티들 삭제
         recruitmentService.deleteRecruitment(no);
 
+        //모집글 이미지 삭제
+        imageService.deleteImage(RealWorkCode.RECRUITMENT, no);
+
+        /**
+         * 봉사 참여자 리스트 삭제 필요
+         * 관련 스케줄 삭제 필요(독립 서비스 로직 구현하기)
+         * 스케줄 참여자 리스트 삭제 필요
+         * 공지사항 삭제 필요(독립 서비스 로직 구현하기)
+         * 공지사항 확인 리스트 삭제 필요
+         */
         return new ResponseEntity(HttpStatus.OK);
     }
 }

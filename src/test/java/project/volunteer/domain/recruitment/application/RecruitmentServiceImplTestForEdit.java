@@ -7,11 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
+import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
+import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -21,6 +28,7 @@ import project.volunteer.global.common.component.IsDeleted;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.List;
 
 @SpringBootTest
 @Transactional
@@ -30,6 +38,8 @@ class RecruitmentServiceImplTestForEdit {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentService recruitmentService;
     @Autowired RecruitmentRepository recruitmentRepository;
+    @Autowired RepeatPeriodService repeatPeriodService;
+    @Autowired RepeatPeriodRepository repeatPeriodRepository;
 
     private Long saveRecruitmentNo;
     private void clear() {
@@ -52,8 +62,8 @@ class RecruitmentServiceImplTestForEdit {
         clear();
     }
 
-    private void setRecruitment() {
-        //모집글 저장
+    private void setRegRecruitment() {
+        //정기-모집글 저장
         String category = "001";
         String volunteeringType = VolunteeringType.REG.name();
         String volunteerType = "1"; //all
@@ -75,14 +85,23 @@ class RecruitmentServiceImplTestForEdit {
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
 
+        //정기-주기 저장
+        String period = "month";
+        int week = Week.FIRST.getValue();
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
+        RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
+        repeatPeriodService.addRepeatPeriod(saveRecruitmentNo, savePeriodDto);
+
         clear();
     }
 
+
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 모집글_삭제_성공(){
+    @Rollback(value = false)
+    public void 정기모집글_삭제_성공_반복주기포함(){
         //given
-        setRecruitment();
+        setRegRecruitment();
 
         //when
         recruitmentService.deleteRecruitment(saveRecruitmentNo);
@@ -91,5 +110,9 @@ class RecruitmentServiceImplTestForEdit {
         //then
         Recruitment recruitment = recruitmentRepository.findById(saveRecruitmentNo).get();
         Assertions.assertThat(recruitment.getIsDeleted()).isEqualTo(IsDeleted.Y);
+
+        List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(saveRecruitmentNo);
+        findPeriod.stream()
+                .forEach(p -> Assertions.assertThat(p.getIsDeleted()).isEqualTo(IsDeleted.Y));
     }
 }

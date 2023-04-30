@@ -38,7 +38,6 @@ import javax.persistence.PersistenceContext;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -89,7 +88,8 @@ class RecruitmentControllerTestForEdit {
         em.flush();
         em.clear();
     }
-    private void setRecruitment(){
+    private void setRegRecruitment(){
+        //정기-모집글 등록
         String category = "001";
         String volunteeringType = VolunteeringType.REG.name();
         String volunteerType = "1"; //all
@@ -110,16 +110,15 @@ class RecruitmentControllerTestForEdit {
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
-    }
-    private void setRepeatPeriod(){
-        //(정기) 반복주기 저장
+
+        //정기-반복주기 등록
         String period = "month";
         int week = Week.FIRST.getValue();
         List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
         RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
         repeatPeriodService.addRepeatPeriod(saveRecruitmentNo, savePeriodDto);
     }
-    private void addImage(RealWorkCode realWorkCode, Long no) throws IOException {
+    private void setImage(RealWorkCode realWorkCode, Long no) throws IOException {
         ImageParam staticImageDto = ImageParam.builder()
                 .code(realWorkCode)
                 .imageType(ImageType.UPLOAD)
@@ -134,42 +133,13 @@ class RecruitmentControllerTestForEdit {
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
 
-    @DisplayName("모집글만 삭제 테스트")
+    @DisplayName("정기 모집글 삭제 테스트(반복주기,이미지 포함)")
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_삭제_성공() throws Exception {
+    public void 정기모집글_삭제_성공() throws Exception {
         //given
-        setRecruitment();
-
-        //when & then
-        mockMvc.perform(delete(DELETE_URL+saveRecruitmentNo))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @DisplayName("모집글 and 반복주기 삭제 테스트")
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_반복주기_삭제_성공() throws Exception {
-        //given
-        setRecruitment();
-        setRepeatPeriod();
-
-        //when & then
-        mockMvc.perform(delete(DELETE_URL+saveRecruitmentNo))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @DisplayName("모집글 and 반복 주기 and 모집글이미지 삭제 테스트")
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Rollback(value = false)
-    public void 모집글_반복주기_모집글이미지_삭제_성공() throws Exception {
-        //given
-        setRecruitment();
-        setRepeatPeriod();
-        addImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+        setRegRecruitment();
+        setImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
 
         //when & then
         mockMvc.perform(delete(DELETE_URL+saveRecruitmentNo))

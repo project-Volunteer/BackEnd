@@ -3,7 +3,6 @@ package project.volunteer.domain.image.application;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +30,8 @@ import javax.persistence.EntityManager;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SpringBootTest
@@ -45,7 +46,7 @@ class ImageServiceImplTestForEdit {
     @Autowired FileService fileService;
 
     private Long saveRecruitmentNo;
-    private Long uploadImageNo;
+    private List<Long> uploadImageNoList = new ArrayList<>();
     private void clear() {
         em.flush();
         em.clear();
@@ -80,8 +81,7 @@ class ImageServiceImplTestForEdit {
                 .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
-        Long imageNo = imageService.addImage(imageParam);
-        uploadImageNo = imageNo;
+        uploadImageNoList.add(imageService.addImage(imageParam));
     }
     private MockMultipartFile getMockMultipartFile() throws IOException {
         return new MockMultipartFile(
@@ -103,8 +103,8 @@ class ImageServiceImplTestForEdit {
     }
     @AfterEach
     public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
-        if(uploadImageNo!=null){
-            Image image = imageRepository.findById(uploadImageNo).get();
+        for(Long id : uploadImageNoList){
+            Image image = imageRepository.findById(id).get();
             Storage storage = image.getStorage();
             fileService.deleteFile(storage.getFakeImageName());
         }
@@ -112,7 +112,7 @@ class ImageServiceImplTestForEdit {
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 업로드_이미지_삭제_성공() throws IOException {
+    public void 단건_이미지_삭제_성공() throws IOException {
         //given
         setRecruitment();
         setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
@@ -122,17 +122,34 @@ class ImageServiceImplTestForEdit {
         imageService.deleteImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
 
         //then
-        Image image = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.RECRUITMENT, saveRecruitmentNo).get();
-        Assertions.assertThat(image.getIsDeleted()).isEqualTo(IsDeleted.Y);
-        Assertions.assertThat(image.getStorage().getIsDeleted()).isEqualTo(IsDeleted.Y);
+        uploadImageNoList.stream()
+                .forEach(img -> {
+                    Image image = imageRepository.findById(img).get();
+                    Assertions.assertThat(image.getIsDeleted()).isEqualTo(IsDeleted.Y);
+                    Assertions.assertThat(image.getStorage().getIsDeleted()).isEqualTo(IsDeleted.Y);
+                });
     }
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 업로드_이미지_삭제_실패_없는_이미지(){
+    public void 복수_이미지_삭제_성공() throws IOException {
+        //given
+        setRecruitment();
+        setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+        setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+        setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+        clear();
 
-        Assertions.assertThatThrownBy(() -> imageService.deleteImage(RealWorkCode.RECRUITMENT, Long.MAX_VALUE))
-                .isInstanceOf(NullPointerException.class);
+        //when
+        imageService.deleteImageList(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+
+        //then
+        uploadImageNoList.stream()
+                .forEach(img -> {
+                    Image image = imageRepository.findById(img).get();
+                    Assertions.assertThat(image.getIsDeleted()).isEqualTo(IsDeleted.Y);
+                    Assertions.assertThat(image.getStorage().getIsDeleted()).isEqualTo(IsDeleted.Y);
+                });
     }
 
 }

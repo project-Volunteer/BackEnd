@@ -54,14 +54,14 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
 
         //모집글 이미지(image + storage) -> 쿼리 1번
         //모집글 이미지는 반드시 존재!
-        Optional<Image> recruitmentImage = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.RECRUITMENT, no);
+        Optional<Image> recruitmentImage = imageRepository.findByEGStorageByCodeAndNo(RealWorkCode.RECRUITMENT, no);
         //2. 모집글 이미지 dto 세팅
         if(recruitmentImage.isPresent())
             dto.setPicture(new PictureDetails(recruitmentImage.get().getStaticImageName(), recruitmentImage.get().getStorage().getImagePath()));
 
         //작성자 프로필 이미지(image + storage) -> 쿼리 1번
         //upload 이미지이므로 존재할 수도 있고, 없을수 있음.!
-        Optional<Image> userUploadImage = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.USER, writer.getUserNo());
+        Optional<Image> userUploadImage = imageRepository.findByEGStorageByCodeAndNo(RealWorkCode.USER, writer.getUserNo());
         //3. 모집글 작성자 dto 세팅
         dto.setAuthor(createWriterDto(writer, userUploadImage));
 
@@ -106,7 +106,7 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
                 .forEach(p -> {
                     User participant = p.getParticipant();
                     Boolean isApproved = (p.getState().equals(State.JOIN_APPROVAL))?true:false;
-                    Optional<Image> userUploadImage = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.USER, participant.getUserNo());
+                    Optional<Image> userUploadImage = imageRepository.findByEGStorageByCodeAndNo(RealWorkCode.USER, participant.getUserNo());
                     if(userUploadImage.isPresent()){  //유저 프로필이 업로드 이미지인 경우
                         dtos.add(new ParticipantDetails(participant.getNickName(), userUploadImage.get().getStorage().getImagePath(), isApproved));
                     }else {                           //유저 프로필이 기본(oauth image)인 경우

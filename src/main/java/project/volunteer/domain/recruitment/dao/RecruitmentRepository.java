@@ -15,4 +15,8 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
     @Query("select r from Recruitment r " +
             "where r.recruitmentNo=:no and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N and r.isPublished=true")
     Optional<Recruitment> findEGWriterAndRecruitment(@Param("no") Long recruitmentNo);
+
+    @Query("select r from Recruitment  r " +
+            "where r.recruitmentNo=:no and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    Optional<Recruitment> findByNo(@Param("no") Long recruitmentNo);
 }

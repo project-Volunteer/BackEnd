@@ -8,4 +8,6 @@ public interface ImageService {
     public Long addImage(ImageParam saveImageDto);
 
     public void deleteImage(RealWorkCode code, Long no);
+
+    public void deleteImageList(RealWorkCode code, Long no);
 }
