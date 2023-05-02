@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.volunteer.global.common.component.IsDeleted;
 
 import javax.persistence.*;
 
@@ -29,12 +30,21 @@ public class Storage {
     @Column(name = "ext_name", length = 10, nullable = false)
     private String extName; //확장자명
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_deleted", length = 1, nullable = false)
+    private IsDeleted isDeleted;
+
     @Builder
     public Storage(String imagePath, String fakeImageName, String realImageName, String extName) {
         this.imagePath = imagePath;
         this.fakeImageName = fakeImageName;
         this.realImageName = realImageName;
         this.extName = extName;
+        this.isDeleted = IsDeleted.N;
+    }
+
+    public void setDeleted(){
+        this.isDeleted=IsDeleted.Y;
     }
 
 }

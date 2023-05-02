@@ -10,6 +10,8 @@ import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)

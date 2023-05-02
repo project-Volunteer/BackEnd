@@ -1,6 +1,7 @@
-package project.volunteer.global.common.converter;
+package project.volunteer.domain.participation.converter;
 
 import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.converter.AbstractLegacyEnumAttributeConverter;
 
 import javax.persistence.Converter;
 

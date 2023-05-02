@@ -18,6 +18,7 @@ import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuer
 import project.volunteer.domain.recruitment.domain.*;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.State;
 
 import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
@@ -85,8 +86,9 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                         eqVolunteeringType(searchType.getVolunteeringType()),
                         eqVolunteerType(searchType.getVolunteerType()),
                         eqIsIssued(searchType.getIsIssued()),
-                        recruitment.isPublished.eq(Boolean.TRUE) //임시저장된 모집글은 제외
-                        //추후 삭제된 게시물도 제외 필요.
+
+                        recruitment.isPublished.eq(Boolean.TRUE), //임시저장된 모집글은 제외
+                        recruitment.isDeleted.eq(IsDeleted.N)     //삭제 게시물 제외
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1) //limit 보다 한개더 가져온다.
@@ -94,6 +96,25 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .fetch(); //counting 쿼리 X
 
         return checkEndPage(pageable, content);
+    }
+
+    @Override
+    public Long findRecruitmentCountBySearchType(RecruitmentCond searchType) {
+        return jpaQueryFactory
+                .select(recruitment.count())
+                .from(recruitment)
+                .where(
+                        containCategory(searchType.getCategory()),
+                        eqSidoCode(searchType.getSido()),
+                        eqSigunguCode(searchType.getSigungu()),
+                        eqVolunteeringType(searchType.getVolunteeringType()),
+                        eqVolunteerType(searchType.getVolunteerType()),
+                        eqIsIssued(searchType.getIsIssued()),
+
+                        recruitment.isPublished.eq(Boolean.TRUE), //임시저장된 모집글은 제외
+                        recruitment.isDeleted.eq(IsDeleted.N)     //삭제 게시물 제외
+                )
+                .fetchOne();
     }
 
     private List<Day> findDays(Long recruitmentNo){

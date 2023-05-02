@@ -5,11 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -181,7 +179,7 @@ class RecruitmentControllerTestForWrite {
         //finally(s3 업로드 이미지 삭제)
         //테스트 코드에서 저장한 모집글 게시물은 하나니깐 전체 조회해도 반드시 하나만 나올것이다. (좋지 않은 코드 같은데...)
         Recruitment recruitment = recruitmentRepository.findAll().get(0);
-        Image image = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.RECRUITMENT, recruitment.getRecruitmentNo()).get();
+        Image image = imageRepository.findByEGStorageByCodeAndNo(RealWorkCode.RECRUITMENT, recruitment.getRecruitmentNo()).get();
         fileService.deleteFile(image.getStorage().getFakeImageName());
     }
 
@@ -209,7 +207,7 @@ class RecruitmentControllerTestForWrite {
         //finally(s3 업로드 이미지 삭제)
         //테스트 코드에서 저장한 모집글 게시물은 하나니깐 전체 조회해도 반드시 하나만 나올것이다. (좋지 않은 코드 같은데...)
         Recruitment recruitment = recruitmentRepository.findAll().get(0);
-        Image image = imageRepository.findByRealWorkCodeAndNo(RealWorkCode.RECRUITMENT, recruitment.getRecruitmentNo()).get();
+        Image image = imageRepository.findByEGStorageByCodeAndNo(RealWorkCode.RECRUITMENT, recruitment.getRecruitmentNo()).get();
         fileService.deleteFile(image.getStorage().getFakeImageName());
     }
 

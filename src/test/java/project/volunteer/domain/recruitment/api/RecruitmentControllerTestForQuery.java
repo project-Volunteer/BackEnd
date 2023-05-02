@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class RecruitmentControllerTestForFindAll {
+class RecruitmentControllerTestForQuery {
 
     @Autowired UserRepository userRepository;
     @Autowired ParticipantRepository participantRepository;
@@ -66,7 +66,8 @@ class RecruitmentControllerTestForFindAll {
     @PersistenceContext EntityManager em;
     @Autowired MockMvc mockMvc;
 
-    private static final String FINDALL_URL = "/recruitment";
+    private static final String FIND_ALL_URL = "/recruitment";
+    private static final String COUNT_ALL_URL = "/recruitment/count";
     private static User saveUser;
     private List<Long> deletePlanS3ImageNo = new ArrayList<>();
     private void clear() {
@@ -204,7 +205,7 @@ class RecruitmentControllerTestForFindAll {
 
         //when & then
         mockMvc.perform(
-                get(FINDALL_URL).params(info))
+                get(FIND_ALL_URL).params(info))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -222,9 +223,42 @@ class RecruitmentControllerTestForFindAll {
 
         //when & then
         mockMvc.perform(
-                        get(FINDALL_URL).params(info))
+                        get(FIND_ALL_URL).params(info))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
 
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    public void 모집글_전체카운트_모든필터링_성공() throws Exception {
+        //init
+        setData();
+
+        //given
+        MultiValueMap<String,String> info = new LinkedMultiValueMap();
+        info.add("volunteering_category", "001");
+        info.add("sido", "11");
+        info.add("sigungu","1111");
+        info.add("volunteering_type", VolunteeringType.IRREG.name());
+        info.add("volunteer_type", "1"); //all
+        info.add("is_issued", "true");
+
+        //when & then
+        mockMvc.perform(
+                        get(COUNT_ALL_URL).params(info))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    public void 모집글_전체카운트_빈필터링_성공() throws Exception {
+        //init
+        setData();
+
+        mockMvc.perform(
+                        get(COUNT_ALL_URL))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 }

@@ -6,4 +6,5 @@ public interface RecruitmentService {
 
     public Long addRecruitment(RecruitmentParam saveDto);
 
+    public void deleteRecruitment(Long deleteNo);
 }

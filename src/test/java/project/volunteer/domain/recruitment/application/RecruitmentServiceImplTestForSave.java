@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.*;
 //@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-class RecruitmentServiceImplTest {
+class RecruitmentServiceImplTestForSave {
 
     //@Mock
     @Autowired

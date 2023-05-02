@@ -86,6 +86,25 @@ public class RecruitmentController {
                         dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
     }
 
+    @GetMapping("/recruitment/count")
+    public ResponseEntity<RecruitmentCountResponse> recruitmentListCount(@RequestParam(required = false) List<String> volunteering_category,
+                                                                         @RequestParam(required = false) String sido,
+                                                                         @RequestParam(required = false) String sigungu,
+                                                                         @RequestParam(required = false) String volunteering_type,
+                                                                         @RequestParam(required = false) String volunteer_type,
+                                                                         @RequestParam(required = false) Boolean is_issued){
+        Long recruitmentsCount = recruitmentQueryDtoRepository.findRecruitmentCountBySearchType(
+                RecruitmentCond.builder()
+                        .category(volunteering_category)
+                        .sido(sido)
+                        .sigungu(sigungu)
+                        .volunteeringType(volunteering_type)
+                        .volunteerType(volunteer_type)
+                        .isIssued(is_issued)
+                        .build());
+        return ResponseEntity.ok(new RecruitmentCountResponse("success count recruitment list", recruitmentsCount));
+    }
+
     @GetMapping("/recruitment/{no}")
     public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
 
@@ -93,4 +112,22 @@ public class RecruitmentController {
         return ResponseEntity.ok(new RecruitmentDetailsResponse("success search recruitment details", dto));
     }
 
+    @DeleteMapping("/recruitment/{no}")
+    public ResponseEntity recruitmentDelete(@PathVariable Long no) {
+
+        //모집글 관련 엔티티들 삭제
+        recruitmentService.deleteRecruitment(no);
+
+        //모집글 이미지 삭제
+        imageService.deleteImage(RealWorkCode.RECRUITMENT, no);
+
+        /**
+         * 봉사 참여자 리스트 삭제 필요
+         * 관련 스케줄 삭제 필요(독립 서비스 로직 구현하기)
+         * 스케줄 참여자 리스트 삭제 필요
+         * 공지사항 삭제 필요(독립 서비스 로직 구현하기)
+         * 공지사항 확인 리스트 삭제 필요
+         */
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }
