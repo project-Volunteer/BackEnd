@@ -86,13 +86,6 @@ public class RecruitmentController {
                         dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
     }
 
-    @GetMapping("/recruitment/{no}")
-    public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
-
-        RecruitmentDetails dto = recruitmentDtoService.findRecruitment(no);
-        return ResponseEntity.ok(new RecruitmentDetailsResponse("success search recruitment details", dto));
-    }
-
     @GetMapping("/recruitment/count")
     public ResponseEntity<RecruitmentCountResponse> recruitmentListCount(@RequestParam(required = false) List<String> volunteering_category,
                                                                          @RequestParam(required = false) String sido,
@@ -112,4 +105,29 @@ public class RecruitmentController {
         return ResponseEntity.ok(new RecruitmentCountResponse("success count recruitment list", recruitmentsCount));
     }
 
+    @GetMapping("/recruitment/{no}")
+    public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
+
+        RecruitmentDetails dto = recruitmentDtoService.findRecruitment(no);
+        return ResponseEntity.ok(new RecruitmentDetailsResponse("success search recruitment details", dto));
+    }
+
+    @DeleteMapping("/recruitment/{no}")
+    public ResponseEntity recruitmentDelete(@PathVariable Long no) {
+
+        //모집글 관련 엔티티들 삭제
+        recruitmentService.deleteRecruitment(no);
+
+        //모집글 이미지 삭제
+        imageService.deleteImage(RealWorkCode.RECRUITMENT, no);
+
+        /**
+         * 봉사 참여자 리스트 삭제 필요
+         * 관련 스케줄 삭제 필요(독립 서비스 로직 구현하기)
+         * 스케줄 참여자 리스트 삭제 필요
+         * 공지사항 삭제 필요(독립 서비스 로직 구현하기)
+         * 공지사항 확인 리스트 삭제 필요
+         */
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

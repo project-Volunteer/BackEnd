@@ -1,6 +1,7 @@
 package project.volunteer.domain.image.application;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -22,16 +23,20 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @SpringBootTest
 @Transactional
-class ImageServiceImplTest {
+class ImageServiceImplTestForEdit {
 
     @Autowired EntityManager em;
     @Autowired UserRepository userRepository;
@@ -41,15 +46,12 @@ class ImageServiceImplTest {
     @Autowired FileService fileService;
 
     private Long saveRecruitmentNo;
+    private List<Long> uploadImageNoList = new ArrayList<>();
     private void clear() {
         em.flush();
         em.clear();
     }
-    private MockMultipartFile getMockMultipartFile() throws IOException {
-        return new MockMultipartFile(
-                "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
-    }
-    private void setDate(){
+    private void setRecruitment(){
         String category = "001";
         String organizationName ="name";
         String sido = "11";
@@ -70,11 +72,23 @@ class ImageServiceImplTest {
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
-        clear();
+    }
+    private void setUploadImage(RealWorkCode realWorkCode, Long no) throws IOException {
+        ImageParam imageParam = ImageParam.builder()
+                .code(realWorkCode)
+                .imageType(ImageType.UPLOAD)
+                .no(no)
+                .staticImageCode(null)
+                .uploadImage(getMockMultipartFile())
+                .build();
+        uploadImageNoList.add(imageService.addImage(imageParam));
+    }
+    private MockMultipartFile getMockMultipartFile() throws IOException {
+        return new MockMultipartFile(
+                "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
     @BeforeEach
     private void initUser() {
-
         String nickname = "nickname";
         String email = "email@gmail.com";
         Gender gender = Gender.M;
@@ -87,86 +101,55 @@ class ImageServiceImplTest {
                 .provider("kakao").providerId("1234").build());
         clear();
     }
-
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 모집글_이미지_저장_실패_없는모집글PK() {
-        //init
-        setDate();
-
-        //given
-        ImageParam dto = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(Long.MAX_VALUE) //-> 없는 모집글 PK
-                .staticImageCode("1")
-                .uploadImage(null)
-                .build();
-
-        //when,then
-        Assertions.assertThatThrownBy(() -> imageService.addImage(dto))
-                .isInstanceOf(NullPointerException.class);
-    }
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 모집글_정적_이미지_저장_성공() throws IOException {
-        //init
-        setDate();
-
-        //given
-        ImageParam dto = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitmentNo)
-                .staticImageCode("1")
-                .uploadImage(null)
-                .build();
-
-        //when
-        Long saveId = imageService.addImage(dto);
-        clear();
-
-        //then
-        Image image = imageRepository.findById(saveId).get();
-        Assertions.assertThat(image.getImageNo()).isEqualTo(saveId);
-        Assertions.assertThat(image.getNo()).isEqualTo(saveRecruitmentNo);
-        Assertions.assertThat(image.getStaticImageName()).isEqualTo("1");
-        Assertions.assertThat(image.getRealWorkCode()).isEqualTo(RealWorkCode.RECRUITMENT);
-        Assertions.assertThat(image.getStorage()).isNull();
+    @AfterEach
+    public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
+        for(Long id : uploadImageNoList){
+            Image image = imageRepository.findById(id).get();
+            Storage storage = image.getStorage();
+            fileService.deleteFile(storage.getFakeImageName());
+        }
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 모집글_업로드_이미지_저장_성공() throws IOException {
-        //init
-        setDate();
-
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 단건_이미지_삭제_성공() throws IOException {
         //given
-        ImageParam dto = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.UPLOAD)
-                .no(saveRecruitmentNo)
-                .staticImageCode(null)
-                .uploadImage(getMockMultipartFile())
-                .build();
-
-        //when
-        Long saveId = imageService.addImage(dto);
+        setRecruitment();
+        setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
         clear();
 
+        //when
+        imageService.deleteImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+
         //then
-        Image image = imageRepository.findById(saveId).get();
-        Assertions.assertThat(image.getImageNo()).isEqualTo(saveId);
-        Assertions.assertThat(image.getNo()).isEqualTo(saveRecruitmentNo);
-        Assertions.assertThat(image.getStaticImageName()).isNull();
-        Assertions.assertThat(image.getRealWorkCode()).isEqualTo(RealWorkCode.RECRUITMENT);
+        uploadImageNoList.stream()
+                .forEach(img -> {
+                    Image image = imageRepository.findById(img).get();
+                    Assertions.assertThat(image.getIsDeleted()).isEqualTo(IsDeleted.Y);
+                    Assertions.assertThat(image.getStorage().getIsDeleted()).isEqualTo(IsDeleted.Y);
+                });
+    }
 
-        Storage storage = image.getStorage();
-        Assertions.assertThat(storage.getRealImageName()).isEqualTo("file.PNG");
-        Assertions.assertThat(storage.getExtName()).isEqualTo(".PNG");
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 복수_이미지_삭제_성공() throws IOException {
+        //given
+        setRecruitment();
+        setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+        setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+        setUploadImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+        clear();
 
-        //finally
-        fileService.deleteFile(storage.getFakeImageName());
+        //when
+        imageService.deleteImageList(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+
+        //then
+        uploadImageNoList.stream()
+                .forEach(img -> {
+                    Image image = imageRepository.findById(img).get();
+                    Assertions.assertThat(image.getIsDeleted()).isEqualTo(IsDeleted.Y);
+                    Assertions.assertThat(image.getStorage().getIsDeleted()).isEqualTo(IsDeleted.Y);
+                });
     }
 
 }

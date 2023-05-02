@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.State;
-import project.volunteer.global.common.converter.CategoryConverter;
-import project.volunteer.global.common.converter.StateConverter;
+import project.volunteer.domain.participation.converter.StateConverter;
 
 import javax.persistence.*;
 @Getter

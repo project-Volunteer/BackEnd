@@ -8,9 +8,10 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
-import project.volunteer.global.common.converter.CategoryConverter;
-import project.volunteer.global.common.converter.VolunteerTypeConverter;
+import project.volunteer.domain.recruitment.converter.CategoryConverter;
+import project.volunteer.domain.recruitment.converter.VolunteerTypeConverter;
 
 import javax.persistence.*;
 
@@ -69,6 +70,10 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "is_published", nullable = false)
     private Boolean isPublished;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_deleted", length = 1, nullable = false)
+    private IsDeleted isDeleted;
+
     /**
      * Auditing - 작성자, 수정인 추가 필요
      */
@@ -97,10 +102,15 @@ public class Recruitment extends BaseTimeEntity {
 
         this.likeCount = 0;
         this.viewCount = 0;
+        this.isDeleted = IsDeleted.N;
     }
 
     public void setWriter(User user){
         this.writer = user;
     }
+
+    public void setDeleted(){this.isDeleted=IsDeleted.Y;}
+
+    public void setIsPublished(Boolean isPublished){this.isPublished=isPublished;}
 
 }

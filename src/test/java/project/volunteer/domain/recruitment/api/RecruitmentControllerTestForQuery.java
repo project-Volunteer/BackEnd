@@ -67,7 +67,7 @@ class RecruitmentControllerTestForQuery {
     @Autowired MockMvc mockMvc;
 
     private static final String FIND_ALL_URL = "/recruitment";
-    private static final String COUNT_URL = "/recruitment/count";
+    private static final String COUNT_ALL_URL = "/recruitment/count";
     private static User saveUser;
     private List<Long> deletePlanS3ImageNo = new ArrayList<>();
     private void clear() {
@@ -245,7 +245,7 @@ class RecruitmentControllerTestForQuery {
 
         //when & then
         mockMvc.perform(
-                        get(COUNT_URL).params(info))
+                        get(COUNT_ALL_URL).params(info))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -257,7 +257,7 @@ class RecruitmentControllerTestForQuery {
         setData();
 
         mockMvc.perform(
-                        get(COUNT_URL))
+                        get(COUNT_ALL_URL))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
