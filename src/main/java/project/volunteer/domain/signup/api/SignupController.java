@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.recruitment.api.dto.response.SaveRecruitResponse;
 import project.volunteer.domain.signup.api.dto.request.UserEmailRequest;
 import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.signup.api.dto.response.KakaoUserInfoResponse;
