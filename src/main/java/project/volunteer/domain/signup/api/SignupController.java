@@ -24,6 +24,7 @@ import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.volunteer.domain.recruitment.api.dto.response.SaveRecruitResponse;
+import project.volunteer.domain.signup.api.dto.request.UserEmailRequest;
 import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.signup.api.dto.response.KakaoUserInfoResponse;
 import project.volunteer.domain.signup.api.dto.response.MailSendResultResponse;
@@ -63,16 +64,21 @@ public class SignupController {
 		String accessToken = kakaoLoginService.getKakaoAccessToken(param.get("authorizationCode"));
 		KakaoUserInfo kakaoUserInfo = kakaoLoginService.getKakaoUserInfo(accessToken);
 		
-		return ResponseEntity.ok(new KakaoUserInfoResponse("success search kakao user info", kakaoUserInfo));
+		if(userSignupService.checkDuplicatedUser("kakao_"+kakaoUserInfo.getProviderId())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new KakaoUserInfoResponse("이미 가입된 유저입니다.", kakaoUserInfo));
+		} else {
+			return ResponseEntity.ok(new KakaoUserInfoResponse("success search kakao user info", kakaoUserInfo));
+		}
+		
 	}
 
 	@ResponseBody
 	@PostMapping("/signup/email")
-	public ResponseEntity<MailSendResultResponse> sendSingUpCode(@RequestBody HashMap<String, String> param) throws MessagingException {
+	public ResponseEntity<MailSendResultResponse> sendSingUpCode(@RequestBody @Validated UserEmailRequest userEmailRequest) throws MessagingException {
 		// 랜덤 키 생성
 		String authCode= String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
 		
-		return mailSendService.sendEmail(param.get("email"), "Volunteer Sign Auth code", authCode);
+		return mailSendService.sendEmail(userEmailRequest.getEmail(), "Volunteer Sign Auth code", authCode);
 	}
 
 	@ResponseBody

@@ -46,7 +46,7 @@ class MailSendServiceImplTest {
 		ResponseEntity<MailSendResultResponse> result = mailSendService.sendEmail(toAddress, subject, authCode);
 		
 		// then
-		Assertions.assertThat(result.getBody().getMessage()).contains("Fail");
+		Assertions.assertThat(result.getBody().getMessage()).contains("메일 전송에 실패했습니다.");
 	}
 
 }

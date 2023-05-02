@@ -30,6 +30,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 		log.error("JWT 토큰 인증 실패");
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
-		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("jwt token authentication fail")));
+		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("로그인에 실패하셨습니다.")));
 	}
 }

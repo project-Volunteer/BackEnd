@@ -39,3 +39,5 @@ out/
 ### project ignore ###
 application-local.yml
 *.yml
+.gitmodules
+yml-config/

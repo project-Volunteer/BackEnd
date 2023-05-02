@@ -1,5 +1,7 @@
 package project.volunteer.domain.signup.application;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +40,11 @@ public class UserSignupServiceImpl implements UserSignupService {
 					.build();
 		
 		return userRepository.save(user).getUserNo();
+	}
+
+	@Override
+	public Boolean checkDuplicatedUser(String id) {
+		Optional<User> findUser = userRepository.findById(id);
+		return findUser.isPresent();
 	}
 }

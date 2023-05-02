@@ -1,8 +1,5 @@
 package project.volunteer.domain.signup.application;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -37,11 +34,11 @@ public class MailSendServiceImpl implements MailSendService{
 			return ResponseEntity.ok(new MailSendResultResponse(resultMessage, authCode));
 		} catch (MailSendException e) {
 			log.error("MailSendException {}", e.getMessage(), e);
-			resultMessage = "Failed to send mail";
+			resultMessage = "메일 전송에 실패했습니다.";
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MailSendResultResponse(resultMessage, authCode));
 		} catch(MessagingException e) {
 			log.error("MessagingException {}", e.getMessage(), e);
-			resultMessage = "Failed to send mail";
+			resultMessage = "메일 전송에 실패했습니다.";
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MailSendResultResponse(resultMessage, authCode));
 		}
 	}

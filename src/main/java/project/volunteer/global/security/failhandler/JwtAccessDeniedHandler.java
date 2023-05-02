@@ -30,6 +30,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
 		log.error("권한이 없는 사용자 접근");
 		response.setStatus(HttpStatus.FORBIDDEN.value());
-		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("not acceptable fail")));
+		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("로그인에 실패하셨습니다.")));
 	}
 }

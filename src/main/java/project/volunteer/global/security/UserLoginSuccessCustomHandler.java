@@ -32,7 +32,6 @@ import project.volunteer.global.util.ResponseUtil;
 public class UserLoginSuccessCustomHandler implements AuthenticationSuccessHandler {
 
 	private final JwtService jwtService;
-	private final ResponseUtil responseUtil;
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -56,7 +55,7 @@ public class UserLoginSuccessCustomHandler implements AuthenticationSuccessHandl
 									.build();
 		
 		// 4. response
-		responseUtil.setJwtTokenResponseParam(response, jwtToken, userInfo, "success login");
+		ResponseUtil.setJwtTokenResponseParam(response, jwtToken, userInfo, "success login");
 	}
 
 	

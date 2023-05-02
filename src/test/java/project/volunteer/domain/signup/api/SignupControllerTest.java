@@ -41,7 +41,7 @@ class SignupControllerTest {
 		String requestJson = "{\"email\":\"jw_passion\"}";
 
 		mockMvc.perform(post("/signup/email").contentType(MediaType.APPLICATION_JSON).content(requestJson))
-				.andExpect(jsonPath("message", is("Failed to send mail"))).andDo(MockMvcResultHandlers.print());
+				.andExpect(MockMvcResultMatchers.status().is4xxClientError()).andDo(MockMvcResultHandlers.print());
 	}
 
 	@Test
@@ -60,8 +60,6 @@ class SignupControllerTest {
 				+ "\"email\": \"email\","
 				+ "\"birthday\": \"2000-11-10\","
 				+ "\"gender\": 1}";
-		
-		System.out.println(Gender.M.getCode());
 		
 		MockHttpServletRequestBuilder builder = 
 				post("/signup/user")

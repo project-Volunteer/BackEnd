@@ -30,6 +30,6 @@ public class UserLoginFailureCustomHandler implements AuthenticationFailureHandl
 		
 		log.error("로그인 실패");
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
-		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("login fail")));
+		response.getWriter().write(objectMapper.writeValueAsString(new BaseErrorResponse("로그인에 실패하셨습니다.")));
 	}
 }

@@ -37,4 +37,14 @@ class UserSignupServiceImplTest {
 		
 	}
 
+	
+	@Test
+	void 중복회원가입() {
+		// when
+		Boolean duplicated = userSignupService.checkDuplicatedUser("kakao_123456789");
+		
+		// then
+		Assertions.assertThat(duplicated).isTrue();
+	}
+
 }

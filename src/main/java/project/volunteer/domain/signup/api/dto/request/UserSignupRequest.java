@@ -3,33 +3,39 @@ package project.volunteer.domain.signup.api.dto.request;
 import java.time.LocalDate;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import project.volunteer.domain.user.domain.Gender;
 
-@Data
+@Getter @Setter
 public class UserSignupRequest {
-	@NotBlank(message = "필수 입력 값입니다.")
+	@NotBlank(message = "닉네임은 필수 입력 값입니다.")
 	private String nickName;
-	@NotBlank(message = "필수 입력 값입니다.")
+	
+	@NotBlank(message = "프로필 사진은 필수 입력 값입니다.")
 	private String profile;
 	
-	@NotBlank(message = "필수 입력 값입니다.")
-    @Email(message = "이메일 형식에 맞지 않습니다.")
+	@NotBlank(message = "이메일은 필수 입력 값입니다.")
+    @Email(message = "올바르지 않은 이메일 형식입니다.")
 	private String email;
-	
+
+	@NotNull(message = "생년월일은 필수 입력 값입니다.")
 	private LocalDate birthday;
+	
+	@NotNull(message = "성별은 필수 입력 값입니다.")
 	private Gender gender;
+	
 	private Boolean beforealarm_yn;
     private Boolean joinAlarmYn;
     private Boolean noticeAlarmYn;
     private Boolean beforeAlarmYn;
     private String provider;
+
+	@NotBlank(message = "제공기관 고유키는 필수 입력 값입니다.")
 	private String providerId;
 	
 	public UserSignupRequest() {}

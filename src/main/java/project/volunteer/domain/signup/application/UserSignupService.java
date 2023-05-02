@@ -6,4 +6,6 @@ public interface UserSignupService {
 
 	Long addUser(UserSignupRequest userSignup);
 
+	Boolean checkDuplicatedUser(String providerId);
+
 }
