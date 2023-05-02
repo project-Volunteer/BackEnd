@@ -5,6 +5,9 @@ spring:
       - aws
       - oauth
       - smtp
+
+  messages:
+    basename: messages
       
 logging:
   level:
