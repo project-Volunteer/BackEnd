@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import project.volunteer.domain.signup.api.dto.response.KakaoUserInfoResponse;
+import project.volunteer.domain.signup.dto.KakaoUserInfo;
 
 @Slf4j
 @Service
@@ -46,7 +47,7 @@ public class KakaoLoginServiceImpl implements KakaoLoginService{
 		return (String) response.get("access_token");
 	}
 
-	public KakaoUserInfoResponse getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+	public KakaoUserInfo getKakaoUserInfo(String accessToken) throws JsonProcessingException {
 		// 카카오에 요청 보내기 및 응답 받기
 		WebClient webClient = WebClient.builder()
 				.baseUrl("https://kapi.kakao.com")
@@ -64,11 +65,22 @@ public class KakaoLoginServiceImpl implements KakaoLoginService{
 		String nickname = (String) kakaoMap.get("nickname");
 		String profile = (String) kakaoMap.get("profile_image");
 		
-		KakaoUserInfoResponse kakaoUserInfoResponse = new KakaoUserInfoResponse();
-		kakaoUserInfoResponse.setProviderId(providerId);
-		kakaoUserInfoResponse.setNickName(nickname);
-		kakaoUserInfoResponse.setProfile(profile);
 		
-		return kakaoUserInfoResponse;
+		return new KakaoUserInfo(nickname, profile, providerId);
+	}
+
+	@Override
+	public String getKakaoProviderId(String kakaoAccessToken) throws JsonProcessingException {
+		WebClient webClient = WebClient.builder()
+				.baseUrl("https://kapi.kakao.com")
+				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.build();
+
+		JSONObject response = webClient.post()
+				.uri(uriBuilder -> uriBuilder.path("/v2/user/me").build())
+				.header("Authorization", "Bearer " + kakaoAccessToken)
+				.retrieve().bodyToMono(JSONObject.class).block();
+		
+		return response.getAsString("id");
 	}
 }

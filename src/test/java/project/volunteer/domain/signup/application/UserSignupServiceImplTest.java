@@ -2,11 +2,12 @@ package project.volunteer.domain.signup.application;
 
 import java.time.LocalDate;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.signup.application.UserSignupService;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.User;
@@ -19,19 +20,31 @@ class UserSignupServiceImplTest {
 	@Test
 	void 회원가입_성공() {
 		// given
-		UserSignupDTO userSignupDTO = new UserSignupDTO();
-		userSignupDTO.setGender(1);
-		userSignupDTO.setBirthday("2000-11-11");
+		UserSignupRequest userSignupDTO = new UserSignupRequest();
+		userSignupDTO.setGender(Gender.M);
+		userSignupDTO.setBirthday(LocalDate.parse("2000-11-22"));
 		userSignupDTO.setNickName("nickName");
 		userSignupDTO.setEmail("jw_passion@naver.com");
 		userSignupDTO.setProfile("profile");
 		userSignupDTO.setProviderId("123456789");
 		
 		// when
-		userSignupService.addUser(userSignupDTO);
+		Long userNo = userSignupService.addUser(userSignupDTO);
 		
 		// then
+		System.out.println("userNo = " + userNo);
+		Assertions.assertThat(userNo).isNotNull();
 		
+	}
+
+	
+	@Test
+	void 중복회원가입() {
+		// when
+		Boolean duplicated = userSignupService.checkDuplicatedUser("kakao_123456789");
+		
+		// then
+		Assertions.assertThat(duplicated).isTrue();
 	}
 
 }
