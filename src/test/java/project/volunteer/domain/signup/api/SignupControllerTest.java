@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.time.LocalDate;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.user.domain.Gender;
 
 @SpringBootTest
@@ -39,7 +41,7 @@ class SignupControllerTest {
 		String requestJson = "{\"email\":\"jw_passion\"}";
 
 		mockMvc.perform(post("/signup/email").contentType(MediaType.APPLICATION_JSON).content(requestJson))
-				.andExpect(jsonPath("resultMessage", is("Failed to send mail"))).andDo(MockMvcResultHandlers.print());
+				.andExpect(MockMvcResultMatchers.status().is4xxClientError()).andDo(MockMvcResultHandlers.print());
 	}
 
 	@Test
@@ -53,13 +55,11 @@ class SignupControllerTest {
 	@Test
 	public void 회원가입_vaildationcheck() throws Exception {
 		String requestJson = "{\"providerId\": \"123456\","
-				+ "\"nickName\": \"nickName\","
+				+ "\"nickName\": \"\","
 				+ "\"profile\": \"profile\","
 				+ "\"email\": \"email\","
-				+ "\"birthday\": \"2000-11-1\","
+				+ "\"birthday\": \"2000-11-10\","
 				+ "\"gender\": 1}";
-		
-		System.out.println(Gender.M.getCode());
 		
 		MockHttpServletRequestBuilder builder = 
 				post("/signup/user")
@@ -75,22 +75,22 @@ class SignupControllerTest {
 		// 필수 입력 값입니다.
 		// 이메일 형식에 맞지 않습니다.
 		// 날짜 포맷이 맞지 않습니다.
-		Assertions.assertThat(message).contains("이메일 형식에 맞지 않습니다.","날짜 포맷이 맞지 않습니다.");
+		Assertions.assertThat(message).contains("이메일 형식에 맞지 않습니다.","필수 입력 값입니다.");
 		
 	}
 
 	@Test
 	public void 회원가입_성공() throws Exception {
-		UserSignupDTO userSignupDTO = new UserSignupDTO();
+		UserSignupRequest userSignupDTO = new UserSignupRequest();
 		userSignupDTO.setProviderId("123456");
 		userSignupDTO.setNickName("nickName");
 		userSignupDTO.setProfile("profile");
 		userSignupDTO.setEmail("email@naver.com");
-		userSignupDTO.setBirthday("2000-11-22");
-		userSignupDTO.setGender(1);
+		userSignupDTO.setBirthday(LocalDate.parse("2000-11-22"));
+		userSignupDTO.setGender(Gender.M);
 
 		mockMvc.perform(post("/signup/user").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(userSignupDTO)))
-				.andExpect(MockMvcResultMatchers.status().is2xxSuccessful()).andDo(MockMvcResultHandlers.print());
+				.andExpect(MockMvcResultMatchers.status().isCreated()).andDo(MockMvcResultHandlers.print());
 	}
 }

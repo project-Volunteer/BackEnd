@@ -18,7 +18,13 @@ public class User extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userno")
     private Long userNo;
-
+    
+    @Column(name = "id", length = 100, nullable = false)
+    private String id;
+    
+    @Column(name = "password", length = 100, nullable = false)
+    private String password;
+    
     @Column(name = "nick_name", length = 13, nullable = false)
     private String nickName;
 
@@ -43,8 +49,12 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "beforealarm_yn", nullable = false)
     private Boolean beforeAlarmYn;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10, nullable = false)
+    private Role role;
     
-    @Column(length = 100, nullable = false)
+    @Column(length = 50, nullable = false)
     private String provider;
     
     @Column(name = "provider_id", length = 50, nullable = false)
@@ -58,8 +68,10 @@ public class User extends BaseTimeEntity {
      */
     
     @Builder
-    public User(String nickName, String email, Gender gender, LocalDate birthDay, String picture, Boolean joinAlarmYn,
-                Boolean noticeAlarmYn, Boolean beforeAlarmYn, String provider,String providerId, String refreshToken) {
+    public User(String id, String password, String nickName, String email, Gender gender, LocalDate birthDay, String picture, Boolean joinAlarmYn,
+                Boolean noticeAlarmYn, Boolean beforeAlarmYn, Role role, String provider,String providerId, String refreshToken) {
+        this.id = id;
+        this.password = password;
         this.nickName = nickName;
         this.email = email;
         this.gender = gender;
@@ -68,6 +80,7 @@ public class User extends BaseTimeEntity {
         this.joinAlarmYn = joinAlarmYn;
         this.noticeAlarmYn = noticeAlarmYn;
         this.beforeAlarmYn = beforeAlarmYn;
+        this.role = role;
         this.provider = provider;
         this.providerId = providerId;
         this.refreshToken = refreshToken;

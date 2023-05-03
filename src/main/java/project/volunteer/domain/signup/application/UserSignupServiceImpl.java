@@ -1,15 +1,15 @@
 package project.volunteer.domain.signup.application;
 
-import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.user.dao.UserRepository;
-import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 
 @Service
@@ -21,24 +21,30 @@ public class UserSignupServiceImpl implements UserSignupService {
 	private final PasswordEncoder passwordEncoder;
 	
 	@Override
-	public void addUser(UserSignupDTO userSignupDTO) {
-		Gender gender = (userSignupDTO.getGender() > 0) ? Gender.M : Gender.W;
-		LocalDate birthday = LocalDate.parse(userSignupDTO.getBirthday());
+	public Long addUser(UserSignupRequest userSignupRequest) {
 		User user = User.builder()
-					.nickName(userSignupDTO.getNickName())
-					.email(userSignupDTO.getEmail())
-					.gender(gender)
-					.birthDay(birthday)
-					.picture(userSignupDTO.getProfile())
-					.provider(passwordEncoder.encode("kakao"))
-					.providerId(userSignupDTO.getProviderId())
+					.id("kakao_"+userSignupRequest.getProviderId())
+					.password(passwordEncoder.encode("kakao"))
+					.nickName(userSignupRequest.getNickName())
+					.email(userSignupRequest.getEmail())
+					.gender(userSignupRequest.getGender())
+					.birthDay(userSignupRequest.getBirthday())
+					.picture(userSignupRequest.getProfile())
+					.role(Role.USER)
+					.provider("kakao")
+					.providerId(userSignupRequest.getProviderId())
 					.noticeAlarmYn(true)
 				    .joinAlarmYn(true)
 				    .noticeAlarmYn(true)
 				    .beforeAlarmYn(true)
 					.build();
 		
-		userRepository.save(user);
+		return userRepository.save(user).getUserNo();
 	}
 
+	@Override
+	public Boolean checkDuplicatedUser(String id) {
+		Optional<User> findUser = userRepository.findById(id);
+		return findUser.isPresent();
+	}
 }

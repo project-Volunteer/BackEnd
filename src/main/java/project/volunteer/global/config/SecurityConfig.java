@@ -2,6 +2,7 @@ package project.volunteer.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,14 +16,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.jwt.util.JwtProvider;
-import project.volunteer.domain.security.UserLoginSuccessCustomHandler;
-import project.volunteer.domain.security.failhandler.JwtAccessDeniedHandler;
-import project.volunteer.domain.security.failhandler.JwtAuthenticationEntryPoint;
-import project.volunteer.domain.security.failhandler.UserLoginFailureCustomHandler;
-import project.volunteer.domain.security.filter.JwtAuthenticationFilter;
-import project.volunteer.domain.security.filter.UsernamePasswordAuthenticationCustomFilter;
 import project.volunteer.domain.signup.application.KakaoLoginService;
+import project.volunteer.global.jwt.util.JwtProvider;
+import project.volunteer.global.security.UserLoginSuccessCustomHandler;
+import project.volunteer.global.security.failhandler.JwtAccessDeniedHandler;
+import project.volunteer.global.security.failhandler.JwtAuthenticationEntryPoint;
+import project.volunteer.global.security.failhandler.UserLoginFailureCustomHandler;
+import project.volunteer.global.security.filter.JwtAuthenticationFilter;
+import project.volunteer.global.security.filter.UsernamePasswordAuthenticationCustomFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -53,7 +54,9 @@ public class SecurityConfig {
 			
 			// exception handling 할 때 우리가 만든 클래스를 추가
             .exceptionHandling()
+            // 인증되지 않은 유저 요청 시
             .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            // 권한이 없는 유저 요청 시
             .accessDeniedHandler(jwtAccessDeniedHandler)
             .and()
 			
@@ -63,6 +66,18 @@ public class SecurityConfig {
 			
 			.authorizeRequests()
 			.anyRequest().permitAll()
+			/*
+			// 게시글 등록, 수정, 삭제
+			.antMatchers(HttpMethod.POST,"/recruitment").hasAuthority("USER")
+			.antMatchers(HttpMethod.PUT,"/recruitment").hasAuthority("USER")
+			.antMatchers(HttpMethod.DELETE,"/recruitment").hasAuthority("USER")
+			
+			// 일정 등록, 수정, 삭제
+			.antMatchers(HttpMethod.POST,"/schedule").hasAuthority("USER")
+			.antMatchers(HttpMethod.PUT,"/schedule").hasAuthority("USER")
+			.antMatchers(HttpMethod.DELETE,"/schedule").hasAuthority("USER")
+			*/
+			
 			.and()
 			.build();
 	}

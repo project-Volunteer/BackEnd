@@ -1,9 +1,11 @@
 package project.volunteer.domain.signup.application;
 
-import project.volunteer.domain.signup.api.dto.request.UserSignupDTO;
+import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 
 public interface UserSignupService {
 
-	void addUser(UserSignupDTO userSignup);
+	Long addUser(UserSignupRequest userSignup);
+
+	Boolean checkDuplicatedUser(String providerId);
 
 }
