@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import project.volunteer.global.error.exception.BaseException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,9 +42,7 @@ class AwsS3ServiceTest {
     public void AWS_S3_이미지_저장_실패_파일확장자에러() throws IOException {
 
         Assertions.assertThatThrownBy(() -> fileService.uploadFile(getFailMockMultipartFile(), FileFolder.RECRUITMENT_IMAGES))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("잘못된 형식의 파일");
-
+                .isInstanceOf(BaseException.class);
     }
 
 }

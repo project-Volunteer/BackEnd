@@ -20,6 +20,7 @@ public enum ErrorCode {
     //파일 관련
     INVALID_FILE_FORMAT(HttpStatus.BAD_REQUEST, "file.format.invalid"),
     NOT_FOUND_FILE_FOLDER(HttpStatus.INTERNAL_SERVER_ERROR, "file.folder.not_found"),
+    NOT_FOUND_FILE_FOLDER_OfCode(HttpStatus.INTERNAL_SERVER_ERROR, "file.folder.not_found"),
     S3_UPLOAD_IO_EX(HttpStatus.INTERNAL_SERVER_ERROR, "file.upload.io_ex")
 
     ;
