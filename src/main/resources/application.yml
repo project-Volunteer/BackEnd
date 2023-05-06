@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: local
+    include :
+      - aws
+      - oauth
+      - smtp
+
+logging:
+  level:
+    root: info
