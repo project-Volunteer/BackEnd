@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import project.volunteer.global.error.exception.BaseException;
+import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class AwsS3Service implements FileService{
                             .withCannedAcl(CannedAccessControlList.PublicRead)
             );
         } catch (IOException e) {
-            throw new BaseException(ErrorCode.S3_UPLOAD_IO_EX, String.format(e.getMessage()));
+            throw new BusinessException(ErrorCode.S3_UPLOAD_IO_EX, String.format(e.getMessage()));
         }
         return storageFileName;
     }
@@ -80,7 +80,7 @@ public class AwsS3Service implements FileService{
         }else if(fileFolder == FileFolder.LOG_IMAGES){
             folder = logFolder;
         }else {
-            throw new BaseException(ErrorCode.NOT_FOUND_FILE_FOLDER, String.format("Folder Name = [%s]", fileFolder));
+            throw new BusinessException(ErrorCode.NOT_FOUND_FILE_FOLDER, String.format("Folder Name = [%s]", fileFolder));
         }
         return folder;
     }
@@ -94,7 +94,7 @@ public class AwsS3Service implements FileService{
         try {
             return originalFileName.substring(originalFileName.lastIndexOf("."));
         }catch(StringIndexOutOfBoundsException e) {
-            throw new BaseException(ErrorCode.INVALID_FILE_FORMAT, String.format("File Name = [%s]", originalFileName));
+            throw new BusinessException(ErrorCode.INVALID_FILE_FORMAT, String.format("File Name = [%s]", originalFileName));
         }
     }
 }

@@ -13,7 +13,7 @@ import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.storage.application.StorageService;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
-import project.volunteer.global.error.exception.BaseException;
+import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 @Slf4j
@@ -73,10 +73,10 @@ public class ImageServiceImpl implements ImageService{
         //더 클린하게 작성할 수 없을까?
         if(code==RealWorkCode.USER) {
             userRepository.findById(no).orElseThrow(() ->
-                    new BaseException(ErrorCode.NOT_EXIST_USER, String.format("User No = [%d]", no)));
+                    new BusinessException(ErrorCode.NOT_EXIST_USER, String.format("User No = [%d]", no)));
         }else if(code==RealWorkCode.RECRUITMENT){
             recruitmentRepository.findById(no).orElseThrow(() ->
-                    new BaseException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", no)));
+                    new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", no)));
         }
     }
 

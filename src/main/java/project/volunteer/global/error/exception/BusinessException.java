@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class BaseException extends RuntimeException{
+public class BusinessException extends RuntimeException{
 
     //예외 코드
     protected ErrorCode errorCode;
@@ -17,10 +17,10 @@ public class BaseException extends RuntimeException{
     //추가 상세 메시지
     protected String details;
 
-    public BaseException(ErrorCode errorCode){
+    public BusinessException(ErrorCode errorCode){
         this.errorCode = errorCode;
     }
-    public BaseException(ErrorCode errorCode, String details){
+    public BusinessException(ErrorCode errorCode, String details){
         this.errorCode = errorCode;
         this.details = details;
     }

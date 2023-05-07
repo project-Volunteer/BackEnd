@@ -23,11 +23,10 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.error.exception.BaseException;
+import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
-import javax.persistence.SecondaryTable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -114,7 +113,7 @@ class ImageServiceImplTestForSave {
 
         //when,then
         Assertions.assertThatThrownBy(() -> imageService.addImage(dto))
-                .isInstanceOf(BaseException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -131,7 +130,7 @@ class ImageServiceImplTestForSave {
 
         //when & then
         Assertions.assertThatThrownBy(() -> imageService.addImage(dto))
-                .isInstanceOf(BaseException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -211,7 +210,7 @@ class ImageServiceImplTestForSave {
 
         //when & then
         Assertions.assertThatThrownBy(() -> imageService.addImage(dto))
-                .isInstanceOf(BaseException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
 }
