@@ -1,6 +1,8 @@
 package project.volunteer.global.common.converter;
 
 import lombok.Getter;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.global.util.LegacyCodeEnumValueConverterUtils;
 
 import javax.persistence.AttributeConverter;
@@ -30,7 +32,7 @@ public class AbstractLegacyEnumAttributeConverter<E extends Enum<E> & LegacyCode
     public String convertToDatabaseColumn(E attribute) {
         //모든 Enum 타입 컬럼엔 null, "" 들어갈수 없음.
         if(attribute==null){
-            throw new IllegalArgumentException(String.format("[%s]는 NULL로 저장될 수 없습니다.",enumName));
+            throw new BusinessException(ErrorCode.NOT_NULL_COLUMN, String.format("Entity Enum = [%s]", attribute.name()));
         }
         return LegacyCodeEnumValueConverterUtils.toLegacyCode(attribute);
     }
