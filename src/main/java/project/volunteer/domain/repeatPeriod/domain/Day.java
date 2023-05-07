@@ -2,6 +2,8 @@ package project.volunteer.domain.repeatPeriod.domain;
 
 import lombok.Data;
 import lombok.Getter;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.Arrays;
 
@@ -22,6 +24,6 @@ public enum Day {
         return Arrays.stream(Day.values())
                 .filter(v -> v.getValue().equals(value))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match day=[%s]",value)));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ENUM_VALUE, String.format("Day Value = [%d]", value)));
     }
 }
