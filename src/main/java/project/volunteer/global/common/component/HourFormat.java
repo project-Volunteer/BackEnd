@@ -1,6 +1,8 @@
 package project.volunteer.global.common.component;
 
 import lombok.Getter;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.Arrays;
 
@@ -15,10 +17,10 @@ public enum HourFormat {
         this.viewName = viewName;
     }
 
-    public static HourFormat ofName(String name){
+    public static HourFormat ofName(String value){
         return Arrays.stream(HourFormat.values())
-                .filter(h -> h.name().equals(name.toUpperCase()))
+                .filter(h -> h.name().equals(value.toUpperCase()))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match HourFormat=[%s]",name)));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ENUM_VALUE, String.format("HourFormat Value = [%s]", value)));
     }
 }

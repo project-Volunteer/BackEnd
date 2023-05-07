@@ -33,6 +33,7 @@ import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
@@ -68,8 +69,10 @@ class RecruitmentControllerTestForQuery {
 
     private static final String FIND_ALL_URL = "/recruitment";
     private static final String COUNT_ALL_URL = "/recruitment/count";
+    private static final String FIND_URL = "/recruitment/";
     private static User saveUser;
-    private List<Long> deletePlanS3ImageNo = new ArrayList<>();
+    private List<Long> deleteS3ImageNoList = new ArrayList<>();
+    private List<Long> saveRecruitmentNoList = new ArrayList<>();
     private void clear() {
         em.flush();
         em.clear();
@@ -121,6 +124,9 @@ class RecruitmentControllerTestForQuery {
             Long no1 = recruitmentService.addRecruitment(saveRecruitDto1);
             Long no2 = recruitmentService.addRecruitment(saveRecruitDto2);
 
+            saveRecruitmentNoList.add(no1);
+            saveRecruitmentNoList.add(no2);
+
             //반복 주기 저장
             RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
             repeatPeriodService.addRepeatPeriod(no2, savePeriodDto);
@@ -143,7 +149,7 @@ class RecruitmentControllerTestForQuery {
                     .uploadImage(getMockMultipartFile())
                     .build();
             Long saveId2 = imageService.addImage(uploadImageDto);
-            deletePlanS3ImageNo.add(saveId2); //S3에 저장된 이미지 추후 삭제 예정
+            deleteS3ImageNoList.add(saveId2); //S3에 저장된 이미지 추후 삭제 예정
 
             //참여자 저장
             Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
@@ -165,22 +171,23 @@ class RecruitmentControllerTestForQuery {
     }
     @BeforeEach
     public void initUser(){
-        //유저 임시 로그인
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-        saveUser = userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
+        saveUser = userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
         clear();
     }
     @AfterEach
     public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
-        for(Long id : deletePlanS3ImageNo){
+        for(Long id : deleteS3ImageNoList){
             Image image = imageRepository.findById(id).get();
             Storage storage = image.getStorage();
             fileService.deleteFile(storage.getFakeImageName());
@@ -188,7 +195,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체조회_모든필터링_성공() throws Exception {
         //init
         setData();
@@ -211,7 +218,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체조회_다중카테고리필터링_성공() throws Exception {
         //init
         setData();
@@ -229,7 +236,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체카운트_모든필터링_성공() throws Exception {
         //init
         setData();
@@ -251,7 +258,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체카운트_빈필터링_성공() throws Exception {
         //init
         setData();
@@ -260,5 +267,35 @@ class RecruitmentControllerTestForQuery {
                         get(COUNT_ALL_URL))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_상세조회_성공() throws Exception {
+        //given
+        setData();
+
+        //when && then
+        mockMvc.perform(get(FIND_URL + saveRecruitmentNoList.get(1)))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_상세조회_실패_삭제된게시글() throws Exception {
+        //given
+        setData();
+
+        //when
+        Recruitment recruitment = recruitmentRepository.findById(saveRecruitmentNoList.get(1)).get();
+        recruitment.setDeleted(); //게시글 삭제하기
+        clear();
+
+        //then
+        mockMvc.perform(get(FIND_URL + saveRecruitmentNoList.get(1)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
     }
 }

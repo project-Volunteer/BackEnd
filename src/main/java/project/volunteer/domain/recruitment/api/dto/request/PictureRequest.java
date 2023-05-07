@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
@@ -16,14 +17,14 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class PictureRequest {
 
-    @Min(0)
+    @NotNull
+    @Range(min = 0, max = 1)
     private Integer type; //0(static),1(upload)
 
+    @NotNull
     @Length(min = 1, max = 10)
-    @NotNull(message = "널을 허용하지 않습니다.")
     private String staticImage;
 
-    @NotNull(message = "널을 허용하지 않습니다.")
     private MultipartFile uploadImage;
 
 }

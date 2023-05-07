@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -21,9 +20,11 @@ import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
+import project.volunteer.global.error.exception.BusinessException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -48,17 +49,18 @@ class RecruitmentServiceImplTestForEdit {
     }
     @BeforeEach
     private void initUser() {
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
+        userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
         clear();
     }
 
@@ -95,10 +97,8 @@ class RecruitmentServiceImplTestForEdit {
         clear();
     }
 
-
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    @Rollback(value = false)
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 정기모집글_삭제_성공_반복주기포함(){
         //given
         setRegRecruitment();
@@ -115,4 +115,16 @@ class RecruitmentServiceImplTestForEdit {
         findPeriod.stream()
                 .forEach(p -> Assertions.assertThat(p.getIsDeleted()).isEqualTo(IsDeleted.Y));
     }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 정기모집글_삭제_실패_없는모집글(){
+        //given
+        setRegRecruitment();
+
+        //when & then
+        Assertions.assertThatThrownBy(() -> recruitmentService.deleteRecruitment(Long.MAX_VALUE)) //없는 모집글 PK
+                .isInstanceOf(BusinessException.class);
+    }
+
 }
