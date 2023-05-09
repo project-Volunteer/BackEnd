@@ -41,5 +41,6 @@ application-aws.yml
 application-local.yml
 application-oauth.yml
 application-smtp.yml
+application-prod.yml
 .gitmodules
 yml-config/
