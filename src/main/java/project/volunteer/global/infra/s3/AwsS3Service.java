@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +54,7 @@ public class AwsS3Service implements FileService{
                             .withCannedAcl(CannedAccessControlList.PublicRead)
             );
         } catch (IOException e) {
-            throw new IllegalArgumentException(String.format("파일 변환 중 에러가 발생했습니다. (%s)", file.getOriginalFilename()));
+            throw new BusinessException(ErrorCode.S3_UPLOAD_IO_EX, String.format(e.getMessage()));
         }
         return storageFileName;
     }
@@ -78,7 +80,7 @@ public class AwsS3Service implements FileService{
         }else if(fileFolder == FileFolder.LOG_IMAGES){
             folder = logFolder;
         }else {
-            throw new FolderNotFoundException("일치하는 폴더가 없습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND_FILE_FOLDER, String.format("Folder Name = [%s]", fileFolder));
         }
         return folder;
     }
@@ -92,7 +94,7 @@ public class AwsS3Service implements FileService{
         try {
             return originalFileName.substring(originalFileName.lastIndexOf("."));
         }catch(StringIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException(String.format("잘못된 형식의 파일 (%s) 입니다.", originalFileName));
+            throw new BusinessException(ErrorCode.INVALID_FILE_FORMAT, String.format("File Name = [%s]", originalFileName));
         }
     }
 }

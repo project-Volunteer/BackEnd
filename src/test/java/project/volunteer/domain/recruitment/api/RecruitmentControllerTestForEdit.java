@@ -29,6 +29,7 @@ import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
@@ -63,17 +64,18 @@ class RecruitmentControllerTestForEdit {
     private final String DELETE_URL = "/recruitment/";
     @BeforeEach
     public void initUser(){
-        //유저 임시 로그인
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
+         userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
         clear();
     }
     @AfterEach
@@ -144,6 +146,15 @@ class RecruitmentControllerTestForEdit {
         //when & then
         mockMvc.perform(delete(DELETE_URL+saveRecruitmentNo))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 정기모집글_삭제_실패_없는모집글() throws Exception {
+
+        mockMvc.perform(delete(DELETE_URL+Long.MAX_VALUE))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

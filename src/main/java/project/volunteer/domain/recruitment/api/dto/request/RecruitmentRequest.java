@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Getter
@@ -15,68 +16,66 @@ import java.util.List;
 @AllArgsConstructor
 public class RecruitmentRequest {
 
-    @Length(min=1, max = 30)
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotEmpty
     private String volunteeringCategory;
 
+    @NotNull
     @Length(min = 1, max = 50)
-    @NotEmpty(message = "필수 입력값입니다.")
     private String organizationName;
 
     private AddressRequest address;
 
-    @NotNull(message = "널을 허용하지 않습니다.")
+    @NotNull
     private Boolean isIssued;
 
-    @Length(min = 1, max = 10)
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotEmpty
     private String volunteerType;
 
-    @Min(value = 1)
+    @NotNull
+    @Range(min = 1, max = 9999)
     private Integer volunteerNum;
 
-    @Length(min=1, max = 5)
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotEmpty
     private String volunteeringType;
 
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotEmpty
+    @Pattern(regexp = "^(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])-\\d{4}$")
     private String startDay;
 
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotEmpty
+    @Pattern(regexp = "^(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])-\\d{4}$")
     private String endDay;
 
-    @Length(max = 2)
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotEmpty
     private String hourFormat;
 
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotEmpty
+    @Pattern(regexp = "^(0[1-9]|1[012]):(0[1-9]|[12345][0-9])$")
     private String startTime;
 
     @Range(min=1, max = 24)
     private Integer progressTime;
 
-    @Length(max = 5)
-    @NotNull(message = "널을 허용하지 않습니다.")
+    @NotNull
     private String period;
 
-    @Range(min = 0, max = 5)
-    @NotNull(message = "널을 허용하지 않습니다.")
+    @NotNull
     private Integer week;
 
-    @NotNull(message = "널을 허용하지 않습니다.")
+    @NotNull
     private List<Integer> days;
 
     private PictureRequest picture;
 
+    @NotNull
     @Length(min = 1, max = 255)
-    @NotEmpty(message = "필수 입력값입니다.")
     private String title;
 
-    @Length(min = 1)
-    @NotEmpty(message = "필수 입력값입니다.")
+    @NotNull
+    @Length(min = 1, max = 255)
     private String content;
 
-    @NotNull(message = "널을 허용하지 않습니다.")
+    @NotNull
     private Boolean isPublished; //임시 저장글 유무
 
 }

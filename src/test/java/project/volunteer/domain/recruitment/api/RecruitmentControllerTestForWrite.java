@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -22,6 +23,7 @@ import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
@@ -57,7 +59,7 @@ class RecruitmentControllerTestForWrite {
         em.flush();
         em.clear();
     }
-    private static final String WRITE_URL = "/recruitment";
+    private final String WRITE_URL = "/recruitment";
     final String volunteeringCategory = "001";
     final String organizationName = "organization";
     final Boolean isIssued = true;
@@ -65,8 +67,8 @@ class RecruitmentControllerTestForWrite {
     final int volunteerNum = 5;
     final String volunteeringType1 = VolunteeringType.IRREG.name();
     final String volunteeringType2 = VolunteeringType.REG.name();
-    final String startDay = "01-01-2000";
-    final String endDay = "01-01-2000";
+    final String startDay = "05-01-2023";
+    final String endDay = "05-09-2023";
     final String hourFormat = HourFormat.AM.name();
     final String startTime = "10:00";
     final int progressTime = 10;
@@ -119,18 +121,19 @@ class RecruitmentControllerTestForWrite {
         return info;
     }
     @BeforeEach
-    public void init() {
-        //유저 로그인
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
+    private void initUser() {
+        User save = userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
         clear();
     }
 
@@ -174,7 +177,8 @@ class RecruitmentControllerTestForWrite {
                         .file(getRealMockMultipartFile()) //업로드 이미지
                         .params(info)
                 )
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         //finally(s3 업로드 이미지 삭제)
         //테스트 코드에서 저장한 모집글 게시물은 하나니깐 전체 조회해도 반드시 하나만 나올것이다. (좋지 않은 코드 같은데...)
@@ -202,7 +206,8 @@ class RecruitmentControllerTestForWrite {
                                 .file(getRealMockMultipartFile()) //업로드 이미지
                                 .params(info)
                 )
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         //finally(s3 업로드 이미지 삭제)
         //테스트 코드에서 저장한 모집글 게시물은 하나니깐 전체 조회해도 반드시 하나만 나올것이다. (좋지 않은 코드 같은데...)
@@ -213,18 +218,19 @@ class RecruitmentControllerTestForWrite {
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_저장_실패_없은카테고리코드() throws Exception {
+    public void 모집글_저장_실패_없은봉사자유형코드() throws Exception {
         //given
         MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
-        info.add("volunteeringCategory", "1000"); // -> 존재하지 않는 카테코리
+        info.add("volunteeringCategory", "001");
         info.add("organizationName", organizationName);
         info.add("isIssued", String.valueOf(isIssued));
-        info.add("volunteerType", volunteerType);
+        info.add("volunteerType", "99999999"); // -> 없는 봉사자 유형코드!!!
         info.add("volunteerNum", String.valueOf(volunteerNum));
         info.add("startDay", startDay);
         info.add("endDay", endDay);
         info.add("startTime", startTime);
         info.add("progressTime", String.valueOf(23));
+        info.add("hourFormat", hourFormat);
         info.add("title", title);
         info.add("content", content);
         info.add("isPublished", String.valueOf(isPublished));
@@ -246,7 +252,87 @@ class RecruitmentControllerTestForWrite {
                                 .file(getFakeMockMultipartFile()) //정적이미지
                                 .params(info)
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_저장_실패_없은봉사카테고리코드() throws Exception {
+        //given
+        MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
+        info.add("volunteeringCategory", "1000"); // -> 존재하지 않는 카테코리 코드 !!
+        info.add("organizationName", organizationName);
+        info.add("isIssued", String.valueOf(isIssued));
+        info.add("volunteerType", volunteerType);
+        info.add("volunteerNum", String.valueOf(volunteerNum));
+        info.add("startDay", startDay);
+        info.add("endDay", endDay);
+        info.add("startTime", startTime);
+        info.add("progressTime", String.valueOf(23));
+        info.add("hourFormat", hourFormat);
+        info.add("title", title);
+        info.add("content", content);
+        info.add("isPublished", String.valueOf(isPublished));
+        info.add("address.sido", sido);
+        info.add("address.sigungu", sigungu);
+        info.add("address.details", details);
+        info.add("address.latitude", String.valueOf(latitude));
+        info.add("address.longitude", String.valueOf(longitude));
+        info.add("volunteeringType",volunteeringType1);
+        info.add("period", period1);
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글_저장_실패_없은봉사유형값() throws Exception {
+        //given
+        MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
+        info.add("volunteeringCategory", "001");
+        info.add("organizationName", organizationName);
+        info.add("isIssued", String.valueOf(isIssued));
+        info.add("volunteerType", volunteerType);
+        info.add("volunteerNum", String.valueOf(volunteerNum));
+        info.add("startDay", startDay);
+        info.add("endDay", endDay);
+        info.add("startTime", startTime);
+        info.add("progressTime", String.valueOf(23));
+        info.add("hourFormat", hourFormat);
+        info.add("title", title);
+        info.add("content", content);
+        info.add("isPublished", String.valueOf(isPublished));
+        info.add("address.sido", sido);
+        info.add("address.sigungu", sigungu);
+        info.add("address.details", details);
+        info.add("address.latitude", String.valueOf(latitude));
+        info.add("address.longitude", String.valueOf(longitude));
+        info.add("volunteeringType", "fail"); // -> 존재하지않는 봉사유형!!!!
+        info.add("period", period1);
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
     @Test
@@ -254,7 +340,7 @@ class RecruitmentControllerTestForWrite {
     public void 모집글폼_유효성검사_NotEmpty() throws Exception {
         //given
         MultiValueMap info = createRecruitmentForm_common();
-        info.add("volunteeringType", ""); // -> null & 빈 값 허용안함
+        //info.add("volunteeringType", ""); // -> null & 빈 값 허용안함
         info.add("period", period1); //비정기
         info.add("week", String.valueOf(week1and2)); //비정기
         info.add("days", ""); //비정기
@@ -267,18 +353,37 @@ class RecruitmentControllerTestForWrite {
                                 .file(getFakeMockMultipartFile()) //정적이미지
                                 .params(info)
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글폼_유효성검사_Length() throws Exception {
         //given
-        MultiValueMap info = createRecruitmentForm_common();
-        info.add("volunteeringType", "testtesttest"); // -> length 초과
-        info.add("period", period1); //비정기
+        MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
+        info.add("volunteeringCategory", "001");
+        info.add("organizationName", ""); // -> Length 미만
+        info.add("isIssued", String.valueOf(isIssued));
+        info.add("volunteerType", volunteerType);
+        info.add("volunteerNum", String.valueOf(volunteerNum));
+        info.add("startDay", startDay);
+        info.add("endDay", endDay);
+        info.add("startTime", startTime);
+        info.add("progressTime", String.valueOf(23));
+        info.add("hourFormat", hourFormat);
+        info.add("title", title);
+        info.add("content", content);
+        info.add("isPublished", String.valueOf(isPublished));
+        info.add("address.sido", sido);
+        info.add("address.sigungu", sigungu);
+        info.add("address.details", details);
+        info.add("address.latitude", String.valueOf(latitude));
+        info.add("address.longitude", String.valueOf(longitude));
+        info.add("volunteeringType", volunteeringType1);
+        info.add("period", period1);
         info.add("week", String.valueOf(week1and2)); //비정기
-        info.add("days",""); //비정기
+        info.add("days", ""); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -288,7 +393,48 @@ class RecruitmentControllerTestForWrite {
                                 .file(getFakeMockMultipartFile()) //정적이미지
                                 .params(info)
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글폼_유효성검사_Range() throws Exception {
+        //given
+        MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
+        info.add("volunteeringCategory", "001");
+        info.add("organizationName", organizationName);
+        info.add("isIssued", String.valueOf(isIssued));
+        info.add("volunteerType", volunteerType);
+        info.add("volunteerNum", String.valueOf(Integer.MAX_VALUE)); // -> Range 초과
+        info.add("startDay", startDay);
+        info.add("endDay", endDay);
+        info.add("startTime", startTime);
+        info.add("progressTime", String.valueOf(23));
+        info.add("hourFormat", hourFormat);
+        info.add("title", title);
+        info.add("content", content);
+        info.add("isPublished", String.valueOf(isPublished));
+        info.add("address.sido", sido);
+        info.add("address.sigungu", sigungu);
+        info.add("address.details", details);
+        info.add("address.latitude", String.valueOf(latitude));
+        info.add("address.longitude", String.valueOf(longitude));
+        info.add("volunteeringType", volunteeringType1);
+        info.add("period", period1);
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
     @Test
@@ -314,18 +460,19 @@ class RecruitmentControllerTestForWrite {
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글폼_유효성검사_Range() throws Exception {
+    public void 모집글폼_유효성검사_Pattern_날짜() throws Exception {
         //given
         MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
-        info.add("volunteeringCategory", volunteeringCategory);
+        info.add("volunteeringCategory", "001");
         info.add("organizationName", organizationName);
         info.add("isIssued", String.valueOf(isIssued));
         info.add("volunteerType", volunteerType);
         info.add("volunteerNum", String.valueOf(volunteerNum));
-        info.add("startDay", startDay);
-        info.add("endDay", endDay);
+        info.add("startDay", "12:25-2222"); // -> patten: MM-dd-yyyy
+        info.add("endDay", "09-302222"); // -> patten: MM-dd-yyyy
         info.add("startTime", startTime);
-        info.add("progressTime", String.valueOf(25)); // -> range(1,24) 까지 허용
+        info.add("progressTime", String.valueOf(23));
+        info.add("hourFormat", hourFormat);
         info.add("title", title);
         info.add("content", content);
         info.add("isPublished", String.valueOf(isPublished));
@@ -334,10 +481,10 @@ class RecruitmentControllerTestForWrite {
         info.add("address.details", details);
         info.add("address.latitude", String.valueOf(latitude));
         info.add("address.longitude", String.valueOf(longitude));
-        info.add("volunteeringType",volunteeringType1);
+        info.add("volunteeringType", volunteeringType1);
         info.add("period", period1);
-        info.add("week", String.valueOf(week1and2)); //정기
-        info.add("days", ""); //정기
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
         info.add("picture.type", String.valueOf(type1)); //정적 이미지
         info.add("picture.staticImage", staticImage1); //정적이미지
 
@@ -347,7 +494,48 @@ class RecruitmentControllerTestForWrite {
                                 .file(getFakeMockMultipartFile()) //정적이미지
                                 .params(info)
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 모집글폼_유효성검사_Pattern_시간() throws Exception {
+        //given
+        MultiValueMap<String,String> info  = new LinkedMultiValueMap<>();
+        info.add("volunteeringCategory", "001");
+        info.add("organizationName", organizationName);
+        info.add("isIssued", String.valueOf(isIssued));
+        info.add("volunteerType", volunteerType);
+        info.add("volunteerNum", String.valueOf(volunteerNum));
+        info.add("startDay", startDay);
+        info.add("endDay", endDay);
+        info.add("startTime", "01/59"); // -> patten: HH:MM
+        info.add("progressTime", String.valueOf(23));
+        info.add("hourFormat", hourFormat);
+        info.add("title", title);
+        info.add("content", content);
+        info.add("isPublished", String.valueOf(isPublished));
+        info.add("address.sido", sido);
+        info.add("address.sigungu", sigungu);
+        info.add("address.details", details);
+        info.add("address.latitude", String.valueOf(latitude));
+        info.add("address.longitude", String.valueOf(longitude));
+        info.add("volunteeringType", volunteeringType1);
+        info.add("period", period1);
+        info.add("week", String.valueOf(week1and2)); //비정기
+        info.add("days", ""); //비정기
+        info.add("picture.type", String.valueOf(type1)); //정적 이미지
+        info.add("picture.staticImage", staticImage1); //정적이미지
+
+        //when & then
+        mockMvc.perform(
+                        multipart(WRITE_URL)
+                                .file(getFakeMockMultipartFile()) //정적이미지
+                                .params(info)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
 }

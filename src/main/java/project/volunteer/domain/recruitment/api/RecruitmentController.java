@@ -7,7 +7,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.domain.RealWorkCode;
@@ -27,7 +26,10 @@ import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -42,7 +44,7 @@ public class RecruitmentController {
     private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<RecruitmentSaveResponse> recruitmentAdd(@Validated  @ModelAttribute RecruitmentRequest form) {
+    public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
 
         //모집글 정보 저장
         Long recruitmentNo = recruitmentService.addRecruitment(new RecruitmentParam(form));
@@ -64,8 +66,11 @@ public class RecruitmentController {
         imageService.addImage(
                 new ImageParam(RealWorkCode.RECRUITMENT, recruitmentNo, form.getPicture()));
 
+        //response
+        Map<String, Object> result = new HashMap<>();
+        result.put("no", recruitmentNo);
         return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new RecruitmentSaveResponse("success save recruitment",recruitmentNo));
+                .body(result);
     }
 
     @GetMapping("/recruitment")
@@ -82,12 +87,11 @@ public class RecruitmentController {
 
         //response DTO 변환
         List<RecruitmentList> dtos = result.getContent().stream().map(dto -> new RecruitmentList(dto)).collect(Collectors.toList());
-        return ResponseEntity.ok(new RecruitmentListResponse("success search recruitment list",
-                        dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
+        return ResponseEntity.ok(new RecruitmentListResponse(dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
     }
 
     @GetMapping("/recruitment/count")
-    public ResponseEntity<RecruitmentCountResponse> recruitmentListCount(@RequestParam(required = false) List<String> volunteering_category,
+    public ResponseEntity<Map<String,Object>> recruitmentListCount(@RequestParam(required = false) List<String> volunteering_category,
                                                                          @RequestParam(required = false) String sido,
                                                                          @RequestParam(required = false) String sigungu,
                                                                          @RequestParam(required = false) String volunteering_type,
@@ -102,14 +106,18 @@ public class RecruitmentController {
                         .volunteerType(volunteer_type)
                         .isIssued(is_issued)
                         .build());
-        return ResponseEntity.ok(new RecruitmentCountResponse("success count recruitment list", recruitmentsCount));
+
+        //response
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalCnt", recruitmentsCount);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/recruitment/{no}")
-    public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
+    public ResponseEntity<RecruitmentDetails> recruitmentDetails(@PathVariable Long no){
 
         RecruitmentDetails dto = recruitmentDtoService.findRecruitment(no);
-        return ResponseEntity.ok(new RecruitmentDetailsResponse("success search recruitment details", dto));
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/recruitment/{no}")

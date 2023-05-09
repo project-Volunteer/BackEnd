@@ -20,6 +20,7 @@ import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 
@@ -58,17 +59,18 @@ class RecruitmentServiceImplTestForSave {
     }
     @BeforeEach
     private void initUser() {
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
+        userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
         clear();
     }
 

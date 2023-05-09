@@ -1,6 +1,8 @@
 package project.volunteer.domain.recruitment.domain;
 
 import lombok.Getter;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.Arrays;
 
@@ -23,6 +25,6 @@ public enum VolunteeringType {
         return Arrays.stream(VolunteeringType.values())
                 .filter(v -> v.name().equals(value.toUpperCase()))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match volunteering type=[%s]", value)));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ENUM_VALUE, String.format("VolunteeringType Value = [%s]", value)));
     }
 }

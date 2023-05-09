@@ -21,6 +21,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
@@ -89,16 +90,18 @@ class ImageServiceImplTestForEdit {
     }
     @BeforeEach
     private void initUser() {
-        String nickname = "nickname";
-        String email = "email@gmail.com";
-        Gender gender = Gender.M;
-        LocalDate birth = LocalDate.now();
-        String picture = "picture";
-        Boolean alarm = true;
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
+        userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
         clear();
     }
     @AfterEach

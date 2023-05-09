@@ -1,6 +1,8 @@
 package project.volunteer.domain.repeatPeriod.domain;
 
 import lombok.Getter;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.Arrays;
 
@@ -12,16 +14,16 @@ public enum Week {
 
     private final Integer value;
     private final String viewName;
-    Week(int value, String label) {
+    Week(int value, String viewName) {
         this.value = value;
-        this.viewName = label;
+        this.viewName = viewName;
     }
 
     public static Week ofValue(int value){
         return Arrays.stream(Week.values())
                 .filter(v -> v.getValue().equals(value))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Not found match week=[%s]",value)));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ENUM_VALUE, String.format("Week Value = [%d]", value)));
     }
 
 }

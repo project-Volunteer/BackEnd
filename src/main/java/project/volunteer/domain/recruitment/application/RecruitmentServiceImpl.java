@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
@@ -14,6 +11,8 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.user.dao.UserRepository;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.global.util.SecurityUtil;
 
 import java.util.List;
@@ -49,8 +48,8 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         //1. SecurityUtil 를 통해서 사용자 정보 가져오기 및 예외 처리
         //2. 연관관계 세팅
         //추후 수정 필요 (임시)
-        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserNo())
-                .orElseThrow(()-> new NullPointerException(String.format("Not found userEmail=[%s]", SecurityUtil.getLoginUserNo()))));
+        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserId())
+                .orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_USER, String.format("Search User ID = [%d]", SecurityUtil.getLoginUserId()))));
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
@@ -61,7 +60,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
 
         Recruitment findRecruitment =
                 recruitmentRepository.findByNo(deleteNo).orElseThrow(
-                        () -> new NullPointerException(String.format("[%d]는 존재하지 않는 모집글 입니다.", deleteNo)));
+                        () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
         //정기일 경우 반복주기 삭제
         if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){

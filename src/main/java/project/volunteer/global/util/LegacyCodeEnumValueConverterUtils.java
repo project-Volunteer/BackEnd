@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 import project.volunteer.global.common.converter.LegacyCodeCommonType;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.EnumSet;
 
@@ -28,8 +30,10 @@ public class LegacyCodeEnumValueConverterUtils {
         return EnumSet.allOf(enumClass).stream()
                 .filter(e -> e.getLegacyCode().equals(legacyCode))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("enum=[%s]에 legacyCode=[%s]가 존재하지 않습니다.",
-                        enumClass.getName(), legacyCode)));
+                .orElseThrow(() ->
+                        new BusinessException(ErrorCode.UNKNOWN_ENUM_CODE,
+                                String.format("%s Code = [%s]", enumClass.getName().substring(enumClass.getName().lastIndexOf(".")+1)
+                                        , legacyCode)));
     }
 
     //Enum -> legacy code

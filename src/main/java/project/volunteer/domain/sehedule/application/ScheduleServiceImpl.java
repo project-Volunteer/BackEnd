@@ -18,6 +18,8 @@ import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.global.util.DateUtil;
 
 import java.time.DayOfWeek;
@@ -38,9 +40,8 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Transactional
     public Long addSchedule(Long recruitmentNo, ScheduleParam dto) {
 
-        //굳이 한번더 조회해야할까?
         Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
-                .orElseThrow(() -> new NullPointerException(String.format("Not found recruitmentNo=[%d]",recruitmentNo)));
+                .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
 
         Schedule createSchedule = Schedule.builder()
                 .timetable(dto.getTimetable())
@@ -59,7 +60,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
         //공통 메서드로 분리 생각해보기
         Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
-                .orElseThrow(() -> new NullPointerException(String.format("Not found recruitmentNo=[%d]",recruitmentNo)));
+                .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
 
         List<LocalDate> scheduleDate = (dto.getRepeatPeriodParam().getPeriod().equals(Period.MONTH))?
                 (makeDatesOfRegMonth(dto.getTimetable().getStartDay(), dto.getTimetable().getEndDay(),

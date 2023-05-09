@@ -19,12 +19,12 @@ import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.State;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +47,9 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
 
         //모집글 정보 + 모집글 작성자 정보 -> 쿼리1번
         Recruitment findRecruitment = recruitmentRepository.findEGWriterAndRecruitment(no).orElseThrow(()
-                -> new NullPointerException(String.format("Not found recruitmentNo=[%d]", no)));
+                -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Search Recruitment NO = [%d]", no)));
         User writer = findRecruitment.getWriter();
+
         //1. 모집글 정보 dto 생성
         RecruitmentDetails dto = new RecruitmentDetails(findRecruitment);
 
@@ -93,9 +94,9 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     }
 
     private RepeatPeriodDetails createRepeatPeriodDto(List<RepeatPeriod> repeatPeriods){
-        Period period = repeatPeriods.get(0).getPeriod();
-        Week week = (period.equals(Period.MONTH))?(repeatPeriods.get(0).getWeek()):null;
-        List<Day> days = repeatPeriods.stream().map(r -> r.getDay()).collect(Collectors.toList());
+        String period = repeatPeriods.get(0).getPeriod().getViewName();
+        String week = (period.equals(Period.MONTH))?(repeatPeriods.get(0).getWeek().getViewName()):"";
+        List<String> days = repeatPeriods.stream().map(r -> r.getDay().getViewName()).collect(Collectors.toList());
         return new RepeatPeriodDetails(period, week, days);
     }
 

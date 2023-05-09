@@ -31,8 +31,10 @@ import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
@@ -71,6 +73,7 @@ class RecruitmentDtoServiceImplTest {
 
         //모집글 업로드 이미지 저장
         addImage(RealWorkCode.RECRUITMENT, saveRecruitment.getRecruitmentNo());
+
         //작성자 업로드 이미지 저장
         addImage(RealWorkCode.USER, userNo);
 
@@ -125,19 +128,21 @@ class RecruitmentDtoServiceImplTest {
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
     private void initParticipant() throws IOException {
-        String email = "email@naver.com";
-        Gender gender = Gender.M;
-        LocalDate birth = LocalDate.now();
-        String picture = "picture";
-        Boolean alarm = true;
-
         for (int i=0;i<5;i++){
             //임시 사용자 회원가입
-            String nickname = "nickname"+i;
-            User saveUser = userRepository.save(User.builder().nickName(nickname)
-                    .email(email).gender(gender).birthDay(birth).picture(picture)
-                    .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                    .provider("kakao").providerId("1234").build());
+            String rand = "test"+i;
+            User saveUser = userRepository.save(User.builder()
+                    .id(rand)
+                    .password(rand)
+                    .nickName(rand)
+                    .email("email@naver.com")
+                    .gender(Gender.M)
+                    .birthDay(LocalDate.now())
+                    .picture("picture")
+                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                    .role(Role.USER)
+                    .provider("kakao").providerId("1234")
+                    .build());
 
             //임시 사용자 이미지 업로드
             if(i%2==0)
@@ -149,18 +154,20 @@ class RecruitmentDtoServiceImplTest {
         }
     }
     @BeforeEach
-    public void initUser() throws IOException {
-        final String nickname = "nickname";
-        final String email = "email@gmail.com";
-        final Gender gender = Gender.M;
-        final LocalDate birth = LocalDate.now();
-        final String picture = "picture";
-        final Boolean alarm = true;
-        userNo = userRepository.save(User.builder().nickName(nickname)
-                        .email(email).gender(gender).birthDay(birth).picture(picture)
-                        .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                        .provider("kakao").providerId("1234").build())
-                .getUserNo();
+    private void initUser() {
+        User save = userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
+        userNo = save.getUserNo();
         clear();
     }
     @AfterEach
@@ -172,7 +179,7 @@ class RecruitmentDtoServiceImplTest {
         }
     }
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_상세조회_성공() throws IOException {
         //init
         setMockUpData();
@@ -198,7 +205,7 @@ class RecruitmentDtoServiceImplTest {
 
         //when & then
         Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -210,7 +217,7 @@ class RecruitmentDtoServiceImplTest {
 
         //when & then
         Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
 }

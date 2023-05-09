@@ -1,6 +1,8 @@
 package project.volunteer.global.infra.s3;
 
 import lombok.Getter;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.Arrays;
 
@@ -18,7 +20,7 @@ public enum FileFolder {
         return Arrays.stream(FileFolder.values())
                 .filter(v -> v.getCode().equals(code))
                 .findAny()
-                .orElseThrow(() -> new FolderNotFoundException(String.format("Not found match fileFolder=[%s]",code)));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_FILE_FOLDER_OfCode, String.format("Search File Code = [%s]", code)));
     }
 
 }
