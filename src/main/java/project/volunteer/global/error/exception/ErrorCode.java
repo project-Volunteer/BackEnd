@@ -11,7 +11,8 @@ public enum ErrorCode {
     //common
     UNKNOWN_ENUM_VALUE(HttpStatus.BAD_REQUEST, "mismatch.enumValue"),
     UNKNOWN_ENUM_CODE(HttpStatus.BAD_REQUEST, "mismatch.enumCode"),
-    INVALID_ATTRIBUTE(HttpStatus.BAD_REQUEST, "invalid.attribute"),
+    INVALID_ATTRIBUTE(HttpStatus.BAD_REQUEST, "invalid.data"), //modelAttribute
+    INVALID_PAYLOAD(HttpStatus.BAD_REQUEST, "invalid.data"), //requestBody
     NOT_NULL_COLUMN(HttpStatus.INTERNAL_SERVER_ERROR, "notNull.column"),
 
     //모집글 관련
