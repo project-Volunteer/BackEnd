@@ -60,6 +60,8 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
+	//jackson
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 }
 
 // querydsl 세팅 시작

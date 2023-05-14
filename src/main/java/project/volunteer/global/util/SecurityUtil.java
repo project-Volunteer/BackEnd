@@ -6,12 +6,13 @@ import project.volunteer.global.security.PrincipalDetails;
 import project.volunteer.domain.user.domain.User;
 
 public class SecurityUtil {
+
+    // Authentication에서 userNo 가져오기
     public static Long getLoginUserNo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-        return user.getUserNo();
+        return principal.getUser().getUserNo();
     }
 
     // authentication에서 userId 가져오기

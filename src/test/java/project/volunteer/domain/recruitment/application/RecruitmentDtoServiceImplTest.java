@@ -34,6 +34,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.State;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
@@ -149,7 +150,11 @@ class RecruitmentDtoServiceImplTest {
                 addImage(RealWorkCode.USER, saveUser.getUserNo());
 
             //참여자로 등록
-            Participant participant = Participant.builder().participant(saveUser).recruitment(saveRecruitment).build();
+            Participant participant = Participant.builder()
+                    .participant(saveUser)
+                    .recruitment(saveRecruitment)
+                    .state(State.JOIN_APPROVAL)
+                    .build();
             participantRepository.save(participant);
         }
     }
@@ -191,7 +196,7 @@ class RecruitmentDtoServiceImplTest {
         Assertions.assertThat(recruitment.getCurrentVolunteer().size()).isEqualTo(5); //참여자 5명
         Assertions.assertThat(recruitment.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getValue()); //모집글 이미지=업로드
         for(ParticipantDetails dto : recruitment.getCurrentVolunteer()){
-            Assertions.assertThat(dto.getIsApproved()).isFalse();
+            Assertions.assertThat(dto.getIsApproved()).isTrue();
         }
         System.out.println(recruitment);
     }
