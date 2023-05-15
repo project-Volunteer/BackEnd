@@ -65,19 +65,26 @@ public class SecurityConfig {
 			.and()
 			
 			.authorizeRequests()
+
+					//팀원 관리
+					.antMatchers(HttpMethod.POST, "/recruitment/join").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/cancel").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/approval").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/kick").hasAuthority("USER")
+
 			.anyRequest().permitAll()
 			/*
 			// 게시글 등록, 수정, 삭제
 			.antMatchers(HttpMethod.POST,"/recruitment").hasAuthority("USER")
 			.antMatchers(HttpMethod.PUT,"/recruitment").hasAuthority("USER")
 			.antMatchers(HttpMethod.DELETE,"/recruitment").hasAuthority("USER")
-			
+
 			// 일정 등록, 수정, 삭제
 			.antMatchers(HttpMethod.POST,"/schedule").hasAuthority("USER")
 			.antMatchers(HttpMethod.PUT,"/schedule").hasAuthority("USER")
 			.antMatchers(HttpMethod.DELETE,"/schedule").hasAuthority("USER")
 			*/
-			
+
 			.and()
 			.build();
 	}
