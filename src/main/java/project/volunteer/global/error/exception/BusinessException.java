@@ -1,11 +1,8 @@
 package project.volunteer.global.error.exception;
 
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class BusinessException extends RuntimeException{
 
     //예외 코드
@@ -19,6 +16,11 @@ public class BusinessException extends RuntimeException{
 
     public BusinessException(ErrorCode errorCode){
         this.errorCode = errorCode;
+    }
+    public BusinessException(ErrorCode errorCode, Object[] args, String details) {
+        this.errorCode = errorCode;
+        this.args = args;
+        this.details = details;
     }
     public BusinessException(ErrorCode errorCode, String details){
         this.errorCode = errorCode;

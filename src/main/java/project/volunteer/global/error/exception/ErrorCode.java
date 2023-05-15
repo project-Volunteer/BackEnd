@@ -32,6 +32,9 @@ public enum ErrorCode {
     //모집글 팀원 관련
     DUPLICATE_PARTICIPATION(HttpStatus.BAD_REQUEST, "duplicate.participation"),
     INVALID_STATE(HttpStatus.BAD_REQUEST, "invalid.state"),
+    INSUFFICIENT_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.capacity"),
+    INSUFFICIENT_APPROVAL_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.approval.capacity"),
+
     ;
 
     private final HttpStatus httpStatus; //상태 코드
