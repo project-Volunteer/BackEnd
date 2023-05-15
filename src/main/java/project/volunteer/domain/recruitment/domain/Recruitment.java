@@ -113,4 +113,8 @@ public class Recruitment extends BaseTimeEntity {
 
     public void setIsPublished(Boolean isPublished){this.isPublished=isPublished;}
 
+    public void setVolunteeringTimeTable(Timetable timetable){
+        this.VolunteeringTimeTable = timetable;
+    }
+
 }

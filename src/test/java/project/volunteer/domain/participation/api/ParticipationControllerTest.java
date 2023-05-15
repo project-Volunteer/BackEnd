@@ -123,6 +123,33 @@ class ParticipationControllerTest {
 
         clear();
     }
+    private List<Long> addParticipant(int count, State state){
+        List<Long> participantNoList = new ArrayList<>();
+
+        for(int i=0;i<count;i++){
+            User joinUser = userRepository.save(User.builder()
+                    .id("1234" + i)
+                    .password("1234" + i)
+                    .nickName("nickname" + i)
+                    .email("email" + i + "@gmail.com")
+                    .gender(Gender.M)
+                    .birthDay(LocalDate.now())
+                    .picture("picture" + i)
+                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                    .role(Role.USER)
+                    .provider("kakao").providerId("1234" + i)
+                    .build());
+
+            participantRepository.save(Participant.builder()
+                    .participant(joinUser)
+                    .recruitment(saveRecruitment)
+                    .state(state)
+                    .build());
+
+            participantNoList.add(joinUser.getUserNo());
+        }
+        return participantNoList;
+    }
     private void clear() {
         em.flush();
         em.clear();
@@ -158,9 +185,49 @@ class ParticipationControllerTest {
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 봉사모집글_팀신청_실패_종료된모집글() throws Exception {
+        //given
+        Timetable newTime = Timetable.builder()
+                .hourFormat(HourFormat.AM)
+                .progressTime(3)
+                .startTime(LocalTime.now())
+                .startDay(LocalDate.of(2023, 5, 13))
+                .endDay(LocalDate.of(2023, 5, 14)) //봉사 활동 종료
+                .build();
+        recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get().setVolunteeringTimeTable(newTime);
+        clear();
+        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
+
+        //when & then
+        mockMvc.perform(post(joinPath)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_중복신청() throws Exception {
         //given
         participationService.participate(saveRecruitment.getRecruitmentNo()); //팀 신청 요청
+        clear();
+
+        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
+
+        //when & then
+        mockMvc.perform(post(joinPath)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 봉사모집글_팀신청_실패_참가가능인원초과() throws Exception {
+        //given
+        addParticipant(5, State.JOIN_APPROVAL);
         clear();
 
         ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
@@ -269,6 +336,26 @@ class ParticipationControllerTest {
 
         ParticipantAddParam dto =
                 new ParticipantAddParam(saveRecruitment.getRecruitmentNo(), List.of(loginUser.getUserNo()));
+
+        //when & then
+        mockMvc.perform(post(approvalPath)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 봉사모집글_팀신청승인_실패_승인가능인원초과() throws Exception {
+        //given
+        //현재 승인가능인원 1명
+        addParticipant(4, State.JOIN_APPROVAL);
+        List<Long> requestUserNoList = addParticipant(3, State.JOIN_REQUEST);
+        clear();
+
+        ParticipantAddParam dto =
+                new ParticipantAddParam(saveRecruitment.getRecruitmentNo(), requestUserNoList);
 
         //when & then
         mockMvc.perform(post(approvalPath)

@@ -194,6 +194,46 @@ class ParticipationServiceImplTest {
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 팀신청_실패_종료된모집글(){
+        //given
+        Timetable newTime = Timetable.builder()
+                .hourFormat(HourFormat.AM)
+                .progressTime(3)
+                .startTime(LocalTime.now())
+                .startDay(LocalDate.of(2023, 5, 13))
+                .endDay(LocalDate.of(2023, 5, 14)) //봉사 활동 종료
+                .build();
+        recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get().setVolunteeringTimeTable(newTime);
+        clear();
+
+        //when & then
+        Assertions.assertThatThrownBy(() -> participationService.participate(saveRecruitment.getRecruitmentNo()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("NOT_EXIST_RECRUITMENT");
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 팀신청_실패_참여가능인원초과(){
+        //given
+        joinUser(5);
+        joinUserList.stream()
+                .forEach(user -> participantRepository.save(
+                        Participant.builder()
+                                .participant(user)
+                                .recruitment(saveRecruitment)
+                                .state(State.JOIN_APPROVAL)
+                                .build()));
+        clear();
+
+        //when & then
+        Assertions.assertThatThrownBy(() -> participationService.participate(saveRecruitment.getRecruitmentNo()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("INSUFFICIENT_CAPACITY");
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 팀신청취소_성공(){
         //given
         participantRepository.save(Participant.builder()
@@ -309,6 +349,37 @@ class ParticipationServiceImplTest {
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INVALID_STATE");
 
+    }
+
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 팀신청승인_실패_승인가능인원초과(){
+        //given
+        //남은 승인 가능인원 1명
+        joinUser(4);
+        joinUserList.stream()
+                .forEach(user -> participantRepository.save(
+                        Participant.builder()
+                                .participant(user)
+                                .recruitment(saveRecruitment)
+                                .state(State.JOIN_APPROVAL)
+                                .build()));
+
+        joinUser(3);
+        joinUserList.stream()
+                .forEach(user -> participantRepository.save(
+                        Participant.builder()
+                                .participant(user)
+                                .recruitment(saveRecruitment)
+                                .state(State.JOIN_REQUEST)
+                                .build()));
+        List<Long> joinUserNoList = joinUserList.stream().map(user -> user.getUserNo()).collect(Collectors.toList());
+        clear();
+
+        //when & then
+        Assertions.assertThatThrownBy(() -> participationService.approvalParticipant(saveRecruitment.getRecruitmentNo(), joinUserNoList))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("INSUFFICIENT_APPROVAL_CAPACITY");
     }
 
     @Test
