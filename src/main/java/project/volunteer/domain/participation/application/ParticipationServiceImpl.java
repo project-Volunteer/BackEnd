@@ -29,9 +29,15 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Override
     public void participate(Long recruitmentNo) {
 
-        Recruitment recruitment = existsRecruitment(recruitmentNo, String.format("RecruitmentNo to Participate = [%d]", recruitmentNo));
+        Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Participate = [%d]", recruitmentNo));
 
         Long loginUserNo = SecurityUtil.getLoginUserNo();
+
+        //참여 가능 인원이 꽉 찬경우
+        if(participantRepository.countAvailableParticipants(recruitmentNo) ==recruitment.getVolunteerNum()){
+            throw  new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
+                    String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitmentNo, recruitment.getVolunteerNum()));
+        }
 
         participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
                 .ifPresentOrElse(
@@ -63,7 +69,7 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Override
     public void cancelParticipation(Long recruitmentNo) {
 
-        existsRecruitment(recruitmentNo, String.format("RecruitmentNo to Cancel = [%d]", recruitmentNo));
+        isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Cancel = [%d]", recruitmentNo));
 
         Long loginUserNo = SecurityUtil.getLoginUserNo();
 
@@ -79,8 +85,16 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Override
     public void approvalParticipant(Long recruitmentNo, List<Long> userNo) {
 
-        Recruitment recruitment = existsRecruitment(recruitmentNo, String.format("RecruitmentNo to Approval = [%d]", recruitmentNo));
+        Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Approval = [%d]", recruitmentNo));
         isRecruitmentOwner(recruitment);
+
+        //승인가능인원수 초과
+        Integer remainNum = recruitment.getVolunteerNum() - participantRepository.countAvailableParticipants(recruitmentNo);
+        if(remainNum < userNo.size()){
+            throw new BusinessException(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY, new Integer[]{remainNum},
+                    String.format("RecruitmentNo = [%d], Available participant num = [%d], " +
+                            "Approval participants num", recruitmentNo, remainNum, userNo.size()));
+        }
 
         List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitmentNo, userNo);
         findParticipants.stream()
@@ -98,7 +112,7 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Override
     public void deportParticipant(Long recruitmentNo, Long userNo) {
 
-        Recruitment recruitment = existsRecruitment(recruitmentNo, String.format("RecruitmentNo to Deport = [%d]", recruitmentNo));
+        Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Deport = [%d]", recruitmentNo));
         isRecruitmentOwner(recruitment);
 
         Participant findState = participantRepository.findByState(recruitmentNo, userNo, State.JOIN_APPROVAL)
@@ -108,9 +122,9 @@ public class ParticipationServiceImpl implements ParticipationService{
         findState.deport();
     }
 
-    //모집글 존재 여부 판별 메서드
-    private Recruitment existsRecruitment(Long recruitmentNo, String logErrorMessage){
-        return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
+    //신청 가능한 모집글인지 판별
+    private Recruitment isActivatediRecruitment(Long recruitmentNo, String logErrorMessage){
+        return recruitmentRepository.findActivatedRecruitment(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
                         logErrorMessage));
     }
