@@ -18,12 +18,19 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     Optional<Participant> findByRecruitment_RecruitmentNoAndParticipant_UserNo(Long recruitmentNo, Long userId);
 
+    List<Participant> findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(Long recruitmentNo, List<Long> userNos);
+
     @Query("select p from Participant p " +
             "where p.recruitment.recruitmentNo = :recruitmentNo " +
             "and p.participant.userNo = :userNo " +
             "and p.state = :state")
     Optional<Participant> findByState(@Param("recruitmentNo")Long recruitmentNo, @Param("userNo")Long userNo, @Param("state")State state);
 
-    List<Participant> findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(Long recruitmentNo, List<Long> userNos);
+    //봉사 모집글 팀원 신청가능한 인원 반환 쿼리
+    @Query("select count(p) from Participant p " +
+            "join p.recruitment r " +
+            "where p.recruitment.recruitmentNo=:no " +
+            "and p.state=project.volunteer.global.common.component.State.JOIN_APPROVAL")
+    Integer countAvailableParticipants(@Param("no") Long recruitmentNo);
 
 }
