@@ -3,6 +3,7 @@ package project.volunteer.domain.recruitment.application;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,7 @@ import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.application.dto.ParticipantDetails;
+import project.volunteer.domain.recruitment.application.dto.ParticipantState;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -35,6 +36,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
@@ -43,6 +45,8 @@ import javax.persistence.PersistenceContext;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +66,7 @@ class RecruitmentDtoServiceImplTest {
     @Autowired RecruitmentRepository recruitmentRepository;
 
     private Recruitment saveRecruitment;
-    private Long userNo;
+    private User loginUser;
     private List<Long> deleteImageNo = new ArrayList<>();
     private void clear() {
         em.flush();
@@ -76,7 +80,7 @@ class RecruitmentDtoServiceImplTest {
         addImage(RealWorkCode.RECRUITMENT, saveRecruitment.getRecruitmentNo());
 
         //작성자 업로드 이미지 저장
-        addImage(RealWorkCode.USER, userNo);
+        addImage(RealWorkCode.USER, loginUser.getUserNo());
 
         //유저 임시 회원가입, 이미지 업로드, 참여자 등록
         initParticipant();
@@ -92,9 +96,9 @@ class RecruitmentDtoServiceImplTest {
         String organizationName = "name";
         String details = "details";
         Float latitude = 3.2F, longitude = 3.2F;
-        Integer volunteerNum = 5;
-        String startDay = "01-01-2000";
-        String endDay = "01-01-2000";
+        Integer volunteerNum = 7;
+        String startDay = LocalDate.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        String endDay = LocalDate.now().plusMonths(3).format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         String hourFormat = HourFormat.AM.name();
         String startTime = "01:01";
         Integer progressTime = 3;
@@ -158,9 +162,37 @@ class RecruitmentDtoServiceImplTest {
             participantRepository.save(participant);
         }
     }
+    private List<Long> addParticipant(int count, State state, Long recruitmentNo){
+        List<Long> participantNoList = new ArrayList<>();
+
+        for(int i=0;i<count;i++){
+            User joinUser = userRepository.save(User.builder()
+                    .id("1234" + i)
+                    .password("1234" + i)
+                    .nickName("nickname" + i)
+                    .email("email" + i + "@gmail.com")
+                    .gender(Gender.M)
+                    .birthDay(LocalDate.now())
+                    .picture("picture" + i)
+                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                    .role(Role.USER)
+                    .provider("kakao").providerId("1234" + i)
+                    .build());
+
+            participantRepository.save(Participant.builder()
+                    .participant(joinUser)
+                    .recruitment(recruitmentRepository.findById(recruitmentNo).get())
+                    .state(state)
+                    .build());
+
+            participantNoList.add(joinUser.getUserNo());
+        }
+        return participantNoList;
+    }
+
     @BeforeEach
     private void initUser() {
-        User save = userRepository.save(User.builder()
+        loginUser = userRepository.save(User.builder()
                 .id("1234")
                 .password("1234")
                 .nickName("nickname")
@@ -172,7 +204,6 @@ class RecruitmentDtoServiceImplTest {
                 .role(Role.USER)
                 .provider("kakao").providerId("1234")
                 .build());
-        userNo = save.getUserNo();
         clear();
     }
     @AfterEach
@@ -190,15 +221,151 @@ class RecruitmentDtoServiceImplTest {
         setMockUpData();
 
         //given & when
-        RecruitmentDetails recruitment = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+        RecruitmentDetails recruitmentDto = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
 
         //then
-        Assertions.assertThat(recruitment.getCurrentVolunteer().size()).isEqualTo(5); //참여자 5명
-        Assertions.assertThat(recruitment.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getValue()); //모집글 이미지=업로드
-        for(ParticipantDetails dto : recruitment.getCurrentVolunteer()){
-            Assertions.assertThat(dto.getIsApproved()).isTrue();
-        }
-        System.out.println(recruitment);
+        Assertions.assertThat(recruitmentDto.getApprovalVolunteer().size()).isEqualTo(5); //승인 참여자 5명
+        Assertions.assertThat(recruitmentDto.getRequiredVolunteer().size()).isEqualTo(0);
+        Assertions.assertThat(recruitmentDto.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getValue()); //모집글 이미지=업로드
+    }
+
+    @DisplayName("모집글 참가인원 상태 테스트")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void searchParticipantState() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        addParticipant(5, State.JOIN_REQUEST, saveRecruitment.getRecruitmentNo()); //팀 신청 5명
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getApprovalVolunteer().size()).isEqualTo(5);
+        Assertions.assertThat(details.getRequiredVolunteer().size()).isEqualTo(5);
+    }
+
+    @DisplayName("모집글 첫 참가 신청으로 로그인 사용자 상태가 신청 가능 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserAvailableStateByFirst() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.AVAILABLE.name());
+
+    }
+
+    @DisplayName("모집글 팀 탈퇴로 인해 로그인 사용자 상태가 신청 가능 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserAvailableStateByQuit() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        participantRepository.save(
+                Participant.builder()
+                        .recruitment(saveRecruitment)
+                        .participant(loginUser)
+                        .state(State.QUIT)
+                        .build()
+        );
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.AVAILABLE.name());
+    }
+
+    @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserPendingState() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        participantRepository.save(
+                Participant.builder()
+                        .recruitment(saveRecruitment)
+                        .participant(loginUser)
+                        .state(State.JOIN_REQUEST)
+                        .build()
+        );
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.PENDING.name());
+    }
+
+    @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserApprovedState() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        participantRepository.save(
+                Participant.builder()
+                        .recruitment(saveRecruitment)
+                        .participant(loginUser)
+                        .state(State.JOIN_APPROVAL)
+                        .build()
+        );
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.APPROVED.name());
+    }
+
+    @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserDoneStateByFinishEndDay() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        saveRecruitment.setVolunteeringTimeTable(
+                Timetable.builder()
+                        .progressTime(3)
+                        .startDay(LocalDate.now().minusMonths(3))
+                        .endDay(LocalDate.now().minusMonths(2))
+                        .startTime(LocalTime.now())
+                        .hourFormat(HourFormat.AM)
+                        .build()
+        );
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.DONE.name());
+    }
+
+    @DisplayName("팀원 모집인원 초과로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserDoneStateByVolunteerNum() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        addParticipant(2, State.JOIN_APPROVAL, saveRecruitment.getRecruitmentNo()); //모집인원 마감
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.DONE.name());
     }
 
     @Test

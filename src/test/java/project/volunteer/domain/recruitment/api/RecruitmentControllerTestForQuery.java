@@ -171,6 +171,33 @@ class RecruitmentControllerTestForQuery {
         }
         clear();
     }
+    private List<Long> addParticipant(int count, State state, Long recruitmentNo){
+        List<Long> participantNoList = new ArrayList<>();
+
+        for(int i=0;i<count;i++){
+            User joinUser = userRepository.save(User.builder()
+                    .id("1234" + i)
+                    .password("1234" + i)
+                    .nickName("nickname" + i)
+                    .email("email" + i + "@gmail.com")
+                    .gender(Gender.M)
+                    .birthDay(LocalDate.now())
+                    .picture("picture" + i)
+                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                    .role(Role.USER)
+                    .provider("kakao").providerId("1234" + i)
+                    .build());
+
+            participantRepository.save(Participant.builder()
+                    .participant(joinUser)
+                    .recruitment(recruitmentRepository.findById(recruitmentNo).get())
+                    .state(state)
+                    .build());
+
+            participantNoList.add(joinUser.getUserNo());
+        }
+        return participantNoList;
+    }
     @BeforeEach
     public void initUser(){
         saveUser = userRepository.save(User.builder()
@@ -276,6 +303,9 @@ class RecruitmentControllerTestForQuery {
     public void 모집글_상세조회_성공() throws Exception {
         //given
         setData();
+        addParticipant(100, State.JOIN_APPROVAL, saveRecruitmentNoList.get(1));
+        addParticipant(10, State.JOIN_REQUEST, saveRecruitmentNoList.get(1));
+        clear();
 
         //when && then
         mockMvc.perform(get(FIND_URL + saveRecruitmentNoList.get(1)))
