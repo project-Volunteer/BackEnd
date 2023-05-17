@@ -4,13 +4,12 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 public class ParticipantDetails {
 
+    private Long userNo;
     private String nickName;
     private String imageUrl;
-    private Boolean isApproved;
 
 }
