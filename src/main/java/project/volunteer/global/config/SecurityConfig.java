@@ -63,8 +63,14 @@ public class SecurityConfig {
 			 // 커스텀 필터 등록
             .apply(new MyCustomDsl())
 			.and()
-			
+
 			.authorizeRequests()
+
+					//봉사 모집글 관련
+					.antMatchers(HttpMethod.POST, "/recruitment").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/recruitment/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/recruitment", "/recruitment/count").permitAll()
+					.antMatchers(HttpMethod.GET,"/recruitment/*").hasAuthority("USER")
 
 					//팀원 관리
 					.antMatchers(HttpMethod.POST, "/recruitment/join").hasAuthority("USER")
@@ -73,12 +79,8 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.POST, "/recruitment/kick").hasAuthority("USER")
 
 			.anyRequest().permitAll()
-			/*
-			// 게시글 등록, 수정, 삭제
-			.antMatchers(HttpMethod.POST,"/recruitment").hasAuthority("USER")
-			.antMatchers(HttpMethod.PUT,"/recruitment").hasAuthority("USER")
-			.antMatchers(HttpMethod.DELETE,"/recruitment").hasAuthority("USER")
 
+			/*
 			// 일정 등록, 수정, 삭제
 			.antMatchers(HttpMethod.POST,"/schedule").hasAuthority("USER")
 			.antMatchers(HttpMethod.PUT,"/schedule").hasAuthority("USER")

@@ -9,6 +9,7 @@ import project.volunteer.domain.recruitment.dto.PictureDetails;
 import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,7 +26,8 @@ public class RecruitmentDetails {
     private String volunteeringType;
     private String volunteerType;
     private Integer volunteerNum;
-    private List<ParticipantDetails> currentVolunteer;
+    private List<ParticipantDetails> approvalVolunteer = new ArrayList<>(); //승인된 참여자 리스트
+    private List<ParticipantDetails> requiredVolunteer = new ArrayList<>(); //참여 요청한 참여자 리스트
     private WriterDetails author;
     private String startDay;
     private String endDay;
@@ -36,6 +38,7 @@ public class RecruitmentDetails {
     private PictureDetails picture;
     private String title;
     private String content;
+    private String status;
 
     public RecruitmentDetails(Recruitment recruitment){
         this.no = recruitment.getRecruitmentNo();

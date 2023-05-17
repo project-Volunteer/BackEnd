@@ -50,7 +50,7 @@ public class RecruitmentRequest {
     private String hourFormat;
 
     @NotEmpty
-    @Pattern(regexp = "^(0[1-9]|1[012]):(0[1-9]|[12345][0-9])$")
+    @Pattern(regexp = "^(0[1-9]|1[012]):(0[0-9]|[12345][0-9])$")
     private String startTime;
 
     @Range(min=1, max = 24)
