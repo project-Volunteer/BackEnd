@@ -16,7 +16,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @EntityGraph(attributePaths = {"storage"})
     @Query("select im from Image im " +
             "where im.realWorkCode = :code and im.no = :no and im.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    public Optional<Image> findByEGStorageByCodeAndNo(@Param("code") RealWorkCode realWorkCode, @Param("no") Long no);
+    public Optional<Image> findEGStorageByCodeAndNo(@Param("code") RealWorkCode realWorkCode, @Param("no") Long no);
 
     @Query("select img from Image img " +
             "where img.realWorkCode=:code and img.no=:no and img.isDeleted=project.volunteer.global.common.component.IsDeleted.N")

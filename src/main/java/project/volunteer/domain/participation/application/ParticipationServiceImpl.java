@@ -73,7 +73,7 @@ public class ParticipationServiceImpl implements ParticipationService{
 
         Long loginUserNo = SecurityUtil.getLoginUserNo();
 
-        Participant findState = participantRepository.findByState(recruitmentNo, loginUserNo, State.JOIN_REQUEST)
+        Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, loginUserNo, State.JOIN_REQUEST)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
                                 loginUserNo, recruitmentNo, State.JOIN_REQUEST.name())));
@@ -115,7 +115,7 @@ public class ParticipationServiceImpl implements ParticipationService{
         Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Deport = [%d]", recruitmentNo));
         isRecruitmentOwner(recruitment);
 
-        Participant findState = participantRepository.findByState(recruitmentNo, userNo, State.JOIN_APPROVAL)
+        Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, userNo, State.JOIN_APPROVAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], RecruitmentNo = [%d]", userNo, recruitmentNo)));
 
