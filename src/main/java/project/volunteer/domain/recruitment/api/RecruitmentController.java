@@ -25,6 +25,7 @@ import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
+import project.volunteer.global.aop.LogExecutionTime;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -113,6 +114,7 @@ public class RecruitmentController {
         return ResponseEntity.ok(result);
     }
 
+//    @LogExecutionTime
     @GetMapping("/recruitment/{no}")
     public ResponseEntity<RecruitmentDetails> recruitmentDetails(@PathVariable Long no){
 
