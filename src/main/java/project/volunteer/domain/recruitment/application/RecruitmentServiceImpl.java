@@ -45,11 +45,9 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .isPublished(saveDto.getIsPublished())
                 .build();
 
-        //1. SecurityUtil 를 통해서 사용자 정보 가져오기 및 예외 처리
-        //2. 연관관계 세팅
-        //추후 수정 필요 (임시)
-        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserId())
-                .orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_USER, String.format("Search User ID = [%d]", SecurityUtil.getLoginUserId()))));
+        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserNo())
+                .orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED_USER,
+                        String.format("Unauthorized UserNo = [%d]", SecurityUtil.getLoginUserNo()))));
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
