@@ -62,6 +62,9 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 recruitmentRepository.findValidByRecruitmentNo(deleteNo).orElseThrow(
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
+        //모집글 방장 검사
+        isRecruitmentOwner(findRecruitment);
+
         //정기일 경우 반복주기 삭제
         if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){
             List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(findRecruitment.getRecruitmentNo());
@@ -71,6 +74,16 @@ public class RecruitmentServiceImpl implements RecruitmentService{
 
         //모집글 삭제
         findRecruitment.setDeleted();
+    }
+
+    //모집글 방장 검증 메서드
+    private void isRecruitmentOwner(Recruitment recruitment){
+        Long loginUserNo = SecurityUtil.getLoginUserNo();
+
+        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
+        }
     }
 
 }
