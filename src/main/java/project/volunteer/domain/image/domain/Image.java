@@ -14,7 +14,9 @@ import java.util.Optional;
 
 @Getter
 @Entity
-@Table(name = "vlt_image")
+@Table(name = "vlt_image", indexes = {
+        @Index(name = "idx_no_realworkcode", columnList = "no, realwork_code")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Image extends BaseTimeEntity {
 

@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -30,6 +31,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.storage.dao.StorageRepository;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -61,6 +63,7 @@ class RecruitmentControllerTestForQuery {
     @Autowired ParticipantRepository participantRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ImageRepository imageRepository;
+    @Autowired StorageRepository storageRepository;
     @Autowired RecruitmentService recruitmentService;
     @Autowired RepeatPeriodService repeatPeriodService;
     @Autowired ImageService imageService;
@@ -99,7 +102,7 @@ class RecruitmentControllerTestForQuery {
         String organizationName ="name";
         String details = "details";
         Float latitude = 3.2F , longitude = 3.2F;
-        Integer volunteerNum = 5;
+        Integer volunteerNum = 9999;
         String startDay = "01-01-2000";
         String endDay = "01-01-2000";
         String hourFormat = HourFormat.AM.name();
@@ -187,6 +190,21 @@ class RecruitmentControllerTestForQuery {
                     .role(Role.USER)
                     .provider("kakao").providerId("1234" + i)
                     .build());
+
+            Storage storage = storageRepository.save(
+                    Storage.builder()
+                            .imagePath("1234" + i)
+                            .fakeImageName("1234" + i)
+                            .realImageName("1234" + i)
+                            .extName(".jpg")
+                            .build());
+
+            Image save = imageRepository.save(
+                    Image.builder()
+                            .realWorkCode(RealWorkCode.USER)
+                            .no(joinUser.getUserNo())
+                            .build());
+            save.setStorage(storage);
 
             participantRepository.save(Participant.builder()
                     .participant(joinUser)
@@ -303,8 +321,8 @@ class RecruitmentControllerTestForQuery {
     public void 모집글_상세조회_성공() throws Exception {
         //given
         setData();
-        addParticipant(100, State.JOIN_APPROVAL, saveRecruitmentNoList.get(1));
-        addParticipant(10, State.JOIN_REQUEST, saveRecruitmentNoList.get(1));
+        addParticipant(200, State.JOIN_APPROVAL, saveRecruitmentNoList.get(1));
+        addParticipant(100, State.JOIN_REQUEST, saveRecruitmentNoList.get(1));
         clear();
 
         //when && then
