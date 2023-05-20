@@ -42,5 +42,8 @@ application-local.yml
 application-oauth.yml
 application-smtp.yml
 application-prod.yml
+application-test.yml
+application-perfomance.yml
+application-*.yml
 .gitmodules
 yml-config/
