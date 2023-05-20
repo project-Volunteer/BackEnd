@@ -9,6 +9,7 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
+import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.dto.ParticipantDetails;
 import project.volunteer.domain.recruitment.application.dto.ParticipantState;
@@ -69,7 +70,8 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         }
 
         //5. 모집글 참여자 dto 세팅 -> 참여자 정보(쿼리1번) + 참여자 이미지 검색(참여자 수 N)
-        makeParticipantsDto(dto, no);
+        //makeParticipantsDto(dto, no);
+        makeOptimizedParticipantsDto(dto, no);
 
         //6. 로그인 사용자 상태 판별 -> 쿼리 2번
         dto.setStatus(decideUserState(findRecruitment));
@@ -137,6 +139,28 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
                         approvedList.add(details);
                     }else{
                         requiredList.add(details);
+                    }
+                });
+
+        dto.setApprovalVolunteer(approvedList);
+        dto.setRequiredVolunteer(requiredList);
+    }
+
+    private void makeOptimizedParticipantsDto(RecruitmentDetails dto, Long recruitmentNo){
+
+        List<ParticipantDetails> approvedList = new ArrayList<>();
+        List<ParticipantDetails> requiredList = new ArrayList<>();
+
+        //최적화한 쿼리(쿼리 1번)
+        List<ParticipantStateDetails> participants = participantRepository.findParticipantsByOptimization(recruitmentNo,
+                List.of(State.JOIN_REQUEST, State.JOIN_APPROVAL));
+
+        participants.stream()
+                .forEach(p -> {
+                    if(p.getState().equals(State.JOIN_REQUEST)){
+                        requiredList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                    }else{
+                        approvedList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
                     }
                 });
 
