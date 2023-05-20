@@ -90,4 +90,9 @@ public class User extends BaseTimeEntity {
 		this.refreshToken = refreshToken;
 	}
 
+    //테스트 케이스를 위한 것
+    public void setUserNo(Long userNo){
+        this.userNo = userNo;
+    }
+
 }

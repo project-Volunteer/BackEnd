@@ -45,11 +45,9 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .isPublished(saveDto.getIsPublished())
                 .build();
 
-        //1. SecurityUtil 를 통해서 사용자 정보 가져오기 및 예외 처리
-        //2. 연관관계 세팅
-        //추후 수정 필요 (임시)
-        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserId())
-                .orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_USER, String.format("Search User ID = [%d]", SecurityUtil.getLoginUserId()))));
+        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserNo())
+                .orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED_USER,
+                        String.format("Unauthorized UserNo = [%d]", SecurityUtil.getLoginUserNo()))));
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
@@ -62,6 +60,9 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 recruitmentRepository.findValidByRecruitmentNo(deleteNo).orElseThrow(
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
+        //모집글 방장 검사
+        isRecruitmentOwner(findRecruitment);
+
         //정기일 경우 반복주기 삭제
         if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){
             List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(findRecruitment.getRecruitmentNo());
@@ -71,6 +72,16 @@ public class RecruitmentServiceImpl implements RecruitmentService{
 
         //모집글 삭제
         findRecruitment.setDeleted();
+    }
+
+    //모집글 방장 검증 메서드
+    private void isRecruitmentOwner(Recruitment recruitment){
+        Long loginUserNo = SecurityUtil.getLoginUserNo();
+
+        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
+        }
     }
 
 }

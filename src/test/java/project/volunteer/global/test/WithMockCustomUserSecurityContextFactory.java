@@ -18,7 +18,7 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
     public SecurityContext createSecurityContext(WithMockCustomUser annotation) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
-        UserDetails userDetails = new PrincipalDetails(User.builder()
+        User loginUser = User.builder()
                 .id(annotation.tempValue())
                 .password(annotation.tempValue())
                 .nickName(annotation.tempValue())
@@ -29,7 +29,10 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
                 .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
                 .role(Role.USER)
                 .provider("kakao").providerId(annotation.tempValue())
-                .build());
+                .build();
+        loginUser.setUserNo(Long.MAX_VALUE);
+
+        UserDetails userDetails = new PrincipalDetails(loginUser);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(
                 userDetails,
