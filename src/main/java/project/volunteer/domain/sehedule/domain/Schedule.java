@@ -31,6 +31,9 @@ public class Schedule extends BaseTimeEntity {
     @Column(length = 50)
     private String content;
 
+    @Column(name = "volunteer_num", nullable = false)
+    private Integer volunteerNum;
+
     /**
      *  Auditing - 생성인, 수정인 추가 필요
      */
@@ -40,11 +43,12 @@ public class Schedule extends BaseTimeEntity {
     private Recruitment recruitment;
 
     @Builder
-    public Schedule(Timetable timetable, String content,String organizationName,  Address address) {
+    public Schedule(Timetable timetable, String content,String organizationName,  Address address, int volunteerNum) {
         this.scheduleTimeTable = timetable;
         this.content = content;
         this.organizationName = organizationName;
         this.address = address;
+        this.volunteerNum = volunteerNum;
     }
 
     public void setRecruitment(Recruitment recruitment) {
