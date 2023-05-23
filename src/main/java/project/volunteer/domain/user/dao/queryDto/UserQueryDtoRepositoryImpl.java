@@ -47,7 +47,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 								recruitment.volunteerType))
 				.from(recruitment)
 				.innerJoin(participant1).on(participant1.recruitment.recruitmentNo.eq(recruitment.recruitmentNo))
-				.leftJoin(image).on(recruitment.recruitmentNo.eq(image.no)) 
+				.innerJoin(image).on(recruitment.recruitmentNo.eq(image.no)) 
 				.leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT)) 
 				.where(
 						participant1.state.eq(State.JOIN_REQUEST), 
@@ -79,7 +79,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 								"currentVolunteerNum")
 				))
 				.from(recruitment)
-				.leftJoin(image).on(recruitment.recruitmentNo.eq(image.no))
+				.innerJoin(image).on(recruitment.recruitmentNo.eq(image.no))
 				.leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT))
 				.where(
 						recruitment.writer.userNo.eq(userNo),

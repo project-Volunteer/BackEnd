@@ -313,18 +313,16 @@ public class UserServiceImplTest {
 	}
 	
 	@Test
-	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	void 나의_모집글_승인대기_리스트조회() throws Exception{
-		UserJoinRequestListResponse result = userService.findUserJoinRequest();
+		UserJoinRequestListResponse result = userService.findUserJoinRequest(saveUser.getUserNo());
 		List<UserRecruitmentJoinRequestQuery> dataList = result.getRequestList();
 		
 		Assertions.assertThat(dataList.size()).isEqualTo(2);
 	}
 	
 	@Test
-    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	void 나의_모집글_모집중_리스트조회() throws Exception{
-		UserRecruitingListResponse result = userService.findUserRecruiting();
+		UserRecruitingListResponse result = userService.findUserRecruiting(saveUser.getUserNo());
 		List<UserRecruitingQuery> dataList = result.getRecruitingList();
 		Assertions.assertThat(dataList.size()).isEqualTo(2);
 		dataList.stream().forEach(data -> {

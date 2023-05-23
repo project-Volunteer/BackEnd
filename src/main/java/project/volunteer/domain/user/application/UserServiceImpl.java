@@ -33,9 +33,7 @@ public class UserServiceImpl implements UserService{
 	private final UserQueryDtoRepository userQueryDtoRepository;
 
 	@Override
-	public UserJoinRequestListResponse findUserJoinRequest() {
-		Long userNo = SecurityUtil.getLoginUserNo();
-		
+	public UserJoinRequestListResponse findUserJoinRequest(Long userNo) {
 		User user = userRepository.findByUserNo(userNo)
 				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_USER, 
 						String.format("not found user = [%d]", SecurityUtil.getLoginUserId())));
@@ -46,9 +44,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public UserRecruitingListResponse findUserRecruiting() {
-		Long userNo = SecurityUtil.getLoginUserNo();
-		
+	public UserRecruitingListResponse findUserRecruiting(Long userNo) {
 		User user = userRepository.findByUserNo(userNo)
 				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_USER, 
 						String.format("not found user = [%d]", SecurityUtil.getLoginUserId())));
@@ -57,6 +53,5 @@ public class UserServiceImpl implements UserService{
 		
 		return new UserRecruitingListResponse(data);
 	}
-	
 
 }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import project.volunteer.domain.user.api.dto.response.UserJoinRequestListResponse;
 import project.volunteer.domain.user.api.dto.response.UserRecruitingListResponse;
 import project.volunteer.domain.user.application.UserService;
+import project.volunteer.global.util.SecurityUtil;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,14 +20,14 @@ public class UserController {
 	
 	@GetMapping("/request")
 	public HttpEntity<UserJoinRequestListResponse> myJoinRequestList() {
-		
-		return ResponseEntity.ok(userService.findUserJoinRequest());
+		Long userNo = SecurityUtil.getLoginUserNo();
+		return ResponseEntity.ok(userService.findUserJoinRequest(userNo));
 	}
 	
 	@GetMapping("/recruiting")
 	public HttpEntity<UserRecruitingListResponse> myRecruitingList() {
-		
-		return ResponseEntity.ok(userService.findUserRecruiting());
+		Long userNo = SecurityUtil.getLoginUserNo();
+		return ResponseEntity.ok(userService.findUserRecruiting(userNo));
 	}
 	
 	
