@@ -51,6 +51,16 @@ public class Schedule extends BaseTimeEntity {
         this.volunteerNum = volunteerNum;
     }
 
+    public static Schedule crateSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
+        Schedule schedule = new Schedule();
+        schedule.scheduleTimeTable = timetable;
+        schedule.content = content;
+        schedule.organizationName = organizationName;
+        schedule.address = address;
+        schedule.volunteerNum = volunteerNum;
+        return schedule;
+    }
+
     public void setRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
     }

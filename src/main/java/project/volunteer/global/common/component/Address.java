@@ -27,4 +27,12 @@ public class Address {
         this.sigungu = sigungu;
         this.details = details;
     }
+
+    public static Address createAddress(String sido, String sigungu, String details){
+        Address address = new Address();
+        address.sido = sido;
+        address.sigungu  = sigungu;
+        address.details = details;
+        return address;
+    }
 }

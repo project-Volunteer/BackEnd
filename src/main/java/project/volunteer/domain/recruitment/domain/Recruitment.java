@@ -105,6 +105,30 @@ public class Recruitment extends BaseTimeEntity {
         this.isDeleted = IsDeleted.N;
     }
 
+    public static Recruitment createRecruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
+                                                VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
+                                                String organizationName, Address address, Coordinate coordinate,
+                                                Timetable timetable, Boolean isPublished){
+        Recruitment createRecruitment = new Recruitment();
+        createRecruitment.title = title;
+        createRecruitment.content = content;
+        createRecruitment.volunteeringCategory = volunteeringCategory;
+        createRecruitment.volunteeringType = volunteeringType;
+        createRecruitment.volunteerType = volunteerType;
+        createRecruitment.volunteerNum = volunteerNum;
+        createRecruitment.isIssued = isIssued;
+        createRecruitment.organizationName = organizationName;
+        createRecruitment.address = address;
+        createRecruitment.coordinate = coordinate;
+        createRecruitment.VolunteeringTimeTable = timetable;
+        createRecruitment.isPublished = isPublished;
+
+        createRecruitment.likeCount = 0;
+        createRecruitment.viewCount = 0;
+        createRecruitment.isDeleted = IsDeleted.N;
+        return createRecruitment;
+    }
+
     public void setWriter(User user){
         this.writer = user;
     }

@@ -94,5 +94,24 @@ public class User extends BaseTimeEntity {
     public void setUserNo(Long userNo){
         this.userNo = userNo;
     }
+    public static User createUser(String id, String password, String nickName, String email, Gender gender, LocalDate birthDay, String picture, Boolean joinAlarmYn,
+                           Boolean noticeAlarmYn, Boolean beforeAlarmYn, Role role, String provider,String providerId, String refreshToken){
+        User user = new User();
+        user.id = id;
+        user.password = password;
+        user.nickName = nickName;
+        user.email = email;
+        user.gender = gender;
+        user.birthDay = birthDay;
+        user.picture = picture;
+        user.joinAlarmYn = joinAlarmYn;
+        user.noticeAlarmYn = noticeAlarmYn;
+        user.beforeAlarmYn =beforeAlarmYn;
+        user.role = role;
+        user.provider = provider;
+        user.providerId = providerId;
+        user.refreshToken = refreshToken;
+        return user;
+    }
 
 }

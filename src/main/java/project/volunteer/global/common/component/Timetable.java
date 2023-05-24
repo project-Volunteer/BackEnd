@@ -35,4 +35,15 @@ public class Timetable {
     @Column(name = "progress_time", columnDefinition = "TINYINT", nullable = false)
     private Integer progressTime; //(1~24시간)
 
+
+    public static Timetable createTimetable(LocalDate startDay, LocalDate endDay, HourFormat hourFormat, LocalTime startTime, int progressTime){
+        Timetable timetable = new Timetable();
+        timetable.startDay = startDay;
+        timetable.endDay = endDay;
+        timetable.hourFormat = hourFormat;
+        timetable.startTime = startTime;
+        timetable.progressTime = progressTime;
+        return timetable;
+    }
+
 }
