@@ -46,6 +46,7 @@ public class ScheduleServiceImpl implements ScheduleService{
         Schedule createSchedule = Schedule.builder()
                 .timetable(dto.getTimetable())
                 .content(dto.getContent())
+                .volunteerNum(dto.getVolunteerNum())
                 .organizationName(dto.getOrganizationName())
                 .address(dto.getAddress())
                 .build();
@@ -87,6 +88,7 @@ public class ScheduleServiceImpl implements ScheduleService{
                             .address(address)
                             .organizationName(dto.getOrganizationName())
                             .content(dto.getContent())
+                            .volunteerNum(dto.getVolunteerNum())
                             .build();
                     schedule.setRecruitment(recruitment);
                     scheduleRepository.save(schedule);

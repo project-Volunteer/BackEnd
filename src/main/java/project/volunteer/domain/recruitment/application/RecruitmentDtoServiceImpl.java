@@ -12,7 +12,7 @@ import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.dto.ParticipantDetails;
-import project.volunteer.domain.recruitment.application.dto.ParticipantState;
+import project.volunteer.global.common.response.ParticipantState;
 import project.volunteer.domain.recruitment.application.dto.WriterDetails;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.dto.PictureDetails;
