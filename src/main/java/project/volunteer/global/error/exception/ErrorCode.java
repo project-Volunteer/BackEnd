@@ -18,6 +18,7 @@ public enum ErrorCode {
     //모집글 관련
     NOT_EXIST_RECRUITMENT(HttpStatus.BAD_REQUEST, "notExist.recruitment"),
     FORBIDDEN_RECRUITMENT(HttpStatus.FORBIDDEN, "forbidden.recruitment"),
+    FORBIDDEN_RECRUITMENT_TEAM(HttpStatus.FORBIDDEN, "forbidden.recruitment.team"),
 
     //사용자 관련
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "notExist.user"),

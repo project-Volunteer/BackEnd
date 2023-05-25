@@ -5,7 +5,7 @@ import project.volunteer.domain.sehedule.domain.Schedule;
 
 import java.util.Optional;
 
-public interface ScheduleRepository extends JpaRepository<Schedule,Long> {
+public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,CustomScheduleRepository {
 
     public Optional<Schedule> findByRecruitment_RecruitmentNo(Long recruitmentNo);
 
