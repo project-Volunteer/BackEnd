@@ -78,6 +78,9 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.POST, "/recruitment/approval").hasAuthority("USER")
 					.antMatchers(HttpMethod.POST, "/recruitment/kick").hasAuthority("USER")
 
+					//일정 관련
+					.antMatchers(HttpMethod.GET, "/schedule/*").hasAuthority("USER")
+
 			.anyRequest().permitAll()
 
 			/*
