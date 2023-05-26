@@ -1,5 +1,6 @@
 package project.volunteer.domain.sehedule.application.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ScheduleParam {
 
     private Timetable timetable;

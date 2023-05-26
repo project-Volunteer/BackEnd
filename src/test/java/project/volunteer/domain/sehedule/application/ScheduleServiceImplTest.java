@@ -1,18 +1,21 @@
 package project.volunteer.domain.sehedule.application;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
+import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.domain.VolunteerType;
+import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
@@ -20,17 +23,25 @@ import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.error.exception.BusinessException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 @SpringBootTest
-@Transactional
 class ScheduleServiceImplTest {
 
     @PersistenceContext EntityManager em;
@@ -38,186 +49,148 @@ class ScheduleServiceImplTest {
     @Autowired ScheduleRepository scheduleRepository;
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentService recruitmentService;
+    @Autowired RecruitmentRepository recruitmentRepository;
 
-    private Long saveRecruitmentNo;
+    User writer;
+    Recruitment saveRecruitment;
     private void clear() {
         em.flush();
         em.clear();
     }
-    private void setMockUpData(){
-        //임시 모집글 등록
-        String category = "001";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        Float latitude = 3.2F , longitude = 3.2F;
-        Boolean isIssued = true;
-        String volunteerType = "1"; //all
-        Integer volunteerNum = 5;
-        String volunteeringType = "reg";
-        String startDay = "01-01-2000";
-        String endDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String title = "title", content = "content";
-        Boolean isPublished = true;
-        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay,hourFormat, startTime, progressTime, title, content, isPublished);
-        saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
-        clear();
-    }
     @BeforeEach
-    private void initUser() {
-        //임시 유저 회원가입 및 인증
-        String nickname = "nickname";
-        String email = "email@gmail.com";
-        Gender gender = Gender.M;
-        LocalDate birth = LocalDate.now();
-        String picture = "picture";
-        Boolean alarm = true;
-        userRepository.save(User.builder().nickName(nickname)
-                .email(email).gender(gender).birthDay(birth).picture(picture)
-                .joinAlarmYn(alarm).beforeAlarmYn(alarm).noticeAlarmYn(alarm)
-                .provider("kakao").providerId("1234").build());
-        clear();
+    private void setUp() {
+        //작성자 저장
+        writer = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
+                true, true, true, Role.USER, "kakao", "1234", null);
+        userRepository.save(writer);
+
+        //Embedded 값 세팅
+        Address address = Address.createAddress("1", "111", "test");
+        Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
+        Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
+
+        //봉사 모집글 저장
+        saveRecruitment =
+                Recruitment.createRecruitment("test", "test", VolunteeringCategory.EDUCATION, VolunteeringType.IRREG,
+                        VolunteerType.TEENAGER, 10, true, "test", address, coordinate, timetable, true);
+        saveRecruitment.setWriter(writer);
+        recruitmentRepository.save(saveRecruitment);
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 스케줄_등록_성공() {
-        //init
-        setMockUpData();
-
+    @Transactional
+    @DisplayName("수동 봉사 일정 등록에 성공한다.")
+    public void createSchedule() {
         //given
-        String startDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String content = "content";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        ScheduleParam dto = new ScheduleParam(startDay,startDay, hourFormat, startTime, progressTime,
-                organizationName, sido, sigungu, details, content);
+        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
+        final Address address = Address.createAddress("1", "111", "details");
+        final String organizationName = "test";
+        final String content = "test";
+        final int volunteerNum = 3;
+        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when
-        scheduleService.addSchedule(saveRecruitmentNo, dto);
+        Long saveScheduleNo = scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), writer.getUserNo(), param);
         clear();
 
         //then
-        Schedule schedule = scheduleRepository.findByRecruitment_RecruitmentNo(saveRecruitmentNo).get();
-        Assertions.assertThat(schedule.getAddress().getSido()).isEqualTo(sido);
-        Assertions.assertThat(schedule.getAddress().getSigungu()).isEqualTo(sigungu);
-        Assertions.assertThat(schedule.getContent()).isEqualTo(content);
-        Assertions.assertThat(schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))).isEqualTo(startDay);
-        Assertions.assertThat(schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))).isEqualTo(startTime);
-        Assertions.assertThat(schedule.getScheduleTimeTable().getProgressTime()).isEqualTo(progressTime);
+        Schedule findSchedule = scheduleRepository.findById(saveScheduleNo).get();
+        assertAll(
+                () -> assertThat(findSchedule.getScheduleTimeTable().getProgressTime()).isEqualTo(timetable.getProgressTime()),
+                () -> assertThat(findSchedule.getScheduleTimeTable().getStartDay()).isEqualTo(timetable.getStartDay()),
+                () -> assertThat(findSchedule.getScheduleTimeTable().getEndDay()).isEqualTo(timetable.getEndDay()),
+                () -> assertThat(findSchedule.getScheduleTimeTable().getHourFormat()).isEqualTo(timetable.getHourFormat()),
+                () -> assertThat(findSchedule.getScheduleTimeTable().getStartTime().getHour()).isEqualTo(timetable.getStartTime().getHour()),
+                () -> assertThat(findSchedule.getScheduleTimeTable().getStartTime().getMinute()).isEqualTo(timetable.getStartTime().getMinute()),
+                () -> assertThat(findSchedule.getOrganizationName()).isEqualTo(organizationName),
+                () -> assertThat(findSchedule.getContent()).isEqualTo(content),
+                () -> assertThat(findSchedule.getVolunteerNum()).isEqualTo(volunteerNum),
+                () -> assertThat(findSchedule.getAddress().getSido()).isEqualTo(address.getSido()),
+                () -> assertThat(findSchedule.getAddress().getSigungu()).isEqualTo(address.getSigungu()),
+                () -> assertThat(findSchedule.getAddress().getDetails()).isEqualTo(address.getDetails())
+        );
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 스케줄_등록_실패_없는모집글() {
-        //init
-        setMockUpData();
-
+    @Transactional
+    @DisplayName("유효하지않은 봉사 모집글에 일정을 추가하여 에러가 발생한다.")
+    public void notExistRecruitment(){
         //given
-        String startDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String content = "content";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        ScheduleParam dto = new ScheduleParam(startDay, startDay,hourFormat, startTime, progressTime,
-                organizationName, sido, sigungu, details, content);
+        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
+        final Address address = Address.createAddress("1", "111", "details");
+        final String organizationName = "test";
+        final String content = "test";
+        final int volunteerNum = 3;
+        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
-        //when & then
-        Assertions.assertThatThrownBy(() -> scheduleService.addSchedule(Long.MAX_VALUE, dto))
-                .isInstanceOf(NullPointerException.class);
+        //when && then
+        assertThatThrownBy(() -> scheduleService.addSchedule(Long.MAX_VALUE, writer.getUserNo(), param))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("NOT_EXIST_RECRUITMENT");
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 정기모집글_스케줄_자동생성_매달_성공(){
-        //init
-        setMockUpData();
-
+    @Transactional
+    @DisplayName("방장이 아닌 사용자가 일정을 등록을 시도하여 권한에러가 발생한다.")
+    public void notRecruitmentOwner(){
         //given
-        String startDay = "12-01-2022";
-        String endDay = "02-01-2023";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String content = "content";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        String period = "month"; //매달
-        int week = Week.FOUR.getValue();
-        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
-        RepeatPeriodParam periodParam = new RepeatPeriodParam(period, week, days);
-        ScheduleParamReg reg = ScheduleParamReg.builder()
-                .startDay(startDay)
-                .endDay(endDay)
-                .hourFormat(hourFormat)
-                .startTime(startTime)
-                .progressTime(progressTime)
-                .organizationName(organizationName)
-                .sido(sido)
-                .sigungu(sigungu)
-                .details(details)
-                .content(content)
-                .periodParam(periodParam)
-                .build();
+        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
+        final Address address = Address.createAddress("1", "111", "details");
+        final String organizationName = "test";
+        final String content = "test";
+        final int volunteerNum = 3;
+        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
-        //when & then
-        scheduleService.addRegSchedule(saveRecruitmentNo, reg);
+        //when && then
+        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), Long.MAX_VALUE, param))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("FORBIDDEN_RECRUITMENT");
     }
 
     @Test
-    @Rollback(value = false)
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
-    public void 정기모집글_스케줄_자동생성_매주_성공(){
-        //init
-        setMockUpData();
-
+    @Transactional
+    @DisplayName("반복주기가 매달인 봉사 일정 자동 등록에 성공한다.")
+    public void createScheduleWithMonth(){
         //given
-        String startDay = "01-06-2023";
-        String endDay = "02-01-2023";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String content = "content";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        String period = "week"; //매주
-        int week = 0;
-        List<Integer> days = List.of(Day.SAT.getValue(), Day.MON.getValue());
-        RepeatPeriodParam periodParam = new RepeatPeriodParam(period, week, days);
-        ScheduleParamReg reg = ScheduleParamReg.builder()
-                .startDay(startDay)
-                .endDay(endDay)
-                .hourFormat(hourFormat)
-                .startTime(startTime)
-                .progressTime(progressTime)
-                .organizationName(organizationName)
-                .sido(sido)
-                .sigungu(sigungu)
-                .details(details)
-                .content(content)
-                .periodParam(periodParam)
-                .build();
+        final Timetable timetable = Timetable.createTimetable(
+                LocalDate.of(2023, 1,2), LocalDate.of(2023,5,8), HourFormat.AM, LocalTime.now(), 3);
+        final String organizationName ="test";
+        final String content = "test";
+        final int volunteerNum = 10;
+        final Address address = Address.createAddress("1", "1111", "details");
+        final RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(Period.MONTH, Week.FIRST, List.of(Day.MON, Day.TUES));
+        final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
-        //when & then
-        scheduleService.addRegSchedule(saveRecruitmentNo, reg);
+        //when
+        scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        clear();
+
+        //then
+        List<Schedule> schedules = scheduleRepository.findAll(); //자동으로 저장한 일정 리스트 가져오기
+        assertThat(schedules.size()).isEqualTo(10);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("반복주기가 매주인 봉사 일정 자동 등록에 성공한다.")
+    public void createScheduleWithWeek(){
+        //given
+        final Timetable timetable = Timetable.createTimetable(
+                LocalDate.of(2023, 1,2), LocalDate.of(2023,2,1), HourFormat.AM, LocalTime.now(), 3);
+        final String organizationName ="test";
+        final String content = "test";
+        final int volunteerNum = 10;
+        final Address address = Address.createAddress("1", "1111", "details");
+        final RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(Period.WEEK, null, List.of(Day.SAT, Day.SUN));
+        final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
+
+        //when
+        scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        clear();
+
+        //then
+        List<Schedule> schedules = scheduleRepository.findAll();
+        assertThat(schedules.size()).isEqualTo(8);
     }
 
 }

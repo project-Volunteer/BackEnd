@@ -1,9 +1,6 @@
 package project.volunteer.domain.sehedule.application.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.HourFormat;
@@ -16,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ScheduleParamReg {
 
     private Timetable timetable;
