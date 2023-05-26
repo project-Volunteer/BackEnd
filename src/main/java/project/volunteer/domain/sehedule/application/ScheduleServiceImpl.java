@@ -38,20 +38,18 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public Long addSchedule(Long recruitmentNo, ScheduleParam dto) {
+    public Long addSchedule(Long recruitmentNo, Long loginUserNo, ScheduleParam dto) {
 
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
+        //봉사 모집글 검증
+        Recruitment recruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
 
-        Schedule createSchedule = Schedule.builder()
-                .timetable(dto.getTimetable())
-                .content(dto.getContent())
-                .volunteerNum(dto.getVolunteerNum())
-                .organizationName(dto.getOrganizationName())
-                .address(dto.getAddress())
-                .build();
-        createSchedule.setRecruitment(recruitment);
+        //모집글 방장 검증
+        isRecruitmentOwner(recruitment, loginUserNo);
 
+        Schedule createSchedule =
+                Schedule.createSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getVolunteerNum());
+        createSchedule.setRecruitment(recruitment);
         return scheduleRepository.save(createSchedule).getScheduleNo();
     }
 
@@ -71,26 +69,16 @@ public class ScheduleServiceImpl implements ScheduleService{
         //스케줄 등록
         scheduleDate.stream()
                 .forEach(date -> {
-                    Timetable timetable = Timetable.builder()
-                            .startDay(date)
-                            .endDay(date)
-                            .hourFormat(dto.getTimetable().getHourFormat())
-                            .startTime(dto.getTimetable().getStartTime())
-                            .progressTime(dto.getTimetable().getProgressTime())
-                            .build();
-                    Address address = Address.builder()
-                            .sido(dto.getAddress().getSido())
-                            .sigungu(dto.getAddress().getSigungu())
-                            .details(dto.getAddress().getSigungu())
-                            .build();
-                    Schedule schedule = Schedule.builder()
-                            .timetable(timetable)
-                            .address(address)
-                            .organizationName(dto.getOrganizationName())
-                            .content(dto.getContent())
-                            .volunteerNum(dto.getVolunteerNum())
-                            .build();
+                    Timetable timetable = Timetable.createTimetable(date, date, dto.getTimetable().getHourFormat(),
+                            dto.getTimetable().getStartTime(), dto.getTimetable().getProgressTime());
+
+                    Address address =
+                            Address.createAddress(dto.getAddress().getSido(), dto.getAddress().getSigungu(), dto.getAddress().getDetails());
+
+                    Schedule schedule =
+                            Schedule.createSchedule(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());
                     schedule.setRecruitment(recruitment);
+
                     scheduleRepository.save(schedule);
                 });
     }
@@ -146,5 +134,13 @@ public class ScheduleServiceImpl implements ScheduleService{
 
         return scheduleDate;
    }
+
+    //모집글 방장 검증 메서드
+    private void isRecruitmentOwner(Recruitment recruitment, Long loginUserNo){
+        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)){
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
+        }
+    }
 
 }
