@@ -1,9 +1,6 @@
 package project.volunteer.domain.sehedule.application.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
@@ -24,6 +21,7 @@ public class ScheduleParam {
     private String content;
     private Integer volunteerNum;
 
+    @Builder
     public ScheduleParam(String startDay, String endDay, String hourFormat, String startTime, int progressTime,
                          String organizationName, String sido, String sigungu, String details, String content, int volunteerNum){
 

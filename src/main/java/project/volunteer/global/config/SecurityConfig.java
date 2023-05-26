@@ -80,6 +80,7 @@ public class SecurityConfig {
 
 					//일정 관련
 					.antMatchers(HttpMethod.GET, "/schedule/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/schedule").hasAuthority("USER")
 
 			.anyRequest().permitAll()
 
