@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddressSave {
+public class AddressRequest {
 
     @NotNull
     @Length(min = 1, max = 5)

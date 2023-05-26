@@ -18,8 +18,8 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.sehedule.api.dto.request.AddressSave;
-import project.volunteer.domain.sehedule.api.dto.request.ScheduleSave;
+import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
+import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -81,7 +81,7 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleSave dto = new ScheduleSave(recruitmentNo, new AddressSave(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -108,7 +108,7 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleSave dto = new ScheduleSave(recruitmentNo, new AddressSave(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -136,7 +136,7 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 100; //max 조건 위반
         final String content = "content";
-        ScheduleSave dto = new ScheduleSave(recruitmentNo, new AddressSave(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -164,7 +164,7 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 20; //봉사 팀원 최대인원보다 작아야 된다.
         final String content = "content";
-        ScheduleSave dto = new ScheduleSave(recruitmentNo, new AddressSave(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then

@@ -15,12 +15,12 @@ import javax.validation.constraints.Pattern;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScheduleSave {
+public class ScheduleRequest {
 
     @NotNull
     private Long no;
 
-    private AddressSave address;
+    private AddressRequest address;
 
     @NotEmpty
     @Pattern(regexp = "^(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])-\\d{4}$")
