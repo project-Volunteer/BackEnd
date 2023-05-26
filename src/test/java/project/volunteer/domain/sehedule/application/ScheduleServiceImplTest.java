@@ -149,6 +149,24 @@ class ScheduleServiceImplTest {
 
     @Test
     @Transactional
+    @DisplayName("일정 모집 인원이 봉사 팀원 최대 모집인원을 초과하다.")
+    public void exceedScheduleVolunteerNum(){
+        //given
+        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
+        final Address address = Address.createAddress("1", "111", "details");
+        final String organizationName = "test";
+        final String content = "test";
+        final int volunteerNum = 100; //초과!!
+        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
+
+        //when && then
+        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), writer.getUserNo(), param))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("EXCEED_CAPACITY_PARTICIPANT");
+    }
+
+    @Test
+    @Transactional
     @DisplayName("반복주기가 매달인 봉사 일정 자동 등록에 성공한다.")
     public void createScheduleWithMonth(){
         //given

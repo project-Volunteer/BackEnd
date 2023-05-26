@@ -147,6 +147,34 @@ class ScheduleControllerTestForWrite {
                 .andDo(print());
     }
 
+    @DisplayName("수동 일정 등록간 모집 인원은 봉사 팀원 최대 인원보다 많을 수 없다.")
+    @Test
+    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void exceedVolunteerNum() throws Exception {
+        //given
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        final String sido = "1";
+        final String sigungu = "1111";
+        final String details = "details";
+        final String startDay = "05-26-2023";
+        final String hourFormat = "AM";
+        final String startTime = "10:00";
+        final Integer progressTime = 2;
+        final String organizationName = "organization";
+        final Integer volunteerNum = 20; //봉사 팀원 최대인원보다 작아야 된다.
+        final String content = "content";
+        ScheduleSave dto = new ScheduleSave(recruitmentNo, new AddressSave(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+                organizationName, volunteerNum, content);
+
+        //when & then
+        mockMvc.perform(post("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
     private <T> String toJson(T data) throws JsonProcessingException {
         return objectMapper.writeValueAsString(data);
     }

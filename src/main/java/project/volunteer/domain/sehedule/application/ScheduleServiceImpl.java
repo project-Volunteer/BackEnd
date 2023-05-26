@@ -47,6 +47,12 @@ public class ScheduleServiceImpl implements ScheduleService{
         //모집글 방장 검증
         isRecruitmentOwner(recruitment, loginUserNo);
 
+        //일정 참여가능 최대 수는 봉사 팀원 가능 인원보다 많을 수 없음.
+        if(recruitment.getVolunteerNum() < dto.getVolunteerNum()){
+            throw new BusinessException(ErrorCode.EXCEED_CAPACITY_PARTICIPANT,
+                    String.format("Recruitment VolunteerNum = [%d], Schedule VolunteerNum = [%d]", recruitment.getVolunteerNum(), dto.getVolunteerNum()));
+        }
+
         Schedule createSchedule =
                 Schedule.createSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getVolunteerNum());
         createSchedule.setRecruitment(recruitment);
