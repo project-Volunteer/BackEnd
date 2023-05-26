@@ -10,8 +10,6 @@ import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Getter
 @Entity
@@ -51,7 +49,7 @@ public class Schedule extends BaseTimeEntity {
         this.volunteerNum = volunteerNum;
     }
 
-    public static Schedule crateSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
+    public static Schedule createSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
         Schedule schedule = new Schedule();
         schedule.scheduleTimeTable = timetable;
         schedule.content = content;
