@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.global.common.component.IsDeleted;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -21,7 +22,8 @@ public class CustomScheduleRepositoryImpl implements CustomScheduleRepository{
                 .from(schedule)
                 .where(
                         schedule.recruitment.recruitmentNo.eq(recruitmentNo),
-                        schedule.scheduleTimeTable.startDay.after(LocalDate.now())
+                        schedule.scheduleTimeTable.startDay.after(LocalDate.now()),
+                        schedule.isDeleted.eq(IsDeleted.N)
                 )
                 .orderBy(schedule.scheduleTimeTable.startDay.asc())
                 .fetchFirst());

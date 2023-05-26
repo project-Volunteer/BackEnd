@@ -261,4 +261,32 @@ class ScheduleDtoServiceImplTest {
         assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.PARTICIPATING.name());
     }
 
+    @Test
+    @Transactional
+    @DisplayName("3개의 스케줄 중 모집 중이고 삭제되지 않은 가장 가까운 schedule3 일정 조회에 성공한다.")
+    public void findClosestScheduleAndNotDeleted(){
+        //given
+        Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(2), 3);
+        schedule1.delete(); //스케줄 삭제
+        Schedule schedule2 = 스케줄_등록(LocalDate.now().plusMonths(6) , 3);
+        Schedule schedule3 = 스케줄_등록(LocalDate.now().plusMonths(4), 3);
+
+        //when
+        ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(
+                saveRecruitment.getRecruitmentNo(), teamMembers.get(0).getParticipant().getUserNo());
+        clear();
+
+        //then
+        assertAll(
+                () -> assertThat(closestSchedule.getContent()).isEqualTo(schedule3.getContent()),
+                () -> assertThat(closestSchedule.getStartDay()).isEqualTo(schedule3.getScheduleTimeTable()
+                        .getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))),
+                () -> assertThat(closestSchedule.getHourFormat()).isEqualTo(schedule3.getScheduleTimeTable().getHourFormat().getViewName()),
+                () -> assertThat(closestSchedule.getStartTime()).isEqualTo(schedule3.getScheduleTimeTable()
+                        .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
+                () -> assertThat(closestSchedule.getVolunteerNum()).isEqualTo(schedule3.getVolunteerNum()),
+                () ->  assertThat(closestSchedule.getActiveVolunteerNum()).isEqualTo(0),
+                () ->  assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.AVAILABLE.name()));
+    }
+
 }
