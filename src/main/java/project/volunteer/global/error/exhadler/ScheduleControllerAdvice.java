@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,6 +43,16 @@ public class ScheduleControllerAdvice {
         String message = ms.getMessage(e.getErrorCode().getPropertiesCode(), e.getArgs(), null);
         log.info("Error Code = {} , Details = {}", e.getErrorCode().name(), e.getDetails());
 
+        return new BaseErrorResponse(message);
+    }
+
+    //잘못된 MediaType 요청
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public BaseErrorResponse HttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e){
+
+        String message = ms.getMessage(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getPropertiesCode(), null, null);
+        log.info("Error Code = {}, Details = {}", ErrorCode.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
         return new BaseErrorResponse(message);
     }
 

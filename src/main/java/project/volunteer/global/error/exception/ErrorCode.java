@@ -14,6 +14,7 @@ public enum ErrorCode {
     INVALID_ATTRIBUTE(HttpStatus.BAD_REQUEST, "invalid.data"), //modelAttribute
     INVALID_PAYLOAD(HttpStatus.BAD_REQUEST, "invalid.data"), //requestBody
     NOT_NULL_COLUMN(HttpStatus.INTERNAL_SERVER_ERROR, "notNull.column"),
+    UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "unsupported.mediaType"),
 
     //모집글 관련
     NOT_EXIST_RECRUITMENT(HttpStatus.BAD_REQUEST, "notExist.recruitment"),
