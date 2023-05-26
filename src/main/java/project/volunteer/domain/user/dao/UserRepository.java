@@ -5,15 +5,17 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import project.volunteer.domain.user.domain.User;
 
-import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Long> {
 
-    public Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(String email);
     
 	Optional<User> findByEmailAndProviderId(String email, String providerId);
 
 	Optional<User> findById(String id);
 
-	public Optional<User> findByRefreshToken(String refreshToken);
+	Optional<User> findByRefreshToken(String refreshToken);
+
+	Optional<User> findByUserNo(Long userNo);
+	
 }
