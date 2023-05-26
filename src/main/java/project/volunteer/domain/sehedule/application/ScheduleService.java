@@ -2,7 +2,6 @@ package project.volunteer.domain.sehedule.application;
 
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
-import project.volunteer.domain.sehedule.domain.Schedule;
 
 public interface ScheduleService {
 
@@ -14,4 +13,7 @@ public interface ScheduleService {
 
     //스케줄 정보 수정
     public Long editSchedule(Long scheduleNo, Long loginUserNo, ScheduleParam dto);
+
+    //스케줄 삭제
+    public void deleteSchedule(Long scheduleNo, Long loginUserNo);
 }

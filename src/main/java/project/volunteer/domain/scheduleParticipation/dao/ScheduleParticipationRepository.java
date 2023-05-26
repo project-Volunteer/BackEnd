@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ScheduleParticipationRepository extends JpaRepository<ScheduleParticipation, Long> {
@@ -21,4 +22,6 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "where sp.schedule.scheduleNo=:scheduleNo " +
             "and sp.state=project.volunteer.global.common.component.State.PARTICIPATION_APPROVAL")
     Integer countActiveParticipant(@Param("scheduleNo")Long scheduleNo);
+
+    List<ScheduleParticipation> findBySchedule_ScheduleNo(Long scheduleNo);
 }

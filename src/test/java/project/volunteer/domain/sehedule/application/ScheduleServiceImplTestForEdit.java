@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -163,5 +164,24 @@ class ScheduleServiceImplTestForEdit {
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INSUFFICIENT_CAPACITY_PARTICIPANT");
     }
+
+    @Test
+    @Transactional
+    @DisplayName("봉사 일정 삭제에 성공하다.")
+    public void deleteSchedule(){
+        //given & when
+        scheduleService.deleteSchedule(saveSchedule.getScheduleNo(), writer.getUserNo());
+        clear();
+
+        //then
+        Schedule findSchedule = scheduleRepository.findById(saveSchedule.getScheduleNo()).get();
+        assertThat(findSchedule.getIsDeleted()).isEqualTo(IsDeleted.Y);
+
+        List<ScheduleParticipation> participants = scheduleParticipationRepository.findBySchedule_ScheduleNo(saveSchedule.getScheduleNo());
+        assertThat(participants.size()).isEqualTo(5);
+        participants.stream()
+                .forEach(p -> assertThat(p.getState()).isEqualTo(State.DELETED));
+    }
+
 
 }

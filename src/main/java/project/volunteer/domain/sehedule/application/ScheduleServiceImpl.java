@@ -13,6 +13,7 @@ import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -120,6 +121,29 @@ public class ScheduleServiceImpl implements ScheduleService{
         //일정 정보 수정
         findSchedule.changeSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getVolunteerNum());
         return findSchedule.getScheduleNo();
+    }
+
+    @Override
+    @Transactional
+    public void deleteSchedule(Long scheduleNo, Long loginUserNo) {
+
+        //일정 검증
+        Schedule findSchedule = isValidSchedule(scheduleNo);
+
+        //봉사 모집글 검증
+        Recruitment recruitment = isValidRecruitment(findSchedule.getRecruitment().getRecruitmentNo());
+
+        //모집글 방장 검증
+        isRecruitmentOwner(recruitment, loginUserNo);
+
+        //일정 삭제
+        findSchedule.delete();
+
+        //일정 참가자 리스트 삭제
+        List<ScheduleParticipation> participants = scheduleParticipationRepository.findBySchedule_ScheduleNo(scheduleNo);
+        participants.stream()
+                .forEach(p -> p.delete());
+
     }
 
     //반복 주기가 week 인 일정 날짜 생성
