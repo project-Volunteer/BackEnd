@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
@@ -32,6 +33,10 @@ public class Schedule extends BaseTimeEntity {
     @Column(name = "volunteer_num", nullable = false)
     private Integer volunteerNum;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_deleted", length = 1, nullable = false)
+    private IsDeleted isDeleted;
+
     /**
      *  Auditing - 생성인, 수정인 추가 필요
      */
@@ -47,6 +52,7 @@ public class Schedule extends BaseTimeEntity {
         this.organizationName = organizationName;
         this.address = address;
         this.volunteerNum = volunteerNum;
+        this.isDeleted = IsDeleted.N;
     }
 
     public static Schedule createSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
@@ -56,7 +62,16 @@ public class Schedule extends BaseTimeEntity {
         schedule.organizationName = organizationName;
         schedule.address = address;
         schedule.volunteerNum = volunteerNum;
+        schedule.isDeleted = IsDeleted.N;
         return schedule;
+    }
+
+    public void changeSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
+        this.scheduleTimeTable = timetable;
+        this.content = content;
+        this.organizationName = organizationName;
+        this.address = address;
+        this.volunteerNum = volunteerNum;
     }
 
     public void setRecruitment(Recruitment recruitment) {

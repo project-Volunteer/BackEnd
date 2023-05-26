@@ -37,7 +37,9 @@ public enum ErrorCode {
     INSUFFICIENT_APPROVAL_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.approval.capacity"),
 
     //일정 관련
+    NOT_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "notExist.schedule"),
     EXCEED_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "exceed.capacity.participant"),
+    INSUFFICIENT_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "insufficient.capacity.participant"),
     ;
 
     private final HttpStatus httpStatus; //상태 코드
