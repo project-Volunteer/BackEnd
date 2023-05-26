@@ -82,6 +82,7 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.GET, "/schedule/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.POST, "/schedule").hasAuthority("USER")
 					.antMatchers(HttpMethod.PUT, "/schedule").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/schedule/*").hasAuthority("USER")
 
 			.anyRequest().permitAll()
 			.and()

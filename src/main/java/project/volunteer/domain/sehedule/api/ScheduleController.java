@@ -69,4 +69,11 @@ public class ScheduleController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{scheduleNo}")
+    public ResponseEntity scheduleDelete(@PathVariable Long scheduleNo){
+
+        scheduleService.deleteSchedule(scheduleNo, SecurityUtil.getLoginUserNo());
+        return ResponseEntity.ok().build();
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -213,6 +214,16 @@ class ScheduleControllerTestForEdit {
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE) //잘못된 Media Type!
                         .content(toJson(dto)))
                 .andExpect(status().isUnsupportedMediaType())
+                .andDo(print());
+    }
+
+    @DisplayName("봉사 일정 삭제에 성공하다.")
+    @Test
+    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void scheduleDelete() throws Exception {
+        mockMvc.perform(delete("/schedule/" + saveSchedule.getScheduleNo()))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }
