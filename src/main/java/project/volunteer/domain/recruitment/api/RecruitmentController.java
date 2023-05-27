@@ -60,7 +60,7 @@ public class RecruitmentController {
             scheduleService.addRegSchedule(recruitmentNo,
                     new ScheduleParamReg(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
                             form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
-                            form.getContent(), periodParam));
+                            form.getContent(), form.getVolunteerNum(), periodParam));
         }
 
         //이미지 저장

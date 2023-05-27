@@ -21,4 +21,11 @@ public class Coordinate {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public static Coordinate createCoordinate(Float latitude, Float longitude){
+        Coordinate coordinate = new Coordinate();
+        coordinate.latitude = latitude;
+        coordinate.longitude = longitude;
+        return coordinate;
+    }
 }

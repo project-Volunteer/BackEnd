@@ -12,6 +12,8 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.Week;
+import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -35,22 +37,27 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     private final ScheduleRepository scheduleRepository;
     private final RecruitmentRepository recruitmentRepository;
+    private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
     @Transactional
-    public Long addSchedule(Long recruitmentNo, ScheduleParam dto) {
+    public Long addSchedule(Long recruitmentNo, Long loginUserNo, ScheduleParam dto) {
 
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
-                .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
+        //봉사 모집글 검증
+        Recruitment recruitment = isValidRecruitment(recruitmentNo);
 
-        Schedule createSchedule = Schedule.builder()
-                .timetable(dto.getTimetable())
-                .content(dto.getContent())
-                .organizationName(dto.getOrganizationName())
-                .address(dto.getAddress())
-                .build();
+        //모집글 방장 검증
+        isRecruitmentOwner(recruitment, loginUserNo);
+
+        //일정 참여가능 최대 수는 봉사 팀원 가능 인원보다 많을 수 없음.
+        if(recruitment.getVolunteerNum() < dto.getVolunteerNum()){
+            throw new BusinessException(ErrorCode.EXCEED_CAPACITY_PARTICIPANT,
+                    String.format("Recruitment VolunteerNum = [%d], Schedule VolunteerNum = [%d]", recruitment.getVolunteerNum(), dto.getVolunteerNum()));
+        }
+
+        Schedule createSchedule =
+                Schedule.createSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getVolunteerNum());
         createSchedule.setRecruitment(recruitment);
-
         return scheduleRepository.save(createSchedule).getScheduleNo();
     }
 
@@ -58,9 +65,8 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Transactional
     public void addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
 
-        //공통 메서드로 분리 생각해보기
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentNo)
-                .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
+        //봉사 모집글 검증
+        Recruitment recruitment = isValidRecruitment(recruitmentNo);
 
         List<LocalDate> scheduleDate = (dto.getRepeatPeriodParam().getPeriod().equals(Period.MONTH))?
                 (makeDatesOfRegMonth(dto.getTimetable().getStartDay(), dto.getTimetable().getEndDay(),
@@ -70,27 +76,74 @@ public class ScheduleServiceImpl implements ScheduleService{
         //스케줄 등록
         scheduleDate.stream()
                 .forEach(date -> {
-                    Timetable timetable = Timetable.builder()
-                            .startDay(date)
-                            .endDay(date)
-                            .hourFormat(dto.getTimetable().getHourFormat())
-                            .startTime(dto.getTimetable().getStartTime())
-                            .progressTime(dto.getTimetable().getProgressTime())
-                            .build();
-                    Address address = Address.builder()
-                            .sido(dto.getAddress().getSido())
-                            .sigungu(dto.getAddress().getSigungu())
-                            .details(dto.getAddress().getSigungu())
-                            .build();
-                    Schedule schedule = Schedule.builder()
-                            .timetable(timetable)
-                            .address(address)
-                            .organizationName(dto.getOrganizationName())
-                            .content(dto.getContent())
-                            .build();
+                    Timetable timetable = Timetable.createTimetable(date, date, dto.getTimetable().getHourFormat(),
+                            dto.getTimetable().getStartTime(), dto.getTimetable().getProgressTime());
+
+                    Address address =
+                            Address.createAddress(dto.getAddress().getSido(), dto.getAddress().getSigungu(), dto.getAddress().getDetails());
+
+                    Schedule schedule =
+                            Schedule.createSchedule(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());
                     schedule.setRecruitment(recruitment);
+
                     scheduleRepository.save(schedule);
                 });
+    }
+
+    @Override
+    @Transactional
+    public Long editSchedule(Long scheduleNo, Long loginUserNo, ScheduleParam dto) {
+
+        //일정 검증
+        Schedule findSchedule = isValidSchedule(scheduleNo);
+
+        //봉사 모집글 검증
+        Recruitment recruitment = isValidRecruitment(findSchedule.getRecruitment().getRecruitmentNo());
+
+        //모집글 방장 검증
+        isRecruitmentOwner(recruitment, loginUserNo);
+
+        //수정할 참여 인원수는 현재 일정에 참여중인 인원수보다 적을 수 없음.
+        Integer activeVolunteerNum = scheduleParticipationRepository.countActiveParticipant(scheduleNo);
+        if(activeVolunteerNum > dto.getVolunteerNum()){
+            throw new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY_PARTICIPANT,
+                    String.format("ScheduleNo = [%d], activeVolunteerNum = [%d], editVolunteerNum = [%d]",
+                            scheduleNo, activeVolunteerNum, dto.getVolunteerNum()));
+        }
+
+        //일정 참여가능 최대 수는 봉사 팀원 가능 인원보다 많을 수 없음.
+        if(recruitment.getVolunteerNum() < dto.getVolunteerNum()){
+            throw new BusinessException(ErrorCode.EXCEED_CAPACITY_PARTICIPANT,
+                    String.format("ScheduleNo = [%d], Recruitment VolunteerNum = [%d], editVolunteerNum = [%d]",
+                            scheduleNo, recruitment.getVolunteerNum(), dto.getVolunteerNum()));
+        }
+
+        //일정 정보 수정
+        findSchedule.changeSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getVolunteerNum());
+        return findSchedule.getScheduleNo();
+    }
+
+    @Override
+    @Transactional
+    public void deleteSchedule(Long scheduleNo, Long loginUserNo) {
+
+        //일정 검증
+        Schedule findSchedule = isValidSchedule(scheduleNo);
+
+        //봉사 모집글 검증
+        Recruitment recruitment = isValidRecruitment(findSchedule.getRecruitment().getRecruitmentNo());
+
+        //모집글 방장 검증
+        isRecruitmentOwner(recruitment, loginUserNo);
+
+        //일정 삭제
+        findSchedule.delete();
+
+        //일정 참가자 리스트 삭제
+        List<ScheduleParticipation> participants = scheduleParticipationRepository.findBySchedule_ScheduleNo(scheduleNo);
+        participants.stream()
+                .forEach(p -> p.delete());
+
     }
 
     //반복 주기가 week 인 일정 날짜 생성
@@ -144,5 +197,25 @@ public class ScheduleServiceImpl implements ScheduleService{
 
         return scheduleDate;
    }
+
+   //일정 유효성 검사
+    private Schedule isValidSchedule(Long scheduleNo){
+        return scheduleRepository.findValidByScheduleNo(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
+    }
+
+   //모집 글 유효성 검사
+    private Recruitment isValidRecruitment(Long recruitmentNo){
+        return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
+                .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
+    }
+
+    //모집글 방장 검증 메서드
+    private void isRecruitmentOwner(Recruitment recruitment, Long loginUserNo){
+        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)){
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
+        }
+    }
 
 }

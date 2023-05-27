@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Getter
 @Entity
@@ -31,6 +30,13 @@ public class Schedule extends BaseTimeEntity {
     @Column(length = 50)
     private String content;
 
+    @Column(name = "volunteer_num", nullable = false)
+    private Integer volunteerNum;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_deleted", length = 1, nullable = false)
+    private IsDeleted isDeleted;
+
     /**
      *  Auditing - 생성인, 수정인 추가 필요
      */
@@ -40,13 +46,37 @@ public class Schedule extends BaseTimeEntity {
     private Recruitment recruitment;
 
     @Builder
-    public Schedule(Timetable timetable, String content,String organizationName,  Address address) {
+    public Schedule(Timetable timetable, String content,String organizationName,  Address address, int volunteerNum) {
         this.scheduleTimeTable = timetable;
         this.content = content;
         this.organizationName = organizationName;
         this.address = address;
+        this.volunteerNum = volunteerNum;
+        this.isDeleted = IsDeleted.N;
     }
 
+    public static Schedule createSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
+        Schedule schedule = new Schedule();
+        schedule.scheduleTimeTable = timetable;
+        schedule.content = content;
+        schedule.organizationName = organizationName;
+        schedule.address = address;
+        schedule.volunteerNum = volunteerNum;
+        schedule.isDeleted = IsDeleted.N;
+        return schedule;
+    }
+
+    public void changeSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
+        this.scheduleTimeTable = timetable;
+        this.content = content;
+        this.organizationName = organizationName;
+        this.address = address;
+        this.volunteerNum = volunteerNum;
+    }
+
+    public void delete(){
+        this.isDeleted = IsDeleted.Y;
+    }
     public void setRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
     }

@@ -41,11 +41,24 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     Optional<Participant> findByRecruitmentNoAndParticipantNoAndState(@Param("recruitmentNo")Long recruitmentNo, @Param("userNo")Long userNo,
                                                                       @Param("state")State state);
 
-    //봉사 모집글 팀원 신청가능한 인원 반환 쿼리
+    //봉사 모집글 팀원 인원 반환 쿼리
     @Query("select count(p) from Participant p " +
             "join p.recruitment r " +
             "where p.recruitment.recruitmentNo=:no " +
             "and p.state=project.volunteer.global.common.component.State.JOIN_APPROVAL")
     Integer countAvailableParticipants(@Param("no") Long recruitmentNo);
+
+    /**
+     * 봉사 모집글 팀원 확인 쿼리
+     * JPA 에서 select 절 exist 지원하지 않음
+     * "count" 성능 이슈 발생할 거 같은데??
+     */
+    //봉사 모집글 팀원 확인 쿼리
+    @Query("select count(p.participantNo) > 0 " +
+            "from Participant p " +
+            "where p.recruitment.recruitmentNo=:recruitmentNo " +
+            "and p.participant.userNo=:userNo " +
+            "and p.state=project.volunteer.global.common.component.State.JOIN_APPROVAL")
+    Boolean existRecruitmentTeamMember(@Param("recruitmentNo") Long recruitmentNo, @Param("userNo") Long userNo);
 
 }

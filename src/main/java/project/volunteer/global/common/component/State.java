@@ -11,7 +11,7 @@ public enum State implements LegacyCodeCommonType {
     PARTICIPATION_REQUEST("5", "참여 신청"), PARTICIPATION_APPROVAL("6", "참여 승인"),
     PARTICIPATION_CANCEL("7", "참여 취소 요청"), PARTICIPATION_CANCEL_APPROVAL("8", "참여 취소 승인"),
 
-    FINISH("99", "참가 완료"), DEPORT("100", "강제 탈퇴"),
+    FINISH("99", "참가 완료"), DEPORT("100", "강제 탈퇴"), DELETED("101", "삭제")
 
     ;
 

@@ -40,6 +40,14 @@ public class Participant extends BaseTimeEntity {
         this.state = state;
     }
 
+    public static Participant createParticipant(Recruitment recruitment, User participant, State state){
+        Participant createParticipant = new Participant();
+        createParticipant.recruitment = recruitment;
+        createParticipant.participant = participant;
+        createParticipant.state = state;
+        return createParticipant;
+    }
+
     public void joinRequest(){ //참가 요청
         this.state = State.JOIN_REQUEST;
     }

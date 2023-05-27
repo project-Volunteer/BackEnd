@@ -18,6 +18,14 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             "and r.isPublished=true")
     Optional<Recruitment> findWriterEG(@Param("no") Long recruitmentNo);
 
+    //출판된 게시물(삭제 x, 임시 저장 x)
+    @Query("select r " +
+            "from Recruitment r " +
+            "where r.recruitmentNo=:no " +
+            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
+            "and r.isPublished=true")
+    Optional<Recruitment> findPublishedByRecruitmentNo(@Param("no")Long recruitmentNo);
+
     //삭제되지 않은 게시물
     @Query("select r from Recruitment  r " +
             "where r.recruitmentNo=:no and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
