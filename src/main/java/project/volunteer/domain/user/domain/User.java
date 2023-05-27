@@ -90,30 +90,18 @@ public class User extends BaseTimeEntity {
 		this.refreshToken = refreshToken;
 	}
 	
-	public void setJoinAlarmYn(Boolean joinAlarmYn) {
+	public void changeAlarm(Boolean joinAlarmYn, Boolean noticeAlarmYn, Boolean beforeAlarmYn) {
 		this.joinAlarmYn = joinAlarmYn;
-	}
-	
-	public void setNoticeAlarmYn(Boolean noticeAlarmYn) {
 		this.noticeAlarmYn = noticeAlarmYn;
-	}
-	
-	public void setBeforeAlarmYn(Boolean beforeAlarmYn) {
 		this.beforeAlarmYn = beforeAlarmYn;
 	}
 	
-	public void setNickName(String nickName) {
+	public void changeProfile(String nickName, String email, String picture) {
 		this.nickName = nickName;
-	}
-	
-	public void setEmail(String email) {
 		this.email = email;
-	}
-	
-	public void setPicture(String picture) {
 		this.picture = picture;
 	}
-
+	
     //테스트 케이스를 위한 것
     public void setUserNo(Long userNo){
         this.userNo = userNo;
