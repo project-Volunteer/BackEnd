@@ -68,6 +68,7 @@ public class UserServiceImplTest {
 	@Autowired ImageService imageService;
 	@Autowired FileService fileService;
 	@Autowired UserService userService;
+	@Autowired UserDtoService userDtoService;
 	@PersistenceContext EntityManager em;
 
 	String changedNickName= "changedNickName";
@@ -315,14 +316,9 @@ public class UserServiceImplTest {
 		}
 	}
 
-    private MockMultipartFile getRealMockMultipartFile() throws IOException {
-        return new MockMultipartFile(
-                "picture", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
-    }
-    
 	@Test
 	void 나의_모집글_승인대기_리스트조회() throws Exception{
-		UserJoinRequestListResponse result = userService.findUserJoinRequest(saveUser.getUserNo());
+		UserJoinRequestListResponse result = userDtoService.findUserJoinRequest(saveUser.getUserNo());
 		List<UserRecruitmentJoinRequestQuery> dataList = result.getRequestList();
 		
 		Assertions.assertThat(dataList.size()).isEqualTo(2);
@@ -330,7 +326,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	void 나의_모집글_모집중_리스트조회() throws Exception{
-		UserRecruitingListResponse result = userService.findUserRecruiting(saveUser.getUserNo());
+		UserRecruitingListResponse result = userDtoService.findUserRecruiting(saveUser.getUserNo());
 		List<UserRecruitingQuery> dataList = result.getRecruitingList();
 		Assertions.assertThat(dataList.size()).isEqualTo(2);
 		dataList.stream().forEach(data -> {
@@ -340,7 +336,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	void 나의_메일수신동의여부_조회() throws Exception{
-		UserAlarmResponse result = userService.findUserAlarm(saveUser.getUserNo());
+		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
 		Assertions.assertThat(result.getJoinAlarm().TRUE);
 		Assertions.assertThat(result.getNoticeAlarm().TRUE);
 		Assertions.assertThat(result.getBeforeAlarm().TRUE);
@@ -350,7 +346,7 @@ public class UserServiceImplTest {
 	@Test
 	void 나의_메일수신동의여부_수정() throws Exception{
 		userService.userAlarmUpdate(saveUser.getUserNo(),Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
-		UserAlarmResponse result = userService.findUserAlarm(saveUser.getUserNo());
+		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
 		Assertions.assertThat(result.getJoinAlarm().FALSE);
 		Assertions.assertThat(result.getNoticeAlarm().FALSE);
 		Assertions.assertThat(result.getBeforeAlarm().FALSE);
@@ -358,7 +354,7 @@ public class UserServiceImplTest {
 
 	@Test
 	void 프로필_수정_프로필사진변경() throws Exception{
-		userService.userInfoUpdate(saveUser.getUserNo(), changedNickName, changedEmail, getRealMockMultipartFile());
+		userService.userInfoUpdate(saveUser.getUserNo(), changedNickName, changedEmail, "https://test.png");
 		Optional<User> result = userRepository.findById(saveUser.getUserNo());
 
 		Assertions.assertThat(result.get().getNickName().equals(changedNickName));
