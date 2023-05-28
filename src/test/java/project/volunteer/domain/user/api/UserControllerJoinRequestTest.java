@@ -38,11 +38,6 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
-import project.volunteer.domain.repeatPeriod.domain.Day;
-import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
-import project.volunteer.domain.signup.application.UserSignupService;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -53,6 +48,7 @@ import project.volunteer.global.common.component.State;
 import project.volunteer.global.infra.s3.FileService;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 @Transactional
 public class UserControllerJoinRequestTest {
 	@Autowired UserRepository userRepository;

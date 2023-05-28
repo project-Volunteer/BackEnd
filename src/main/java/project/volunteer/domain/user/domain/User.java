@@ -89,7 +89,19 @@ public class User extends BaseTimeEntity {
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
-
+	
+	public void changeAlarm(Boolean joinAlarmYn, Boolean noticeAlarmYn, Boolean beforeAlarmYn) {
+		this.joinAlarmYn = joinAlarmYn;
+		this.noticeAlarmYn = noticeAlarmYn;
+		this.beforeAlarmYn = beforeAlarmYn;
+	}
+	
+	public void changeProfile(String nickName, String email, String picture) {
+		this.nickName = nickName;
+		this.email = email;
+		this.picture = picture;
+	}
+	
     //테스트 케이스를 위한 것
     public void setUserNo(Long userNo){
         this.userNo = userNo;
