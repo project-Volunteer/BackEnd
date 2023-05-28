@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +37,7 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.user.api.dto.response.UserAlarmResponse;
 import project.volunteer.domain.user.api.dto.response.UserJoinRequestListResponse;
 import project.volunteer.domain.user.api.dto.response.UserRecruitingListResponse;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -68,8 +68,12 @@ public class UserServiceImplTest {
 	@Autowired ImageService imageService;
 	@Autowired FileService fileService;
 	@Autowired UserService userService;
+	@Autowired UserDtoService userDtoService;
 	@PersistenceContext EntityManager em;
 
+	String changedNickName= "changedNickName";
+	String changedEmail= "changedEmail@test.test";
+	
 	private static User saveUser;
 	private List<Long> deleteS3ImageNoList = new ArrayList<>();
 
@@ -311,10 +315,10 @@ public class UserServiceImplTest {
 			fileService.deleteFile(storage.getFakeImageName());
 		}
 	}
-	
+
 	@Test
 	void 나의_모집글_승인대기_리스트조회() throws Exception{
-		UserJoinRequestListResponse result = userService.findUserJoinRequest(saveUser.getUserNo());
+		UserJoinRequestListResponse result = userDtoService.findUserJoinRequest(saveUser.getUserNo());
 		List<UserRecruitmentJoinRequestQuery> dataList = result.getRequestList();
 		
 		Assertions.assertThat(dataList.size()).isEqualTo(2);
@@ -322,12 +326,49 @@ public class UserServiceImplTest {
 	
 	@Test
 	void 나의_모집글_모집중_리스트조회() throws Exception{
-		UserRecruitingListResponse result = userService.findUserRecruiting(saveUser.getUserNo());
+		UserRecruitingListResponse result = userDtoService.findUserRecruiting(saveUser.getUserNo());
 		List<UserRecruitingQuery> dataList = result.getRecruitingList();
 		Assertions.assertThat(dataList.size()).isEqualTo(2);
 		dataList.stream().forEach(data -> {
 			log.info("CurrentVolunteerNum={}",data.getCurrentVolunteerNum());
 		});
+	}
+	
+	@Test
+	void 나의_메일수신동의여부_조회() throws Exception{
+		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
+		Assertions.assertThat(result.getJoinAlarm().TRUE);
+		Assertions.assertThat(result.getNoticeAlarm().TRUE);
+		Assertions.assertThat(result.getBeforeAlarm().TRUE);
+	}
+	
+
+	@Test
+	void 나의_메일수신동의여부_수정() throws Exception{
+		userService.userAlarmUpdate(saveUser.getUserNo(),Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
+		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
+		Assertions.assertThat(result.getJoinAlarm().FALSE);
+		Assertions.assertThat(result.getNoticeAlarm().FALSE);
+		Assertions.assertThat(result.getBeforeAlarm().FALSE);
+	}
+
+	@Test
+	void 프로필_수정_프로필사진변경() throws Exception{
+		userService.userInfoUpdate(saveUser.getUserNo(), changedNickName, changedEmail, "https://test.png");
+		Optional<User> result = userRepository.findById(saveUser.getUserNo());
+
+		Assertions.assertThat(result.get().getNickName().equals(changedNickName));
+		Assertions.assertThat(result.get().getEmail().equals(changedEmail));
+		Assertions.assertThat(!result.get().getPicture().equals(saveUser.getPicture()));
+	}
+
+	@Test
+	void 프로필_수정_프로필사진변경X() throws Exception{
+		userService.userInfoUpdate(saveUser.getUserNo(), changedNickName, changedEmail, null);
+		Optional<User> result = userRepository.findById(saveUser.getUserNo());
 		
+		Assertions.assertThat(result.get().getNickName().equals(changedNickName));
+		Assertions.assertThat(result.get().getEmail().equals(changedEmail));
+		Assertions.assertThat(result.get().getPicture().equals(saveUser.getPicture()));
 	}
 }
