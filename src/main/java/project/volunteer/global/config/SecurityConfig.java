@@ -70,7 +70,7 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.POST, "/recruitment").hasAuthority("USER")
 					.antMatchers(HttpMethod.DELETE, "/recruitment/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/recruitment", "/recruitment/count").permitAll()
-					.antMatchers(HttpMethod.GET,"/recruitment/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET,"/recruitment/*").permitAll()
 
 					//팀원 관리
 					.antMatchers(HttpMethod.POST, "/recruitment/join").hasAuthority("USER")
