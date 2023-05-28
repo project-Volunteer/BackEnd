@@ -22,7 +22,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.user.api.dto.HistoryTimeInfo;
+//import project.volunteer.domain.user.api.dto.HistoryTimeInfo;
 import project.volunteer.domain.user.dao.queryDto.dto.QUserRecruitingQuery;
 import project.volunteer.domain.user.dao.queryDto.dto.QUserRecruitmentJoinRequestQuery;
 import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitingQuery;
