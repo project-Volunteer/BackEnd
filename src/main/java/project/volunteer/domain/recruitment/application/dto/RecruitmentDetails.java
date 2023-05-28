@@ -38,7 +38,6 @@ public class RecruitmentDetails {
     private PictureDetails picture;
     private String title;
     private String content;
-    private String status;
 
     public RecruitmentDetails(Recruitment recruitment){
         this.no = recruitment.getRecruitmentNo();
