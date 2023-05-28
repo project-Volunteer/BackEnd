@@ -26,6 +26,7 @@ import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.global.aop.LogExecutionTime;
+import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -120,6 +121,16 @@ public class RecruitmentController {
 
         RecruitmentDetails dto = recruitmentDtoService.findRecruitment(no);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/recruitment/{no}/status")
+    public ResponseEntity<Map<String,Object>> teamStateDetails(@PathVariable Long no){
+        String status = recruitmentDtoService.findRecruitmentTeamStatus(no, SecurityUtil.getLoginUserNo());
+
+        //response
+        Map<String,Object> result = new HashMap<>();
+        result.put("status", status);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/recruitment/{no}")
