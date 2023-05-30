@@ -48,6 +48,15 @@ public class RepeatPeriod {
         this.isDeleted = IsDeleted.N;
     }
 
+    public static RepeatPeriod createRepeatPeriod(Period period, Week week, Day day){
+        RepeatPeriod repeatPeriod = new RepeatPeriod();
+        repeatPeriod.period = period;
+        repeatPeriod.week = week;
+        repeatPeriod.day = day;
+        repeatPeriod.isDeleted = IsDeleted.N;
+        return repeatPeriod;
+    }
+
     public void setRecruitment(Recruitment recruitment){
         this.recruitment = recruitment;
     }
