@@ -1,0 +1,20 @@
+server:
+  port: 8888
+
+---
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://volunteer.cef8hwf1yigx.ap-northeast-2.rds.amazonaws.com:3306/volunteer?serverTimezone=UTC&characterEncoding=UTF-8
+    username: admin
+    password: volunteer123!
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+
