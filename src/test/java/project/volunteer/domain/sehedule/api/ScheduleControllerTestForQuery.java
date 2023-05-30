@@ -10,6 +10,8 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -32,7 +34,9 @@ import project.volunteer.global.test.WithMockCustomUser;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -201,6 +205,42 @@ class ScheduleControllerTestForQuery {
         mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(ParticipantState.PARTICIPATING.name()))
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("2023년 5월 캘린더에 존재하는 일정 리스트를 조회한다")
+    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void findSchedulesInMay2023() throws Exception {
+        //given
+        스케줄_등록(LocalDate.of(2023, 5, 1), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 15), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 20), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 21), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 10), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 31), 3);
+
+        스케줄_등록(LocalDate.of(2023, 6, 10), 3);
+        스케줄_등록(LocalDate.of(2023, 6, 15), 3);
+        스케줄_등록(LocalDate.of(2023, 4, 25), 3);
+
+        //when & then
+        mockMvc.perform(get("/schedule/"+saveRecruitment.getRecruitmentNo()+"/calendar")
+                    .queryParam("year", "2023")
+                    .queryParam("mon", "5"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("캘린더 일정 조회 간 필수 파라미터를 누락하다.")
+    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void missingQueryParam() throws Exception {
+        mockMvc.perform(get("/schedule/"+saveRecruitment.getRecruitmentNo()+"/calendar")
+                        .queryParam("year", "2023")) //"mon" 쿼리 스트링 누락
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

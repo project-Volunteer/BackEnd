@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -53,6 +54,16 @@ public class ScheduleControllerAdvice {
 
         String message = ms.getMessage(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getPropertiesCode(), null, null);
         log.info("Error Code = {}, Details = {}", ErrorCode.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
+        return new BaseErrorResponse(message);
+    }
+
+    //필수 요청 파라미터(쿼리 스트링) 누락 예외처리
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public BaseErrorResponse MissingServletRequestParameterException(MissingServletRequestParameterException e){
+
+        String message = ms.getMessage(ErrorCode.MISSING_REQUEST_PARAMETER.getPropertiesCode(), null, null);
+        log.info("Error Code = {} , Details = {}", ErrorCode.MISSING_REQUEST_PARAMETER, e.getMessage());
         return new BaseErrorResponse(message);
     }
 
