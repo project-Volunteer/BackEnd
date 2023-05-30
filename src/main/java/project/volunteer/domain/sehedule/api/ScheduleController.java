@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
-import project.volunteer.domain.sehedule.application.CalendarService;
 import project.volunteer.domain.sehedule.application.ScheduleDtoService;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
@@ -27,7 +26,6 @@ public class ScheduleController {
 
     private final ScheduleDtoService scheduleDtoService;
     private final ScheduleService scheduleService;
-    private final CalendarService calendarService;
 
     @GetMapping(value = "/{recruitmentNo}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ScheduleDetails> scheduleDetails(@PathVariable Long recruitmentNo){
@@ -93,7 +91,7 @@ public class ScheduleController {
         LocalDate startDay = LocalDate.of(year, mon, 1);
         LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
 
-        List<Schedule> calendarSchedules = calendarService.findCalendarSchedules(recruitmentNo, SecurityUtil.getLoginUserNo(), startDay, endDay);
+        List<Schedule> calendarSchedules = scheduleService.findCalendarSchedules(recruitmentNo, SecurityUtil.getLoginUserNo(), startDay, endDay);
 
         //response
         List<CalendarScheduleList> list = calendarSchedules.stream()

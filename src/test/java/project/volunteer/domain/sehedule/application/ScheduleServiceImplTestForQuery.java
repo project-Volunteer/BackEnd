@@ -33,14 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-class CalenderServiceImplTest {
+class ScheduleServiceImplTestForQuery {
 
     @PersistenceContext EntityManager em;
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ParticipantRepository participantRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired CalendarService calendarService;
+    @Autowired ScheduleService scheduleService;
 
     Recruitment saveRecruitment;
     List<Participant> teamMembers = new ArrayList<>();
@@ -106,7 +106,7 @@ class CalenderServiceImplTest {
         스케줄_등록(LocalDate.of(2023, 4, 25), 3);
 
         //when
-        List<Schedule> schedules = calendarService.findCalendarSchedules(
+        List<Schedule> schedules = scheduleService.findCalendarSchedules(
                 saveRecruitment.getRecruitmentNo(), teamMembers.get(0).getParticipant().getUserNo(),
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31));
 
@@ -118,7 +118,7 @@ class CalenderServiceImplTest {
     @DisplayName("팀원이 아닌 사용자가 캘린더 스케줄 조회를 시도하다.")
     @Transactional
     public void forbidden(){
-        assertThatThrownBy(() -> calendarService.findCalendarSchedules(
+        assertThatThrownBy(() -> scheduleService.findCalendarSchedules(
                 saveRecruitment.getRecruitmentNo(), Long.MAX_VALUE,
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31)))
                 .isInstanceOf(BusinessException.class)
