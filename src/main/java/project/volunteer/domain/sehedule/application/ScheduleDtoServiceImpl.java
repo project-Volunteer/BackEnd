@@ -15,7 +15,6 @@ import project.volunteer.global.common.component.State;
 import project.volunteer.global.common.response.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-import project.volunteer.global.util.SecurityUtil;
 
 import java.util.Optional;
 
@@ -104,7 +103,7 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
         }
 
         //일정 참여중 상태
-        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATION_APPROVAL)){
+        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATING)){
             return ParticipantState.PARTICIPATING.name();
         }
 

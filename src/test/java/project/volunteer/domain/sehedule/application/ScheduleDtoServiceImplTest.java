@@ -178,9 +178,9 @@ class ScheduleDtoServiceImplTest {
     public void doneState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
@@ -196,8 +196,8 @@ class ScheduleDtoServiceImplTest {
     public void availableStateByFirstParticipation(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
@@ -213,8 +213,8 @@ class ScheduleDtoServiceImplTest {
     public void availableStateByCancelApprove(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
         스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_CANCEL_APPROVAL);
 
         //when
@@ -231,8 +231,8 @@ class ScheduleDtoServiceImplTest {
     public void cancellingState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
         스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_CANCEL);
 
         //when
@@ -249,9 +249,9 @@ class ScheduleDtoServiceImplTest {
     public void participatingState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),

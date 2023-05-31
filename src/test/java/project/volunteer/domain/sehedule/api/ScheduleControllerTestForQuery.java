@@ -10,8 +10,6 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -34,9 +32,7 @@ import project.volunteer.global.test.WithMockCustomUser;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -152,7 +148,7 @@ class ScheduleControllerTestForQuery {
     public void 일정상세조회시_참여자상태_마감() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
-        스케줄_참여자_등록(schedule, teamMember.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule, teamMember.get(1), State.PARTICIPATING);
 
         //when & then
         mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
@@ -199,7 +195,7 @@ class ScheduleControllerTestForQuery {
     public void 일정상세조회시_참여자상태_참여중() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
-        스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATING);
 
         //when & then
         mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))

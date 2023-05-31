@@ -20,7 +20,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
     @Query("select count(sp) " +
             "from ScheduleParticipation sp " +
             "where sp.schedule.scheduleNo=:scheduleNo " +
-            "and sp.state=project.volunteer.global.common.component.State.PARTICIPATION_APPROVAL")
+            "and sp.state=project.volunteer.global.common.component.State.PARTICIPATING")
     Integer countActiveParticipant(@Param("scheduleNo")Long scheduleNo);
 
     List<ScheduleParticipation> findBySchedule_ScheduleNo(Long scheduleNo);
