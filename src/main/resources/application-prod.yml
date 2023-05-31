@@ -1,0 +1,91 @@
+server:
+  port: 8080
+
+---
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://volunteer.cef8hwf1yigx.ap-northeast-2.rds.amazonaws.com:3306/volunteer?serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${db-username}
+    password: ${db-password}
+
+  messages:
+    basename: messages
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client_name: kakao
+            client-id: ${kakao-client-id}
+            client-secret: ${kakao-client-secret}
+            redirect-uri: http://localhost:8888/oauth/callback/kakao
+            authorization-grant-type: authorization_code
+            client-authentication-method: POST
+            scope:
+              - profile_nickname
+              - profile_image
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail-username}
+    password: ${mail-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  #Spring boot 2.6 이상 & swagger 3.0 사용시 호완 오류
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+---
+cloud:
+  aws:
+    credentials:
+      accessKey: ${aws-access-key}
+      secretKey: ${aws-secret-key}
+    s3:
+      bucket: volunteer-project
+      folder:
+        folderName1: user/
+        folderName2: recruitment/
+        folderName3: log/
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+---
+jwt:
+  token:
+    secret-key: ${jwt-secret-key}
+  access-token:
+    expire-length: 1800000
+  refresh-token:
+    expire-length: 1209600000
+
+---
+logging:
+  level:
+    root: info
+
+
