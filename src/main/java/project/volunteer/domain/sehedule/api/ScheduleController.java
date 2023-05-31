@@ -99,4 +99,12 @@ public class ScheduleController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
+
+    @GetMapping("/{recruitmentNo}/calendar/{scheduleNo}")
+    public ResponseEntity<ScheduleDetails> calendarScheduleDetails(@PathVariable("recruitmentNo")Long recruitmentNo,
+                                                  @PathVariable("scheduleNo")Long scheduleNo){
+
+        ScheduleDetails details = scheduleDtoService.findCalendarSchedule(recruitmentNo, scheduleNo, SecurityUtil.getLoginUserNo());
+        return ResponseEntity.ok(details);
+    }
 }

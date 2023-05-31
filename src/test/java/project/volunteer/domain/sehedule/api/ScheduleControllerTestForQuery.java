@@ -244,4 +244,19 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Test
+    @Transactional
+    @DisplayName("캘린더를 통한 일정 상세조회에 성공하다.")
+    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void calendarScheduleDetails() throws Exception {
+        //given
+        Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
+
+        //when & then
+        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo() + "/calendar/" + schedule.getScheduleNo()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("activeVolunteerNum").value(0))
+                .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
+                .andDo(print());
+    }
 }
