@@ -37,6 +37,6 @@ out/
 .vscode/
 
 ### project ignore ###
-src/main/resources/config/**
+src/main/resources/config/
 application-test.yml
 
