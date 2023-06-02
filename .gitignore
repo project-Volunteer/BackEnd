@@ -37,6 +37,6 @@ out/
 .vscode/
 
 ### project ignore ###
-application.yml
-.gitmodules
-yml-config/
+src/main/resources/config/**
+application-test.yml
+
