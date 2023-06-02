@@ -38,5 +38,5 @@ out/
 
 ### project ignore ###
 src/main/resources/config/
-application-test.yml
+application.yml
 
