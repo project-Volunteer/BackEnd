@@ -88,7 +88,7 @@ class ScheduleServiceImplTestForEdit {
             participantRepository.save(participant);
 
             ScheduleParticipation scheduleParticipation =
-                    ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, State.PARTICIPATION_APPROVAL);
+                    ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, State.PARTICIPATING);
             scheduleParticipationRepository.save(scheduleParticipation);
         }
 

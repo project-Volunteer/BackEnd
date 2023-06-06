@@ -178,9 +178,9 @@ class ScheduleDtoServiceImplTest {
     public void doneState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
@@ -196,8 +196,8 @@ class ScheduleDtoServiceImplTest {
     public void availableStateByFirstParticipation(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
@@ -213,8 +213,8 @@ class ScheduleDtoServiceImplTest {
     public void availableStateByCancelApprove(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
         스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_CANCEL_APPROVAL);
 
         //when
@@ -231,8 +231,8 @@ class ScheduleDtoServiceImplTest {
     public void cancellingState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
         스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_CANCEL);
 
         //when
@@ -249,9 +249,9 @@ class ScheduleDtoServiceImplTest {
     public void participatingState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATION_APPROVAL);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
@@ -289,4 +289,43 @@ class ScheduleDtoServiceImplTest {
                 () ->  assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.AVAILABLE.name()));
     }
 
+    @Test
+    @Transactional
+    @DisplayName("캘린더를 통한 스케줄 상세 조회에 성공하다.")
+    public void findCalendarSchedule(){
+        //given
+        Schedule schedule = 스케줄_등록(LocalDate.now(), 3);
+
+        //when
+        ScheduleDetails scheduleDetails = scheduleDtoService.findCalendarSchedule(
+                saveRecruitment.getRecruitmentNo(), schedule.getScheduleNo(), teamMembers.get(0).getParticipant().getUserNo());
+
+        //then
+        assertAll(
+                () -> assertThat(scheduleDetails.getContent()).isEqualTo(schedule.getContent()),
+                () -> assertThat(scheduleDetails.getStartDay()).isEqualTo(schedule.getScheduleTimeTable()
+                        .getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))),
+                () -> assertThat(scheduleDetails.getHourFormat()).isEqualTo(schedule.getScheduleTimeTable().getHourFormat().getViewName()),
+                () -> assertThat(scheduleDetails.getStartTime()).isEqualTo(schedule.getScheduleTimeTable()
+                        .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
+                () -> assertThat(scheduleDetails.getVolunteerNum()).isEqualTo(schedule.getVolunteerNum()),
+                () ->  assertThat(scheduleDetails.getActiveVolunteerNum()).isEqualTo(0),
+                () ->  assertThat(scheduleDetails.getState()).isEqualTo(ParticipantState.AVAILABLE.name()));
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("스케줄 삭제로 인해 캘린 스케줄 상세 조회에 실패하다.")
+    public void deletedSchedule(){
+        //given
+        Schedule schedule = 스케줄_등록(LocalDate.now(), 3);
+        schedule.delete();
+        clear();
+
+        //when & then
+        assertThatThrownBy(() -> scheduleDtoService.findCalendarSchedule(
+                saveRecruitment.getRecruitmentNo(), schedule.getScheduleNo(), teamMembers.get(0).getParticipant().getUserNo()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("NOT_EXIST_SCHEDULE");
+    }
 }

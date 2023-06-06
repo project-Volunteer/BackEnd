@@ -5,13 +5,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
+import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
 import project.volunteer.domain.sehedule.application.ScheduleDtoService;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
+import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,5 +81,30 @@ public class ScheduleController {
 
         scheduleService.deleteSchedule(scheduleNo, SecurityUtil.getLoginUserNo());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{recruitmentNo}/calendar")
+    public ResponseEntity<List<CalendarScheduleList>> scheduleList(@PathVariable("recruitmentNo")Long recruitmentNo,
+                                       @RequestParam("year")Integer year,
+                                       @RequestParam("mon")Integer mon){
+
+        LocalDate startDay = LocalDate.of(year, mon, 1);
+        LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
+
+        List<Schedule> calendarSchedules = scheduleService.findCalendarSchedules(recruitmentNo, SecurityUtil.getLoginUserNo(), startDay, endDay);
+
+        //response
+        List<CalendarScheduleList> list = calendarSchedules.stream()
+                .map(c -> CalendarScheduleList.createCalendarSchedule(c.getScheduleNo(), c.getScheduleTimeTable().getStartDay()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/{recruitmentNo}/calendar/{scheduleNo}")
+    public ResponseEntity<ScheduleDetails> calendarScheduleDetails(@PathVariable("recruitmentNo")Long recruitmentNo,
+                                                  @PathVariable("scheduleNo")Long scheduleNo){
+
+        ScheduleDetails details = scheduleDtoService.findCalendarSchedule(recruitmentNo, scheduleNo, SecurityUtil.getLoginUserNo());
+        return ResponseEntity.ok(details);
     }
 }
