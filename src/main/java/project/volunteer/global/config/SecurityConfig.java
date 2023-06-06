@@ -16,6 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import project.volunteer.domain.signup.application.KakaoLoginService;
 import project.volunteer.global.jwt.util.JwtProvider;
 import project.volunteer.global.security.UserLoginSuccessCustomHandler;
@@ -24,6 +27,8 @@ import project.volunteer.global.security.failhandler.JwtAuthenticationEntryPoint
 import project.volunteer.global.security.failhandler.UserLoginFailureCustomHandler;
 import project.volunteer.global.security.filter.JwtAuthenticationFilter;
 import project.volunteer.global.security.filter.UsernamePasswordAuthenticationCustomFilter;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -108,4 +113,17 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration corsConfiguration = new CorsConfiguration();
+		corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
+		corsConfiguration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE"));
+		corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+		corsConfiguration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", corsConfiguration);
+		return source;
+	}
 }
