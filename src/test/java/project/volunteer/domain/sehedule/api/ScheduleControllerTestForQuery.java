@@ -148,7 +148,7 @@ class ScheduleControllerTestForQuery {
     public void 일정상세조회시_참여자상태_마감() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
-        스케줄_참여자_등록(schedule, teamMember.get(1), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule, teamMember.get(1), State.PARTICIPATING);
 
         //when & then
         mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
@@ -195,7 +195,7 @@ class ScheduleControllerTestForQuery {
     public void 일정상세조회시_참여자상태_참여중() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
-        스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATION_APPROVAL);
+        스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATING);
 
         //when & then
         mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
@@ -204,4 +204,55 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Test
+    @Transactional
+    @DisplayName("2023년 5월 캘린더에 존재하는 일정 리스트를 조회한다")
+    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void findSchedulesInMay2023() throws Exception {
+        //given
+        스케줄_등록(LocalDate.of(2023, 5, 1), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 15), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 20), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 21), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 10), 3);
+        스케줄_등록(LocalDate.of(2023, 5, 31), 3);
+
+        스케줄_등록(LocalDate.of(2023, 6, 10), 3);
+        스케줄_등록(LocalDate.of(2023, 6, 15), 3);
+        스케줄_등록(LocalDate.of(2023, 4, 25), 3);
+
+        //when & then
+        mockMvc.perform(get("/schedule/"+saveRecruitment.getRecruitmentNo()+"/calendar")
+                    .queryParam("year", "2023")
+                    .queryParam("mon", "5"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("캘린더 일정 조회 간 필수 파라미터를 누락하다.")
+    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void missingQueryParam() throws Exception {
+        mockMvc.perform(get("/schedule/"+saveRecruitment.getRecruitmentNo()+"/calendar")
+                        .queryParam("year", "2023")) //"mon" 쿼리 스트링 누락
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("캘린더를 통한 일정 상세조회에 성공하다.")
+    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void calendarScheduleDetails() throws Exception {
+        //given
+        Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
+
+        //when & then
+        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo() + "/calendar/" + schedule.getScheduleNo()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("activeVolunteerNum").value(0))
+                .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
+                .andDo(print());
+    }
 }

@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -95,7 +94,7 @@ class ScheduleControllerTestForEdit {
             participantRepository.save(participant);
 
             ScheduleParticipation scheduleParticipation =
-                    ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, State.PARTICIPATION_APPROVAL);
+                    ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, State.PARTICIPATING);
             scheduleParticipationRepository.save(scheduleParticipation);
         }
 

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.repeatPeriod.domain.Day;
@@ -38,6 +39,7 @@ public class ScheduleServiceImpl implements ScheduleService{
     private final ScheduleRepository scheduleRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final ScheduleParticipationRepository scheduleParticipationRepository;
+    private final ParticipantRepository participantRepository;
 
     @Override
     @Transactional
@@ -146,6 +148,20 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     }
 
+    @Override
+    public List<Schedule> findCalendarSchedules(Long recruitmentNo, Long loginUserNo, LocalDate startDay, LocalDate endDay) {
+
+        //모집글 검증
+        Recruitment findRecruitment = isValidRecruitment(recruitmentNo);
+
+        //봉사 팀원 검증
+        isRecruitmentTeamMember(findRecruitment, loginUserNo);
+
+        //기간 내에 일정 리스트 조회
+        return scheduleRepository.findScheduleWithinPeriod(recruitmentNo, startDay, endDay);
+    }
+
+
     //반복 주기가 week 인 일정 날짜 생성
    private List<LocalDate> makeDatsOfRegWeek(LocalDate startDay, LocalDate endDay, List<Day> days){
 
@@ -214,6 +230,13 @@ public class ScheduleServiceImpl implements ScheduleService{
     private void isRecruitmentOwner(Recruitment recruitment, Long loginUserNo){
         if(!recruitment.getWriter().getUserNo().equals(loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
+        }
+    }
+
+    private void isRecruitmentTeamMember(Recruitment recruitment, Long loginUserNo){
+        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo)){
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
         }
     }

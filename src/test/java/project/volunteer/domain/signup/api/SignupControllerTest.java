@@ -72,10 +72,9 @@ class SignupControllerTest {
 		System.out.println("message = " + message);
 		
 		Assertions.assertThat(HttpStatus.BAD_REQUEST);
-		// 필수 입력 값입니다.
-		// 이메일 형식에 맞지 않습니다.
-		// 날짜 포맷이 맞지 않습니다.
-		Assertions.assertThat(message).contains("이메일 형식에 맞지 않습니다.","필수 입력 값입니다.");
+		// xxx는 필수 입력 값입니다.
+		// 올바르지 않은 이메일 형식입니다.
+		Assertions.assertThat(message).contains("올바르지 않은 이메일 형식입니다.","닉네임은 필수 입력 값입니다.");
 		
 	}
 

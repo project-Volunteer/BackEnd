@@ -15,7 +15,6 @@ import project.volunteer.global.common.component.State;
 import project.volunteer.global.common.response.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-import project.volunteer.global.util.SecurityUtil;
 
 import java.util.Optional;
 
@@ -55,6 +54,30 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
         return ScheduleDetails.createScheduleDetails(nearestSchedule.get(), activeParticipantNum, state);
     }
 
+    @Override
+    public ScheduleDetails findCalendarSchedule(Long recruitmentNo, Long scheduleNo, Long loginUserNo) {
+
+        //봉사 모집글 존재 검증
+        Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
+        //봉사 팀원 검증
+        isRecruitmentTeamMember(findRecruitment, loginUserNo);
+
+        //일정 검증
+        Schedule findSchedule = scheduleRepository.findValidByScheduleNo(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
+
+        //현재 일정에 참여중인 인원수 확인
+        Integer activeParticipantNum = scheduleParticipationRepository.countActiveParticipant(scheduleNo);
+
+        //사용자 일정 참여 가능 상태 확인
+        String state = decideUserStateAboutSchedule(findSchedule, loginUserNo, activeParticipantNum);
+
+        //DTO 생성
+        return ScheduleDetails.createScheduleDetails(findSchedule, activeParticipantNum, state);
+    }
+
+
     private void isRecruitmentTeamMember(Recruitment recruitment, Long loginUserNo){
         if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
@@ -80,7 +103,7 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
         }
 
         //일정 참여중 상태
-        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATION_APPROVAL)){
+        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATING)){
             return ParticipantState.PARTICIPATING.name();
         }
 

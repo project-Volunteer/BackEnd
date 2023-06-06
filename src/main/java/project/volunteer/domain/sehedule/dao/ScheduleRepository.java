@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,CustomScheduleRepository {
@@ -18,4 +20,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,Custom
             "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
     public Optional<Schedule> findValidByScheduleNo(@Param("no") Long scheduleNo);
 
+    @Query("select s " +
+            "from Schedule s " +
+            "where s.recruitment.recruitmentNo=:no " +
+            "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
+            "and s.scheduleTimeTable.startDay between :startDay and :endDay " +
+            "order by s.scheduleTimeTable.startDay asc ")
+    public List<Schedule> findScheduleWithinPeriod(@Param("no")Long recruitmentNo, @Param("startDay")LocalDate startDay, @Param("endDay")LocalDate endDay);
 }
