@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
@@ -17,17 +19,14 @@ import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.domain.VolunteerType;
-import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
-import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.Period;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.global.common.component.*;
 import project.volunteer.global.common.response.ParticipantState;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
+import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Week;
 import project.volunteer.domain.storage.domain.Storage;
@@ -35,6 +34,9 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
@@ -44,19 +46,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 @SpringBootTest
+@Transactional
 class RecruitmentDtoServiceImplTest {
 
     @PersistenceContext EntityManager em;
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentDtoService recruitmentDtoService;
-    @Autowired RepeatPeriodRepository repeatPeriodRepository;
+    @Autowired RecruitmentService recruitmentService;
+    @Autowired RepeatPeriodService repeatPeriodService;
     @Autowired ImageService imageService;
     @Autowired FileService fileService;
     @Autowired ImageRepository imageRepository;
@@ -64,17 +66,145 @@ class RecruitmentDtoServiceImplTest {
     @Autowired RecruitmentRepository recruitmentRepository;
 
     private Recruitment saveRecruitment;
-    private RepeatPeriod saveRegPeriod;
-    private User writer;
+    private User loginUser;
     private List<Long> deleteImageNo = new ArrayList<>();
+    private void clear() {
+        em.flush();
+        em.clear();
+    }
+    private void setMockUpData() throws IOException {
+        //모집글 저장 및 반복 주기 저장
+        addRecruitment();
+
+        //모집글 업로드 이미지 저장
+        addImage(RealWorkCode.RECRUITMENT, saveRecruitment.getRecruitmentNo());
+
+        //작성자 업로드 이미지 저장
+        addImage(RealWorkCode.USER, loginUser.getUserNo());
+
+        //유저 임시 회원가입, 이미지 업로드, 참여자 등록
+        initParticipant();
+    }
+    private void addRecruitment() {
+        //모집글 저장
+        String category = "001";
+        String volunteeringType = VolunteeringType.REG.name();
+        String volunteerType = "1"; //all
+        Boolean isIssued = true;
+        String sido = "11";
+        String sigungu = "1111";
+        String organizationName = "name";
+        String details = "details";
+        Float latitude = 3.2F, longitude = 3.2F;
+        Integer volunteerNum = 7;
+        String startDay = LocalDate.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        String endDay = LocalDate.now().plusMonths(3).format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        String hourFormat = HourFormat.AM.name();
+        String startTime = "01:01";
+        Integer progressTime = 3;
+        String title = "title", content = "content";
+        Boolean isPublished = true;
+        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
+                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
+        Long no = recruitmentService.addRecruitment(saveRecruitDto);
+
+        //모집글 반복주기 저장(장기-매달)
+        String period = "month";
+        int week = Week.FIRST.getValue();
+        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
+        RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
+        repeatPeriodService.addRepeatPeriod(no, savePeriodDto);
+
+        saveRecruitment = recruitmentRepository.findById(no).get();
+    }
+    private void addImage(RealWorkCode realWorkCode, Long no) throws IOException {
+        ImageParam staticImageDto = ImageParam.builder()
+                .code(realWorkCode)
+                .imageType(ImageType.UPLOAD)
+                .no(no)
+                .staticImageCode(null)
+                .uploadImage(getMockMultipartFile())
+                .build();
+        Long imageNo = imageService.addImage(staticImageDto);
+        deleteImageNo.add(imageNo);
+    }
+    private MockMultipartFile getMockMultipartFile() throws IOException {
+        return new MockMultipartFile(
+                "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
+    }
+    private void initParticipant() throws IOException {
+        for (int i=0;i<5;i++){
+            //임시 사용자 회원가입
+            String rand = "test"+i;
+            User saveUser = userRepository.save(User.builder()
+                    .id(rand)
+                    .password(rand)
+                    .nickName(rand)
+                    .email("email@naver.com")
+                    .gender(Gender.M)
+                    .birthDay(LocalDate.now())
+                    .picture("picture")
+                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                    .role(Role.USER)
+                    .provider("kakao").providerId("1234")
+                    .build());
+
+            //임시 사용자 이미지 업로드
+            if(i%2==0)
+                addImage(RealWorkCode.USER, saveUser.getUserNo());
+
+            //참여자로 등록
+            Participant participant = Participant.builder()
+                    .participant(saveUser)
+                    .recruitment(saveRecruitment)
+                    .state(State.JOIN_APPROVAL)
+                    .build();
+            participantRepository.save(participant);
+        }
+    }
+    private List<Long> addParticipant(int count, State state, Long recruitmentNo){
+        List<Long> participantNoList = new ArrayList<>();
+
+        for(int i=0;i<count;i++){
+            User joinUser = userRepository.save(User.builder()
+                    .id("1234" + i)
+                    .password("1234" + i)
+                    .nickName("nickname" + i)
+                    .email("email" + i + "@gmail.com")
+                    .gender(Gender.M)
+                    .birthDay(LocalDate.now())
+                    .picture("picture" + i)
+                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                    .role(Role.USER)
+                    .provider("kakao").providerId("1234" + i)
+                    .build());
+
+            participantRepository.save(Participant.builder()
+                    .participant(joinUser)
+                    .recruitment(recruitmentRepository.findById(recruitmentNo).get())
+                    .state(state)
+                    .build());
+
+            participantNoList.add(joinUser.getUserNo());
+        }
+        return participantNoList;
+    }
 
     @BeforeEach
-    private void setUp() throws IOException {
-
-        writer = 작성자_등록();
-        saveRecruitment = 정기모집글_등록(writer);
-        업로드_이미지_등록(RealWorkCode.RECRUITMENT, saveRecruitment.getRecruitmentNo());
-        업로드_이미지_등록(RealWorkCode.USER, writer.getUserNo());
+    private void initUser() {
+        loginUser = userRepository.save(User.builder()
+                .id("1234")
+                .password("1234")
+                .nickName("nickname")
+                .email("email@gmail.com")
+                .gender(Gender.M)
+                .birthDay(LocalDate.now())
+                .picture("picture")
+                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+                .role(Role.USER)
+                .provider("kakao").providerId("1234")
+                .build());
+        clear();
     }
     @AfterEach
     public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
@@ -84,238 +214,166 @@ class RecruitmentDtoServiceImplTest {
             fileService.deleteFile(storage.getFakeImageName());
         }
     }
-    private void clear() {
-        em.flush();
-        em.clear();
-    }
-    private User 작성자_등록(){
-        User writer = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
-                true, true, true, Role.USER, "kakao", "1234", null);
-        return userRepository.save(writer);
-    }
-    private Recruitment 정기모집글_등록(User writer) {
-        //모집글 저장
-        final String title = "title";
-        final String content = "content";
-        final VolunteeringCategory category = VolunteeringCategory.EDUCATION;
-        final VolunteeringType volunteeringType = VolunteeringType.REG;
-        final VolunteerType volunteerType = VolunteerType.TEENAGER;
-        final int volunteerNum = 4;
-        final Boolean isIssued = true;
-        final  String organizationName = "name";
-        final Address address = Address.createAddress("1", "111", "details");
-        final Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
-        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3);
-        final  Boolean isPublished = true;
-
-        Recruitment createRecruitment = Recruitment.createRecruitment(title, content, category, volunteeringType, volunteerType, volunteerNum, isIssued, organizationName,
-                address, coordinate, timetable, isPublished);
-        createRecruitment.setWriter(writer);
-        Recruitment save = recruitmentRepository.save(createRecruitment);
-
-        //반복 주기 저장(정기 모집글)
-        RepeatPeriod period = RepeatPeriod.createRepeatPeriod(Period.MONTH, Week.FIRST, Day.MON);
-        period.setRecruitment(save);
-        this.saveRegPeriod = repeatPeriodRepository.save(period);
-        return save;
-    }
-    private void 업로드_이미지_등록(RealWorkCode realWorkCode, Long no) throws IOException {
-        ImageParam imageDto = ImageParam.builder()
-                .code(realWorkCode)
-                .imageType(ImageType.UPLOAD)
-                .no(no)
-                .staticImageCode(null)
-                .uploadImage(getMockMultipartFile())
-                .build();
-        Long imageNo = imageService.addImage(imageDto);
-        deleteImageNo.add(imageNo);
-    }
-    private MockMultipartFile getMockMultipartFile() throws IOException {
-        return new MockMultipartFile(
-                "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
-    }
-    private Participant 봉사모집글_팀원_상태추가(String signName, State state) throws IOException {
-        //신규 사용자 가입
-        User newUser= User.createUser(signName, "password", signName, "test@naver.com", Gender.M, LocalDate.now(), "picture",
-                true, true, true, Role.USER, "kakao", signName, null);
-        User saveUser = userRepository.save(newUser);
-
-        //업로드 이미지 등록
-        ImageParam imageDto = ImageParam.builder()
-                .code(RealWorkCode.USER)
-                .imageType(ImageType.UPLOAD)
-                .no(saveUser.getUserNo())
-                .staticImageCode(null)
-                .uploadImage(getMockMultipartFile())
-                .build();
-        Long imageNo = imageService.addImage(imageDto);
-        deleteImageNo.add(imageNo);
-
-        //봉사 팀원 등록
-        Participant participant = Participant.createParticipant(saveRecruitment, saveUser, state);
-        return participantRepository.save(participant);
-    }
-    private User 신규회원_가입(String signName){
-        User newUser= User.createUser(signName, "password", signName, "test@naver.com", Gender.M, LocalDate.now(), "picture",
-                true, true, true, Role.USER, "kakao", signName, null);
-        return userRepository.save(newUser);
-    }
-
-
-
-    @DisplayName("봉사 모집글 상세조회에 성공하다.")
     @Test
-    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_상세조회_성공() throws IOException {
+        //init
+        setMockUpData();
+
         //given & when
-        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
-        clear();
+        RecruitmentDetails recruitmentDto = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
 
         //then
-        assertAll(
-                () -> assertThat(details.getVolunteeringCategory()).isEqualTo(saveRecruitment.getVolunteeringCategory().getDesc()),
-                () -> assertThat(details.getOrganizationName()).isEqualTo(saveRecruitment.getOrganizationName()),
-                () -> assertThat(details.getIsIssued()).isEqualTo(saveRecruitment.getIsIssued()),
-                () -> assertThat(details.getVolunteerType()).isEqualTo(saveRecruitment.getVolunteerType().getDesc()),
-                () -> assertThat(details.getVolunteerNum()).isEqualTo(saveRecruitment.getVolunteerNum()),
-                () -> assertThat(details.getVolunteeringType()).isEqualTo(saveRecruitment.getVolunteeringType().getViewName()),
-                () -> assertThat(details.getTitle()).isEqualTo(saveRecruitment.getTitle()),
-                () -> assertThat(details.getContent()).isEqualTo(saveRecruitment.getContent()),
-                () -> assertThat(details.getAuthor().getNickname()).isEqualTo(writer.getNickName()),
-                () -> assertThat(details.getRepeatPeriod().getPeriod()).isEqualTo(saveRegPeriod.getPeriod().getViewName()),
-                () -> assertThat(details.getRepeatPeriod().getWeek()).isEqualTo(saveRegPeriod.getWeek().getViewName()),
-                () -> assertThat(details.getRepeatPeriod().getDays().size()).isEqualTo(1),
-                () -> assertThat(details.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getValue())
-        );
+        Assertions.assertThat(recruitmentDto.getApprovalVolunteer().size()).isEqualTo(5); //승인 참여자 5명
+        Assertions.assertThat(recruitmentDto.getRequiredVolunteer().size()).isEqualTo(0);
+        Assertions.assertThat(recruitmentDto.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getValue()); //모집글 이미지=업로드
     }
 
-    @DisplayName("봉사 모집글 신청자/승인자 각 인원이 3명이 된다.")
+    @DisplayName("모집글 참가인원 상태 테스트")
     @Test
-    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void searchParticipantState() throws IOException {
         //given
-        봉사모집글_팀원_상태추가("홍길동", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("구하라", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("스프링", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("ORM", State.JOIN_REQUEST);
-        봉사모집글_팀원_상태추가("JPA", State.JOIN_REQUEST);
-        봉사모집글_팀원_상태추가("트랜잭션", State.JOIN_REQUEST);
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        addParticipant(5, State.JOIN_REQUEST, saveRecruitment.getRecruitmentNo()); //팀 신청 5명
+        clear();
 
         //when
         RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
-        clear();
 
         //then
-        assertThat(details.getRequiredVolunteer().size()).isEqualTo(3);
-        assertThat(details.getApprovalVolunteer().size()).isEqualTo(3);
+        Assertions.assertThat(details.getApprovalVolunteer().size()).isEqualTo(5);
+        Assertions.assertThat(details.getRequiredVolunteer().size()).isEqualTo(5);
     }
 
     @DisplayName("모집글 첫 참가 신청으로 로그인 사용자 상태가 신청 가능 상태가 된다.")
     @Test
-    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void loginUserAvailableStateByFirst() throws IOException {
         //given
-        User newUser = 신규회원_가입("new");
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
         clear();
 
         //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.AVAILABLE.name());
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.AVAILABLE.name());
+
     }
 
     @DisplayName("모집글 팀 탈퇴로 인해 로그인 사용자 상태가 신청 가능 상태가 된다.")
     @Test
-    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void loginUserAvailableStateByQuit() throws IOException {
         //given
-        Participant p = 봉사모집글_팀원_상태추가("new", State.QUIT);
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
-        clear();
-
-        //then
-        assertThat(status).isEqualTo(ParticipantState.AVAILABLE.name());
-    }
-
-    @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserPendingState() throws IOException {
-        //given
-        Participant p = 봉사모집글_팀원_상태추가("new", State.JOIN_REQUEST);
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
-        clear();
-
-        //then
-        assertThat(status).isEqualTo(ParticipantState.PENDING.name());
-    }
-
-    @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserApprovedState() throws IOException {
-        //given
-        Participant p = 봉사모집글_팀원_상태추가("new", State.JOIN_APPROVAL);
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
-        clear();
-
-        //then
-        assertThat(status).isEqualTo(ParticipantState.APPROVED.name());
-    }
-
-    @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserDoneStateByFinishEndDay() throws IOException {
-        //given
-        User newUser = 신규회원_가입("new");
-        //봉사 모집글 시간 정보 변경
-        saveRecruitment.setVolunteeringTimeTable(
-                Timetable.createTimetable(LocalDate.now().minusDays(2), LocalDate.now().minusDays(1), HourFormat.AM,
-                        LocalTime.now(), 3)
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        participantRepository.save(
+                Participant.builder()
+                        .recruitment(saveRecruitment)
+                        .participant(loginUser)
+                        .state(State.QUIT)
+                        .build()
         );
         clear();
 
         //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.DONE.name());
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.AVAILABLE.name());
+    }
+
+    @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserPendingState() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        participantRepository.save(
+                Participant.builder()
+                        .recruitment(saveRecruitment)
+                        .participant(loginUser)
+                        .state(State.JOIN_REQUEST)
+                        .build()
+        );
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.PENDING.name());
+    }
+
+    @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserApprovedState() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        participantRepository.save(
+                Participant.builder()
+                        .recruitment(saveRecruitment)
+                        .participant(loginUser)
+                        .state(State.JOIN_APPROVAL)
+                        .build()
+        );
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.APPROVED.name());
+    }
+
+    @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
+    @Test
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void loginUserDoneStateByFinishEndDay() throws IOException {
+        //given
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        saveRecruitment.setVolunteeringTimeTable(
+                Timetable.builder()
+                        .progressTime(3)
+                        .startDay(LocalDate.now().minusMonths(3))
+                        .endDay(LocalDate.now().minusMonths(2))
+                        .startTime(LocalTime.now())
+                        .hourFormat(HourFormat.AM)
+                        .build()
+        );
+        clear();
+
+        //when
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+
+        //then
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.DONE.name());
     }
 
     @DisplayName("팀원 모집인원 초과로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
     @Test
-    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void loginUserDoneStateByVolunteerNum() throws IOException {
         //given
-        User newUser = 신규회원_가입("new");
-        //현재 팀원 최대 인원 4명으로 설정됨
-        봉사모집글_팀원_상태추가("스프링", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("ORM", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("JPA", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("트랜잭션", State.JOIN_APPROVAL);
+        setMockUpData(); //기본 approval 사용자 5명, 모집글 최대 참가인원 7명
+        addParticipant(2, State.JOIN_APPROVAL, saveRecruitment.getRecruitmentNo()); //모집인원 마감
         clear();
 
         //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
+        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.DONE.name());
+        Assertions.assertThat(details.getStatus()).isEqualTo(ParticipantState.DONE.name());
     }
 
     @Test
-    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_상세조회_실패_삭제된게시물() throws IOException {
         //given
-        saveRecruitment.setDeleted();
-        clear();
+        setMockUpData();
+        saveRecruitment.setDeleted(); //삭제 게시물로 만들기
 
         //when & then
         Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
@@ -323,11 +381,11 @@ class RecruitmentDtoServiceImplTest {
     }
 
     @Test
-    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_상세조회_실패_임시게시물() throws IOException {
         //given
+        setMockUpData();
         saveRecruitment.setIsPublished(false); //임시 게시물로 만들기
-        clear();
 
         //when & then
         Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
