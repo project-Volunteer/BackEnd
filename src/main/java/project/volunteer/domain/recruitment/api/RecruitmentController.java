@@ -137,7 +137,7 @@ public class RecruitmentController {
     public ResponseEntity recruitmentDelete(@PathVariable Long no) {
 
         //모집글 관련 엔티티들 삭제
-        recruitmentService.deleteRecruitment(no);
+        recruitmentService.deleteRecruitment(SecurityUtil.getLoginUserNo(), no);
 
         //모집글 이미지 삭제
         imageService.deleteImage(RealWorkCode.RECRUITMENT, no);

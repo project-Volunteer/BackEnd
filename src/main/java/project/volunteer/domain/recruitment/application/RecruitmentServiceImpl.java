@@ -43,14 +43,14 @@ public class RecruitmentServiceImpl implements RecruitmentService{
 
     @Override
     @Transactional
-    public void deleteRecruitment(Long deleteNo) {
+    public void deleteRecruitment(Long loginUserNo, Long deleteNo) {
 
         Recruitment findRecruitment =
                 recruitmentRepository.findValidByRecruitmentNo(deleteNo).orElseThrow(
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
         //모집글 방장 검사
-        isRecruitmentOwner(findRecruitment);
+        isRecruitmentOwner(findRecruitment, loginUserNo);
 
         //정기일 경우 반복주기 삭제
         if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){
@@ -64,9 +64,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     }
 
     //모집글 방장 검증 메서드
-    private void isRecruitmentOwner(Recruitment recruitment){
-        Long loginUserNo = SecurityUtil.getLoginUserNo();
-
+    private void isRecruitmentOwner(Recruitment recruitment, Long loginUserNo){
         if(!recruitment.getWriter().getUserNo().equals(loginUserNo)) {
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
