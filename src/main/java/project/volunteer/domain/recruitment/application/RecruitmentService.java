@@ -4,7 +4,7 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 
 public interface RecruitmentService {
 
-    public Long addRecruitment(RecruitmentParam saveDto);
+    public Long addRecruitment(Long loginUserNo, RecruitmentParam saveDto);
 
     public void deleteRecruitment(Long deleteNo);
 }

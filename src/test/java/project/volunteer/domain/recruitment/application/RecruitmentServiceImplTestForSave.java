@@ -4,12 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
+import project.volunteer.domain.recruitment.domain.VolunteerType;
+import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
@@ -22,181 +22,156 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-//@ExtendWith(MockitoExtension.class)
 @SpringBootTest
-@Transactional
 class RecruitmentServiceImplTestForSave {
 
-    //@Mock
-    @Autowired
-    private EntityManager em;
-    //@InjectMocks
-    //RecruitmentServiceImpl recruitmentService;
-    @Autowired
-    RecruitmentService recruitmentService;
-    @Autowired
-    RepeatPeriodService repeatPeriodService;
-    //@Mock
-    @Autowired
-    RecruitmentRepository recruitmentRepository;
-    @Autowired
-    RepeatPeriodRepository repeatPeriodRepository;
-    //@Mock
-    @Autowired
-    UserRepository userRepository;
 
+    @Autowired private EntityManager em;
+    @Autowired RecruitmentService recruitmentService;
+    @Autowired RepeatPeriodService repeatPeriodService;
+    @Autowired RecruitmentRepository recruitmentRepository;
+    @Autowired RepeatPeriodRepository repeatPeriodRepository;
+    @Autowired UserRepository userRepository;
+
+    User writer;
     private void clear() {
         em.flush();
         em.clear();
     }
     @BeforeEach
-    private void initUser() {
-        userRepository.save(User.builder()
-                .id("1234")
-                .password("1234")
-                .nickName("nickname")
-                .email("email@gmail.com")
-                .gender(Gender.M)
-                .birthDay(LocalDate.now())
-                .picture("picture")
-                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
-                .role(Role.USER)
-                .provider("kakao").providerId("1234")
-                .build());
-        clear();
+    private void init() {
+        writer = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
+                true, true, true, Role.USER, "kakao", "1234", null);
+        userRepository.save(writer);
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @Transactional
     public void 모집글_작성_저장_성공_비정기(){
         //given
-        String category = "001";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        Float latitude = 3.2F , longitude = 3.2F;
-        Boolean isIssued = true;
-        String volunteerType = "1"; //all
-        Integer volunteerNum = 5;
-        String volunteeringType = VolunteeringType.IRREG.name();
-        String startDay = "01-01-2000";
-        String endDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 5;
-        String title = "title", content = "content";
-        Boolean isPublished = true;
-        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
+        final String title = "title";
+        final String content = "content";
+        final VolunteeringCategory category = VolunteeringCategory.EDUCATION;
+        final VolunteeringType volunteeringType = VolunteeringType.IRREG;
+        final VolunteerType volunteerType = VolunteerType.TEENAGER;
+        final int volunteerNum = 4;
+        final Boolean isIssued = true;
+        final  String organizationName = "name";
+        final Address address = Address.createAddress("1", "111", "details");
+        final Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
+        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3);
+        final  Boolean isPublished = true;
+
+        RecruitmentParam param = new RecruitmentParam(title, content, category, volunteeringType, volunteerType, volunteerNum, isIssued, organizationName, address,
+                coordinate, timetable, isPublished);
 
         //when
-        Long no = recruitmentService.addRecruitment(saveRecruitDto);
+        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
         clear();
 
         //then
         Recruitment find = recruitmentRepository.findById(no).get();
-        assertThat(find.getVolunteeringCategory().getLegacyCode()).isEqualTo(category);
+        assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
         assertThat(find.getOrganizationName()).isEqualTo(organizationName);
-        //...
         assertThat(find.getContent()).isEqualTo(content);
         assertThat(find.getTitle()).isEqualTo(title);
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @Transactional
     public void 모집글_작성_저장_성공_정기_매주() {
         //given
-        String category = "001";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        Float latitude = 3.2F , longitude = 3.2F;
-        Boolean isIssued = true;
-        String volunteerType = "1"; //all
-        Integer volunteerNum = 5;
-        String volunteeringType = VolunteeringType.REG.name();
-        String startDay = "01-01-2000";
-        String endDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String title = "title", content = "content";
-        Boolean isPublished = true;
-        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
+        final String title = "title";
+        final String content = "content";
+        final VolunteeringCategory category = VolunteeringCategory.EDUCATION;
+        final VolunteeringType volunteeringType = VolunteeringType.REG;
+        final VolunteerType volunteerType = VolunteerType.TEENAGER;
+        final int volunteerNum = 4;
+        final Boolean isIssued = true;
+        final  String organizationName = "name";
+        final Address address = Address.createAddress("1", "111", "details");
+        final Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
+        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3);
+        final  Boolean isPublished = true;
+        RecruitmentParam param = new RecruitmentParam(title, content, category, volunteeringType, volunteerType, volunteerNum, isIssued, organizationName, address,
+                coordinate, timetable, isPublished);
 
-        String period = "week";
-        int week = 0;
-        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
-        RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
+        final Period period = Period.WEEK;
+        final Week week = null;
+        final List<Day> days = List.of(Day.MON, Day.TUES);
+        RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(period, week, days);
 
         //when
-        Long no = recruitmentService.addRecruitment(saveRecruitDto);
-        repeatPeriodService.addRepeatPeriod(no, savePeriodDto);
+        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        repeatPeriodService.addRepeatPeriod(no, repeatPeriodParam);
         clear();
 
         //then
+        Recruitment find = recruitmentRepository.findById(no).get();
+        assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
+
         List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(no);
-        assertThat(list.get(0).getDay().name()).isEqualTo(Day.MON.name());
-        assertThat(list.get(1).getDay().name()).isEqualTo(Day.TUES.name());
-        assertThat(list.get(0).getPeriod().name()).isEqualTo(Period.WEEK.name());
-        assertThat(list.get(1).getPeriod().name()).isEqualTo(Period.WEEK.name());
+        assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
+        assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
+        assertThat(list.get(0).getPeriod()).isEqualTo(Period.WEEK);
+        assertThat(list.get(1).getPeriod()).isEqualTo(Period.WEEK);
         assertThat(list.get(0).getWeek()).isNull();
         assertThat(list.get(1).getWeek()).isNull();
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION) //@BeforeEach 어노테이션부터 활성화하도록!!
+    @Transactional
     public void 모집글_작성_저장_성공_정기_매월(){
         //given
-        String category = "001";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        Float latitude = 3.2F , longitude = 3.2F;
-        Boolean isIssued = true;
-        String volunteerType = "1"; //all
-        Integer volunteerNum = 5;
-        String volunteeringType = VolunteeringType.REG.name();
-        String startDay = "01-01-2000";
-        String endDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String title = "title", content = "content";
-        Boolean isPublished = true;
-        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
+        final String title = "title";
+        final String content = "content";
+        final VolunteeringCategory category = VolunteeringCategory.EDUCATION;
+        final VolunteeringType volunteeringType = VolunteeringType.REG;
+        final VolunteerType volunteerType = VolunteerType.TEENAGER;
+        final int volunteerNum = 4;
+        final Boolean isIssued = true;
+        final  String organizationName = "name";
+        final Address address = Address.createAddress("1", "111", "details");
+        final Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
+        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3);
+        final  Boolean isPublished = true;
+        RecruitmentParam param = new RecruitmentParam(title, content, category, volunteeringType, volunteerType, volunteerNum, isIssued, organizationName, address,
+                coordinate, timetable, isPublished);
 
-        String period = "month";
-        int week = Week.FIRST.getValue();
-        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
-        RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
+        final Period period = Period.MONTH;
+        final Week week = Week.FIRST;
+        final List<Day> days = List.of(Day.MON, Day.TUES);
+        RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(period, week, days);
+
 
         //when
-        Long no = recruitmentService.addRecruitment(saveRecruitDto);
-        repeatPeriodService.addRepeatPeriod(no, savePeriodDto);
+        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        repeatPeriodService.addRepeatPeriod(no, repeatPeriodParam);
         clear();
 
         //then
+        Recruitment find = recruitmentRepository.findById(no).get();
+        assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
+
         List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(no);
-        assertThat(list.get(0).getDay().name()).isEqualTo(Day.MON.name());
-        assertThat(list.get(1).getDay().name()).isEqualTo(Day.TUES.name());
-        assertThat(list.get(0).getPeriod().name()).isEqualTo(Period.MONTH.name());
-        assertThat(list.get(1).getPeriod().name()).isEqualTo(Period.MONTH.name());
-        assertThat(list.get(0).getWeek().name()).isEqualTo(Week.FIRST.name());
-        assertThat(list.get(1).getWeek().name()).isEqualTo(Week.FIRST.name());
+        assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
+        assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
+        assertThat(list.get(0).getPeriod()).isEqualTo(Period.MONTH);
+        assertThat(list.get(1).getPeriod()).isEqualTo(Period.MONTH);
+        assertThat(list.get(0).getWeek()).isEqualTo(Week.FIRST);
+        assertThat(list.get(1).getWeek()).isEqualTo(Week.FIRST);
     }
 
 }

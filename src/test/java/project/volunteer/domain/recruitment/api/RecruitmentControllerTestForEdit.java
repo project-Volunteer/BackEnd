@@ -61,10 +61,11 @@ class RecruitmentControllerTestForEdit {
 
     private Long saveRecruitmentNo;
     private Long deleteImageNo;
+    private User writer;
     private final String DELETE_URL = "/recruitment/";
     @BeforeEach
     public void initUser(){
-         userRepository.save(User.builder()
+         writer = userRepository.save(User.builder()
                 .id("1234")
                 .password("1234")
                 .nickName("nickname")
@@ -111,7 +112,7 @@ class RecruitmentControllerTestForEdit {
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido, sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-        saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
+        saveRecruitmentNo = recruitmentService.addRecruitment(writer.getUserNo(), saveRecruitDto);
 
         //정기-반복주기 등록
         String period = "month";

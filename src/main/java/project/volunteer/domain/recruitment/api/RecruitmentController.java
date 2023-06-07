@@ -49,7 +49,7 @@ public class RecruitmentController {
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
 
         //모집글 정보 저장
-        Long recruitmentNo = recruitmentService.addRecruitment(new RecruitmentParam(form));
+        Long recruitmentNo = recruitmentService.addRecruitment(SecurityUtil.getLoginUserNo(), new RecruitmentParam(form));
 
         //정기일 경우
         if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())) {

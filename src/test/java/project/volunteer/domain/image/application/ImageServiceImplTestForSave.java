@@ -42,6 +42,7 @@ class ImageServiceImplTestForSave {
     @Autowired ImageRepository imageRepository;
     @Autowired FileService fileService;
 
+    User writer;
     private Long saveRecruitmentNo;
     private void clear() {
         em.flush();
@@ -76,12 +77,12 @@ class ImageServiceImplTestForSave {
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-        saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
+        saveRecruitmentNo = recruitmentService.addRecruitment(writer.getUserNo(), saveRecruitDto);
         clear();
     }
     @BeforeEach
     private void initUser() {
-        userRepository.save(User.builder()
+        writer = userRepository.save(User.builder()
                 .id("1234")
                 .password("1234")
                 .nickName("nickname")

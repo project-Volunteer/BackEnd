@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.application.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import java.util.Comparator;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class RecruitmentParam {
 
     private String title;

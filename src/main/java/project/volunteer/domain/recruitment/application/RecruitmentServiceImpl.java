@@ -28,26 +28,15 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Transactional
-    public Long addRecruitment(RecruitmentParam saveDto){
+    public Long addRecruitment(Long loginUserNo, RecruitmentParam saveDto){
 
-        Recruitment recruitment = Recruitment.builder()
-                .title(saveDto.getTitle())
-                .content(saveDto.getContent())
-                .volunteeringCategory(saveDto.getVolunteeringCategory())
-                .volunteeringType(saveDto.getVolunteeringType())
-                .volunteerType(saveDto.getVolunteerType())
-                .volunteerNum(saveDto.getVolunteerNum())
-                .isIssued(saveDto.getIsIssued())
-                .organizationName(saveDto.getOrganizationName())
-                .address(saveDto.getAddress())
-                .coordinate(saveDto.getCoordinate())
-                .timetable(saveDto.getTimetable())
-                .isPublished(saveDto.getIsPublished())
-                .build();
+        Recruitment recruitment = Recruitment.createRecruitment(saveDto.getTitle(), saveDto.getContent(), saveDto.getVolunteeringCategory(), saveDto.getVolunteeringType(),
+                saveDto.getVolunteerType(), saveDto.getVolunteerNum(), saveDto.getIsIssued(), saveDto.getOrganizationName(), saveDto.getAddress(),
+                saveDto.getCoordinate(), saveDto.getTimetable(), saveDto.getIsPublished());
 
-        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserNo())
+        recruitment.setWriter(userRepository.findById(loginUserNo)
                 .orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED_USER,
-                        String.format("Unauthorized UserNo = [%d]", SecurityUtil.getLoginUserNo()))));
+                        String.format("Unauthorized UserNo = [%d]", loginUserNo))));
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
