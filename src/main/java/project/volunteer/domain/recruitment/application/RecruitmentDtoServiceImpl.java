@@ -69,14 +69,20 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
             makeRepeatPeriodDto(dto, no);
         }
 
-        //5. 모집글 참여자 dto 세팅 -> 참여자 정보(쿼리1번) + 참여자 이미지 검색(참여자 수 N)
+        //5. 모집글 참여자 dto 세팅
         //makeParticipantsDto(dto, no);
         makeOptimizedParticipantsDto(dto, no);
 
-        //6. 로그인 사용자 상태 판별 -> 쿼리 2번
-        dto.setStatus(decideUserState(findRecruitment));
-
         return dto;
+    }
+
+    @Override
+    public String findRecruitmentTeamStatus(Long recruitmentNo, Long loginUserNo) {
+
+        Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Search Recruitment NO = [%d]", recruitmentNo)));
+
+        return decideUserState(findRecruitment, loginUserNo);
     }
 
     private void makeRecruitmentImageDto(RecruitmentDetails dto, Long recruitmentNo){
@@ -105,7 +111,7 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         List<RepeatPeriod> repeatPeriods = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
 
         String period = repeatPeriods.get(0).getPeriod().getViewName();
-        String week = (period.equals(Period.MONTH))?(repeatPeriods.get(0).getWeek().getViewName()):"";
+        String week = (period.equals(Period.MONTH.getViewName()))?(repeatPeriods.get(0).getWeek().getViewName()):"";
         List<String> days = repeatPeriods.stream().map(r -> r.getDay().getViewName()).collect(Collectors.toList());
 
         dto.setRepeatPeriod(new RepeatPeriodDetails(period, week, days));
@@ -168,33 +174,38 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         dto.setRequiredVolunteer(requiredList);
     }
 
-    private String decideUserState(Recruitment findRecruitment){
+    /**
+     * 마감 -> 인원 수 초과, 모집 기간이 지난 경우
+     * 팀 신청 -> 팀 신청 요청 상태 -> 팀원 마감이라도 "팀 신청"상태로 표시되어야 된다.
+     * 팀 승인 -> 팀원인 상태 -> 팀원 마감이라도 "팀 승인" 상태로 표시되어야 된다.
+     * 팀 신청 취소, 첫 신청 , 팀 탈퇴, 팀 강제 탈퇴-> 팀원 마감이라면 "마감" 상태이어야 하고 아닌 경우는 "신청 가능" 상태이어야 된다.
+     */
+    private String decideUserState(Recruitment findRecruitment, Long loginUserNo){
+        String status = null;
+        Optional<Participant> findState = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
+                findRecruitment.getRecruitmentNo(), loginUserNo);
+
+        //신청 가능 상태(첫 신청, 팀 신청 취소, 탈퇴, 강제 탈퇴)
+        if(findState.isEmpty() || List.of(State.JOIN_CANCEL, State.QUIT, State.DEPORT).contains(findState.get().getState())){
+            status = ParticipantState.AVAILABLE.name();
+        }
+
+        if(findState.isPresent() && findState.get().getState().equals(State.JOIN_REQUEST)){
+            return ParticipantState.PENDING.name();
+        }
+
+        //승인 완료 상태
+        if(findState.isPresent() && findState.get().getState().equals(State.JOIN_APPROVAL)){
+            return ParticipantState.APPROVED.name();
+        }
+
         //모집 마감 상태
         if(findRecruitment.getVolunteeringTimeTable().getEndDay().isBefore(LocalDate.now()) ||
                 participantRepository.countAvailableParticipants(findRecruitment.getRecruitmentNo())==findRecruitment.getVolunteerNum()) {
             return ParticipantState.DONE.name();
         }
 
-        Long loginUserNo = SecurityUtil.getLoginUserNo();
-        Optional<Participant> findState = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
-                findRecruitment.getRecruitmentNo(), loginUserNo);
-
-        //신청 가능 상태(재신청 포함)
-        if(!findState.isPresent() || List.of(State.JOIN_CANCEL, State.QUIT, State.DEPORT).contains(findState.get().getState())){
-            return ParticipantState.AVAILABLE.name();
-        }
-
-        //승인 대기 상태
-        if(findState.get().getState().equals(State.JOIN_REQUEST)){
-            return ParticipantState.PENDING.name();
-        }
-
-        //승인 완료 상태
-        if(findState.get().getState().equals(State.JOIN_APPROVAL)){
-            return ParticipantState.APPROVED.name();
-        }
-
-        return "";
+        return status;
     }
 
 }
