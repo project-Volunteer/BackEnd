@@ -10,6 +10,7 @@ import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
 import project.volunteer.domain.participation.api.dto.ParticipantRemoveParam;
 import project.volunteer.domain.participation.api.dto.ParticipationParam;
 import project.volunteer.domain.participation.application.ParticipationService;
+import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
 
@@ -23,28 +24,28 @@ public class ParticipationController {
     @PostMapping("/join")
     public ResponseEntity participationRequest(@RequestBody @Valid ParticipationParam dto){
 
-        participationService.participate(dto.getNo());
+        participationService.participate(SecurityUtil.getLoginUserNo(), dto.getNo());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/cancel")
     public ResponseEntity participationCancel(@RequestBody @Valid ParticipationParam dto){
 
-        participationService.cancelParticipation(dto.getNo());
+        participationService.cancelParticipation(SecurityUtil.getLoginUserNo(), dto.getNo());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/approval")
     public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto){
 
-        participationService.approvalParticipant(dto.getRecruitmentNo(), dto.getUserNos());
+        participationService.approvalParticipant(SecurityUtil.getLoginUserNo(), dto.getRecruitmentNo(), dto.getUserNos());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/kick")
     public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto){
 
-        participationService.deportParticipant(dto.getRecruitmentNo(), dto.getUserNo());
+        participationService.deportParticipant(SecurityUtil.getLoginUserNo(), dto.getRecruitmentNo(), dto.getUserNo());
         return ResponseEntity.ok().build();
     }
 
