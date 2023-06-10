@@ -1,6 +1,7 @@
 package project.volunteer.domain.sehedule.application;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,6 +140,7 @@ class ScheduleDtoServiceImplTest {
                 .hasMessageContaining("NOT_EXIST_RECRUITMENT");
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("팀원이 아니므로 일정 조회를 하지 못한다.")

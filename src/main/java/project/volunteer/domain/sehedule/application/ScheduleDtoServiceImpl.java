@@ -3,7 +3,6 @@ package project.volunteer.domain.sehedule.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
@@ -25,7 +24,6 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
 
     private final ScheduleRepository scheduleRepository;
     private final RecruitmentRepository recruitmentRepository;
-    private final ParticipantRepository participantRepository;
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
@@ -34,8 +32,6 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
         //봉사 모집글 존재 검증
         Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
-        //봉사 팀원 검증
-        isRecruitmentTeamMember(findRecruitment, loginUserNo);
 
         //모집 중인 가장 가까운 봉사 스케줄 찾기
         //없는 경우 빈 response 응답
@@ -60,8 +56,6 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
         //봉사 모집글 존재 검증
         Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
-        //봉사 팀원 검증
-        isRecruitmentTeamMember(findRecruitment, loginUserNo);
 
         //일정 검증
         Schedule findSchedule = scheduleRepository.findValidByScheduleNo(scheduleNo)
@@ -75,14 +69,6 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
 
         //DTO 생성
         return ScheduleDetails.createScheduleDetails(findSchedule, activeParticipantNum, state);
-    }
-
-
-    private void isRecruitmentTeamMember(Recruitment recruitment, Long loginUserNo){
-        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo)){
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
     }
 
     /**

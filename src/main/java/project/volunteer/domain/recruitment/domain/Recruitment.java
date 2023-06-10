@@ -143,11 +143,11 @@ public class Recruitment extends BaseTimeEntity {
         this.VolunteeringTimeTable = timetable;
     }
 
-    public void isRecruitmentOwner(Long userNo){
-        if(!this.getWriter().getUserNo().equals(userNo)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", this.getRecruitmentNo(), userNo));
+    public Boolean isRecruitmentOwner(Long userNo){
+        if(this.getWriter().getUserNo().equals(userNo)) {
+           return true;
         }
+        return false;
     }
 
 }

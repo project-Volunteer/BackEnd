@@ -56,6 +56,7 @@ class ScheduleControllerTestForEdit {
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
 
     Schedule saveSchedule;
+    Recruitment saveRecruitment;
     private void clear() {
         em.flush();
         em.clear();
@@ -73,7 +74,7 @@ class ScheduleControllerTestForEdit {
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
         //봉사 모집글 저장
-        Recruitment saveRecruitment =
+        saveRecruitment =
                 Recruitment.createRecruitment("test", "test", VolunteeringCategory.EDUCATION, VolunteeringType.IRREG,
                         VolunteerType.TEENAGER, 10, true, "test", address, coordinate, timetable, true);
         saveRecruitment.setWriter(writer);
@@ -118,11 +119,11 @@ class ScheduleControllerTestForEdit {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(scheduleNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(put("/schedule")
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), scheduleNo)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(toJson(dto)))
                 .andExpect(status().isOk());
@@ -131,7 +132,7 @@ class ScheduleControllerTestForEdit {
     @DisplayName("방장이 아닌 사용자가 일정 수정을 시도하다.")
     @Test
     @Transactional
-    @WithMockCustomUser(tempValue = "forbidden")
+    @WithMockCustomUser(tempValue = "test0")
     public void forbidden() throws Exception {
         //given
         final Long scheduleNo = saveSchedule.getScheduleNo();
@@ -145,11 +146,11 @@ class ScheduleControllerTestForEdit {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(scheduleNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(put("/schedule")
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), scheduleNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isForbidden())
@@ -173,19 +174,15 @@ class ScheduleControllerTestForEdit {
         final String organizationName = "organization";
         final Integer volunteerNum = 3; //현재 일정에 참여중인 인원수(5명) 보다 작을 수 없다.!
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(scheduleNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(put("/schedule")
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), scheduleNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
-    }
-
-    private <T> String toJson(T data) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(data);
     }
 
     @DisplayName("잘못된 MediaType 으로 일정 수정 API를 요청하다.")
@@ -205,11 +202,11 @@ class ScheduleControllerTestForEdit {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(scheduleNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(put("/schedule")
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), scheduleNo)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE) //잘못된 Media Type!
                         .content(toJson(dto)))
                 .andExpect(status().isUnsupportedMediaType())
@@ -221,8 +218,12 @@ class ScheduleControllerTestForEdit {
     @Transactional
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void scheduleDelete() throws Exception {
-        mockMvc.perform(delete("/schedule/" + saveSchedule.getScheduleNo()))
+        mockMvc.perform(delete("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo()))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    private <T> String toJson(T data) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(data);
     }
 }

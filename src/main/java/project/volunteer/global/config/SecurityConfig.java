@@ -85,12 +85,12 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.POST, "/recruitment/*/kick").hasAuthority("USER")
 
 					//일정 관련
-					.antMatchers(HttpMethod.GET, "/schedule/*").hasAuthority("USER")
-					.antMatchers(HttpMethod.POST, "/schedule").hasAuthority("USER")
-					.antMatchers(HttpMethod.PUT, "/schedule").hasAuthority("USER")
-					.antMatchers(HttpMethod.DELETE, "/schedule/*").hasAuthority("USER")
-					.antMatchers(HttpMethod.GET, "/schedule/*/calendar").hasAuthority("USER")
-					.antMatchers(HttpMethod.GET, "/schedule/*/calendar/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/recruitment/*/schedule").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/*/schedule").hasAuthority("USER")
+					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/recruitment/*/schedule/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/recruitment/*/calendar").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/recruitment/*/calendar/*").hasAuthority("USER")
 
 			.anyRequest().permitAll()
 			.and()

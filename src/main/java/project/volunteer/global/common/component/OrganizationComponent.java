@@ -25,10 +25,13 @@ public class OrganizationComponent {
     public void validRecruitmentOwner(HttpServletRequest request, Long loginUserNo){
         Recruitment findRecruitment = getRecruitment(request);
         //DDD 설계 살려서
-        findRecruitment.isRecruitmentOwner(loginUserNo);
+        if(!findRecruitment.isRecruitmentOwner(loginUserNo)){
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(), loginUserNo));
+        }
     }
 
-    //봉사 모집글 팀원 검증 메서드
+    //봉사 모집글 팀원 검증 메서드(방장 or 팀원)
     public void validRecruitmentTeam(HttpServletRequest request, Long loginUserNo){
         Recruitment findRecruitment = getRecruitment(request);
         //단방향 연관관계이므로 별도의 메서드로 검증
@@ -50,7 +53,8 @@ public class OrganizationComponent {
 
     private void isRecruitmentTeam(Recruitment recruitment, Long loginUserNo){
         //기본 Spring OSIV 모드 트랜잭션 읽기 모드 사용(수정 변경 불가, 단순 읽기만, 영속 상태)
-        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo)){
+        //팀원 or 방장
+        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo) && !recruitment.isRecruitmentOwner(loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
         }
