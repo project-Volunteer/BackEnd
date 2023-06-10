@@ -79,10 +79,10 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.GET, "/recruitment/*/status").hasAuthority("USER")
 
 					//팀원 관리
-					.antMatchers(HttpMethod.POST, "/recruitment/join").hasAuthority("USER")
-					.antMatchers(HttpMethod.POST, "/recruitment/cancel").hasAuthority("USER")
-					.antMatchers(HttpMethod.POST, "/recruitment/approval").hasAuthority("USER")
-					.antMatchers(HttpMethod.POST, "/recruitment/kick").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/*/join").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/*/cancel").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/*/approval").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/*/kick").hasAuthority("USER")
 
 					//일정 관련
 					.antMatchers(HttpMethod.GET, "/schedule/*").hasAuthority("USER")

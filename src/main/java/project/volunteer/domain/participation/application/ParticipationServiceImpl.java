@@ -79,10 +79,9 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void approvalParticipant(Long loginUsrNo, Long recruitmentNo, List<Long> userNo) {
+    public void approvalParticipant(Long recruitmentNo, List<Long> userNo) {
 
         Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Approval = [%d]", recruitmentNo));
-        isRecruitmentOwner(loginUsrNo, recruitment);
 
         //승인가능인원수 초과
         Integer remainNum = recruitment.getVolunteerNum() - participantRepository.countAvailableParticipants(recruitmentNo);
@@ -106,10 +105,7 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void deportParticipant(Long loginUserNo, Long recruitmentNo, Long userNo) {
-
-        Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Deport = [%d]", recruitmentNo));
-        isRecruitmentOwner(loginUserNo, recruitment);
+    public void deportParticipant(Long recruitmentNo, Long userNo) {
 
         Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, userNo, State.JOIN_APPROVAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
@@ -123,14 +119,6 @@ public class ParticipationServiceImpl implements ParticipationService{
         return recruitmentRepository.findActivatedRecruitment(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
                         logErrorMessage));
-    }
-
-    //모집글 방장 검증 메서드
-    private void isRecruitmentOwner(Long loginUserNo, Recruitment recruitment){
-        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)){
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
     }
 
 }

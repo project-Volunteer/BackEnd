@@ -2,7 +2,6 @@ package project.volunteer.global.common.component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerMapping;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;

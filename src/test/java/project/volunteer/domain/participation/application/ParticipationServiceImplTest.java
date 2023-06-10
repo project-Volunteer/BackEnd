@@ -2,6 +2,7 @@ package project.volunteer.domain.participation.application;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -228,7 +229,7 @@ class ParticipationServiceImplTest {
         List<Long> requestNos = List.of(saveUser1.getUserNo(), saveUser2.getUserNo(), saveUser3.getUserNo());
 
         //when
-        participationService.approvalParticipant(writer.getUserNo(), saveRecruitment.getRecruitmentNo(), requestNos);
+        participationService.approvalParticipant(saveRecruitment.getRecruitmentNo(), requestNos);
         clear();
 
         //then
@@ -238,6 +239,7 @@ class ParticipationServiceImplTest {
                 .forEach(p -> Assertions.assertThat(p.getState()).isEqualTo(State.JOIN_APPROVAL));
     }
 
+    @Disabled
     @Test
     @Transactional
     public void 팀신청승인_실패_권한없음(){
@@ -253,7 +255,7 @@ class ParticipationServiceImplTest {
 
         //when & then
         Assertions.assertThatThrownBy(
-                () -> participationService.approvalParticipant(saveUser1.getUserNo(), saveRecruitment.getRecruitmentNo(), requestNos))
+                () -> participationService.approvalParticipant(saveRecruitment.getRecruitmentNo(), requestNos))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("FORBIDDEN_RECRUITMENT");
     }
@@ -269,7 +271,7 @@ class ParticipationServiceImplTest {
 
         //when & then
         Assertions.assertThatThrownBy(
-                () -> participationService.approvalParticipant(writer.getUserNo(), saveRecruitment.getRecruitmentNo(),requestNos))
+                () -> participationService.approvalParticipant(saveRecruitment.getRecruitmentNo(),requestNos))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INVALID_STATE");
     }
@@ -291,7 +293,7 @@ class ParticipationServiceImplTest {
         clear();
 
         //when & then
-        Assertions.assertThatThrownBy(() -> participationService.approvalParticipant(writer.getUserNo(), saveRecruitment.getRecruitmentNo(), requestNos))
+        Assertions.assertThatThrownBy(() -> participationService.approvalParticipant(saveRecruitment.getRecruitmentNo(), requestNos))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INSUFFICIENT_APPROVAL_CAPACITY");
     }
@@ -304,7 +306,7 @@ class ParticipationServiceImplTest {
         참여자_상태_등록(saveUser, State.JOIN_APPROVAL);
 
         //when
-        participationService.deportParticipant(writer.getUserNo(), saveRecruitment.getRecruitmentNo(),saveUser.getUserNo());
+        participationService.deportParticipant(saveRecruitment.getRecruitmentNo(),saveUser.getUserNo());
         clear();
 
         //then
@@ -322,7 +324,7 @@ class ParticipationServiceImplTest {
 
         //when & then
         Assertions.assertThatThrownBy(() ->
-                participationService.deportParticipant(writer.getUserNo(), saveRecruitment.getRecruitmentNo(), saveUser.getUserNo()))
+                participationService.deportParticipant(saveRecruitment.getRecruitmentNo(), saveUser.getUserNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INVALID_STATE");
     }
