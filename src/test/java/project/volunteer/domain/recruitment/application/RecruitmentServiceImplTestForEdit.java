@@ -1,6 +1,7 @@
 package project.volunteer.domain.recruitment.application;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,7 @@ class RecruitmentServiceImplTestForEdit {
     @Transactional
     public void 정기모집글_삭제_성공_반복주기포함(){
         //given & when
-        recruitmentService.deleteRecruitment(writer.getUserNo(), saveRecruitment.getRecruitmentNo());
+        recruitmentService.deleteRecruitment(saveRecruitment.getRecruitmentNo());
         clear();
 
         //then
@@ -92,10 +93,11 @@ class RecruitmentServiceImplTestForEdit {
     @Test
     @Transactional
     public void 정기모집글_삭제_실패_없는모집글(){
-        assertThatThrownBy(() -> recruitmentService.deleteRecruitment(writer.getUserNo(), Long.MAX_VALUE)) //없는 모집글 PK
+        assertThatThrownBy(() -> recruitmentService.deleteRecruitment(Long.MAX_VALUE)) //없는 모집글 PK
                 .isInstanceOf(BusinessException.class);
     }
 
+    @Disabled
     @DisplayName("봉사 모집글 시 권한이 없는 경우 예외가 발생한다.")
     @Test
     @Transactional
@@ -107,7 +109,7 @@ class RecruitmentServiceImplTestForEdit {
         clear();
 
         //when & then
-        assertThatThrownBy(() -> recruitmentService.deleteRecruitment(createUser.getUserNo(), saveRecruitment.getRecruitmentNo()))
+        assertThatThrownBy(() -> recruitmentService.deleteRecruitment(saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("FORBIDDEN_RECRUITMENT");
     }

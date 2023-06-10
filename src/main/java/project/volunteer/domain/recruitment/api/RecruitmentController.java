@@ -25,6 +25,7 @@ import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
+import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.aop.LogExecutionTime;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -33,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static project.volunteer.global.Interceptor.OrganizationAuth.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -133,11 +136,12 @@ public class RecruitmentController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/recruitment/{no}")
-    public ResponseEntity recruitmentDelete(@PathVariable Long no) {
+    @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
+    @DeleteMapping("/recruitment/{recruitmentNo}")
+    public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
 
         //모집글 관련 엔티티들 삭제
-        recruitmentService.deleteRecruitment(SecurityUtil.getLoginUserNo(), no);
+        recruitmentService.deleteRecruitment(no);
 
         //모집글 이미지 삭제
         imageService.deleteImage(RealWorkCode.RECRUITMENT, no);

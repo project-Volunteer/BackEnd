@@ -33,6 +33,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
+import project.volunteer.global.test.WithMockCustomUser;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -62,7 +63,7 @@ class RecruitmentControllerTestForEdit {
     private Long saveRecruitmentNo;
     private Long deleteImageNo;
     private User writer;
-    private final String DELETE_URL = "/recruitment/";
+    private final String DELETE_URL = "/recruitment";
     @BeforeEach
     public void initUser(){
          writer = userRepository.save(User.builder()
@@ -145,8 +146,22 @@ class RecruitmentControllerTestForEdit {
         setImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
 
         //when & then
-        mockMvc.perform(delete(DELETE_URL+saveRecruitmentNo))
+        mockMvc.perform(delete(DELETE_URL + "/{recruitmentNo}", saveRecruitmentNo))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("정기 모집글 방장이 아닌 사용자가 삭제를 시도하다.")
+    @Test
+    @WithMockCustomUser()
+    public void 정기모집글_삭제_실패_권한없음() throws Exception {
+        //given
+        setRegRecruitment();
+        setImage(RealWorkCode.RECRUITMENT, saveRecruitmentNo);
+
+        //when & then
+        mockMvc.perform(delete(DELETE_URL + "/{recruitmentNo}", saveRecruitmentNo))
+                .andExpect(status().isForbidden())
                 .andDo(print());
     }
 
@@ -154,7 +169,7 @@ class RecruitmentControllerTestForEdit {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 정기모집글_삭제_실패_없는모집글() throws Exception {
 
-        mockMvc.perform(delete(DELETE_URL+Long.MAX_VALUE))
+        mockMvc.perform(delete(DELETE_URL + "/{recruitmentNo}", Long.MAX_VALUE))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
