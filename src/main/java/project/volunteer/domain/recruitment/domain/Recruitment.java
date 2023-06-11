@@ -12,6 +12,8 @@ import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.domain.recruitment.converter.CategoryConverter;
 import project.volunteer.domain.recruitment.converter.VolunteerTypeConverter;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.persistence.*;
 
@@ -139,6 +141,13 @@ public class Recruitment extends BaseTimeEntity {
 
     public void setVolunteeringTimeTable(Timetable timetable){
         this.VolunteeringTimeTable = timetable;
+    }
+
+    public Boolean isRecruitmentOwner(Long userNo){
+        if(this.getWriter().getUserNo().equals(userNo)) {
+           return true;
+        }
+        return false;
     }
 
 }

@@ -163,8 +163,8 @@ public class UserControllerRecruitingTest {
 		RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2,
 				details, latitude, longitude, isIssued2, volunteerType2, volunteerNum2, volunteeringType, startDay,
 				endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-		Long no1 = recruitmentService.addRecruitment(saveRecruitDto1);
-		Long no2 = recruitmentService.addRecruitment(saveRecruitDto2);
+		Long no1 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto1);
+		Long no2 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto2);
 
 		saveRecruitmentNoList.add(no1);
 		saveRecruitmentNoList.add(no2);

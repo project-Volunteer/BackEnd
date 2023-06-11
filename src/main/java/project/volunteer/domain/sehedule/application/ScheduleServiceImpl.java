@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.repeatPeriod.domain.Day;
@@ -39,17 +38,13 @@ public class ScheduleServiceImpl implements ScheduleService{
     private final ScheduleRepository scheduleRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final ScheduleParticipationRepository scheduleParticipationRepository;
-    private final ParticipantRepository participantRepository;
 
     @Override
     @Transactional
-    public Long addSchedule(Long recruitmentNo, Long loginUserNo, ScheduleParam dto) {
+    public Long addSchedule(Long recruitmentNo, ScheduleParam dto) {
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(recruitmentNo);
-
-        //모집글 방장 검증
-        isRecruitmentOwner(recruitment, loginUserNo);
 
         //일정 참여가능 최대 수는 봉사 팀원 가능 인원보다 많을 수 없음.
         if(recruitment.getVolunteerNum() < dto.getVolunteerNum()){
@@ -94,16 +89,13 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public Long editSchedule(Long scheduleNo, Long loginUserNo, ScheduleParam dto) {
+    public Long editSchedule(Long scheduleNo, ScheduleParam dto) {
 
         //일정 검증
         Schedule findSchedule = isValidSchedule(scheduleNo);
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(findSchedule.getRecruitment().getRecruitmentNo());
-
-        //모집글 방장 검증
-        isRecruitmentOwner(recruitment, loginUserNo);
 
         //수정할 참여 인원수는 현재 일정에 참여중인 인원수보다 적을 수 없음.
         Integer activeVolunteerNum = scheduleParticipationRepository.countActiveParticipant(scheduleNo);
@@ -127,16 +119,13 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public void deleteSchedule(Long scheduleNo, Long loginUserNo) {
+    public void deleteSchedule(Long scheduleNo) {
 
         //일정 검증
         Schedule findSchedule = isValidSchedule(scheduleNo);
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(findSchedule.getRecruitment().getRecruitmentNo());
-
-        //모집글 방장 검증
-        isRecruitmentOwner(recruitment, loginUserNo);
 
         //일정 삭제
         findSchedule.delete();
@@ -149,13 +138,10 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public List<Schedule> findCalendarSchedules(Long recruitmentNo, Long loginUserNo, LocalDate startDay, LocalDate endDay) {
+    public List<Schedule> findCalendarSchedules(Long recruitmentNo, LocalDate startDay, LocalDate endDay) {
 
         //모집글 검증
         Recruitment findRecruitment = isValidRecruitment(recruitmentNo);
-
-        //봉사 팀원 검증
-        isRecruitmentTeamMember(findRecruitment, loginUserNo);
 
         //기간 내에 일정 리스트 조회
         return scheduleRepository.findScheduleWithinPeriod(recruitmentNo, startDay, endDay);
@@ -224,21 +210,6 @@ public class ScheduleServiceImpl implements ScheduleService{
     private Recruitment isValidRecruitment(Long recruitmentNo){
         return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
-    }
-
-    //모집글 방장 검증 메서드
-    private void isRecruitmentOwner(Recruitment recruitment, Long loginUserNo){
-        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)){
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
-    }
-
-    private void isRecruitmentTeamMember(Recruitment recruitment, Long loginUserNo){
-        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo)){
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
     }
 
 }

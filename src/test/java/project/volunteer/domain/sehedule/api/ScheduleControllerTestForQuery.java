@@ -97,14 +97,30 @@ class ScheduleControllerTestForQuery {
 
     @Test
     @Transactional
-    @DisplayName("모집중인 가장 가까운 일정 상세 조회에 성공한다.")
+    @DisplayName("팀원이 모집중인 가장 가까운 일정 상세 조회에 성공한다.")
     @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void scheduleDetails() throws Exception {
+    public void scheduleDetailsByTeamMember() throws Exception {
         //given
         스케줄_등록(LocalDate.now().plusMonths(2), 2);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("activeVolunteerNum").value(0))
+                .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("방장이 모집중인 가장 가까운 일정 상세 조회에 성공한다.")
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void scheduleDetailsByOwner() throws Exception {
+        //given
+        스케줄_등록(LocalDate.now().plusMonths(2), 2);
+
+        //when & then
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
                 .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
@@ -120,7 +136,7 @@ class ScheduleControllerTestForQuery {
         스케줄_등록(LocalDate.now().plusMonths(2), 2);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("message").value("봉사 팀원에게만 공개된 일정입니다. 팀원 참여 후 이용해주시길 바랍니다."))
                 .andDo(print());
@@ -135,7 +151,7 @@ class ScheduleControllerTestForQuery {
         스케줄_등록(LocalDate.now(), 2);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(""))
                 .andDo(print());
@@ -151,7 +167,7 @@ class ScheduleControllerTestForQuery {
         스케줄_참여자_등록(schedule, teamMember.get(1), State.PARTICIPATING);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(ParticipantState.DONE.name()))
                 .andDo(print());
@@ -166,7 +182,7 @@ class ScheduleControllerTestForQuery {
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
                 .andDo(print());
@@ -182,7 +198,7 @@ class ScheduleControllerTestForQuery {
         스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATION_CANCEL);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(ParticipantState.CANCELLING.name()))
                 .andDo(print());
@@ -198,7 +214,7 @@ class ScheduleControllerTestForQuery {
         스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATING);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(ParticipantState.PARTICIPATING.name()))
                 .andDo(print());
@@ -222,7 +238,7 @@ class ScheduleControllerTestForQuery {
         스케줄_등록(LocalDate.of(2023, 4, 25), 3);
 
         //when & then
-        mockMvc.perform(get("/schedule/"+saveRecruitment.getRecruitmentNo()+"/calendar")
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/calendar/",saveRecruitment.getRecruitmentNo())
                     .queryParam("year", "2023")
                     .queryParam("mon", "5"))
                 .andExpect(status().isOk())
@@ -234,7 +250,7 @@ class ScheduleControllerTestForQuery {
     @DisplayName("캘린더 일정 조회 간 필수 파라미터를 누락하다.")
     @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void missingQueryParam() throws Exception {
-        mockMvc.perform(get("/schedule/"+saveRecruitment.getRecruitmentNo()+"/calendar")
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/calendar/",saveRecruitment.getRecruitmentNo())
                         .queryParam("year", "2023")) //"mon" 쿼리 스트링 누락
                 .andExpect(status().isBadRequest())
                 .andDo(print());
@@ -249,7 +265,7 @@ class ScheduleControllerTestForQuery {
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
 
         //when & then
-        mockMvc.perform(get("/schedule/" + saveRecruitment.getRecruitmentNo() + "/calendar/" + schedule.getScheduleNo()))
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}",saveRecruitment.getRecruitmentNo(),schedule.getScheduleNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
                 .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))

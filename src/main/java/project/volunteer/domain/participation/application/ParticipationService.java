@@ -5,10 +5,10 @@ import java.util.List;
 public interface ParticipationService {
 
     //팀 참가 신청
-    public void participate(Long recruitmentNo);
+    public void participate(Long loginUserNo, Long recruitmentNo);
 
     //팀 참가 취소
-    public void cancelParticipation(Long recruitmentNo);
+    public void cancelParticipation(Long loginUserNo, Long recruitmentNo);
 
     //팀 탈퇴(미정)
 

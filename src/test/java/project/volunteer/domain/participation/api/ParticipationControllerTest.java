@@ -10,13 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
 import project.volunteer.domain.participation.api.dto.ParticipantRemoveParam;
-import project.volunteer.domain.participation.api.dto.ParticipationParam;
-import project.volunteer.domain.participation.application.ParticipationService;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -51,104 +48,41 @@ class ParticipationControllerTest {
     @Autowired EntityManager em;
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
-    @Autowired ParticipationService participationService;
     @Autowired ParticipantRepository participantRepository;
     private User loginUser;
     private User writer;
     private Recruitment saveRecruitment;
-    private final String joinPath = "/recruitment/join";
-    private final String cancelPath = "/recruitment/cancel";
-    private final String approvalPath = "/recruitment/approval";
-    private final String deportPath = "/recruitment/kick";
     @BeforeEach
     public void init(){
         //로그인 사용자 저장
-        loginUser = userRepository.save(User.builder()
-                .id("1234")
-                .password("1234")
-                .nickName("nickname")
-                .email("email@gmail.com")
-                .gender(Gender.M)
-                .birthDay(LocalDate.now())
-                .picture("picture")
-                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
-                .role(Role.USER)
-                .provider("kakao").providerId("1234")
-                .build());
+        User login = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
+                true, true, true, Role.USER, "kakao", "1234", null);
+        loginUser = userRepository.save(login);
 
         //작성자 저장
-        writer = userRepository.save(User.builder()
-                .id("4321")
-                .password("4321")
-                .nickName("4321")
-                .email("email4321@gmail.com")
-                .gender(Gender.M)
-                .birthDay(LocalDate.now())
-                .picture("picture4321")
-                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
-                .role(Role.USER)
-                .provider("kakao").providerId("4321")
-                .build());
+        User writerUser = User.createUser("4321", "4321", "4321", "4321", Gender.M, LocalDate.now(), "4321",
+                true, true, true, Role.USER, "kakao", "4321", null);
+        writer = userRepository.save(writerUser);
 
         //모집글 저장
-        saveRecruitment = Recruitment.builder()
-                .title("title")
-                .content("content")
-                .volunteeringCategory(VolunteeringCategory.ADMINSTRATION_ASSISTANCE)
-                .volunteeringType(VolunteeringType.IRREG)
-                .volunteerType(VolunteerType.TEENAGER)
-                .volunteerNum(5)
-                .isIssued(true)
-                .organizationName("organization")
-                .address(Address.builder()
-                        .sido("111")
-                        .sigungu("11111")
-                        .details("details")
-                        .build())
-                .coordinate(Coordinate.builder()
-                        .latitude(3.2F)
-                        .longitude(3.2F)
-                        .build())
-                .timetable(Timetable.builder()
-                        .startDay(LocalDate.now())
-                        .endDay(LocalDate.now())
-                        .hourFormat(HourFormat.AM)
-                        .startTime(LocalTime.now())
-                        .progressTime(2)
-                        .build())
-                .isPublished(true)
-                .build();
-        saveRecruitment.setWriter(writer);
-        recruitmentRepository.save(saveRecruitment);
+        Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 3, true, "organization",
+                Address.createAddress("11", "1111","details"), Coordinate.createCoordinate(3.2F, 3.2F),
+                Timetable.createTimetable(LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3), true);
+        createRecruitment.setWriter(writer);
+        saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         clear();
     }
-    private List<Long> addParticipant(int count, State state){
-        List<Long> participantNoList = new ArrayList<>();
 
-        for(int i=0;i<count;i++){
-            User joinUser = userRepository.save(User.builder()
-                    .id("1234" + i)
-                    .password("1234" + i)
-                    .nickName("nickname" + i)
-                    .email("email" + i + "@gmail.com")
-                    .gender(Gender.M)
-                    .birthDay(LocalDate.now())
-                    .picture("picture" + i)
-                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
-                    .role(Role.USER)
-                    .provider("kakao").providerId("1234" + i)
-                    .build());
-
-            participantRepository.save(Participant.builder()
-                    .participant(joinUser)
-                    .recruitment(saveRecruitment)
-                    .state(state)
-                    .build());
-
-            participantNoList.add(joinUser.getUserNo());
-        }
-        return participantNoList;
+    private User 사용자_등록(String username){
+        User createUser = User.createUser(username, username, username, username, Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", username, null);
+        return userRepository.save(createUser);
+    }
+    private Participant 참여자_상태_등록(User user, State state){
+        Participant participant = Participant.createParticipant(saveRecruitment, user, state);
+        return participantRepository.save(participant);
     }
     private void clear() {
         em.flush();
@@ -161,24 +95,24 @@ class ParticipationControllerTest {
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_성공() throws Exception {
+        //given
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
 
-        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
-
-        mockMvc.perform(post(joinPath)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
+        //when & then
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/join", recruitmentNo)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_없는모집글() throws Exception {
+        //given
+        final Long recruitmentNo = Long.MAX_VALUE;
 
-        ParticipationParam dto = new ParticipationParam(Long.MAX_VALUE);
-
-        mockMvc.perform(post(joinPath)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
+        //when & then
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/join", recruitmentNo)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -196,12 +130,11 @@ class ParticipationControllerTest {
                 .build();
         recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get().setVolunteeringTimeTable(newTime);
         clear();
-        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
 
         //when & then
-        mockMvc.perform(post(joinPath)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/join", recruitmentNo)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -210,15 +143,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_중복신청() throws Exception {
         //given
-        participationService.participate(saveRecruitment.getRecruitmentNo()); //팀 신청 요청
+        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         clear();
 
-        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
-
         //when & then
-        mockMvc.perform(post(joinPath)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/join", recruitmentNo)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -227,15 +158,19 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_참가가능인원초과() throws Exception {
         //given
-        addParticipant(5, State.JOIN_APPROVAL);
+        User saveUser1 = 사용자_등록("구길동");
+        User saveUser2 = 사용자_등록("구갈동");
+        User saveUser3 = 사용자_등록("구동굴");
+        참여자_상태_등록(saveUser1, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser2, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser3, State.JOIN_APPROVAL);
+
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         clear();
 
-        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
-
         //when & then
-        mockMvc.perform(post(joinPath)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/join", recruitmentNo)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -244,14 +179,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청취소_성공() throws Exception {
         //given
-        participationService.participate(saveRecruitment.getRecruitmentNo()); //팀 신청 요청
-
-        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
+        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        clear();
 
         //when & then
-        mockMvc.perform(post(cancelPath)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(dto)))
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/cancel", recruitmentNo)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -260,21 +194,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청취소_실패_잘못된상태() throws Exception {
         //given
-        participantRepository.save(
-                Participant.builder()
-                        .participant(loginUser)
-                        .recruitment(saveRecruitment)
-                        .state(State.JOIN_APPROVAL) //잘못된 상태
-                        .build()
-        );
+        참여자_상태_등록(loginUser, State.JOIN_APPROVAL);
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         clear();
 
-        ParticipationParam dto = new ParticipationParam(saveRecruitment.getRecruitmentNo());
-
         //when & then
-        mockMvc.perform(post(cancelPath)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(dto)))
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/cancel", recruitmentNo)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
@@ -283,20 +209,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_성공() throws Exception {
         //given
-        participantRepository.save(
-                Participant.builder()
-                        .participant(loginUser)
-                        .recruitment(saveRecruitment)
-                        .state(State.JOIN_REQUEST)
-                        .build()
-        );
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
         clear();
 
-        ParticipantAddParam dto =
-                new ParticipantAddParam(saveRecruitment.getRecruitmentNo(), List.of(loginUser.getUserNo()));
-
         //when & then
-        mockMvc.perform(post(approvalPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/approval", recruitmentNo)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(dto)))
                 .andExpect(status().isOk())
@@ -307,14 +226,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_실패_권한없음() throws Exception {
         //given
-        participationService.participate(saveRecruitment.getRecruitmentNo());
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
         clear();
 
-        ParticipantAddParam dto =
-                new ParticipantAddParam(saveRecruitment.getRecruitmentNo(), List.of(loginUser.getUserNo()));
-
         //when & then
-        mockMvc.perform(post(approvalPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/approval", recruitmentNo)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(dto)))
                 .andExpect(status().isForbidden())
@@ -325,20 +243,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_실패_잘못된상태() throws Exception {
         //given
-        participantRepository.save(
-                Participant.builder()
-                        .participant(loginUser)
-                        .recruitment(saveRecruitment)
-                        .state(State.JOIN_CANCEL) //잘못된 상태
-                        .build()
-        );
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        참여자_상태_등록(loginUser, State.JOIN_CANCEL);
+        ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
         clear();
 
-        ParticipantAddParam dto =
-                new ParticipantAddParam(saveRecruitment.getRecruitmentNo(), List.of(loginUser.getUserNo()));
-
         //when & then
-        mockMvc.perform(post(approvalPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/approval", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
@@ -349,16 +260,23 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_실패_승인가능인원초과() throws Exception {
         //given
-        //현재 승인가능인원 1명
-        addParticipant(4, State.JOIN_APPROVAL);
-        List<Long> requestUserNoList = addParticipant(3, State.JOIN_REQUEST);
+        //승인 가능인원 1명
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        User saveUser1 = 사용자_등록("구길동");
+        User saveUser2 = 사용자_등록("구갈동");
+        User saveUser3 = 사용자_등록("구동굴");
+        User saveUser4 = 사용자_등록("구갈염");
+        참여자_상태_등록(saveUser1, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser2, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser3, State.JOIN_REQUEST);
+        참여자_상태_등록(saveUser4, State.JOIN_REQUEST);
+        List<Long> requestNos = List.of(saveUser3.getUserNo(), saveUser4.getUserNo());
+
+        ParticipantAddParam dto = new ParticipantAddParam(requestNos);
         clear();
 
-        ParticipantAddParam dto =
-                new ParticipantAddParam(saveRecruitment.getRecruitmentNo(), requestUserNoList);
-
         //when & then
-        mockMvc.perform(post(approvalPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/approval", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
@@ -369,20 +287,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀원강제탈퇴_성공() throws Exception {
         //given
-        participantRepository.save(
-                Participant.builder()
-                        .participant(loginUser)
-                        .recruitment(saveRecruitment)
-                        .state(State.JOIN_APPROVAL)
-                        .build()
-        );
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        참여자_상태_등록(loginUser, State.JOIN_APPROVAL);
+        ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
         clear();
 
-        ParticipantRemoveParam dto =
-                new ParticipantRemoveParam(saveRecruitment.getRecruitmentNo(), loginUser.getUserNo());
-
         //then & then
-        mockMvc.perform(post(deportPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/kick", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isOk())
@@ -393,20 +304,13 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀원강제탈퇴_실패_잘못된상태() throws Exception {
         //given
-        participantRepository.save(
-                Participant.builder()
-                        .participant(loginUser)
-                        .recruitment(saveRecruitment)
-                        .state(State.JOIN_CANCEL)
-                        .build()
-        );
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
         clear();
 
-        ParticipantRemoveParam dto =
-                new ParticipantRemoveParam(saveRecruitment.getRecruitmentNo(), loginUser.getUserNo());
-
         //then & then
-        mockMvc.perform(post(deportPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/kick", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
@@ -414,13 +318,14 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void notNull_valid_테스트() throws Exception {
         //given
-        ParticipationParam dto = new ParticipationParam(null);
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        ParticipantRemoveParam dto = new ParticipantRemoveParam(null);
 
         //when & then
-        mockMvc.perform(post(joinPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/kick", recruitmentNo)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
@@ -431,15 +336,15 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void notEmpty_valid_테스트() throws Exception {
         //given
-        ParticipantAddParam dto = new ParticipantAddParam(1L, new ArrayList<>());
-        
+        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        ParticipantAddParam dto = new ParticipantAddParam(new ArrayList<>());
+
         //when & then
-        mockMvc.perform(post(approvalPath)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/approval", recruitmentNo)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
-
     }
 
 }

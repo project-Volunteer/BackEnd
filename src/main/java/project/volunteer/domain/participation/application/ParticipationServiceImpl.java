@@ -27,11 +27,9 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void participate(Long recruitmentNo) {
+    public void participate(Long loginUserNo, Long recruitmentNo) {
 
         Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Participate = [%d]", recruitmentNo));
-
-        Long loginUserNo = SecurityUtil.getLoginUserNo();
 
         //참여 가능 인원이 꽉 찬경우
         if(participantRepository.countAvailableParticipants(recruitmentNo) ==recruitment.getVolunteerNum()){
@@ -67,11 +65,9 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void cancelParticipation(Long recruitmentNo) {
+    public void cancelParticipation(Long loginUserNo, Long recruitmentNo) {
 
         isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Cancel = [%d]", recruitmentNo));
-
-        Long loginUserNo = SecurityUtil.getLoginUserNo();
 
         Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, loginUserNo, State.JOIN_REQUEST)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
@@ -86,7 +82,6 @@ public class ParticipationServiceImpl implements ParticipationService{
     public void approvalParticipant(Long recruitmentNo, List<Long> userNo) {
 
         Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Approval = [%d]", recruitmentNo));
-        isRecruitmentOwner(recruitment);
 
         //승인가능인원수 초과
         Integer remainNum = recruitment.getVolunteerNum() - participantRepository.countAvailableParticipants(recruitmentNo);
@@ -112,9 +107,6 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Override
     public void deportParticipant(Long recruitmentNo, Long userNo) {
 
-        Recruitment recruitment = isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Deport = [%d]", recruitmentNo));
-        isRecruitmentOwner(recruitment);
-
         Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, userNo, State.JOIN_APPROVAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], RecruitmentNo = [%d]", userNo, recruitmentNo)));
@@ -127,16 +119,6 @@ public class ParticipationServiceImpl implements ParticipationService{
         return recruitmentRepository.findActivatedRecruitment(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
                         logErrorMessage));
-    }
-
-    //모집글 방장 검증 메서드
-    private void isRecruitmentOwner(Recruitment recruitment){
-        Long loginUserNo = SecurityUtil.getLoginUserNo();
-
-        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)){
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
     }
 
 }

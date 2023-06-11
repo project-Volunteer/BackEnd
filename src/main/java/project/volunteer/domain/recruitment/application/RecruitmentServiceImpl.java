@@ -13,7 +13,6 @@ import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-import project.volunteer.global.util.SecurityUtil;
 
 import java.util.List;
 
@@ -28,26 +27,15 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Transactional
-    public Long addRecruitment(RecruitmentParam saveDto){
+    public Long addRecruitment(Long loginUserNo, RecruitmentParam saveDto){
 
-        Recruitment recruitment = Recruitment.builder()
-                .title(saveDto.getTitle())
-                .content(saveDto.getContent())
-                .volunteeringCategory(saveDto.getVolunteeringCategory())
-                .volunteeringType(saveDto.getVolunteeringType())
-                .volunteerType(saveDto.getVolunteerType())
-                .volunteerNum(saveDto.getVolunteerNum())
-                .isIssued(saveDto.getIsIssued())
-                .organizationName(saveDto.getOrganizationName())
-                .address(saveDto.getAddress())
-                .coordinate(saveDto.getCoordinate())
-                .timetable(saveDto.getTimetable())
-                .isPublished(saveDto.getIsPublished())
-                .build();
+        Recruitment recruitment = Recruitment.createRecruitment(saveDto.getTitle(), saveDto.getContent(), saveDto.getVolunteeringCategory(), saveDto.getVolunteeringType(),
+                saveDto.getVolunteerType(), saveDto.getVolunteerNum(), saveDto.getIsIssued(), saveDto.getOrganizationName(), saveDto.getAddress(),
+                saveDto.getCoordinate(), saveDto.getTimetable(), saveDto.getIsPublished());
 
-        recruitment.setWriter(userRepository.findById(SecurityUtil.getLoginUserNo())
+        recruitment.setWriter(userRepository.findById(loginUserNo)
                 .orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED_USER,
-                        String.format("Unauthorized UserNo = [%d]", SecurityUtil.getLoginUserNo()))));
+                        String.format("Unauthorized UserNo = [%d]", loginUserNo))));
 
         return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
@@ -60,9 +48,6 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 recruitmentRepository.findValidByRecruitmentNo(deleteNo).orElseThrow(
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
-        //모집글 방장 검사
-        isRecruitmentOwner(findRecruitment);
-
         //정기일 경우 반복주기 삭제
         if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){
             List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(findRecruitment.getRecruitmentNo());
@@ -72,16 +57,6 @@ public class RecruitmentServiceImpl implements RecruitmentService{
 
         //모집글 삭제
         findRecruitment.setDeleted();
-    }
-
-    //모집글 방장 검증 메서드
-    private void isRecruitmentOwner(Recruitment recruitment){
-        Long loginUserNo = SecurityUtil.getLoginUserNo();
-
-        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
     }
 
 }

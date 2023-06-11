@@ -108,7 +108,7 @@ class ScheduleServiceImplTestForEdit {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when
-        Long editScheduleNo = scheduleService.editSchedule(saveSchedule.getScheduleNo(), writer.getUserNo(), param);
+        Long editScheduleNo = scheduleService.editSchedule(saveSchedule.getScheduleNo(), param);
         clear();
 
         //then
@@ -142,7 +142,7 @@ class ScheduleServiceImplTestForEdit {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.editSchedule(Long.MAX_VALUE, writer.getUserNo(), param))
+        assertThatThrownBy(() -> scheduleService.editSchedule(Long.MAX_VALUE,  param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("NOT_EXIST_SCHEDULE");
     }
@@ -160,7 +160,7 @@ class ScheduleServiceImplTestForEdit {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.editSchedule(saveSchedule.getScheduleNo(), writer.getUserNo(), param))
+        assertThatThrownBy(() -> scheduleService.editSchedule(saveSchedule.getScheduleNo(),  param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INSUFFICIENT_CAPACITY_PARTICIPANT");
     }
@@ -170,7 +170,7 @@ class ScheduleServiceImplTestForEdit {
     @DisplayName("봉사 일정 삭제에 성공하다.")
     public void deleteSchedule(){
         //given & when
-        scheduleService.deleteSchedule(saveSchedule.getScheduleNo(), writer.getUserNo());
+        scheduleService.deleteSchedule(saveSchedule.getScheduleNo());
         clear();
 
         //then

@@ -81,11 +81,11 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(post("/schedule")
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isOk());
@@ -108,11 +108,11 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(post("/schedule")
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isForbidden())
@@ -136,11 +136,11 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 100; //max 조건 위반
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(post("/schedule")
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
@@ -164,11 +164,11 @@ class ScheduleControllerTestForWrite {
         final String organizationName = "organization";
         final Integer volunteerNum = 20; //봉사 팀원 최대인원보다 작아야 된다.
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(recruitmentNo, new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
-        mockMvc.perform(post("/schedule")
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
