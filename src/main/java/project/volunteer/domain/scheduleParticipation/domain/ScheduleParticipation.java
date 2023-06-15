@@ -47,4 +47,8 @@ public class ScheduleParticipation extends BaseEntity {
         this.state = State.DELETED;
     }
 
+    public void participating(){
+        this.state = State.PARTICIPATING;
+    }
+
 }
