@@ -60,4 +60,21 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                 );
     }
 
+    @Override
+    @Transactional
+    public void cancelRequest(Long scheduleNo, Long loginUserNo) {
+        //일정 조회(종료 일자 검증 포함)
+        Schedule findSchedule = scheduleRepository.findActivateSchedule(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
+                        String.format("Schedule to participant = [%d]", scheduleNo)));
+
+        //일정 신청 상태인지 검증
+        ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNoAndState(loginUserNo, scheduleNo, State.PARTICIPATING)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
+                        String.format("UserNo = [%d], ScheduleNo = [%d]", loginUserNo, scheduleNo)));
+
+        //일정 신청 취소 요청
+        findSp.cancelParticipation();
+    }
+
 }
