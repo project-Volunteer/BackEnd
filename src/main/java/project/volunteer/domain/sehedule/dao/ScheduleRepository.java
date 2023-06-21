@@ -18,7 +18,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,Custom
             "from Schedule s " +
             "where s.scheduleNo=:no " +
             "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    public Optional<Schedule> findValidByScheduleNo(@Param("no") Long scheduleNo);
+    public Optional<Schedule> findValidSchedule(@Param("no") Long scheduleNo);
 
     @Query("select s " +
             "from Schedule s " +

@@ -58,7 +58,7 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
 
         //일정 검증
-        Schedule findSchedule = scheduleRepository.findValidByScheduleNo(scheduleNo)
+        Schedule findSchedule = scheduleRepository.findValidSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
 
         //현재 일정에 참여중인 인원수 확인
