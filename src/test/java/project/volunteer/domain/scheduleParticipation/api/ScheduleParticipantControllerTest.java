@@ -18,6 +18,7 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -111,11 +112,30 @@ class ScheduleParticipantControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("일정 참가 취소 요청에 성공하다.")
+    @Transactional
+    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void cancelParticipation() throws Exception {
+        //given
+        Participant participant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        일정_참여상태_추가(saveSchedule, participant, State.PARTICIPATING);
+        clear();
+
+        //when & then
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancel", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo()))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
 
     private Participant 봉사모집글_팀원_등록(Recruitment recruitment, User user){
         Participant participant = Participant.createParticipant(recruitment, user, State.JOIN_APPROVAL);
         return participantRepository.save(participant);
+    }
+    private ScheduleParticipation 일정_참여상태_추가(Schedule schedule, Participant participant, State state){
+        ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, state);
+        return scheduleParticipationRepository.save(sp);
     }
     private void clear() {
         em.flush();
