@@ -204,6 +204,24 @@ class ScheduleParticipationServiceImplTest {
                 .hasMessageContaining("INVALID_STATE");
     }
 
+    @Test
+    @Transactional
+    @DisplayName("일정 참여 취소 요청 승인에 성공하다.")
+    public void schedule_cancelApprove(){
+        //given
+        User newUser = 사용자_등록("구본식");
+        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
+        ScheduleParticipation newSp = 일정_참여자_추가(saveSchedule, newParticipant, State.PARTICIPATION_CANCEL);
+        clear();
+
+        //when
+        spService.cancelApproval(saveSchedule.getScheduleNo(), newSp.getScheduleParticipationNo());
+
+        //then
+        ScheduleParticipation findSp = scheduleParticipationRepository.findById(newSp.getScheduleParticipationNo()).get();
+        assertThat(findSp.getState()).isEqualTo(State.PARTICIPATION_CANCEL_APPROVAL);
+    }
+
 
     private User 사용자_등록(String username){
         User createUser = User.createUser(username, username, username, username, Gender.M, LocalDate.now(), "picture",

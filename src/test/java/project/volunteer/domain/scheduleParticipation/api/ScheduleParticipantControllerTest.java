@@ -1,11 +1,14 @@
 package project.volunteer.domain.scheduleParticipation.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,6 +20,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
@@ -50,6 +54,7 @@ class ScheduleParticipantControllerTest {
     @Autowired ParticipantRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
     @Autowired ScheduleParticipationService spService;
+    @Autowired ObjectMapper objectMapper;
 
     private User writer;
     private User loginUser;
@@ -128,6 +133,63 @@ class ScheduleParticipantControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("일정 참가 취소 요청 승인에 성공하다.")
+    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void cancelApprove() throws Exception {
+        //given
+        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_CANCEL);
+        CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
+        clear();
+
+        //when & then
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("방장이 아닌 사용자가 일정 참가 취소 요청 승인을 시도하다.")
+    @Transactional
+    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void cancelApprove_forbidden() throws Exception {
+        //given
+        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_CANCEL);
+        CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
+        clear();
+
+        //when & then
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("일정 참가 취소 요청 승인시 필수 파라미터를 누락하다.")
+    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void cancelApprove_notValid() throws Exception {
+        //given
+        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_CANCEL);
+        CancelApproval dto = new CancelApproval(null); //필수 파라미터 누락
+        clear();
+
+        //when & then
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
 
     private Participant 봉사모집글_팀원_등록(Recruitment recruitment, User user){
         Participant participant = Participant.createParticipant(recruitment, user, State.JOIN_APPROVAL);
@@ -140,5 +202,8 @@ class ScheduleParticipantControllerTest {
     private void clear() {
         em.flush();
         em.clear();
+    }
+    private <T> String toJson(T data) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(data);
     }
 }
