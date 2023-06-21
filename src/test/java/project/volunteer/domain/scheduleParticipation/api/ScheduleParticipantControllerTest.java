@@ -21,6 +21,7 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
+import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
@@ -37,6 +38,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -187,6 +189,25 @@ class ScheduleParticipantControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("일정 참가 완료 승인에 성공하다.")
+    @Transactional
+    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void completeApprove() throws Exception {
+        //given
+        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_COMPLETE_UNAPPROVED);
+        CompleteApproval dto = new CompleteApproval(List.of(newSp.getScheduleParticipationNo()));
+        clear();
+
+        //when & then
+        mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/complete", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 

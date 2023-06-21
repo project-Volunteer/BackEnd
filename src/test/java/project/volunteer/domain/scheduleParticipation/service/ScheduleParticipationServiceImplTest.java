@@ -23,11 +23,13 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
 import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -181,7 +183,7 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when
-        spService.cancelRequest(saveSchedule.getScheduleNo(), newUser.getUserNo());
+        spService.cancel(saveSchedule.getScheduleNo(), newUser.getUserNo());
 
         //then
         ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNo(newUser.getUserNo(), saveSchedule.getScheduleNo()).get();
@@ -199,7 +201,7 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when & then
-        assertThatThrownBy(() ->  spService.cancelRequest(saveSchedule.getScheduleNo(), newUser.getUserNo()))
+        assertThatThrownBy(() ->  spService.cancel(saveSchedule.getScheduleNo(), newUser.getUserNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INVALID_STATE");
     }
@@ -215,11 +217,59 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when
-        spService.cancelApproval(saveSchedule.getScheduleNo(), newSp.getScheduleParticipationNo());
+        spService.approvalCancellation(saveSchedule.getScheduleNo(), newSp.getScheduleParticipationNo());
 
         //then
         ScheduleParticipation findSp = scheduleParticipationRepository.findById(newSp.getScheduleParticipationNo()).get();
         assertThat(findSp.getState()).isEqualTo(State.PARTICIPATION_CANCEL_APPROVAL);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("일정 참여 완료 승인에 성공하다.")
+    public void schedule_completeApprove(){
+        //given
+        User newUser1 = 사용자_등록("구본식");
+        Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
+        ScheduleParticipation newSp1 = 일정_참여자_추가(saveSchedule, newParticipant1, State.PARTICIPATION_COMPLETE_UNAPPROVED);
+
+        User newUser2 = 사용자_등록("양소은");
+        Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
+        ScheduleParticipation newSp2 = 일정_참여자_추가(saveSchedule, newParticipant2, State.PARTICIPATION_COMPLETE_UNAPPROVED);
+
+        List<Long> spNos = List.of(newSp1.getScheduleParticipationNo(), newSp2.getScheduleParticipationNo());
+        clear();
+
+        //when
+        spService.approvalCompletion(saveSchedule.getScheduleNo(), spNos);
+
+        //then
+        ScheduleParticipation findSp1 = scheduleParticipationRepository.findById(newSp1.getScheduleParticipationNo()).get();
+        ScheduleParticipation findSp2 = scheduleParticipationRepository.findById(newSp2.getScheduleParticipationNo()).get();
+        assertThat(findSp1.getState()).isEqualTo(State.PARTICIPATION_COMPLETE_APPROVAL);
+        assertThat(findSp2.getState()).isEqualTo(State.PARTICIPATION_COMPLETE_APPROVAL);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("유효한 상태가 아니므로 일정 참여 완료 승인에 실패하다.")
+    public void schedule_completeApprove_invalid_state(){
+        //given
+        User newUser1 = 사용자_등록("구본식");
+        Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
+        ScheduleParticipation newSp1 = 일정_참여자_추가(saveSchedule, newParticipant1, State.PARTICIPATION_COMPLETE_UNAPPROVED);
+
+        User newUser2 = 사용자_등록("양소은");
+        Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
+        ScheduleParticipation newSp2 = 일정_참여자_추가(saveSchedule, newParticipant2, State.PARTICIPATION_COMPLETE_APPROVAL); //유효하지 않은 상태
+
+        List<Long> spNos = List.of(newSp1.getScheduleParticipationNo(), newSp2.getScheduleParticipationNo());
+        clear();
+
+        //when & then
+        assertThatThrownBy(() -> spService.approvalCompletion(saveSchedule.getScheduleNo(), spNos))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(ErrorCode.INVALID_STATE.name());
     }
 
 
