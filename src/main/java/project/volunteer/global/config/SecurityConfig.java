@@ -92,6 +92,8 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.GET, "/recruitment/*/calendar").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/recruitment/*/calendar/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*/join").hasAuthority("USER")
+					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*/cancel").hasAuthority("USER")
+					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*/cancelling").hasAuthority("USER")
 
 			.anyRequest().permitAll()
 			.and()

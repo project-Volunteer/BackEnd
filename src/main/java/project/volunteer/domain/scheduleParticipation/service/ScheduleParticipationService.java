@@ -6,4 +6,6 @@ public interface ScheduleParticipationService {
 
     public void cancelRequest(Long scheduleNo, Long loginUserNo);
 
+    public void cancelApproval(Long scheduleNo, Long spNo);
+
 }

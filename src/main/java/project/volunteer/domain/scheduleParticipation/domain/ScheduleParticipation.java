@@ -53,4 +53,6 @@ public class ScheduleParticipation extends BaseEntity {
 
     public void cancelParticipation() { this.state = State.PARTICIPATION_CANCEL;}
 
+    public void cancelApproval() { this.state = State.PARTICIPATION_CANCEL_APPROVAL;}
+
 }
