@@ -35,4 +35,5 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
                                                                       @Param("state")State state);
 
     Optional<ScheduleParticipation> findByScheduleParticipationNoAndState(Long scheduleParticipationNo, State state);
+    List<ScheduleParticipation> findByScheduleParticipationNoIn(List<Long> spNos);
 }

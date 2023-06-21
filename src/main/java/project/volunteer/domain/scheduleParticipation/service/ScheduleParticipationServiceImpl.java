@@ -13,6 +13,8 @@ import project.volunteer.global.common.component.State;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -62,7 +64,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
 
     @Override
     @Transactional
-    public void cancelRequest(Long scheduleNo, Long loginUserNo) {
+    public void cancel(Long scheduleNo, Long loginUserNo) {
         //일정 조회(종료 일자 검증 포함)
         scheduleRepository.findActivateSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
@@ -79,7 +81,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
 
     @Override
     @Transactional
-    public void cancelApproval(Long scheduleNo, Long spNo) {
+    public void approvalCancellation(Long scheduleNo, Long spNo) {
         //일정 조회(종료 일자 검증 포함)
         scheduleRepository.findActivateSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
@@ -92,6 +94,26 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
 
         //일정 취소 요청 승인
         findSp.cancelApproval();
+    }
+
+    @Override
+    @Transactional
+    public void approvalCompletion(Long scheduleNo, List<Long> spNo) {
+        //일정 조회(삭제되지만 않은)
+        scheduleRepository.findValidSchedule(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
+                        String.format("Schedule to completion approval = [%d]", scheduleNo)));
+
+        scheduleParticipationRepository.findByScheduleParticipationNoIn(spNo).stream()
+                .forEach(sp -> {
+                    //일정 참여 완료 미승인 상태가 아닌 경우
+                    if(!sp.getState().equals(State.PARTICIPATION_COMPLETE_UNAPPROVED)){
+                        throw new BusinessException(ErrorCode.INVALID_STATE,
+                                String.format("ScheduleParticipationNo = [%d], State = [%s]", sp.getScheduleParticipationNo(), sp.getState().name()));
+                    }
+                    //일정 참여 완료 승인
+                    sp.completeApproval();
+                });
     }
 
 }
