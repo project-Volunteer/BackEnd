@@ -54,7 +54,9 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                             //신규 신청
                             //값이 있겠지만, get 으로 가져오는 게 맞을까? 기본적으로 예외를 처리해야하는게 좋은 설계 일까?
                             Participant findParticipant =
-                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo).get();
+                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
+                                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
+                                                    String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
                             ScheduleParticipation createSP = ScheduleParticipation.createScheduleParticipation(findSchedule, findParticipant, State.PARTICIPATING);
                             scheduleParticipationRepository.save(createSP);
