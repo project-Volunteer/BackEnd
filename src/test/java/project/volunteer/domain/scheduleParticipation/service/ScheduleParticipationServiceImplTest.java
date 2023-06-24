@@ -89,6 +89,7 @@ class ScheduleParticipationServiceImplTest {
         //then
         ScheduleParticipation findSP = scheduleParticipationRepository.findByUserNoAndScheduleNo(newUser.getUserNo(), saveSchedule.getScheduleNo()).get();
         assertThat(findSP.getState()).isEqualTo(ParticipantState.PARTICIPATING);
+        assertThat(saveSchedule.getCurrentVolunteerNum()).isEqualTo(1);
     }
 
     @Test
@@ -107,7 +108,7 @@ class ScheduleParticipationServiceImplTest {
         //when & then
         assertThatThrownBy(() -> spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo()))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("NOT_EXIST_SCHEDULE");
+                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
     }
 
     @Test
@@ -117,19 +118,21 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser1 = 사용자_등록("구본식");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
-        일정_참여자_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
+        일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
+        saveSchedule.increaseParticipant();
 
         User newUser2 = 사용자_등록("홍길동");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
-        일정_참여자_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATING);
+        일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATING);
+        saveSchedule.increaseParticipant();
 
         User newUser3 = 사용자_등록("구하라");
         Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
-        일정_참여자_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATING);
+        일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATING);
+        saveSchedule.increaseParticipant();
 
         User newUser4 = 사용자_등록("박하영");
         봉사모집글_팀원_등록(saveRecruitment, newUser4);
-
         clear();
 
         //when & then
@@ -145,7 +148,8 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
+        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
+        saveSchedule.increaseParticipant();
         clear();
 
         //when & then
@@ -161,7 +165,7 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
+        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
         clear();
 
         //when
@@ -179,7 +183,8 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
+        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
+        saveSchedule.increaseParticipant();
         clear();
 
         //when
@@ -197,7 +202,7 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL); //적절하지 않은 상태
+        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL); //적절하지 않은 상태
         clear();
 
         //when & then
@@ -213,15 +218,17 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        ScheduleParticipation newSp = 일정_참여자_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        clear();
+        saveSchedule.increaseParticipant();
+        ScheduleParticipation newSp = 일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
 
         //when
         spService.approvalCancellation(saveSchedule.getScheduleNo(), newSp.getScheduleParticipationNo());
+        clear();
 
         //then
         ScheduleParticipation findSp = scheduleParticipationRepository.findById(newSp.getScheduleParticipationNo()).get();
         assertThat(findSp.getState()).isEqualTo(ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
+        assertThat(saveSchedule.getCurrentVolunteerNum()).isEqualTo(0);
     }
 
     @Test
@@ -231,11 +238,11 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser1 = 사용자_등록("구본식");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
-        ScheduleParticipation newSp1 = 일정_참여자_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
+        ScheduleParticipation newSp1 = 일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
         User newUser2 = 사용자_등록("양소은");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
-        ScheduleParticipation newSp2 = 일정_참여자_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
+        ScheduleParticipation newSp2 = 일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
         List<Long> spNos = List.of(newSp1.getScheduleParticipationNo(), newSp2.getScheduleParticipationNo());
         clear();
@@ -257,11 +264,11 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser1 = 사용자_등록("구본식");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
-        ScheduleParticipation newSp1 = 일정_참여자_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
+        ScheduleParticipation newSp1 = 일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
         User newUser2 = 사용자_등록("양소은");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
-        ScheduleParticipation newSp2 = 일정_참여자_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL); //유효하지 않은 상태
+        ScheduleParticipation newSp2 = 일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL); //유효하지 않은 상태
 
         List<Long> spNos = List.of(newSp1.getScheduleParticipationNo(), newSp2.getScheduleParticipationNo());
         clear();
@@ -282,7 +289,7 @@ class ScheduleParticipationServiceImplTest {
         Participant participant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_APPROVAL);
         return participantRepository.save(participant);
     }
-    private ScheduleParticipation 일정_참여자_추가(Schedule schedule, Participant participant, ParticipantState state){
+    private ScheduleParticipation 일정_참여자_상태_추가(Schedule schedule, Participant participant, ParticipantState state){
         ScheduleParticipation scheduleParticipation = ScheduleParticipation.createScheduleParticipation(schedule, participant, state);
         return scheduleParticipationRepository.save(scheduleParticipation);
     }

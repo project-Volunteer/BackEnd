@@ -45,15 +45,8 @@ public class ScheduleParticipation extends BaseEntity {
     public void delete(){
         this.state = ParticipantState.DELETED;
     }
+    public void updateState(ParticipantState state) {this.state = state;}
 
-    public void participating(){
-        this.state = ParticipantState.PARTICIPATING;
-    }
-
-    public void cancelParticipation() { this.state = ParticipantState.PARTICIPATION_CANCEL;}
-
-    public void cancelApproval() { this.state = ParticipantState.PARTICIPATION_CANCEL_APPROVAL;}
-
-    public void completeApproval() { this.state = ParticipantState.PARTICIPATION_COMPLETE_APPROVAL;}
+    public Boolean isEqualState(ParticipantState state) {return this.state.equals(state);}
 
 }
