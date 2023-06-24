@@ -22,7 +22,7 @@ import project.volunteer.domain.user.dao.queryDto.dto.QUserRecruitmentJoinReques
 import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitingQuery;
 import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitmentJoinRequestQuery;
 import project.volunteer.global.common.component.IsDeleted;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 
 @Repository
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 				.innerJoin(image).on(recruitment.recruitmentNo.eq(image.no)) 
 				.leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT)) 
 				.where(
-						participant1.state.eq(State.JOIN_REQUEST), 
+						participant1.state.eq(ParticipantState.JOIN_REQUEST),
 						participant1.participant.userNo.eq(userNo),
 						recruitment.isPublished.eq(Boolean.TRUE),
 						recruitment.isDeleted.eq(IsDeleted.N))
@@ -68,7 +68,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 									.from(participant1)
 									.where(
 											participant1.recruitment.eq(recruitment)
-											, participant1.state.eq(State.JOIN_APPROVAL)
+											, participant1.state.eq(ParticipantState.JOIN_APPROVAL)
 								),
 								"currentVolunteerNum")
 				))

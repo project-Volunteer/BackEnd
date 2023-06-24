@@ -10,8 +10,7 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.global.common.component.State;
-import project.volunteer.global.common.response.ParticipantState;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -84,23 +83,23 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
 
         //일정 참여 가능 상태(첫 신청 참여자, 취소 요청 승인 참여자)
         if(findState.isEmpty() ||
-                findState.get().getState().equals(State.PARTICIPATION_CANCEL_APPROVAL)){
-            status = ParticipantState.AVAILABLE.name();
+                findState.get().getState().equals(ParticipantState.PARTICIPATION_CANCEL_APPROVAL)){
+            status = project.volunteer.global.common.response.ParticipantState.AVAILABLE.name();
         }
 
         //일정 참여중 상태
-        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATING)){
-            return ParticipantState.PARTICIPATING.name();
+        if(findState.isPresent() && findState.get().getState().equals(ParticipantState.PARTICIPATING)){
+            return project.volunteer.global.common.response.ParticipantState.PARTICIPATING.name();
         }
 
         //일정 참여 취소 요청 상태
-        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATION_CANCEL)){
-            return ParticipantState.CANCELLING.name();
+        if(findState.isPresent() && findState.get().getState().equals(ParticipantState.PARTICIPATION_CANCEL)){
+            return project.volunteer.global.common.response.ParticipantState.CANCELLING.name();
         }
 
         //일정 신청 마감 상태(참여 가능인원 초과)
         if(schedule.getVolunteerNum() == activeParticipantNum){
-            return ParticipantState.DONE.name();
+            return project.volunteer.global.common.response.ParticipantState.DONE.name();
         }
 
         return status;

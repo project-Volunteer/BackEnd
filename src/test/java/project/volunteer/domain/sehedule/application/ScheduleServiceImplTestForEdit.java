@@ -84,11 +84,11 @@ class ScheduleServiceImplTestForEdit {
                     "test" + i, true, true, true, Role.USER, "kakao", "test" + i, null);
             userRepository.save(user);
 
-            Participant participant = Participant.createParticipant(saveRecruitment, user, State.JOIN_APPROVAL);
+            Participant participant = Participant.createParticipant(saveRecruitment, user, ParticipantState.JOIN_APPROVAL);
             participantRepository.save(participant);
 
             ScheduleParticipation scheduleParticipation =
-                    ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, State.PARTICIPATING);
+                    ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, ParticipantState.PARTICIPATING);
             scheduleParticipationRepository.save(scheduleParticipation);
         }
 
@@ -180,7 +180,7 @@ class ScheduleServiceImplTestForEdit {
         List<ScheduleParticipation> participants = scheduleParticipationRepository.findBySchedule_ScheduleNo(saveSchedule.getScheduleNo());
         assertThat(participants.size()).isEqualTo(5);
         participants.stream()
-                .forEach(p -> assertThat(p.getState()).isEqualTo(State.DELETED));
+                .forEach(p -> assertThat(p.getState()).isEqualTo(ParticipantState.DELETED));
     }
 
 

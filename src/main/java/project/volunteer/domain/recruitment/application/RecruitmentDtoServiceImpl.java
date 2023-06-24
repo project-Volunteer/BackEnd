@@ -12,7 +12,6 @@ import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.dto.ParticipantDetails;
-import project.volunteer.global.common.response.ParticipantState;
 import project.volunteer.domain.recruitment.application.dto.WriterDetails;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.dto.PictureDetails;
@@ -24,7 +23,7 @@ import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -119,7 +118,7 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     private void makeParticipantsDto(RecruitmentDetails dto, Long recruitmentNo) {
         //참여자 정보 + (approval, request) 상태 조회 -> 쿼리 1번
         List<Participant> participants = participantRepository.findEGParticipantByRecruitment_RecruitmentNoAndStateIn(
-                recruitmentNo, List.of(State.JOIN_REQUEST, State.JOIN_APPROVAL));
+                recruitmentNo, List.of(ParticipantState.JOIN_REQUEST, ParticipantState.JOIN_APPROVAL));
 
         List<ParticipantDetails> approvedList = new ArrayList<>();
         List<ParticipantDetails> requiredList = new ArrayList<>();
@@ -140,7 +139,7 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
                         details = new ParticipantDetails(participant.getUserNo(), participant.getNickName(), participant.getPicture());
                     }
 
-                    if(p.getState().equals(State.JOIN_APPROVAL)){
+                    if(p.getState().equals(ParticipantState.JOIN_APPROVAL)){
                         approvedList.add(details);
                     }else{
                         requiredList.add(details);
@@ -158,11 +157,11 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
 
         //최적화한 쿼리(쿼리 1번)
         List<ParticipantStateDetails> participants = participantRepository.findParticipantsByOptimization(recruitmentNo,
-                List.of(State.JOIN_REQUEST, State.JOIN_APPROVAL));
+                List.of(ParticipantState.JOIN_REQUEST, ParticipantState.JOIN_APPROVAL));
 
         participants.stream()
                 .forEach(p -> {
-                    if(p.getState().equals(State.JOIN_REQUEST)){
+                    if(p.getState().equals(ParticipantState.JOIN_REQUEST)){
                         requiredList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
                     }else{
                         approvedList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
@@ -185,23 +184,23 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
                 findRecruitment.getRecruitmentNo(), loginUserNo);
 
         //신청 가능 상태(첫 신청, 팀 신청 취소, 탈퇴, 강제 탈퇴)
-        if(findState.isEmpty() || List.of(State.JOIN_CANCEL, State.QUIT, State.DEPORT).contains(findState.get().getState())){
-            status = ParticipantState.AVAILABLE.name();
+        if(findState.isEmpty() || List.of(ParticipantState.JOIN_CANCEL, ParticipantState.QUIT, ParticipantState.DEPORT).contains(findState.get().getState())){
+            status = project.volunteer.global.common.response.ParticipantState.AVAILABLE.name();
         }
 
-        if(findState.isPresent() && findState.get().getState().equals(State.JOIN_REQUEST)){
-            return ParticipantState.PENDING.name();
+        if(findState.isPresent() && findState.get().getState().equals(ParticipantState.JOIN_REQUEST)){
+            return project.volunteer.global.common.response.ParticipantState.PENDING.name();
         }
 
         //승인 완료 상태
-        if(findState.isPresent() && findState.get().getState().equals(State.JOIN_APPROVAL)){
-            return ParticipantState.APPROVED.name();
+        if(findState.isPresent() && findState.get().getState().equals(ParticipantState.JOIN_APPROVAL)){
+            return project.volunteer.global.common.response.ParticipantState.APPROVED.name();
         }
 
         //모집 마감 상태
         if(findRecruitment.getVolunteeringTimeTable().getEndDay().isBefore(LocalDate.now()) ||
                 participantRepository.countAvailableParticipants(findRecruitment.getRecruitmentNo())==findRecruitment.getVolunteerNum()) {
-            return ParticipantState.DONE.name();
+            return project.volunteer.global.common.response.ParticipantState.DONE.name();
         }
 
         return status;

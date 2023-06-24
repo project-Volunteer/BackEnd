@@ -24,7 +24,6 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.response.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 
 import javax.persistence.EntityManager;
@@ -83,7 +82,7 @@ class ScheduleDtoServiceImplTest {
                     true, true, true, Role.USER, "kakao", "test" + i, null);
             User saveUser = userRepository.save(createUser);
 
-            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, State.JOIN_APPROVAL);
+            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, ParticipantState.JOIN_APPROVAL);
             Participant save = participantRepository.save(createParticipant);
             teamMembers.add(save);
         }
@@ -97,7 +96,7 @@ class ScheduleDtoServiceImplTest {
         schedule.setRecruitment(saveRecruitment);
         return scheduleRepository.save(schedule);
     }
-    private ScheduleParticipation 스케줄_참여자_등록(Schedule schedule, Participant participant, State state){
+    private ScheduleParticipation 스케줄_참여자_등록(Schedule schedule, Participant participant, ParticipantState state){
         ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(schedule, participant, state);
         return scheduleParticipationRepository.save(sp);
     }
@@ -126,7 +125,7 @@ class ScheduleDtoServiceImplTest {
                         .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
                 () -> assertThat(closestSchedule.getVolunteerNum()).isEqualTo(schedule3.getVolunteerNum()),
                 () ->  assertThat(closestSchedule.getActiveVolunteerNum()).isEqualTo(0),
-                () ->  assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.AVAILABLE.name()));
+                () ->  assertThat(closestSchedule.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name()));
     }
 
     @Test
@@ -180,16 +179,16 @@ class ScheduleDtoServiceImplTest {
     public void doneState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
                 teamMembers.get(3).getParticipant().getUserNo());
 
         //then
-        assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.DONE.name());
+        assertThat(closestSchedule.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.DONE.name());
     }
 
     @Test
@@ -198,15 +197,15 @@ class ScheduleDtoServiceImplTest {
     public void availableStateByFirstParticipation(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
                 teamMembers.get(2).getParticipant().getUserNo());
 
         //then
-        assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.AVAILABLE.name());
+        assertThat(closestSchedule.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name());
     }
 
     @Test
@@ -215,16 +214,16 @@ class ScheduleDtoServiceImplTest {
     public void availableStateByCancelApprove(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_CANCEL_APPROVAL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
                 teamMembers.get(2).getParticipant().getUserNo());
 
         //then
-        assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.AVAILABLE.name());
+        assertThat(closestSchedule.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name());
     }
 
     @Test
@@ -233,16 +232,16 @@ class ScheduleDtoServiceImplTest {
     public void cancellingState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATION_CANCEL);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATION_CANCEL);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
                 teamMembers.get(2).getParticipant().getUserNo());
 
         //then
-        assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.CANCELLING.name());
+        assertThat(closestSchedule.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.CANCELLING.name());
     }
 
     @Test
@@ -251,16 +250,16 @@ class ScheduleDtoServiceImplTest {
     public void participatingState(){
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
-        스케줄_참여자_등록(schedule1, teamMembers.get(0), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(1), State.PARTICIPATING);
-        스케줄_참여자_등록(schedule1, teamMembers.get(2), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATING);
 
         //when
         ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
                 teamMembers.get(2).getParticipant().getUserNo());
 
         //then
-        assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.PARTICIPATING.name());
+        assertThat(closestSchedule.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.PARTICIPATING.name());
     }
 
     @Test
@@ -288,7 +287,7 @@ class ScheduleDtoServiceImplTest {
                         .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
                 () -> assertThat(closestSchedule.getVolunteerNum()).isEqualTo(schedule3.getVolunteerNum()),
                 () ->  assertThat(closestSchedule.getActiveVolunteerNum()).isEqualTo(0),
-                () ->  assertThat(closestSchedule.getState()).isEqualTo(ParticipantState.AVAILABLE.name()));
+                () ->  assertThat(closestSchedule.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name()));
     }
 
     @Test
@@ -312,7 +311,7 @@ class ScheduleDtoServiceImplTest {
                         .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
                 () -> assertThat(scheduleDetails.getVolunteerNum()).isEqualTo(schedule.getVolunteerNum()),
                 () ->  assertThat(scheduleDetails.getActiveVolunteerNum()).isEqualTo(0),
-                () ->  assertThat(scheduleDetails.getState()).isEqualTo(ParticipantState.AVAILABLE.name()));
+                () ->  assertThat(scheduleDetails.getState()).isEqualTo(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name()));
     }
 
     @Test

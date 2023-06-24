@@ -126,7 +126,7 @@ class ScheduleParticipantControllerTest {
     public void cancelParticipation() throws Exception {
         //given
         Participant participant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        일정_참여상태_추가(saveSchedule, participant, State.PARTICIPATING);
+        일정_참여상태_추가(saveSchedule, participant, ParticipantState.PARTICIPATING);
         clear();
 
         //when & then
@@ -142,7 +142,7 @@ class ScheduleParticipantControllerTest {
     public void cancelApprove() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_CANCEL);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
         CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
         clear();
 
@@ -161,7 +161,7 @@ class ScheduleParticipantControllerTest {
     public void cancelApprove_forbidden() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_CANCEL);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
         CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
         clear();
 
@@ -180,7 +180,7 @@ class ScheduleParticipantControllerTest {
     public void cancelApprove_notValid() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_CANCEL);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
         CancelApproval dto = new CancelApproval(null); //필수 파라미터 누락
         clear();
 
@@ -199,7 +199,7 @@ class ScheduleParticipantControllerTest {
     public void completeApprove() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, State.PARTICIPATION_COMPLETE_UNAPPROVED);
+        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
         CompleteApproval dto = new CompleteApproval(List.of(newSp.getScheduleParticipationNo()));
         clear();
 
@@ -213,10 +213,10 @@ class ScheduleParticipantControllerTest {
 
 
     private Participant 봉사모집글_팀원_등록(Recruitment recruitment, User user){
-        Participant participant = Participant.createParticipant(recruitment, user, State.JOIN_APPROVAL);
+        Participant participant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_APPROVAL);
         return participantRepository.save(participant);
     }
-    private ScheduleParticipation 일정_참여상태_추가(Schedule schedule, Participant participant, State state){
+    private ScheduleParticipation 일정_참여상태_추가(Schedule schedule, Participant participant, ParticipantState state){
         ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, state);
         return scheduleParticipationRepository.save(sp);
     }

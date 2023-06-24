@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.participation.converter.StateConverter;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.auditing.BaseEntity;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 
 import javax.persistence.*;
 
@@ -33,9 +32,9 @@ public class ScheduleParticipation extends BaseEntity {
 
     @Convert(converter = StateConverter.class)
     @Column(length = 3, nullable = false)
-    private State state;
+    private ParticipantState state;
 
-    public static ScheduleParticipation createScheduleParticipation(Schedule schedule, Participant participant, State state){
+    public static ScheduleParticipation createScheduleParticipation(Schedule schedule, Participant participant, ParticipantState state){
         ScheduleParticipation createScheduleParticipation = new ScheduleParticipation();
         createScheduleParticipation.schedule = schedule;
         createScheduleParticipation.participant = participant;
@@ -44,17 +43,17 @@ public class ScheduleParticipation extends BaseEntity {
     }
 
     public void delete(){
-        this.state = State.DELETED;
+        this.state = ParticipantState.DELETED;
     }
 
     public void participating(){
-        this.state = State.PARTICIPATING;
+        this.state = ParticipantState.PARTICIPATING;
     }
 
-    public void cancelParticipation() { this.state = State.PARTICIPATION_CANCEL;}
+    public void cancelParticipation() { this.state = ParticipantState.PARTICIPATION_CANCEL;}
 
-    public void cancelApproval() { this.state = State.PARTICIPATION_CANCEL_APPROVAL;}
+    public void cancelApproval() { this.state = ParticipantState.PARTICIPATION_CANCEL_APPROVAL;}
 
-    public void completeApproval() { this.state = State.PARTICIPATION_COMPLETE_APPROVAL;}
+    public void completeApproval() { this.state = ParticipantState.PARTICIPATION_COMPLETE_APPROVAL;}
 
 }

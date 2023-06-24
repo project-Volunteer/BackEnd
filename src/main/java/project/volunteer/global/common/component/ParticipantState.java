@@ -2,7 +2,7 @@ package project.volunteer.global.common.component;
 
 import project.volunteer.global.common.converter.LegacyCodeCommonType;
 
-public enum State implements LegacyCodeCommonType {
+public enum ParticipantState implements LegacyCodeCommonType {
 
     JOIN_AVAILABLE("r1", "팀 신청 가능"),
     JOIN_REQUEST("r2", "팀 신청"),
@@ -25,7 +25,7 @@ public enum State implements LegacyCodeCommonType {
     private String code;
     private String desc;
 
-    State(String code, String desc) {
+    ParticipantState(String code, String desc) {
         this.code = code;
         this.desc = desc;
     }

@@ -93,7 +93,7 @@ class OrganizationComponentTest {
     public void isRecruitmentTeam(){
         //given
         User testUser = 사용자_추가("test");
-        팀_추가(testUser, State.JOIN_APPROVAL); //팀원 추가
+        팀_추가(testUser, ParticipantState.JOIN_APPROVAL); //팀원 추가
         final String recruitmentNo = String.valueOf(saveRecruitment.getRecruitmentNo());
 
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -127,7 +127,7 @@ class OrganizationComponentTest {
                 true, true, true, Role.USER, "kakao", username, null);
         return userRepository.save(newUser);
     }
-    private Participant 팀_추가( User user, State state){
+    private Participant 팀_추가( User user, ParticipantState state){
         Participant participant = Participant.createParticipant(saveRecruitment, user, state);
         return participantRepository.save(participant);
     }

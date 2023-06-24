@@ -44,7 +44,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.infra.s3.FileService;
 
 @SpringBootTest
@@ -145,13 +145,13 @@ public class UserControllerJoinRequestTest {
 		// 참여자 저장
 		Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
 		Participant participant1 = Participant.builder().participant(saveUser).recruitment(recruitment1)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant1);
 
 		Recruitment recruitment2 = recruitmentRepository.findById(no2).get();
 		Participant participant2 = Participant.builder().participant(saveUser).recruitment(recruitment2)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant2);
 		

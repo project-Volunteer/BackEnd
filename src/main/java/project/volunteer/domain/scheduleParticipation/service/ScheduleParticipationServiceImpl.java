@@ -9,7 +9,7 @@ import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationR
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -43,7 +43,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
         scheduleParticipationRepository.findByUserNoAndScheduleNo(loginUserNo, scheduleNo)
                 .ifPresentOrElse(
                         sp -> {
-                            if (sp.getState().equals(State.PARTICIPATING)) {
+                            if (sp.getState().equals(ParticipantState.PARTICIPATING)) {
                                 throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", scheduleNo, loginUserNo, sp.getState().name()));
                             }
@@ -58,7 +58,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                                             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
-                            ScheduleParticipation createSP = ScheduleParticipation.createScheduleParticipation(findSchedule, findParticipant, State.PARTICIPATING);
+                            ScheduleParticipation createSP = ScheduleParticipation.createScheduleParticipation(findSchedule, findParticipant, ParticipantState.PARTICIPATING);
                             scheduleParticipationRepository.save(createSP);
                         }
                 );
@@ -73,7 +73,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                         String.format("Schedule to cancel participant = [%d]", scheduleNo)));
 
         //일정 신청 상태인지 검증
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNoAndState(loginUserNo, scheduleNo, State.PARTICIPATING)
+        ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNoAndState(loginUserNo, scheduleNo, ParticipantState.PARTICIPATING)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], ScheduleNo = [%d]", loginUserNo, scheduleNo)));
 
@@ -90,7 +90,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                         String.format("Schedule to cancel approval = [%d]", scheduleNo)));
 
         //일정 취소 요청 상태인지 검증
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByScheduleParticipationNoAndState(spNo, State.PARTICIPATION_CANCEL)
+        ScheduleParticipation findSp = scheduleParticipationRepository.findByScheduleParticipationNoAndState(spNo, ParticipantState.PARTICIPATION_CANCEL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("ScheduleParticipationNo = [%d]", spNo)));
 
@@ -109,7 +109,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
         scheduleParticipationRepository.findByScheduleParticipationNoIn(spNo).stream()
                 .forEach(sp -> {
                     //일정 참여 완료 미승인 상태가 아닌 경우
-                    if(!sp.getState().equals(State.PARTICIPATION_COMPLETE_UNAPPROVED)){
+                    if(!sp.getState().equals(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)){
                         throw new BusinessException(ErrorCode.INVALID_STATE,
                                 String.format("ScheduleParticipationNo = [%d], State = [%s]", sp.getScheduleParticipationNo(), sp.getState().name()));
                     }

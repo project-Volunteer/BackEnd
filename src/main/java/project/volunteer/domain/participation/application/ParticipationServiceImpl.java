@@ -9,7 +9,7 @@ import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -40,7 +40,7 @@ public class ParticipationServiceImpl implements ParticipationService{
                 .ifPresentOrElse(
                         p -> {
                             //중복 신청인 경우
-                            if (p.getState().equals(State.JOIN_REQUEST) || p.getState().equals(State.JOIN_APPROVAL)){
+                            if (p.getState().equals(ParticipantState.JOIN_REQUEST) || p.getState().equals(ParticipantState.JOIN_APPROVAL)){
                                 throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
                                         String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
                                                 loginUserNo, recruitmentNo, p.getState().name()));
@@ -55,7 +55,7 @@ public class ParticipationServiceImpl implements ParticipationService{
                             Participant newParticipant = Participant.builder()
                                     .participant(participant)
                                     .recruitment(recruitment)
-                                    .state(State.JOIN_REQUEST)
+                                    .state(ParticipantState.JOIN_REQUEST)
                                     .build();
                             participantRepository.save(newParticipant);
                         }
@@ -68,10 +68,10 @@ public class ParticipationServiceImpl implements ParticipationService{
 
         isActivatediRecruitment(recruitmentNo, String.format("RecruitmentNo to Cancel = [%d]", recruitmentNo));
 
-        Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, loginUserNo, State.JOIN_REQUEST)
+        Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, loginUserNo, ParticipantState.JOIN_REQUEST)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
-                                loginUserNo, recruitmentNo, State.JOIN_REQUEST.name())));
+                                loginUserNo, recruitmentNo, ParticipantState.JOIN_REQUEST.name())));
 
         findState.joinCancel();
     }
@@ -93,7 +93,7 @@ public class ParticipationServiceImpl implements ParticipationService{
         List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitmentNo, userNo);
         findParticipants.stream()
                 .forEach(p -> {
-                    if(!p.getState().equals(State.JOIN_REQUEST)){
+                    if(!p.getState().equals(ParticipantState.JOIN_REQUEST)){
                         throw new BusinessException(ErrorCode.INVALID_STATE,
                                 String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
                                         p.getParticipant().getUserNo(), recruitmentNo, p.getState().name()));
@@ -106,7 +106,7 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Override
     public void deportParticipant(Long recruitmentNo, Long userNo) {
 
-        Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, userNo, State.JOIN_APPROVAL)
+        Participant findState = participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, userNo, ParticipantState.JOIN_APPROVAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], RecruitmentNo = [%d]", userNo, recruitmentNo)));
 
