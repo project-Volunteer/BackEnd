@@ -18,7 +18,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,Custom
             "from Schedule s " +
             "where s.scheduleNo=:no " +
             "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    public Optional<Schedule> findValidByScheduleNo(@Param("no") Long scheduleNo);
+    public Optional<Schedule> findValidSchedule(@Param("no") Long scheduleNo);
 
     @Query("select s " +
             "from Schedule s " +
@@ -27,4 +27,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,Custom
             "and s.scheduleTimeTable.startDay between :startDay and :endDay " +
             "order by s.scheduleTimeTable.startDay asc ")
     public List<Schedule> findScheduleWithinPeriod(@Param("no")Long recruitmentNo, @Param("startDay")LocalDate startDay, @Param("endDay")LocalDate endDay);
+
+    @Query("select s " +
+            "from Schedule s " +
+            "where s.scheduleNo=:no " +
+            "and s.scheduleTimeTable.endDay > current_date " +
+            "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    Optional<Schedule> findActivateSchedule(@Param("no")Long scheduleNo);
+
 }
