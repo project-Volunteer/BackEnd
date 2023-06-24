@@ -1,9 +1,7 @@
 package project.volunteer.domain.user.dao.queryDto;
 
-import static project.volunteer.domain.sehedule.domain.QSchedule.schedule;
 import static project.volunteer.domain.storage.domain.QStorage.storage;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static project.volunteer.domain.image.domain.QImage.image;
@@ -12,11 +10,7 @@ import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitme
 
 import org.springframework.stereotype.Repository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.SubQueryExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 

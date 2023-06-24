@@ -27,7 +27,6 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.State;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-import project.volunteer.global.util.SecurityUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
