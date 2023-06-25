@@ -24,6 +24,7 @@ import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -80,7 +81,7 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Search Recruitment NO = [%d]", recruitmentNo)));
 
-        return decideUserState(findRecruitment, loginUserNo);
+        return converterTeamMemberState(findRecruitment, loginUserNo);
     }
 
     private void makeRecruitmentImageDto(RecruitmentDetails dto, Long recruitmentNo){
@@ -173,34 +174,42 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     }
 
     /**
+     * L1 : 일정 완료 승인, 일정 완료 미승인
+     * L2 : 일정 참여 기간 만료
+     * L3 : 일정 참여 중, 일정 취소 요청
+     * L4 : 일정 참여 가능 인원 초과
+     * L5 : 일정 참여 가능, 일정 취소 승인
+     */
+
+    /**
      * 마감 -> 인원 수 초과, 모집 기간이 지난 경우
      * 팀 신청 -> 팀 신청 요청 상태 -> 팀원 마감이라도 "팀 신청"상태로 표시되어야 된다.
      * 팀 승인 -> 팀원인 상태 -> 팀원 마감이라도 "팀 승인" 상태로 표시되어야 된다.
      * 팀 신청 취소, 첫 신청 , 팀 탈퇴, 팀 강제 탈퇴-> 팀원 마감이라면 "마감" 상태이어야 하고 아닌 경우는 "신청 가능" 상태이어야 된다.
      */
-    private String decideUserState(Recruitment findRecruitment, Long loginUserNo){
+    private String converterTeamMemberState(Recruitment findRecruitment, Long loginUserNo){
         String status = null;
         Optional<Participant> findState = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
                 findRecruitment.getRecruitmentNo(), loginUserNo);
 
         //신청 가능 상태(첫 신청, 팀 신청 취소, 탈퇴, 강제 탈퇴)
         if(findState.isEmpty() || List.of(ParticipantState.JOIN_CANCEL, ParticipantState.QUIT, ParticipantState.DEPORT).contains(findState.get().getState())){
-            status = project.volunteer.global.common.response.ParticipantState.AVAILABLE.name();
+            status = StateResponse.AVAILABLE.name();
         }
 
         if(findState.isPresent() && findState.get().getState().equals(ParticipantState.JOIN_REQUEST)){
-            return project.volunteer.global.common.response.ParticipantState.PENDING.name();
+            return StateResponse.PENDING.name();
         }
 
         //승인 완료 상태
         if(findState.isPresent() && findState.get().getState().equals(ParticipantState.JOIN_APPROVAL)){
-            return project.volunteer.global.common.response.ParticipantState.APPROVED.name();
+            return StateResponse.APPROVED.name();
         }
 
         //모집 마감 상태
         if(findRecruitment.getVolunteeringTimeTable().getEndDay().isBefore(LocalDate.now()) ||
                 participantRepository.countAvailableParticipants(findRecruitment.getRecruitmentNo())==findRecruitment.getVolunteerNum()) {
-            return project.volunteer.global.common.response.ParticipantState.DONE.name();
+            return StateResponse.DONE.name();
         }
 
         return status;

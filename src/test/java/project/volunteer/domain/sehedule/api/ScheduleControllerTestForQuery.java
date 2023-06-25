@@ -26,6 +26,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
+import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.test.WithMockCustomUser;
 
 import java.time.LocalDate;
@@ -106,7 +107,7 @@ class ScheduleControllerTestForQuery {
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 
@@ -122,7 +123,7 @@ class ScheduleControllerTestForQuery {
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 
@@ -164,11 +165,12 @@ class ScheduleControllerTestForQuery {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
         스케줄_참여자_등록(schedule, teamMember.get(1), ParticipantState.PARTICIPATING);
+        schedule.increaseParticipant();
 
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(project.volunteer.global.common.response.ParticipantState.DONE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.FULL.name()))
                 .andDo(print());
     }
 
@@ -183,7 +185,7 @@ class ScheduleControllerTestForQuery {
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 
@@ -195,11 +197,12 @@ class ScheduleControllerTestForQuery {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
         스케줄_참여자_등록(schedule, teamMember.get(0), ParticipantState.PARTICIPATION_CANCEL);
+        schedule.increaseParticipant();
 
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(project.volunteer.global.common.response.ParticipantState.CANCELLING.name()))
+                .andExpect(jsonPath("state").value(StateResponse.CANCELLING.name()))
                 .andDo(print());
     }
 
@@ -211,11 +214,12 @@ class ScheduleControllerTestForQuery {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
         스케줄_참여자_등록(schedule, teamMember.get(0), ParticipantState.PARTICIPATING);
+        schedule.increaseParticipant();
 
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(project.volunteer.global.common.response.ParticipantState.PARTICIPATING.name()))
+                .andExpect(jsonPath("state").value(StateResponse.PARTICIPATING.name()))
                 .andDo(print());
     }
 
@@ -267,7 +271,7 @@ class ScheduleControllerTestForQuery {
         mockMvc.perform(get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}",saveRecruitment.getRecruitmentNo(),schedule.getScheduleNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 }

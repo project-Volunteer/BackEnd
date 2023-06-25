@@ -34,6 +34,7 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
@@ -221,7 +222,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name());
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.name());
     }
 
     @DisplayName("모집글 팀 탈퇴로 인해 로그인 사용자 상태가 신청 가능 상태가 된다.")
@@ -236,7 +237,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //then
-        assertThat(status).isEqualTo(project.volunteer.global.common.response.ParticipantState.AVAILABLE.name());
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.name());
     }
 
     @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
@@ -251,7 +252,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //then
-        assertThat(status).isEqualTo(project.volunteer.global.common.response.ParticipantState.PENDING.name());
+        assertThat(status).isEqualTo(StateResponse.PENDING.name());
     }
 
     @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
@@ -266,7 +267,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //then
-        assertThat(status).isEqualTo(project.volunteer.global.common.response.ParticipantState.APPROVED.name());
+        assertThat(status).isEqualTo(StateResponse.APPROVED.name());
     }
 
     @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
@@ -286,7 +287,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(project.volunteer.global.common.response.ParticipantState.DONE.name());
+        assertThat(status).isEqualTo(StateResponse.DONE.name());
     }
 
     @DisplayName("팀원 모집인원 초과로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
@@ -306,7 +307,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(project.volunteer.global.common.response.ParticipantState.DONE.name());
+        assertThat(status).isEqualTo(StateResponse.DONE.name());
     }
 
     @Test

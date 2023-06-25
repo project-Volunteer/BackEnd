@@ -11,6 +11,7 @@ import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -33,6 +34,9 @@ public class Schedule extends BaseTimeEntity {
     @Column(name = "volunteer_num", nullable = false)
     private Integer volunteerNum;
 
+    @Column(name = "current_volunteer_num", nullable = false)
+    private Integer currentVolunteerNum;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "is_deleted", length = 1, nullable = false)
     private IsDeleted isDeleted;
@@ -52,7 +56,9 @@ public class Schedule extends BaseTimeEntity {
         this.organizationName = organizationName;
         this.address = address;
         this.volunteerNum = volunteerNum;
+
         this.isDeleted = IsDeleted.N;
+        this.currentVolunteerNum = 0;
     }
 
     public static Schedule createSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
@@ -62,7 +68,9 @@ public class Schedule extends BaseTimeEntity {
         schedule.organizationName = organizationName;
         schedule.address = address;
         schedule.volunteerNum = volunteerNum;
+
         schedule.isDeleted = IsDeleted.N;
+        schedule.currentVolunteerNum = 0;
         return schedule;
     }
 
@@ -83,5 +91,11 @@ public class Schedule extends BaseTimeEntity {
     public void changeScheduleTime(Timetable timetable){
         this.scheduleTimeTable = timetable;
     }
+
+    public void increaseParticipant(){this.currentVolunteerNum++;}
+    public void decreaseParticipant(){this.currentVolunteerNum--;}
+
+    public Boolean isFullParticipant(){return this.currentVolunteerNum==this.volunteerNum;}
+    public Boolean isAvailableDate(){return this.scheduleTimeTable.getStartDay().isAfter(LocalDate.now());}
 
 }
