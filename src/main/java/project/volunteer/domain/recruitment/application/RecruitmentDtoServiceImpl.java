@@ -174,45 +174,36 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     }
 
     /**
-     * L1 : 일정 완료 승인, 일정 완료 미승인
-     * L2 : 일정 참여 기간 만료
-     * L3 : 일정 참여 중, 일정 취소 요청
-     * L4 : 일정 참여 가능 인원 초과
-     * L5 : 일정 참여 가능, 일정 취소 승인
-     */
-
-    /**
-     * 마감 -> 인원 수 초과, 모집 기간이 지난 경우
-     * 팀 신청 -> 팀 신청 요청 상태 -> 팀원 마감이라도 "팀 신청"상태로 표시되어야 된다.
-     * 팀 승인 -> 팀원인 상태 -> 팀원 마감이라도 "팀 승인" 상태로 표시되어야 된다.
-     * 팀 신청 취소, 첫 신청 , 팀 탈퇴, 팀 강제 탈퇴-> 팀원 마감이라면 "마감" 상태이어야 하고 아닌 경우는 "신청 가능" 상태이어야 된다.
+     * L1 : 봉사 모집 기간 마감
+     * L2 : 팀 신청, 팀 신청 승인
+     * L3 : 팀 신청 인원 마감
+     * L4 : 팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴)
      */
     private String converterTeamMemberState(Recruitment findRecruitment, Long loginUserNo){
-        String status = null;
-        Optional<Participant> findState = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
+        Optional<Participant> findParticipant = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
                 findRecruitment.getRecruitmentNo(), loginUserNo);
 
-        //신청 가능 상태(첫 신청, 팀 신청 취소, 탈퇴, 강제 탈퇴)
-        if(findState.isEmpty() || List.of(ParticipantState.JOIN_CANCEL, ParticipantState.QUIT, ParticipantState.DEPORT).contains(findState.get().getState())){
-            status = StateResponse.AVAILABLE.name();
-        }
-
-        if(findState.isPresent() && findState.get().getState().equals(ParticipantState.JOIN_REQUEST)){
-            return StateResponse.PENDING.name();
-        }
-
-        //승인 완료 상태
-        if(findState.isPresent() && findState.get().getState().equals(ParticipantState.JOIN_APPROVAL)){
-            return StateResponse.APPROVED.name();
-        }
-
-        //모집 마감 상태
-        if(findRecruitment.getVolunteeringTimeTable().getEndDay().isBefore(LocalDate.now()) ||
-                participantRepository.countAvailableParticipants(findRecruitment.getRecruitmentNo())==findRecruitment.getVolunteerNum()) {
+        //봉사 모집 기간 만료
+        if(!findRecruitment.isAvailableDate()){
             return StateResponse.DONE.name();
         }
 
-        return status;
+        //팀 신청 or 팀 신청 승인
+        if(findParticipant.isPresent() && isTeamActionProgress(findParticipant.get())){
+            return (findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST))
+                    ?(StateResponse.PENDING.name()):(StateResponse.APPROVED.name());
+        }
+
+        //팀 신청 인원 마감
+        if(findRecruitment.isFullTeamMember()){
+            return StateResponse.FULL.name();
+        }
+
+        //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
+        return StateResponse.AVAILABLE.name();
     }
 
+    private Boolean isTeamActionProgress(Participant findParticipant){
+        return (findParticipant.isEqualState(ParticipantState.JOIN_REQUEST) || (findParticipant.isEqualState(ParticipantState.JOIN_APPROVAL)));
+    }
 }

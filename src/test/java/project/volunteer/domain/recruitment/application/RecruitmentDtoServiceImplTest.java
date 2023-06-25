@@ -160,6 +160,9 @@ class RecruitmentDtoServiceImplTest {
                 true, true, true, Role.USER, "kakao", signName, null);
         return userRepository.save(newUser);
     }
+    private Recruitment 저장된_모집글_가져오기(){
+        return recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
+    }
 
 
 
@@ -295,19 +298,24 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void loginUserDoneStateByVolunteerNum() throws IOException {
         //given
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
         User newUser = 신규회원_가입("new");
         //현재 팀원 최대 인원 4명으로 설정됨
         봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
         봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
         봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
         봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
         clear();
 
         //when
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(StateResponse.DONE.name());
+        assertThat(status).isEqualTo(StateResponse.FULL.name());
     }
 
     @Test

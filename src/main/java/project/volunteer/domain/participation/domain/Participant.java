@@ -48,12 +48,7 @@ public class Participant extends BaseTimeEntity {
         return createParticipant;
     }
 
-    public void joinRequest(){ //참가 요청
-        this.state = ParticipantState.JOIN_REQUEST;
-    }
-    public void joinCancel(){ this.state = ParticipantState.JOIN_CANCEL; }
-    public void joinApprove() { //참가 승인
-        this.state = ParticipantState.JOIN_APPROVAL;
-    }
-    public void deport() {this.state = ParticipantState.DEPORT; }
+    public Boolean isEqualState(ParticipantState state) {return this.state.equals(state);}
+
+    public void updateState(ParticipantState state) {this.state = state;}
 }

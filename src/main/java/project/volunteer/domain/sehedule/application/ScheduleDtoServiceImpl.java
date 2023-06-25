@@ -100,11 +100,6 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
             return StateResponse.FULL.name();
         }
 
-        //취소 요청 승인
-        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_CANCEL_APPROVAL)){
-            return StateResponse.AVAILABLE.name();
-        }
-
         //신청 가능
         return StateResponse.AVAILABLE.name();
     }
