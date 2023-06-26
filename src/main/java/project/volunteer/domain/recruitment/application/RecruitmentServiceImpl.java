@@ -45,7 +45,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     public void deleteRecruitment(Long deleteNo) {
 
         Recruitment findRecruitment =
-                recruitmentRepository.findValidByRecruitmentNo(deleteNo).orElseThrow(
+                recruitmentRepository.findValidRecruitment(deleteNo).orElseThrow(
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
         //정기일 경우 반복주기 삭제

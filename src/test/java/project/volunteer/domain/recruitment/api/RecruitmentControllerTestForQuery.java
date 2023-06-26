@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -38,7 +37,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
@@ -160,7 +159,7 @@ class RecruitmentControllerTestForQuery {
             Participant participant1 = Participant.builder()
                     .participant(saveUser)
                     .recruitment(recruitment1)
-                    .state(State.JOIN_APPROVAL) //참여 승인
+                    .state(ParticipantState.JOIN_APPROVAL) //참여 승인
                     .build();
             participantRepository.save(participant1);
 
@@ -168,13 +167,13 @@ class RecruitmentControllerTestForQuery {
             Participant participant2 = Participant.builder()
                     .participant(saveUser)
                     .recruitment(recruitment2)
-                    .state(State.JOIN_REQUEST) //참여 미승인
+                    .state(ParticipantState.JOIN_REQUEST) //참여 미승인
                     .build();
             participantRepository.save(participant2); //참여 미승인
         }
         clear();
     }
-    private List<Long> addParticipant(int count, State state, Long recruitmentNo){
+    private List<Long> addParticipant(int count, ParticipantState state, Long recruitmentNo){
         List<Long> participantNoList = new ArrayList<>();
 
         for(int i=0;i<count;i++){
@@ -321,8 +320,8 @@ class RecruitmentControllerTestForQuery {
     public void 모집글_상세조회_성공() throws Exception {
         //given
         setData();
-        addParticipant(200, State.JOIN_APPROVAL, saveRecruitmentNoList.get(1));
-        addParticipant(100, State.JOIN_REQUEST, saveRecruitmentNoList.get(1));
+        addParticipant(200, ParticipantState.JOIN_APPROVAL, saveRecruitmentNoList.get(1));
+        addParticipant(100, ParticipantState.JOIN_REQUEST, saveRecruitmentNoList.get(1));
         clear();
 
         //when && then

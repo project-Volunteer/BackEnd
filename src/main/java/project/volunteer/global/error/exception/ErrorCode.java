@@ -19,6 +19,7 @@ public enum ErrorCode {
 
     //모집글 관련
     NOT_EXIST_RECRUITMENT(HttpStatus.BAD_REQUEST, "notExist.recruitment"),
+    EXPIRED_PERIOD_RECRUITMENT(HttpStatus.BAD_REQUEST, "expired.period.recruitment"),
     FORBIDDEN_RECRUITMENT(HttpStatus.FORBIDDEN, "forbidden.recruitment"),
     FORBIDDEN_RECRUITMENT_TEAM(HttpStatus.FORBIDDEN, "forbidden.recruitment.team"),
 
@@ -40,6 +41,7 @@ public enum ErrorCode {
     INSUFFICIENT_APPROVAL_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.approval.capacity"),
 
     //일정 관련
+    EXPIRED_PERIOD_SCHEDULE(HttpStatus.BAD_REQUEST, "expired.period.schedule"),
     NOT_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "notExist.schedule"),
     EXCEED_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "exceed.capacity.participant"),
     INSUFFICIENT_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "insufficient.capacity.participant"),

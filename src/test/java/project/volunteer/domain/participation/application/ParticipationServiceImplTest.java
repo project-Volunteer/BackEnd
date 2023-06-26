@@ -20,12 +20,15 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
 import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ParticipationServiceImplTest {
@@ -65,9 +68,12 @@ class ParticipationServiceImplTest {
                 true, true, true, Role.USER, "kakao", username, null);
         return userRepository.save(createUser);
     }
-    private Participant 참여자_상태_등록(User user, State state){
+    private Participant 참여자_상태_등록(User user, ParticipantState state){
         Participant participant = Participant.createParticipant(saveRecruitment, user, state);
         return participantRepository.save(participant);
+    }
+    private Recruitment 저장된_모집글_가져오기(){
+        return recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
     }
 
     @Test
@@ -83,7 +89,7 @@ class ParticipationServiceImplTest {
         //then
         Participant findParticipant =
                 participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(saveRecruitment.getRecruitmentNo(), saveUser.getUserNo()).get();
-        Assertions.assertThat(findParticipant.getState()).isEqualTo(State.JOIN_REQUEST);
+        assertThat(findParticipant.getState()).isEqualTo(ParticipantState.JOIN_REQUEST);
     }
 
     @Test
@@ -91,7 +97,7 @@ class ParticipationServiceImplTest {
     public void 팀신청_재신청_성공(){
         //given
         User saveUser = 사용자_등록("홍길동");
-        Participant participant = 참여자_상태_등록(saveUser, State.JOIN_CANCEL);
+        Participant participant = 참여자_상태_등록(saveUser, ParticipantState.JOIN_CANCEL);
         clear();
 
         //when
@@ -100,7 +106,7 @@ class ParticipationServiceImplTest {
         //then
         Participant findParticipant = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(saveRecruitment.getRecruitmentNo(),
                 saveUser.getUserNo()).get();
-        Assertions.assertThat(findParticipant.getState()).isEqualTo(State.JOIN_REQUEST);
+        assertThat(findParticipant.getState()).isEqualTo(ParticipantState.JOIN_REQUEST);
     }
 
     @Test
@@ -108,7 +114,7 @@ class ParticipationServiceImplTest {
     public void 팀신청_실패_중복신청(){
         //given
         User saveUser = 사용자_등록("홍길동");
-        Participant participant = 참여자_상태_등록(saveUser, State.JOIN_REQUEST);
+        Participant participant = 참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
         clear();
 
         //when && then
@@ -134,8 +140,8 @@ class ParticipationServiceImplTest {
     public void 팀신청_실패_삭제된모집글(){
         //given
         User saveUser = 사용자_등록("홍길동");
-        Recruitment findSaveRecruitment = recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
-        findSaveRecruitment.setDeleted();
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
+        findRecruitment.setDeleted();
         clear();
 
         //when & then
@@ -156,27 +162,31 @@ class ParticipationServiceImplTest {
                 .startDay(LocalDate.of(2023, 5, 13))
                 .endDay(LocalDate.of(2023, 5, 14)) //봉사 활동 종료
                 .build();
-        Recruitment findSaveRecruitment = recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
-        findSaveRecruitment.setVolunteeringTimeTable(newTime);
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
+        findRecruitment.setVolunteeringTimeTable(newTime);
         clear();
 
         //when & then
         Assertions.assertThatThrownBy(() -> participationService.participate(saveUser.getUserNo(), saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("NOT_EXIST_RECRUITMENT");
+                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_RECRUITMENT.name());
     }
 
     @Test
     @Transactional
     public void 팀신청_실패_참여가능인원초과(){
         //given
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
         User saveUser1 = 사용자_등록("홍길동");
         User saveUser2 = 사용자_등록("구본식");
         User saveUser3 = 사용자_등록("구길동");
         User saveUser4 = 사용자_등록("박하선");
-        참여자_상태_등록(saveUser1, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser2, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser3, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser3, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
         clear();
 
         //when & then
@@ -190,7 +200,7 @@ class ParticipationServiceImplTest {
     public void 팀신청취소_성공(){
         //given
         User saveUser = 사용자_등록("홍길동");
-        참여자_상태_등록(saveUser, State.JOIN_REQUEST);
+        참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
 
         //when
         participationService.cancelParticipation(saveUser.getUserNo(), saveRecruitment.getRecruitmentNo());
@@ -199,7 +209,7 @@ class ParticipationServiceImplTest {
         //then
         Participant participant = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
                 saveRecruitment.getRecruitmentNo(), saveUser.getUserNo()).get();
-        Assertions.assertThat(participant.getState()).isEqualTo(State.JOIN_CANCEL);
+        assertThat(participant.getState()).isEqualTo(ParticipantState.JOIN_CANCEL);
     }
 
     @Test
@@ -207,7 +217,7 @@ class ParticipationServiceImplTest {
     public void 팀신청취소_실패_잘못된상태(){
         //given
         User saveUser = 사용자_등록("홍길동");
-        참여자_상태_등록(saveUser, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser, ParticipantState.JOIN_APPROVAL);
         clear();
 
         //when & then
@@ -223,9 +233,9 @@ class ParticipationServiceImplTest {
         User saveUser1 = 사용자_등록("홍길동");
         User saveUser2 = 사용자_등록("구본식");
         User saveUser3 = 사용자_등록("구길동");
-        참여자_상태_등록(saveUser1, State.JOIN_REQUEST);
-        참여자_상태_등록(saveUser2, State.JOIN_REQUEST);
-        참여자_상태_등록(saveUser3, State.JOIN_REQUEST);
+        참여자_상태_등록(saveUser1, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser2, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
         List<Long> requestNos = List.of(saveUser1.getUserNo(), saveUser2.getUserNo(), saveUser3.getUserNo());
 
         //when
@@ -233,10 +243,12 @@ class ParticipationServiceImplTest {
         clear();
 
         //then
+        Recruitment findRecruitment = recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
         List<Participant> participantList =
                 participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(saveRecruitment.getRecruitmentNo(), requestNos);
         participantList.stream()
-                .forEach(p -> Assertions.assertThat(p.getState()).isEqualTo(State.JOIN_APPROVAL));
+                .forEach(p -> assertThat(p.getState()).isEqualTo(ParticipantState.JOIN_APPROVAL));
+        assertThat(findRecruitment.getCurrentVolunteerNum()).isEqualTo(3);
     }
 
     @Disabled
@@ -247,9 +259,9 @@ class ParticipationServiceImplTest {
         User saveUser1 = 사용자_등록("홍길동");
         User saveUser2 = 사용자_등록("구본식");
         User saveUser3 = 사용자_등록("구길동");
-        참여자_상태_등록(saveUser1, State.JOIN_REQUEST);
-        참여자_상태_등록(saveUser2, State.JOIN_REQUEST);
-        참여자_상태_등록(saveUser3, State.JOIN_REQUEST);
+        참여자_상태_등록(saveUser1, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser2, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
         List<Long> requestNos = List.of(saveUser1.getUserNo(), saveUser2.getUserNo(), saveUser3.getUserNo());
         clear();
 
@@ -265,7 +277,7 @@ class ParticipationServiceImplTest {
     public void 팀신청승인_실패_잘못된상태(){
         //given
         User saveUser1 = 사용자_등록("홍길동");
-        참여자_상태_등록(saveUser1, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
         List<Long> requestNos = List.of(saveUser1.getUserNo());
         clear();
 
@@ -280,15 +292,19 @@ class ParticipationServiceImplTest {
     @Transactional
     public void 팀신청승인_실패_승인가능인원초과(){
         //given
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
+
         //남은 승인 가능한 인원 1명
         User saveUser1 = 사용자_등록("홍길동");
         User saveUser2 = 사용자_등록("구본식");
         User saveUser3 = 사용자_등록("구길동");
         User saveUser4 = 사용자_등록("구혜선");
-        참여자_상태_등록(saveUser1, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser2, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser3, State.JOIN_REQUEST);
-        참여자_상태_등록(saveUser4, State.JOIN_REQUEST);
+        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser4, ParticipantState.JOIN_REQUEST);
         List<Long> requestNos = List.of(saveUser3.getUserNo(), saveUser4.getUserNo());
         clear();
 
@@ -302,17 +318,21 @@ class ParticipationServiceImplTest {
     @Transactional
     public void 팀원강제탈퇴_성공(){
         //given
+        Recruitment recruitment = 저장된_모집글_가져오기();
         User saveUser = 사용자_등록("홍길동");
-        참여자_상태_등록(saveUser, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser, ParticipantState.JOIN_APPROVAL);
+        recruitment.increaseTeamMember();
 
         //when
         participationService.deportParticipant(saveRecruitment.getRecruitmentNo(),saveUser.getUserNo());
         clear();
 
         //then
+        Recruitment findRecruitment = recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
         Participant participant = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(saveRecruitment.getRecruitmentNo(),
                 saveUser.getUserNo()).get();
-        Assertions.assertThat(participant.getState()).isEqualTo(State.DEPORT);
+        assertThat(participant.getState()).isEqualTo(ParticipantState.DEPORT);
+        assertThat(findRecruitment.getCurrentVolunteerNum()).isEqualTo(0);
     }
 
     @Test
@@ -320,7 +340,7 @@ class ParticipationServiceImplTest {
     public void 팀원강제탈퇴_실패_잘못된상태(){
         //given
         User saveUser = 사용자_등록("홍길동");
-        참여자_상태_등록(saveUser, State.JOIN_REQUEST);
+        참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
 
         //when & then
         Assertions.assertThatThrownBy(() ->

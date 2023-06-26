@@ -10,8 +10,8 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.global.common.component.State;
-import project.volunteer.global.common.response.ParticipantState;
+import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -40,14 +40,11 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
             return null;
         }
 
-        //현재 일정에 참여중인 인원수 확인
-        Integer activeParticipantNum = scheduleParticipationRepository.countActiveParticipant(nearestSchedule.get().getScheduleNo());
-
         //사용자 일정 참여 가능 상태 확인
-        String state = decideUserStateAboutSchedule(nearestSchedule.get(), loginUserNo, activeParticipantNum);
+        String state = converterParticipantState(nearestSchedule.get(), loginUserNo);
 
         //DTO 생성
-        return ScheduleDetails.createScheduleDetails(nearestSchedule.get(), activeParticipantNum, state);
+        return ScheduleDetails.createScheduleDetails(nearestSchedule.get(), state);
     }
 
     @Override
@@ -61,49 +58,58 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
         Schedule findSchedule = scheduleRepository.findValidSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
 
-        //현재 일정에 참여중인 인원수 확인
-        Integer activeParticipantNum = scheduleParticipationRepository.countActiveParticipant(scheduleNo);
 
         //사용자 일정 참여 가능 상태 확인
-        String state = decideUserStateAboutSchedule(findSchedule, loginUserNo, activeParticipantNum);
+        String state = converterParticipantState(findSchedule, loginUserNo);
 
         //DTO 생성
-        return ScheduleDetails.createScheduleDetails(findSchedule, activeParticipantNum, state);
+        return ScheduleDetails.createScheduleDetails(findSchedule, state);
     }
 
     /**
-     * 마감 -> 인원 수 초과
-     * 참여중 -> 이미 참여 중인 상태 => 인원 수 초과시 '마감' 상태가 아닌 '참여중' 상태가 되어야된다.
-     * 참여 취소 요청 -> 참여중이지만 취소 요청한 상태 => 인원 수 초과시 '마감' 상태가 아닌 '취소 요청' 상태가 되어야된다.
-     * 참여 가능 -> 첫 참가자 or 취소 요청 승인 참가자 => 인원 수 초과시 '마감' 상태가 되어야 된다.
+     * L1 : 일정 완료 승인, 일정 완료 미승인
+     * L2 : 일정 참여 기간 만료
+     * L3 : 일정 참여 중, 일정 취소 요청
+     * L4 : 일정 참여 가능 인원 초과
+     * L5 : 일정 참여 가능, 일정 취소 승인
      */
-    private String decideUserStateAboutSchedule(Schedule schedule, Long loginUserNo, int activeParticipantNum){
-        String status = null;
-        Optional<ScheduleParticipation> findState =
+    private String converterParticipantState(Schedule schedule, Long loginUserNo){
+        //일정 신청 내역 조회
+        Optional<ScheduleParticipation> findSp =
                 scheduleParticipationRepository.findByUserNoAndScheduleNo(loginUserNo, schedule.getScheduleNo());
 
-        //일정 참여 가능 상태(첫 신청 참여자, 취소 요청 승인 참여자)
-        if(findState.isEmpty() ||
-                findState.get().getState().equals(State.PARTICIPATION_CANCEL_APPROVAL)){
-            status = ParticipantState.AVAILABLE.name();
+        //일정 참가 완료 미승인
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)){
+            return StateResponse.COMPLETE_UNAPPROVED.name();
         }
 
-        //일정 참여중 상태
-        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATING)){
-            return ParticipantState.PARTICIPATING.name();
+        //일정 참가 완료 승인
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)){
+            return StateResponse.COMPLETE_APPROVED.name();
         }
 
-        //일정 참여 취소 요청 상태
-        if(findState.isPresent() && findState.get().getState().equals(State.PARTICIPATION_CANCEL)){
-            return ParticipantState.CANCELLING.name();
+        //일정 참여 기간 만료
+        if(!schedule.isAvailableDate()){
+            return StateResponse.DONE.name();
         }
 
-        //일정 신청 마감 상태(참여 가능인원 초과)
-        if(schedule.getVolunteerNum() == activeParticipantNum){
-            return ParticipantState.DONE.name();
+        //참여 중
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATING)){
+            return StateResponse.PARTICIPATING.name();
         }
 
-        return status;
+        //취소 요청
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
+            return StateResponse.CANCELLING.name();
+        }
+
+        //인원 초과
+        if(schedule.isFullParticipant()){
+            return StateResponse.FULL.name();
+        }
+
+        //신청 가능
+        return StateResponse.AVAILABLE.name();
     }
 
 }

@@ -35,7 +35,7 @@ public class ScheduleDetails {
         String details;
     }
 
-    public static ScheduleDetails createScheduleDetails(Schedule schedule, int activeVolunteerNum, String state) {
+    public static ScheduleDetails createScheduleDetails(Schedule schedule, String state) {
 
         ScheduleDetails scheduleDetails = new ScheduleDetails();
         scheduleDetails.no = schedule.getScheduleNo();
@@ -47,7 +47,7 @@ public class ScheduleDetails {
         scheduleDetails.volunteerNum = schedule.getVolunteerNum();
         scheduleDetails.content = schedule.getContent();
         scheduleDetails.currentVolunteerNum = schedule.getVolunteerNum();
-        scheduleDetails.activeVolunteerNum = activeVolunteerNum;
+        scheduleDetails.activeVolunteerNum = schedule.getCurrentVolunteerNum();
         scheduleDetails.state = state;
         return scheduleDetails;
     }

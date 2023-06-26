@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +21,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
     @Query("select count(sp) " +
             "from ScheduleParticipation sp " +
             "where sp.schedule.scheduleNo=:scheduleNo " +
-            "and sp.state=project.volunteer.global.common.component.State.PARTICIPATING")
+            "and sp.state=project.volunteer.global.common.component.ParticipantState.PARTICIPATING")
     Integer countActiveParticipant(@Param("scheduleNo")Long scheduleNo);
 
     List<ScheduleParticipation> findBySchedule_ScheduleNo(Long scheduleNo);
@@ -32,8 +32,8 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "where sp.schedule.scheduleNo=:scheduleNo " +
             "and sp.state=:state ")
     Optional<ScheduleParticipation> findByUserNoAndScheduleNoAndState(@Param("userNo")Long userNo, @Param("scheduleNo")Long scheduleNo,
-                                                                      @Param("state")State state);
+                                                                      @Param("state") ParticipantState state);
 
-    Optional<ScheduleParticipation> findByScheduleParticipationNoAndState(Long scheduleParticipationNo, State state);
+    Optional<ScheduleParticipation> findByScheduleParticipationNoAndState(Long scheduleParticipationNo, ParticipantState state);
     List<ScheduleParticipation> findByScheduleParticipationNoIn(List<Long> spNos);
 }

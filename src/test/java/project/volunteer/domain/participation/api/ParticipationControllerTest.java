@@ -80,9 +80,12 @@ class ParticipationControllerTest {
                 true, true, true, Role.USER, "kakao", username, null);
         return userRepository.save(createUser);
     }
-    private Participant 참여자_상태_등록(User user, State state){
+    private Participant 참여자_상태_등록(User user, ParticipantState state){
         Participant participant = Participant.createParticipant(saveRecruitment, user, state);
         return participantRepository.save(participant);
+    }
+    private Recruitment 저장된_모집글_가져오기(){
+        return recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
     }
     private void clear() {
         em.flush();
@@ -143,7 +146,7 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_중복신청() throws Exception {
         //given
-        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         clear();
 
@@ -158,18 +161,22 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_참가가능인원초과() throws Exception {
         //given
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
         User saveUser1 = 사용자_등록("구길동");
         User saveUser2 = 사용자_등록("구갈동");
         User saveUser3 = 사용자_등록("구동굴");
-        참여자_상태_등록(saveUser1, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser2, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser3, State.JOIN_APPROVAL);
+        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser3, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
 
-        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+
         clear();
 
         //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/join", recruitmentNo)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/join", findRecruitment.getRecruitmentNo())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
@@ -179,7 +186,7 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청취소_성공() throws Exception {
         //given
-        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         clear();
 
@@ -194,7 +201,7 @@ class ParticipationControllerTest {
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청취소_실패_잘못된상태() throws Exception {
         //given
-        참여자_상태_등록(loginUser, State.JOIN_APPROVAL);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         clear();
 
@@ -210,7 +217,7 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀신청승인_성공() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
         ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
         clear();
 
@@ -227,7 +234,7 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀신청승인_실패_권한없음() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
         ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
         clear();
 
@@ -244,7 +251,7 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀신청승인_실패_잘못된상태() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, State.JOIN_CANCEL);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_CANCEL);
         ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
         clear();
 
@@ -261,22 +268,25 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀신청승인_실패_승인가능인원초과() throws Exception {
         //given
         //승인 가능인원 1명
-        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
         User saveUser1 = 사용자_등록("구길동");
         User saveUser2 = 사용자_등록("구갈동");
         User saveUser3 = 사용자_등록("구동굴");
         User saveUser4 = 사용자_등록("구갈염");
-        참여자_상태_등록(saveUser1, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser2, State.JOIN_APPROVAL);
-        참여자_상태_등록(saveUser3, State.JOIN_REQUEST);
-        참여자_상태_등록(saveUser4, State.JOIN_REQUEST);
+        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+
+        참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser4, ParticipantState.JOIN_REQUEST);
         List<Long> requestNos = List.of(saveUser3.getUserNo(), saveUser4.getUserNo());
 
         ParticipantAddParam dto = new ParticipantAddParam(requestNos);
         clear();
 
         //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/approval", recruitmentNo)
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/approval", findRecruitment.getRecruitmentNo())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
@@ -288,7 +298,7 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀원강제탈퇴_성공() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, State.JOIN_APPROVAL);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
         ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
         clear();
 
@@ -305,7 +315,7 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀원강제탈퇴_실패_잘못된상태() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, State.JOIN_REQUEST);
+        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
         ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
         clear();
 

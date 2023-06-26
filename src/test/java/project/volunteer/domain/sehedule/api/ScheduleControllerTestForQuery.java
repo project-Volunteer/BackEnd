@@ -26,7 +26,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.response.ParticipantState;
+import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.test.WithMockCustomUser;
 
 import java.time.LocalDate;
@@ -77,7 +77,7 @@ class ScheduleControllerTestForQuery {
                     true, true, true, Role.USER, "kakao", "test" + i, null);
             User saveUser = userRepository.save(createUser);
 
-            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, State.JOIN_APPROVAL);
+            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, ParticipantState.JOIN_APPROVAL);
             teamMember.add(participantRepository.save(createParticipant));
         }
     }
@@ -90,7 +90,7 @@ class ScheduleControllerTestForQuery {
         schedule.setRecruitment(saveRecruitment);
         return scheduleRepository.save(schedule);
     }
-    private ScheduleParticipation 스케줄_참여자_등록(Schedule schedule, Participant participant, State state){
+    private ScheduleParticipation 스케줄_참여자_등록(Schedule schedule, Participant participant, ParticipantState state){
         ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(schedule, participant, state);
         return scheduleParticipationRepository.save(sp);
     }
@@ -107,7 +107,7 @@ class ScheduleControllerTestForQuery {
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 
@@ -123,7 +123,7 @@ class ScheduleControllerTestForQuery {
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 
@@ -164,12 +164,13 @@ class ScheduleControllerTestForQuery {
     public void 일정상세조회시_참여자상태_마감() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
-        스케줄_참여자_등록(schedule, teamMember.get(1), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule, teamMember.get(1), ParticipantState.PARTICIPATING);
+        schedule.increaseParticipant();
 
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(ParticipantState.DONE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.FULL.name()))
                 .andDo(print());
     }
 
@@ -184,7 +185,7 @@ class ScheduleControllerTestForQuery {
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 
@@ -195,12 +196,13 @@ class ScheduleControllerTestForQuery {
     public void 일정상세조회시_참여자상태_취소요청() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
-        스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATION_CANCEL);
+        스케줄_참여자_등록(schedule, teamMember.get(0), ParticipantState.PARTICIPATION_CANCEL);
+        schedule.increaseParticipant();
 
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(ParticipantState.CANCELLING.name()))
+                .andExpect(jsonPath("state").value(StateResponse.CANCELLING.name()))
                 .andDo(print());
     }
 
@@ -211,12 +213,13 @@ class ScheduleControllerTestForQuery {
     public void 일정상세조회시_참여자상태_참여중() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
-        스케줄_참여자_등록(schedule, teamMember.get(0), State.PARTICIPATING);
+        스케줄_참여자_등록(schedule, teamMember.get(0), ParticipantState.PARTICIPATING);
+        schedule.increaseParticipant();
 
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("state").value(ParticipantState.PARTICIPATING.name()))
+                .andExpect(jsonPath("state").value(StateResponse.PARTICIPATING.name()))
                 .andDo(print());
     }
 
@@ -268,7 +271,7 @@ class ScheduleControllerTestForQuery {
         mockMvc.perform(get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}",saveRecruitment.getRecruitmentNo(),schedule.getScheduleNo()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(ParticipantState.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print());
     }
 }

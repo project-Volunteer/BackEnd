@@ -27,7 +27,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,7 +68,7 @@ class ScheduleServiceImplTestForQuery {
                     true, true, true, Role.USER, "kakao", "test" + i, null);
             User saveUser = userRepository.save(createUser);
 
-            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, State.JOIN_APPROVAL);
+            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, ParticipantState.JOIN_APPROVAL);
             participantRepository.save(createParticipant);
         }
 

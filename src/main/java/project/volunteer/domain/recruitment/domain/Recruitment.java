@@ -16,6 +16,7 @@ import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -47,6 +48,9 @@ public class Recruitment extends BaseTimeEntity {
 
     @Column(name = "volunteer_num", nullable = false)
     private Integer volunteerNum;
+
+    @Column(name = "current_volunteer_num", nullable = false)
+    private Integer currentVolunteerNum;
 
     @Column(name = "is_issued", nullable = false)
     private Boolean isIssued;
@@ -105,6 +109,7 @@ public class Recruitment extends BaseTimeEntity {
         this.likeCount = 0;
         this.viewCount = 0;
         this.isDeleted = IsDeleted.N;
+        this.currentVolunteerNum = 0;
     }
 
     public static Recruitment createRecruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
@@ -128,6 +133,7 @@ public class Recruitment extends BaseTimeEntity {
         createRecruitment.likeCount = 0;
         createRecruitment.viewCount = 0;
         createRecruitment.isDeleted = IsDeleted.N;
+        createRecruitment.currentVolunteerNum = 0;
         return createRecruitment;
     }
 
@@ -148,6 +154,19 @@ public class Recruitment extends BaseTimeEntity {
            return true;
         }
         return false;
+    }
+
+    public void increaseTeamMember(){this.currentVolunteerNum++;}
+    public void decreaseTeamMember(){this.currentVolunteerNum--;}
+
+    public Boolean isFullTeamMember(){return this.currentVolunteerNum == this.volunteerNum;}
+
+    public Integer getAvailableTeamMemberCount(){
+        return this.volunteerNum - this.currentVolunteerNum;
+    }
+
+    public Boolean isAvailableDate(){
+        return this.VolunteeringTimeTable.getEndDay().isAfter(LocalDate.now());
     }
 
 }

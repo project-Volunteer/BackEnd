@@ -28,8 +28,9 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
 
     //삭제되지 않은 게시물
     @Query("select r from Recruitment  r " +
-            "where r.recruitmentNo=:no and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    Optional<Recruitment> findValidByRecruitmentNo(@Param("no") Long recruitmentNo);
+            "where r.recruitmentNo=:no " +
+            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    Optional<Recruitment> findValidRecruitment(@Param("no") Long recruitmentNo);
 
 
     //모집중인 봉사 모집글(삭제 x, 임시 저장 x, 봉사 모집 종료일 내)

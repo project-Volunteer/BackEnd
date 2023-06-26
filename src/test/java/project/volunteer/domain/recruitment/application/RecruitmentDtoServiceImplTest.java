@@ -23,7 +23,6 @@ import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.response.ParticipantState;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -35,6 +34,7 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
@@ -134,7 +134,7 @@ class RecruitmentDtoServiceImplTest {
         return new MockMultipartFile(
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
-    private Participant 봉사모집글_팀원_상태추가(String signName, State state) throws IOException {
+    private Participant 봉사모집글_팀원_상태추가(String signName, ParticipantState state) throws IOException {
         //신규 사용자 가입
         User newUser= User.createUser(signName, "password", signName, "test@naver.com", Gender.M, LocalDate.now(), "picture",
                 true, true, true, Role.USER, "kakao", signName, null);
@@ -159,6 +159,9 @@ class RecruitmentDtoServiceImplTest {
         User newUser= User.createUser(signName, "password", signName, "test@naver.com", Gender.M, LocalDate.now(), "picture",
                 true, true, true, Role.USER, "kakao", signName, null);
         return userRepository.save(newUser);
+    }
+    private Recruitment 저장된_모집글_가져오기(){
+        return recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
     }
 
 
@@ -194,12 +197,12 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void searchParticipantState() throws IOException {
         //given
-        봉사모집글_팀원_상태추가("홍길동", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("구하라", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("스프링", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("ORM", State.JOIN_REQUEST);
-        봉사모집글_팀원_상태추가("JPA", State.JOIN_REQUEST);
-        봉사모집글_팀원_상태추가("트랜잭션", State.JOIN_REQUEST);
+        봉사모집글_팀원_상태추가("홍길동", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("구하라", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_REQUEST);
+        봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_REQUEST);
+        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_REQUEST);
 
         //when
         RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
@@ -222,7 +225,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.AVAILABLE.name());
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.name());
     }
 
     @DisplayName("모집글 팀 탈퇴로 인해 로그인 사용자 상태가 신청 가능 상태가 된다.")
@@ -230,14 +233,14 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void loginUserAvailableStateByQuit() throws IOException {
         //given
-        Participant p = 봉사모집글_팀원_상태추가("new", State.QUIT);
+        Participant p = 봉사모집글_팀원_상태추가("new", ParticipantState.QUIT);
 
         //when
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
         clear();
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.AVAILABLE.name());
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.name());
     }
 
     @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
@@ -245,14 +248,14 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void loginUserPendingState() throws IOException {
         //given
-        Participant p = 봉사모집글_팀원_상태추가("new", State.JOIN_REQUEST);
+        Participant p = 봉사모집글_팀원_상태추가("new", ParticipantState.JOIN_REQUEST);
 
         //when
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
         clear();
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.PENDING.name());
+        assertThat(status).isEqualTo(StateResponse.PENDING.name());
     }
 
     @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
@@ -260,14 +263,14 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void loginUserApprovedState() throws IOException {
         //given
-        Participant p = 봉사모집글_팀원_상태추가("new", State.JOIN_APPROVAL);
+        Participant p = 봉사모집글_팀원_상태추가("new", ParticipantState.JOIN_APPROVAL);
 
         //when
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
         clear();
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.APPROVED.name());
+        assertThat(status).isEqualTo(StateResponse.APPROVED.name());
     }
 
     @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
@@ -287,7 +290,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.DONE.name());
+        assertThat(status).isEqualTo(StateResponse.DONE.name());
     }
 
     @DisplayName("팀원 모집인원 초과로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
@@ -295,19 +298,24 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void loginUserDoneStateByVolunteerNum() throws IOException {
         //given
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
         User newUser = 신규회원_가입("new");
         //현재 팀원 최대 인원 4명으로 설정됨
-        봉사모집글_팀원_상태추가("스프링", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("ORM", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("JPA", State.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("트랜잭션", State.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
         clear();
 
         //when
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(ParticipantState.DONE.name());
+        assertThat(status).isEqualTo(StateResponse.FULL.name());
     }
 
     @Test

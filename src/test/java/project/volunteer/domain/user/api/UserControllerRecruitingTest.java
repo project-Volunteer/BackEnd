@@ -44,7 +44,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.infra.s3.FileService;
 
 @SpringBootTest
@@ -184,34 +184,34 @@ public class UserControllerRecruitingTest {
 		// 참여자 저장
 		Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
 		Participant participant1 = Participant.builder().participant(saveUser).recruitment(recruitment1)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant1);
 
 		Recruitment recruitment2 = recruitmentRepository.findById(no2).get();
 		Participant participant2 = Participant.builder().participant(saveUser).recruitment(recruitment2)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant2);
 
 
 		Recruitment recruitment3 = recruitmentRepository.findById(no2).get();
 		Participant participant3 = Participant.builder().participant(userNo2).recruitment(recruitment3)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant3);
 
 
 		Recruitment recruitment4 = recruitmentRepository.findById(no1).get();
 		Participant participant4 = Participant.builder().participant(userNo3).recruitment(recruitment4)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant4);
 
 
 		Recruitment recruitment5 = recruitmentRepository.findById(no1).get();
 		Participant participant5 = Participant.builder().participant(userNo4).recruitment(recruitment5)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant5);
 		
@@ -219,7 +219,7 @@ public class UserControllerRecruitingTest {
 
 		Recruitment recruitment6 = recruitmentRepository.findById(no2).get();
 		Participant participant6 = Participant.builder().participant(userNo3).recruitment(recruitment6)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant6);
 		

@@ -9,7 +9,7 @@ import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationR
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -27,75 +27,75 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
     @Override
     @Transactional
     public void participate(Long recruitmentNo, Long scheduleNo, Long loginUserNo) {
-        //일정 조회(종료 일자 검증 포함)
-        Schedule findSchedule = scheduleRepository.findActivateSchedule(scheduleNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
-                        String.format("Schedule to participant = [%d]", scheduleNo)));
+        //일정 검증(존재 여부, 모집 기간)
+        Schedule findSchedule = isActiveSchedule(scheduleNo);
 
-        //일정 참여 남은 인원 검증
-        Integer activeNum = scheduleParticipationRepository.countActiveParticipant(scheduleNo);
-        if(activeNum >= findSchedule.getVolunteerNum()){
+        //모집 인원 검증
+        if(findSchedule.isFullParticipant()){
             throw new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
-                    String.format("ScheduleNo = [%d], Active participant num = [%d]", scheduleNo, activeNum));
+                    String.format("ScheduleNo = [%d], Active participant num = [%d]", findSchedule.getScheduleNo(), findSchedule.getCurrentVolunteerNum()));
         }
 
-        //사용자 일정 참여 가능 상태 검증
         scheduleParticipationRepository.findByUserNoAndScheduleNo(loginUserNo, scheduleNo)
                 .ifPresentOrElse(
                         sp -> {
-                            if (sp.getState().equals(State.PARTICIPATING)) {
+                            //중복 신청 검증(일정 참여중, 일정 참여 취소 요청)
+                            if(sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
                                 throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
-                                        String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", scheduleNo, loginUserNo, sp.getState().name()));
+                                        String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", findSchedule.getScheduleNo(), loginUserNo, sp.getState().name()));
                             }
+
                             //재신청
-                            sp.participating();
+                            sp.updateState(ParticipantState.PARTICIPATING);
                         },
                         () ->{
                             //신규 신청
-                            //값이 있겠지만, get 으로 가져오는 게 맞을까? 기본적으로 예외를 처리해야하는게 좋은 설계 일까?
                             Participant findParticipant =
                                     participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
                                             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
-                            ScheduleParticipation createSP = ScheduleParticipation.createScheduleParticipation(findSchedule, findParticipant, State.PARTICIPATING);
+                            ScheduleParticipation createSP =
+                                    ScheduleParticipation.createScheduleParticipation(findSchedule, findParticipant, ParticipantState.PARTICIPATING);
                             scheduleParticipationRepository.save(createSP);
                         }
                 );
+
+        //일정 참가자 수 증가
+        findSchedule.increaseParticipant();
     }
 
     @Override
     @Transactional
     public void cancel(Long scheduleNo, Long loginUserNo) {
-        //일정 조회(종료 일자 검증 포함)
-        scheduleRepository.findActivateSchedule(scheduleNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
-                        String.format("Schedule to cancel participant = [%d]", scheduleNo)));
+        //일정 검증(존재 여부, 모집 기간)
+        Schedule findSchedule = isActiveSchedule(scheduleNo);
 
-        //일정 신청 상태인지 검증
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNoAndState(loginUserNo, scheduleNo, State.PARTICIPATING)
+        //일정 참여 중 상태인지 검증
+        ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNoAndState(loginUserNo, scheduleNo, ParticipantState.PARTICIPATING)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], ScheduleNo = [%d]", loginUserNo, scheduleNo)));
 
         //일정 신청 취소 요청
-        findSp.cancelParticipation();
+        findSp.updateState(ParticipantState.PARTICIPATION_CANCEL);
     }
 
     @Override
     @Transactional
     public void approvalCancellation(Long scheduleNo, Long spNo) {
-        //일정 조회(종료 일자 검증 포함)
-        scheduleRepository.findActivateSchedule(scheduleNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
-                        String.format("Schedule to cancel approval = [%d]", scheduleNo)));
+        //일정 검증(존재 여부, 모집 기간)
+        Schedule findSchedule = isActiveSchedule(scheduleNo);
 
         //일정 취소 요청 상태인지 검증
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByScheduleParticipationNoAndState(spNo, State.PARTICIPATION_CANCEL)
+        ScheduleParticipation findSp = scheduleParticipationRepository.findByScheduleParticipationNoAndState(spNo, ParticipantState.PARTICIPATION_CANCEL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("ScheduleParticipationNo = [%d]", spNo)));
 
         //일정 취소 요청 승인
-        findSp.cancelApproval();
+        findSp.updateState(ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
+
+        //일정 참가자 수 감소
+        findSchedule.decreaseParticipant();
     }
 
     @Override
@@ -109,13 +109,28 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
         scheduleParticipationRepository.findByScheduleParticipationNoIn(spNo).stream()
                 .forEach(sp -> {
                     //일정 참여 완료 미승인 상태가 아닌 경우
-                    if(!sp.getState().equals(State.PARTICIPATION_COMPLETE_UNAPPROVED)){
+                    if(!sp.isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)){
                         throw new BusinessException(ErrorCode.INVALID_STATE,
                                 String.format("ScheduleParticipationNo = [%d], State = [%s]", sp.getScheduleParticipationNo(), sp.getState().name()));
                     }
                     //일정 참여 완료 승인
-                    sp.completeApproval();
+                    sp.updateState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
                 });
+    }
+
+    private Schedule isActiveSchedule(Long scheduleNo){
+        //일정 조회(삭제되지 않은지만 검증)
+        Schedule findSchedule = scheduleRepository.findValidSchedule(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
+                        String.format("Schedule to participant = [%d]", scheduleNo)));
+
+        //일정 마감 일자 조회
+        if(!findSchedule.isAvailableDate()){
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE,
+                    String.format("ScheduleNo = [%d], participation period = [%s]", findSchedule.getScheduleNo(), findSchedule.getScheduleTimeTable().getEndDay().toString()));
+        }
+
+        return findSchedule;
     }
 
 }
