@@ -188,10 +188,14 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
             return StateResponse.DONE.name();
         }
 
-        //팀 신청 or 팀 신청 승인
-        if(findParticipant.isPresent() && isTeamActionProgress(findParticipant.get())){
-            return (findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST))
-                    ?(StateResponse.PENDING.name()):(StateResponse.APPROVED.name());
+        //팀 신청
+        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
+            return StateResponse.PENDING.name();
+        }
+
+        //팀 신청 승인
+        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
+            return StateResponse.APPROVED.name();
         }
 
         //팀 신청 인원 마감
@@ -201,9 +205,5 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
 
         //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
         return StateResponse.AVAILABLE.name();
-    }
-
-    private Boolean isTeamActionProgress(Participant findParticipant){
-        return (findParticipant.isEqualState(ParticipantState.JOIN_REQUEST) || (findParticipant.isEqualState(ParticipantState.JOIN_APPROVAL)));
     }
 }

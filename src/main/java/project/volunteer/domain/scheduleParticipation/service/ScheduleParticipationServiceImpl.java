@@ -39,8 +39,8 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
         scheduleParticipationRepository.findByUserNoAndScheduleNo(loginUserNo, scheduleNo)
                 .ifPresentOrElse(
                         sp -> {
-                            //중복 신청 검증
-                            if(sp.isEqualState(ParticipantState.PARTICIPATING)){
+                            //중복 신청 검증(일정 참여중, 일정 참여 취소 요청)
+                            if(sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
                                 throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", findSchedule.getScheduleNo(), loginUserNo, sp.getState().name()));
                             }

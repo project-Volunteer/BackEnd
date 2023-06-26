@@ -78,10 +78,14 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
         Optional<ScheduleParticipation> findSp =
                 scheduleParticipationRepository.findByUserNoAndScheduleNo(loginUserNo, schedule.getScheduleNo());
 
-        //일정 참가 완료 승인 or 일정 참가 완료 미승인
-        if(findSp.isPresent() && isCompletedScheduleState(findSp.get())){
-            return (findSp.get().isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED))
-                    ?(StateResponse.COMPLETE_UNAPPROVED.name()):(StateResponse.COMPLETE_APPROVED.name());
+        //일정 참가 완료 미승인
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)){
+            return StateResponse.COMPLETE_UNAPPROVED.name();
+        }
+
+        //일정 참가 완료 승인
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)){
+            return StateResponse.COMPLETE_APPROVED.name();
         }
 
         //일정 참여 기간 만료
@@ -89,10 +93,14 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
             return StateResponse.DONE.name();
         }
 
-        //참여 중 or 취소 요청
-        if(findSp.isPresent() && isParticipateState(findSp.get())){
-            return (findSp.get().isEqualState(ParticipantState.PARTICIPATING))
-                    ?(StateResponse.PARTICIPATING.name()):(StateResponse.CANCELLING.name());
+        //참여 중
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATING)){
+            return StateResponse.PARTICIPATING.name();
+        }
+
+        //취소 요청
+        if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
+            return StateResponse.CANCELLING.name();
         }
 
         //인원 초과
@@ -102,14 +110,6 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
 
         //신청 가능
         return StateResponse.AVAILABLE.name();
-    }
-
-    private Boolean isCompletedScheduleState(ScheduleParticipation sp){
-        return (sp.isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED) || sp.isEqualState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
-    }
-
-    private Boolean isParticipateState(ScheduleParticipation sp){
-        return (sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL));
     }
 
 }
