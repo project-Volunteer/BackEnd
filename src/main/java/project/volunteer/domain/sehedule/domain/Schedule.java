@@ -36,6 +36,9 @@ public class Schedule extends BaseTimeEntity {
 
     @Column(name = "current_volunteer_num", nullable = false)
     private Integer currentVolunteerNum;
+    //낙관적 락 사용
+//    @Version
+//    private Integer version;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "is_deleted", length = 1, nullable = false)
