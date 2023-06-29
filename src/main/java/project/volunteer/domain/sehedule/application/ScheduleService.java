@@ -24,4 +24,7 @@ public interface ScheduleService {
     //캘린더 스케줄 리스트 조회
     public List<Schedule> findCalendarSchedules(Long recruitmentNo, LocalDate startDay, LocalDate endDay);
 
+    //스케즐 완료
+    public void finishSchedules();
+
 }
