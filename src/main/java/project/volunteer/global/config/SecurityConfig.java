@@ -91,10 +91,16 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.DELETE, "/recruitment/*/schedule/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/recruitment/*/calendar").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/recruitment/*/calendar/*").hasAuthority("USER")
+
+					//일정 신청 관리
 					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*/join").hasAuthority("USER")
 					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*/cancel").hasAuthority("USER")
 					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*/cancelling").hasAuthority("USER")
 					.antMatchers(HttpMethod.PUT, "/recruitment/*/schedule/*/complete").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/recruitment/*/schedule/*/participating").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/recruitment/*/schedule/*/cancelling").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/recruitment/*/schedule/*/completion").hasAuthority("USER")
+
 
 			.anyRequest().permitAll()
 			.and()
