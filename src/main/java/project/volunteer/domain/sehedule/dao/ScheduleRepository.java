@@ -45,9 +45,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,Custom
 
     @Query("select s " +
             "from Schedule s " +
-            "where s.scheduleNo=:no " +
-            "and s.scheduleTimeTable.endDay > current_date " +
+            "where s.scheduleTimeTable.endDay < current_date " +
             "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    Optional<Schedule> findActivateSchedule(@Param("no")Long scheduleNo);
+    List<Schedule> findCompletedSchedule();
 
 }
