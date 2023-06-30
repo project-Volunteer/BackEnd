@@ -24,6 +24,8 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "and sp.state=project.volunteer.global.common.component.ParticipantState.PARTICIPATING")
     Integer countActiveParticipant(@Param("scheduleNo")Long scheduleNo);
 
+    List<ScheduleParticipation> findBySchedule_ScheduleNoAndState(Long scheduleNo, ParticipantState state);
+
     List<ScheduleParticipation> findBySchedule_ScheduleNo(Long scheduleNo);
 
     @Query("select sp " +
