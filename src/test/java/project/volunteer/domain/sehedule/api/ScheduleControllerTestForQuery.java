@@ -1,5 +1,6 @@
 package project.volunteer.domain.sehedule.api;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,8 +56,8 @@ class ScheduleControllerTestForQuery {
     @BeforeEach
     public void setup(){
         //작성자 저장
-        User writer = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
-                true, true, true, Role.USER, "kakao", "1234", null);
+        User writer = User.createUser("sctfq1234", "sctfq1234", "sctfq1234", "sctfq1234", Gender.M, LocalDate.now(), "1234",
+                true, true, true, Role.USER, "kakao", "sctfq1234", null);
         userRepository.save(writer);
 
         //Embedded 값 세팅
@@ -73,8 +74,8 @@ class ScheduleControllerTestForQuery {
 
         //봉사 팀원 저장
         for(int i=0;i<5;i++){
-            User createUser = User.createUser("test" + i, "test" + i, "test" + i, "test" + i, Gender.M, LocalDate.now(), "test" + i,
-                    true, true, true, Role.USER, "kakao", "test" + i, null);
+            User createUser = User.createUser("sctfq" + i, "sctfq" + i, "sctfq" + i, "sctfq" + i, Gender.M, LocalDate.now(), "picture" + i,
+                    true, true, true, Role.USER, "kakao", "sctfq" + i, null);
             User saveUser = userRepository.save(createUser);
 
             Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, ParticipantState.JOIN_APPROVAL);
@@ -98,7 +99,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("팀원이 모집중인 가장 가까운 일정 상세 조회에 성공한다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void scheduleDetailsByTeamMember() throws Exception {
         //given
         스케줄_등록(LocalDate.now().plusMonths(2), 2);
@@ -114,7 +115,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("방장이 모집중인 가장 가까운 일정 상세 조회에 성공한다.")
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void scheduleDetailsByOwner() throws Exception {
         //given
         스케줄_등록(LocalDate.now().plusMonths(2), 2);
@@ -130,7 +131,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("팀원 아닌 사용자가 일정 조회를 시도한다.")
-    @WithMockCustomUser(tempValue = "forbidden")
+    @WithMockCustomUser(tempValue = "sctfq_forbidden")
     public void forbiddenScheduleDetails() throws Exception {
         //given
         스케줄_등록(LocalDate.now().plusMonths(2), 2);
@@ -145,7 +146,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("모집중인 가장 가까운 일정이 존재하지 않는다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void nullScheduleDetails() throws Exception {
         //given
         스케줄_등록(LocalDate.now(), 2);
@@ -160,7 +161,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("인원 모집 마감된 일정을 조회하다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 일정상세조회시_참여자상태_마감() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
@@ -177,7 +178,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("참여가능한 일정을 조회하다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 일정상세조회시_참여자상태_참여가능() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
@@ -192,7 +193,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("참여 취소 요청한 일정을 조회하다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 일정상세조회시_참여자상태_취소요청() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 1);
@@ -209,7 +210,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("참여중인 일정을 조회하다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 일정상세조회시_참여자상태_참여중() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
@@ -226,7 +227,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("2023년 5월 캘린더에 존재하는 일정 리스트를 조회한다")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void findSchedulesInMay2023() throws Exception {
         //given
         스케줄_등록(LocalDate.of(2023, 5, 1), 3);
@@ -251,7 +252,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("캘린더 일정 조회 간 필수 파라미터를 누락하다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void missingQueryParam() throws Exception {
         mockMvc.perform(get("/recruitment/{recruitmentNo}/calendar/",saveRecruitment.getRecruitmentNo())
                         .queryParam("year", "2023")) //"mon" 쿼리 스트링 누락
@@ -262,7 +263,7 @@ class ScheduleControllerTestForQuery {
     @Test
     @Transactional
     @DisplayName("캘린더를 통한 일정 상세조회에 성공하다.")
-    @WithUserDetails(value = "test0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void calendarScheduleDetails() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);

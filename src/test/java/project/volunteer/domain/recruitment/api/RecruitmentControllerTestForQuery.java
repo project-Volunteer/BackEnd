@@ -218,16 +218,16 @@ class RecruitmentControllerTestForQuery {
     @BeforeEach
     public void initUser(){
         saveUser = userRepository.save(User.builder()
-                .id("1234")
-                .password("1234")
-                .nickName("nickname")
-                .email("email@gmail.com")
+                .id("rctfq1234")
+                .password("rctfq1234")
+                .nickName("rctfq1234")
+                .email("rctfq1234@gmail.com")
                 .gender(Gender.M)
                 .birthDay(LocalDate.now())
                 .picture("picture")
                 .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
                 .role(Role.USER)
-                .provider("kakao").providerId("1234")
+                .provider("kakao").providerId("rctfq1234")
                 .build());
         clear();
     }
@@ -241,7 +241,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체조회_모든필터링_성공() throws Exception {
         //init
         setData();
@@ -264,7 +264,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체조회_다중카테고리필터링_성공() throws Exception {
         //init
         setData();
@@ -282,7 +282,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체카운트_모든필터링_성공() throws Exception {
         //init
         setData();
@@ -304,7 +304,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_전체카운트_빈필터링_성공() throws Exception {
         //init
         setData();
@@ -316,7 +316,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_상세조회_성공() throws Exception {
         //given
         setData();
@@ -331,7 +331,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 모집글_상세조회_실패_삭제된게시글() throws Exception {
         //given
         setData();

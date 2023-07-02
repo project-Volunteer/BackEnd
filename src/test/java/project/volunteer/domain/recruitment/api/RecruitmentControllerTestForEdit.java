@@ -67,16 +67,16 @@ class RecruitmentControllerTestForEdit {
     @BeforeEach
     public void initUser(){
          writer = userRepository.save(User.builder()
-                .id("1234")
-                .password("1234")
-                .nickName("nickname")
-                .email("email@gmail.com")
+                .id("rctfe1234")
+                .password("rctfe1234")
+                .nickName("rctfe1234")
+                .email("rctfe1234@gmail.com")
                 .gender(Gender.M)
                 .birthDay(LocalDate.now())
                 .picture("picture")
                 .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
                 .role(Role.USER)
-                .provider("kakao").providerId("1234")
+                .provider("kakao").providerId("rctfe1234")
                 .build());
         clear();
     }
@@ -139,7 +139,7 @@ class RecruitmentControllerTestForEdit {
 
     @DisplayName("정기 모집글 삭제 테스트(반복주기,이미지 포함)")
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 정기모집글_삭제_성공() throws Exception {
         //given
         setRegRecruitment();
@@ -166,7 +166,7 @@ class RecruitmentControllerTestForEdit {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "rctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 정기모집글_삭제_실패_없는모집글() throws Exception {
 
         mockMvc.perform(delete(DELETE_URL + "/{recruitmentNo}", Long.MAX_VALUE))

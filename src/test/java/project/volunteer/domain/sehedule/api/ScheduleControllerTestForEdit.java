@@ -2,6 +2,7 @@ package project.volunteer.domain.sehedule.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,8 +65,8 @@ class ScheduleControllerTestForEdit {
     @BeforeEach
     private void setUp() {
         //작성자 저장
-        User writer = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
-                true, true, true, Role.USER, "kakao", "1234", null);
+        User writer = User.createUser("sctfe1234", "sctfe1234", "sctfe1234", "sctfe1234", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "sctfe1234", null);
         userRepository.save(writer);
 
         //Embedded 값 세팅
@@ -87,8 +88,8 @@ class ScheduleControllerTestForEdit {
 
         //봉사 팀원 및 일정 참여자 등록
         for(int i=0; i<5;i++){
-            User user = User.createUser("test" + i, "test" + i, "test" + i, "test" + i, Gender.M, LocalDate.now(),
-                    "test" + i, true, true, true, Role.USER, "kakao", "test" + i, null);
+            User user = User.createUser("sctfe" + i, "sctfe" + i, "sctfe" + i, "sctfe" + i, Gender.M, LocalDate.now(),
+                    "picture", true, true, true, Role.USER, "kakao", "sctfe" + i, null);
             userRepository.save(user);
 
             Participant participant = Participant.createParticipant(saveRecruitment, user, ParticipantState.JOIN_APPROVAL);
@@ -105,7 +106,7 @@ class ScheduleControllerTestForEdit {
     @DisplayName("봉사 일정 수정에 성공하다.")
     @Test
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void scheduleEdit() throws Exception {
         //given
         final Long scheduleNo = saveSchedule.getScheduleNo();
@@ -132,7 +133,7 @@ class ScheduleControllerTestForEdit {
     @DisplayName("방장이 아닌 사용자가 일정 수정을 시도하다.")
     @Test
     @Transactional
-    @WithMockCustomUser(tempValue = "test0")
+    @WithMockCustomUser(tempValue = "sctfe0")
     public void forbidden() throws Exception {
         //given
         final Long scheduleNo = saveSchedule.getScheduleNo();
@@ -160,7 +161,7 @@ class ScheduleControllerTestForEdit {
     @DisplayName("봉사 일정 수정간 모집 인원은 현재 일정 참여자 수보다 적을 수 없다.")
     @Test
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void exceedVolunteerNum() throws Exception {
         //given
         final Long scheduleNo = saveSchedule.getScheduleNo();
@@ -188,7 +189,7 @@ class ScheduleControllerTestForEdit {
     @DisplayName("잘못된 MediaType 으로 일정 수정 API를 요청하다.")
     @Test
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void invalidMediaType() throws Exception {
         //given
         final Long scheduleNo = saveSchedule.getScheduleNo();
@@ -216,7 +217,7 @@ class ScheduleControllerTestForEdit {
     @DisplayName("봉사 일정 삭제에 성공하다.")
     @Test
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void scheduleDelete() throws Exception {
         mockMvc.perform(delete("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo()))
                 .andExpect(status().isOk())

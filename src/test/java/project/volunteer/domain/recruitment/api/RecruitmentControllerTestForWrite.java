@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.api;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +135,10 @@ class RecruitmentControllerTestForWrite {
                 .provider("kakao").providerId("1234")
                 .build());
         clear();
+    }
+    @AfterEach
+    private void cleanData(){
+        userRepository.deleteAll();
     }
 
     @Test
