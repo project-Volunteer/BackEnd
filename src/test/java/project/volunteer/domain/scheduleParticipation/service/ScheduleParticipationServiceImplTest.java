@@ -279,7 +279,6 @@ class ScheduleParticipationServiceImplTest {
                 .hasMessageContaining(ErrorCode.INVALID_STATE.name());
     }
 
-
     private User 사용자_등록(String username){
         User createUser = User.createUser(username, username, username, username, Gender.M, LocalDate.now(), "picture",
                 true, true, true, Role.USER, "kakao", username, null);
