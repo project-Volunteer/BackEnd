@@ -61,7 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public void addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
+    public List<Long> addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(recruitmentNo);
@@ -72,8 +72,8 @@ public class ScheduleServiceImpl implements ScheduleService{
                 (makeDatsOfRegWeek(dto.getTimetable().getStartDay(), dto.getTimetable().getEndDay(), dto.getRepeatPeriodParam().getDays()));
 
         //스케줄 등록
-        scheduleDate.stream()
-                .forEach(date -> {
+        return scheduleDate.stream()
+                .map(date -> {
                     Timetable timetable = Timetable.createTimetable(date, date, dto.getTimetable().getHourFormat(),
                             dto.getTimetable().getStartTime(), dto.getTimetable().getProgressTime());
 
@@ -83,9 +83,13 @@ public class ScheduleServiceImpl implements ScheduleService{
                     Schedule schedule =
                             Schedule.createSchedule(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());
                     schedule.setRecruitment(recruitment);
-
-                    scheduleRepository.save(schedule);
-                });
+                    return schedule;
+                })
+                .map(s -> {
+                    Schedule saveSchedule = scheduleRepository.save(s);
+                    return saveSchedule.getScheduleNo();
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

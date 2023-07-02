@@ -13,7 +13,7 @@ public interface ScheduleService {
     public Long addSchedule(Long recruitmentNo, ScheduleParam dto);
 
     //스케줄 자동 등록(정기)
-    public void addRegSchedule(Long recruitmentNo, ScheduleParamReg dto);
+    public List<Long> addRegSchedule(Long recruitmentNo, ScheduleParamReg dto);
 
     //스케줄 정보 수정
     public Long editSchedule(Long scheduleNo, ScheduleParam dto);
