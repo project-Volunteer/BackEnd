@@ -165,7 +165,7 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
+        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
         clear();
 
         //when
