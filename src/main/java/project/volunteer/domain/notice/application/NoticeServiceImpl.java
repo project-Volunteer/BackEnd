@@ -24,7 +24,7 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public Notice addNotice(Long recruitmentNo, NoticeAdd dto) {
         //모집글 검증
-        Recruitment findRecruitment = validateRecruitment(recruitmentNo);
+        Recruitment findRecruitment = validateAndGetRecruitment(recruitmentNo);
 
         Notice createNotice = dto.toEntity();
         createNotice.setRecruitment(findRecruitment);
@@ -36,7 +36,7 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public void editNotice(Long recruitmentNo, Long noticeNo, NoticeEdit dto) {
         //모집글 검증
-        validateRecruitment(recruitmentNo);
+        validateAndGetRecruitment(recruitmentNo);
 
         Notice findNotice = noticeRepository.findValidNotice(noticeNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
@@ -47,14 +47,14 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public void deleteNotice(Long recruitmentNo, Long noticeNo) {
         //모집글 검증
-        validateRecruitment(recruitmentNo);
+        validateAndGetRecruitment(recruitmentNo);
 
         Notice findNotice = noticeRepository.findValidNotice(noticeNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
         findNotice.delete();
     }
 
-    private Recruitment validateRecruitment(Long recruitmentNo){
+    private Recruitment validateAndGetRecruitment(Long recruitmentNo){
         //모집글 검증(출판 and 삭제 x)
         Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
