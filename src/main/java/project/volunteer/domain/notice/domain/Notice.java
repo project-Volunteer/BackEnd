@@ -14,8 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notice extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "noticeno")
     private Long noticeNo;
 
@@ -24,6 +23,12 @@ public class Notice extends BaseTimeEntity {
 
     @Column(nullable = false)
     private IsDeleted isDeleted;
+
+    @Column(name = "checked_num", nullable = false)
+    private Integer checkedNum;
+
+    @Column(name = "comment_num", nullable = false)
+    private Integer commentNum;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitmentno")
@@ -38,6 +43,8 @@ public class Notice extends BaseTimeEntity {
         createNotice.content = content;
 
         createNotice.isDeleted = IsDeleted.N;
+        createNotice.checkedNum = 0;
+        createNotice.commentNum = 0;
         return createNotice;
     }
 
