@@ -47,7 +47,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "join p.participant u " +
             "left join Image i " +
             "on i.no=u.userNo " +
-            "and i.realWorkCode=project.volunteer.domain.image.domain.RealWorkCode.USER " +
+            "and i.realWorkCode=project.volunteer.global.common.component.RealWorkCode.USER " +
             "and i.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
             "left join i.storage s " +
             "where sp.schedule.scheduleNo=:scheduleNo " +

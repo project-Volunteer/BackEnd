@@ -5,14 +5,12 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,7 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.user.api.dto.request.UserAlarmRequestParam;
 import project.volunteer.domain.user.api.dto.request.UserInfoRequestParam;
 import project.volunteer.domain.user.api.dto.response.UserAlarmResponse;

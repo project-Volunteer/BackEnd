@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.api.dto.request.PictureRequest;
 
 @Getter

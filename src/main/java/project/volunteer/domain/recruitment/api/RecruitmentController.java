@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
@@ -26,7 +26,6 @@ import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.global.Interceptor.OrganizationAuth;
-import project.volunteer.global.aop.LogExecutionTime;
 import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
