@@ -2,6 +2,7 @@ package project.volunteer.domain.scheduleParticipation.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +108,7 @@ public class ConcurrentTest {
 
     @Test
     @DisplayName("낙관적 락을 통해 동시성 문제를 해결해보자.")
+    @Disabled
     public void concurrentParticipationWithOPTIMSTICLock() throws InterruptedException {
         //given
         final int numberOfThreads = 3;

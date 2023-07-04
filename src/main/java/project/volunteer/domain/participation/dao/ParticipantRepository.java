@@ -23,7 +23,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             "join p.participant as u " +
             "left join Image i " +
             "on u.userNo = i.no " +
-            "and i.realWorkCode=project.volunteer.domain.image.domain.RealWorkCode.USER " +
+            "and i.realWorkCode=project.volunteer.global.common.component.RealWorkCode.USER " +
             "and i.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
             "left join i.storage as s " +
             "where p.recruitment.recruitmentNo=:no " +

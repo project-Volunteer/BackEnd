@@ -1,6 +1,6 @@
 package project.volunteer.domain.image.converter;
 
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.converter.AbstractLegacyEnumAttributeConverter;
 
 import javax.persistence.Converter;

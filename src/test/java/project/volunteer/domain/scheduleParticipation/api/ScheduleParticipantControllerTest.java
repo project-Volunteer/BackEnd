@@ -20,7 +20,7 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -82,8 +82,8 @@ class ScheduleParticipantControllerTest {
     @BeforeEach
     void init(){
         //작성자 저장
-        User writerUser = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
-                true, true, true, Role.USER, "kakao", "1234", null);
+        User writerUser = User.createUser("spct1234", "spct1234", "spct1234", "spct1234", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "spct1234", null);
         writer = userRepository.save(writerUser);
 
         //모집글 저장
@@ -105,8 +105,8 @@ class ScheduleParticipantControllerTest {
         saveSchedule = scheduleRepository.save(createSchedule);
 
         //로그인 유저 저장
-        User login = User.createUser("test", "test", "test", "test", Gender.M, LocalDate.now(), "test",
-                true, true, true, Role.USER, "kakao", "test", null);
+        User login = User.createUser("spct_test", "spct_test", "spct_test", "spct_test", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "spct_test", null);
         loginUser = userRepository.save(login);
     }
     @AfterEach
@@ -121,7 +121,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("일정 참가 신청에 성공하다.")
     @Transactional
-    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct_test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void schedule_participate() throws Exception {
         //given
         봉사모집글_팀원_등록(saveRecruitment, loginUser);
@@ -136,7 +136,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("팀원이 아닌 사용자가 일정 참가 신청을 시도하다.")
     @Transactional
-    @WithMockCustomUser(tempValue = "forbidden")
+    @WithMockCustomUser(tempValue = "spct_forbidden")
     public void schedule_participate_forbidden() throws Exception {
 
         mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/join", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo()))
@@ -147,7 +147,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("일정 참가 취소 요청에 성공하다.")
     @Transactional
-    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct_test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void cancelParticipation() throws Exception {
         //given
         Participant participant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
@@ -163,7 +163,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("일정 참가 취소 요청 승인에 성공하다.")
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void cancelApprove() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
@@ -182,7 +182,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("방장이 아닌 사용자가 일정 참가 취소 요청 승인을 시도하다.")
     @Transactional
-    @WithUserDetails(value = "test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct_test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void cancelApprove_forbidden() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
@@ -201,7 +201,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("일정 참가 취소 요청 승인시 필수 파라미터를 누락하다.")
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void cancelApprove_notValid() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
@@ -220,7 +220,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("일정 참가 완료 승인에 성공하다.")
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void completeApprove() throws Exception {
         //given
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
@@ -239,7 +239,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("일정 참가 중 상태의 참가자 리스트 조회에 성공하다.")
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void participatingParticipantList() throws Exception {
         //given
         User test1 = 사용자_등록("test1");
@@ -260,7 +260,7 @@ class ScheduleParticipantControllerTest {
     @Test
     @DisplayName("일정 참가 완료 상태의 참가자 리스트 조회에 성공하다.")
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void completedParticipantList() throws Exception {
         //given
         User test1 = 사용자_등록("test1");

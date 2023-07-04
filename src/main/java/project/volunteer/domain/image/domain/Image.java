@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.domain.image.converter.RealWorkCodeConverter;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.IsDeleted;
 
 import javax.persistence.*;

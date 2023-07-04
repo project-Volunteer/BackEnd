@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 
 import java.util.List;
 import java.util.Optional;
