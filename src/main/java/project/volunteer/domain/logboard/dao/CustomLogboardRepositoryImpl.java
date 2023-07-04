@@ -8,23 +8,18 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import static project.volunteer.domain.logboard.domain.QLogboard.logboard;
-import static project.volunteer.domain.storage.domain.QStorage.storage;
 import static project.volunteer.domain.sehedule.domain.QSchedule.schedule;
 import static project.volunteer.domain.user.domain.QUser.user;
-import static project.volunteer.domain.image.domain.QImage.image;
 import static project.volunteer.domain.like.domain.QLike.like;
 
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.logboard.dao.dto.QLogboardListQuery;
 import project.volunteer.global.common.component.IsDeleted;
+import project.volunteer.global.common.component.LogboardSearchType;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,15 +36,6 @@ public class CustomLogboardRepositoryImpl implements CustomLogboardRepository {
 				new QLogboardListQuery(
 					logboard.logboardNo, logboard.writer.userNo, logboard.writer.picture,
 					logboard.writer.nickName, logboard.createdDate,
-					ExpressionUtils.as(
-						JPAExpressions
-						.select(Expressions.stringTemplate("group_concat({0})", storage.imagePath).as("pictures"))
-						.from(image)
-						.innerJoin(storage).on(image.storage.storageNo.eq(storage.storageNo))
-						.where(
-								image.realWorkCode.eq(RealWorkCode.LOG)
-								, image.no.eq(logboard.logboardNo)
-						),"pictures"),
 					schedule.recruitment.volunteeringCategory, logboard.content, 
 					logboard.likeCount, like.likeOk.coalesce(false).as("isLikeMe"), 
 					// 댓글 갯수 조회 쿼리 미완성 추후 추가
@@ -66,7 +52,6 @@ public class CustomLogboardRepositoryImpl implements CustomLogboardRepository {
 					logboard.isPublished.eq(Boolean.TRUE),
 					logboard.isDeleted.eq(IsDeleted.N)
 			)
-			//.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.orderBy(logboard.logboardNo.desc())
 			.fetch();
@@ -76,7 +61,7 @@ public class CustomLogboardRepositoryImpl implements CustomLogboardRepository {
 
     // 내가 쓴 로그일 경우 조회
     private BooleanExpression isSearchTypeMyLog(String searchType, Long writerNo) {
-         if (searchType.equals("all")) {
+         if (LogboardSearchType.isAll(searchType)) {
              return null;
          }
          return logboard.writer.userNo.eq(writerNo);
@@ -101,7 +86,6 @@ public class CustomLogboardRepositoryImpl implements CustomLogboardRepository {
         }
         return new SliceImpl<>(results, pageable, hasNext);
     }
-    
     
     
 }

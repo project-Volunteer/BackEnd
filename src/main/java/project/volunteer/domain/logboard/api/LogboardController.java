@@ -27,12 +27,15 @@ import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.logboard.api.dto.request.LogBoardRequestParam;
+import project.volunteer.domain.logboard.api.dto.response.LogboardDetailResponse;
+import project.volunteer.domain.logboard.api.dto.response.LogboardList;
 import project.volunteer.domain.logboard.api.dto.response.LogboardListResponse;
 import project.volunteer.domain.logboard.application.LogboardService;
-import project.volunteer.domain.logboard.application.dto.LogboardDetails;
+import project.volunteer.domain.logboard.application.dto.LogboardDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.global.common.component.LogboardSearchType;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -59,18 +62,20 @@ public class LogboardController {
 	}
 	
 	@GetMapping("/logboard/edit/{no}")
-	public ResponseEntity<LogboardDetails> logboardDetails(@PathVariable Long no) {
+	public ResponseEntity<LogboardDetailResponse> logboardDetails(@PathVariable Long no) {
 		List<String> imagePath = new ArrayList<>();
 		
-		LogboardDetails logboardDetails = logboardService.findLogboard(no);
+		LogboardDetail logboardDetail = logboardService.findLogboard(no);
 
 		List<Image> logImages = imageRepository.findImagesByCodeAndNo(RealWorkCode.LOG, no);
 		for(Image logImage : logImages) {
 			imagePath.add(logImage.getStorage().getImagePath());
 		}
 		
-		logboardDetails.setPicture(imagePath);
-		return ResponseEntity.ok(logboardDetails);
+		logboardDetail.setPicture(imagePath);
+		LogboardDetailResponse logboardDetailResponse = new LogboardDetailResponse(logboardDetail);
+		
+		return ResponseEntity.ok(logboardDetailResponse);
 	}
 	
 	@PostMapping("/logboard/edit/{no}")
@@ -103,20 +108,40 @@ public class LogboardController {
 		
 		return ResponseEntity.ok().build();
 	}
-	
+
 	
 	@GetMapping("/logboard")
 	public ResponseEntity<LogboardListResponse> logboardList(@PageableDefault(size = 6) Pageable pageable,
 										@RequestParam String search_type,
 										@RequestParam(required = false) Long last_id) {
-		Slice<LogboardListQuery> queryResult = logboardRepository.findLogboardDtos(pageable, search_type, SecurityUtil.getLoginUserNo(), last_id);
-		List<LogboardListQuery> list =  new ArrayList<>(queryResult.toList());
+		// 봉사 로그 쿼리 결과
+		Slice<LogboardListQuery> logboardQueryResults = logboardRepository.findLogboardDtos(pageable, search_type, SecurityUtil.getLoginUserNo(), last_id);
+		List<LogboardListQuery> logboardQueryResultLists =  new ArrayList<>(logboardQueryResults.toList());
+		
+		List<LogboardList> logboardLists =  new ArrayList<>();
+		
+		// 봉사 로그 쿼리 결과로 response 리턴 객체 생성 로직
+		for(LogboardListQuery l : logboardQueryResultLists) {
+			// response 리턴용 봉사로그 개별 인스턴스 생성
+			LogboardList logboardList = 
+					new LogboardList(l.getNo(),l.getWriterNo(),l.getProfile(),l.getNickname(),
+									l.getCreatedDay(),l.getVolunteeringCategory(),l.getContent(),
+									l.getLikeCnt(),l.isLikeMe(),l.getCommentCnt());
+			
+			// 이미지 쿼리 조회 및 response 리턴용 이미지 개별 인스턴스 생성 
+			List<Image> logboardImageList = imageRepository.findImagesByCodeAndNo(RealWorkCode.LOG, l.getWriterNo());
+			logboardList.setPicturesFromImageDomain(logboardImageList);
+			
+			logboardLists.add(logboardList);
+		}
 		
 		LogboardListResponse logBoardListResponse = 
-				new LogboardListResponse(list, 
-										queryResult.isLast(), 
-										(list.isEmpty()) ? null:(list.get(list.size()-1).getNo())
+				new LogboardListResponse(
+						logboardLists,
+						logboardQueryResults.isLast(), 
+						(logboardLists.isEmpty()) ? null:(logboardLists.get(logboardLists.size()-1).getNo())
 				);
+		
 		return ResponseEntity.ok(logBoardListResponse);
 	}
 	
