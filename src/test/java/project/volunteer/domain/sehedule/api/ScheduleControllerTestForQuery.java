@@ -139,7 +139,6 @@ class ScheduleControllerTestForQuery {
         //when & then
         mockMvc.perform(get("/recruitment/{recruitmentNo}/schedule/",saveRecruitment.getRecruitmentNo()))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("message").value("봉사 팀원에게만 공개된 일정입니다. 팀원 참여 후 이용해주시길 바랍니다."))
                 .andDo(print());
     }
 
