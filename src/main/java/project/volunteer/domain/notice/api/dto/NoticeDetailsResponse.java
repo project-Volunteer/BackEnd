@@ -3,14 +3,14 @@ package project.volunteer.domain.notice.api.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.volunteer.domain.notice.application.dto.NoticeDetails;
 
-import javax.validation.constraints.NotEmpty;
-
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoticeEdit {
+@Getter
+public class NoticeDetailsResponse {
 
-    @NotEmpty
-    private String content;
+    NoticeDetails notice;
+    //댓글 details dto 추가 필요
+
 }
