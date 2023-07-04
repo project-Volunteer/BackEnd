@@ -4,13 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import project.volunteer.domain.logboard.application.dto.LogboardDetails;
+import project.volunteer.domain.logboard.application.dto.LogboardDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
@@ -28,11 +24,10 @@ public class LogboardServiceImpl implements LogboardService{
 
 	private final LogboardRepository logboardRepository;
 	private final UserRepository userRepository;
-	private final ParticipantRepository participantRepository;
-    private final RecruitmentRepository recruitmentRepository;
 	private final ScheduleRepository scheduleRepository;
 	private final ScheduleParticipationRepository scheduleParticipationRepository;
     
+	@Transactional
 	@Override
 	public Long addLog(Long userNo, String content, Long scheduleNo, Boolean isPublished) {
 		// 사용자 존재 유무 검증
@@ -41,18 +36,8 @@ public class LogboardServiceImpl implements LogboardService{
 		// 일정 유무 검증(is_deleted Y도 가능)
 		Schedule findSchedule = isScheduleExists(scheduleNo);
 		
-		// 모집글 존재유무 검증(is_deleted Y도 가능)
-		// DB설계상 일정이 있으면 모집글이 없을 수 없음
-		
 		// 로그 이미 등록 했는지 여부 검증
 		isLogboardAlreadyWrite(userNo, scheduleNo);
-		
-		// 모집글 참여중 상태 검증
-		// TODO : 회의시 논의
-		// 필요할까?? 참여완료 후 탈퇴했다면 로그 작성을 못하나??
-		Long recruitmentNo = findSchedule.getRecruitment().getRecruitmentNo();
-		Participant participant = isRecruitmentJoinApprovalUser(recruitmentNo, userNo);
-		System.out.println("recruitmentNo===="+recruitmentNo+"userNo===="+userNo+"participantState===="+participant.getState());
 		
 		// 일정 참가 완료 승인 상태 검증
 		isScheduleParticipationCompleteApprovalUser(userNo, scheduleNo);
@@ -65,11 +50,13 @@ public class LogboardServiceImpl implements LogboardService{
 	}
 
 	@Override
-	public LogboardDetails findLogboard(Long logboardNo) {
+	public LogboardDetail findLogboard(Long logboardNo) {
 		Logboard logboard = isLogboardExists(logboardNo);
-		return new LogboardDetails(logboard);
+
+		return new LogboardDetail(logboard);
 	}
 
+	@Transactional
 	@Override
 	public void editLog(Long logboardNo, Long userNo, String content, Long scheduleNo, Boolean isPublished) {
 		// 사용자 존재 유무 검증
@@ -79,24 +66,12 @@ public class LogboardServiceImpl implements LogboardService{
 		Logboard findLogboard = isLogboardExists(logboardNo);
 
 		// 작성자 여부 검증
-		if(!userNo.equals(findLogboard.getWriter().getUserNo())) {
-			throw new BusinessException(ErrorCode.FORBIDDEN_LOGBOARD, 
-					String.format("forbidden logboard userno=[%d], logboardno=[%d]", userNo, logboardNo));
-		}
+		isEqualParamUserNoAndFindUserNo(userNo, findLogboard);
 
 		// 일정 유무 검증(is_deleted Y도 가능)
 		Schedule findSchedule = isScheduleExists(scheduleNo);
 
-		// 모집글 존재유무 검증(is_deleted Y도 가능)
-		// DB설계상 일정이 있으면 모집글이 없을 수 없음
-		
-		// 모집글 참여중 상태 검증
-		// TODO : 회의시 논의 > 참여완료 후 탈퇴했다면 로그 수정을 못하나??
-		Long recruitmentNo = findSchedule.getRecruitment().getRecruitmentNo();
-		isRecruitmentJoinApprovalUser(recruitmentNo, userNo);
-		
 		// 일정 참가 완료 승인 상태 검증
-		// TODO : 회의시 논의 > 이미 작성한 이력이있는데 필요할까?? 
 		isScheduleParticipationCompleteApprovalUser(userNo, scheduleNo);
 
 		// 수정
@@ -113,14 +88,9 @@ public class LogboardServiceImpl implements LogboardService{
 		Logboard findLogboard = isLogboardExists(logboardNo);
 		
 		// 작성자 여부 검증
-		if(!userNo.equals(findLogboard.getWriter().getUserNo())) {
-			throw new BusinessException(ErrorCode.FORBIDDEN_LOGBOARD, 
-					String.format("forbidden logboard userno=[%d], logboardno=[%d]", userNo, logboardNo));
-		}
+		isEqualParamUserNoAndFindUserNo(userNo, findLogboard);
 		
 		findLogboard.delete();
-		
-		
 	}
 
 	// validation 메서드
@@ -138,17 +108,9 @@ public class LogboardServiceImpl implements LogboardService{
 						String.format("not found schedule = [%d]", scheduleNo)));
 	}
 	
-	// 모집글 참여중 상태 검증
-	public Participant isRecruitmentJoinApprovalUser(Long recruitmentNo, Long userNo) {
-		return participantRepository.findByRecruitmentNoAndParticipantNoAndState(recruitmentNo, userNo, ParticipantState.JOIN_APPROVAL)
-				.orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-						String.format("UserNo = [%d], RecruitmentNo = [%d]", userNo, recruitmentNo)));
-	}
-	
 	// 로그 이미 등록 했는지 여부 검증
 	public void isLogboardAlreadyWrite(Long userNo, Long scheduleNo) {
-		Integer writeCountLogboard =  logboardRepository.findByUserNoAndSchedulNo(userNo, scheduleNo);
-		if(writeCountLogboard != 0) {
+		if(logboardRepository.existsByUserNoAndSchedulNo(userNo, scheduleNo)) {
 			throw new BusinessException(ErrorCode.DUPLICATE_LOGBOARD,
 					String.format("UserNo = [%d], ScheduleNo = [%d]", userNo, scheduleNo));
 		}
@@ -162,11 +124,19 @@ public class LogboardServiceImpl implements LogboardService{
 							String.format("UserNo = [%d], ScheduleNo = [%d]", userNo, scheduleNo)));
 	}
 	
+	// 일정 참여 후 일정 참가 완료 승인 상태 여부 체크
+	public void isEqualParamUserNoAndFindUserNo(Long ParamUserNo, Logboard findLogboard) {
+		if(!ParamUserNo.equals(findLogboard.getWriter().getUserNo())) {
+			throw new BusinessException(ErrorCode.FORBIDDEN_LOGBOARD, 
+					String.format("forbidden logboard userno=[%d], logboardno=[%d]", ParamUserNo, findLogboard.getLogboardNo()));
+		}
+	}
+	
 	// 로그 존재 유무 확인
 	public Logboard isLogboardExists(Long logboardNo) {
 		return logboardRepository.findById(logboardNo)
 				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_LOGBOARD, 
 						String.format("not found logboard = [%d]", logboardNo)));
 	}
-	
+
 }
