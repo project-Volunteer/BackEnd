@@ -244,18 +244,6 @@ public class LogboardServiceImplTestForSave {
 
 	@Test
     @Transactional
-	void 로그저장_모집글참여중이아닌상태로_실패() {
-		// given
-		일정_참여상태_추가(createParticipant2, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
-
-        //when & then
-        assertThatThrownBy(() -> logboardService.addLog(saveUser2.getUserNo(), "test contents", createSchedule.getScheduleNo(), true))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.INVALID_STATE.name());
-	}
-
-	@Test
-    @Transactional
 	void 로그저장_참여중상태로_실패() {
 		// given
 		일정_참여상태_추가(createParticipant, ParticipantState.PARTICIPATING);

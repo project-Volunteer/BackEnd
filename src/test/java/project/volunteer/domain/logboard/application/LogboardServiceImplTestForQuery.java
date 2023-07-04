@@ -29,7 +29,7 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
-import project.volunteer.domain.logboard.application.dto.LogboardDetails;
+import project.volunteer.domain.logboard.application.dto.LogboardDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.logboard.domain.Logboard;
@@ -195,45 +195,43 @@ public class LogboardServiceImplTestForQuery {
 			모집글 1개 생성(staticImg)
 			스케쥴 1개 생성
 			로그 20개 생성
+			
+			사용자 1의 logboardNo array = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+			사용자 2의 logboardNo array = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
 		 */
-    }
-    @Test
-    void 로그보드_조회() throws Exception {	
-    	// given
+	}
+
+	@Test
+	void 로그보드_조회() throws Exception {
+		LogboardDetail logboardDetails = logboardService.findLogboard(logboardList.get(0).getLogboardNo());
 		
-		// when & then
-    	LogboardDetails logboardDetails = logboardService.findLogboard(logboardList.get(0).getLogboardNo());
-    	
 		Assertions.assertThat(logboardDetails.getContent().equals("content0000"));
-    }
-
-    @Test
-    void 로그보드_조회_없는_로그조회_실패() throws Exception {
-    	// given
-    	
-        // when & then
-        assertThatThrownBy(() -> logboardService.findLogboard(100000L))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.NOT_EXIST_LOGBOARD.name());
-    }
-    
-    
-    //TODO : 댓글수 관련 기능 미완성
-    @Test
-    void 로그보드_리스트_조회_사용자1() throws Exception {
-        //given
-        String searchType = "mylog"; // all, mylog
-        PageRequest page = PageRequest.of(0, 6);
-
-        //when
-        Slice<LogboardListQuery> result = 
-        		logboardRepository.findLogboardDtos(page, searchType, saveUser.getUserNo(), 7L);
-
-        //then
-        Assertions.assertThat(result.getContent().size()).isEqualTo(3);
-        Assertions.assertThat(result.hasNext()).isFalse();
-        Assertions.assertThat(result.getNumber()).isEqualTo(0);
-    }
+	}
+	
+	@Test
+	void 로그보드_조회_없는_로그조회_실패() throws Exception {
+		assertThatThrownBy(() -> logboardService.findLogboard(100000L))
+			.isInstanceOf(BusinessException.class)
+			.hasMessageContaining(ErrorCode.NOT_EXIST_LOGBOARD.name());
+	}
+	
+	//TODO : 댓글수 관련 기능 미완성
+	@Test
+	void 로그보드_리스트_조회_사용자1() throws Exception {
+		//given
+		String searchType = "mylog"; // all, mylog
+		PageRequest page = PageRequest.of(0, 6);
+		
+		//when
+		// 사용자 1의 logboardNo array =  [20, 18, 1, 14, 12, 10,     8, 6, 4, 2]
+		Slice<LogboardListQuery> result = 
+				logboardRepository.findLogboardDtos(page, searchType, saveUser.getUserNo(), 10L);
+		
+		//then
+		Assertions.assertThat(result.getContent().size()).isEqualTo(4);
+		Assertions.assertThat(result.hasNext()).isFalse();
+		Assertions.assertThat(result.getNumber()).isEqualTo(0);
+	}
 
 	@AfterEach
 	public void deleteS3Image() { // S3에 테스트를 위해 저장한 이미지 삭제

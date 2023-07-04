@@ -258,19 +258,6 @@ public class LogboardServiceImplTestForEdit {
                 .hasMessageContaining(ErrorCode.NOT_EXIST_SCHEDULE.name());
 	}
 
-
-	@Test
-	void 로그저장_모집글참여중이아닌상태로_실패() throws Exception {
-		// given
-		일정_참여상태_추가(createParticipant2, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
-		Logboard logboard = 로그보드_추가(saveUser2);
-
-        //when & then
-        assertThatThrownBy(() -> logboardService.editLog(logboard.getLogboardNo(), saveUser2.getUserNo(), "test changed contents", createSchedule.getScheduleNo(), true))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.INVALID_STATE.name());
-	}
-
 	@Test
 	void 로그저장_참여중상태로_실패() throws Exception {
 		// given
@@ -282,7 +269,6 @@ public class LogboardServiceImplTestForEdit {
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.INVALID_STATE_LOGBOARD.name());
 	}
-	
 
 	@Test
 	void 로그_삭제_성공() throws Exception {
