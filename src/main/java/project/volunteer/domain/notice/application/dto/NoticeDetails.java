@@ -12,13 +12,26 @@ import java.time.format.DateTimeFormatter;
 @Getter
 public class NoticeDetails {
 
-    private NoticeList notice;
+    private Long no;
+    private String createdAt;
+    private String createdTime;
+    private String content;
+    private Integer checkCnt;
+    private Integer commentsCnt;
+    private Boolean isChecked;
 
     //댓글 DTO 추가 필요
 
     public static NoticeDetails toDto(Notice notice, Boolean isChecked){
         NoticeDetails dto = new NoticeDetails();
-        dto.notice = NoticeList.toDto(notice, isChecked);
+        dto.no = notice.getNoticeNo();
+        dto.createdAt = notice.getCreatedDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        dto.createdTime = notice.getCreatedDate().format(DateTimeFormatter.ofPattern("HH-mm"));
+        dto.content = notice.getContent();
+        dto.checkCnt = notice.getCheckedNum();
+        dto.commentsCnt = notice.getCommentNum();
+        dto.isChecked = isChecked;
+
         //댓글 DTO 추가 필요
 
         return dto;

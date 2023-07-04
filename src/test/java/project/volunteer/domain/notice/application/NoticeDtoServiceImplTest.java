@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
-import project.volunteer.domain.notice.application.dto.NoticeList;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -70,11 +69,11 @@ class NoticeDtoServiceImplTest {
         clear();
 
         //when
-        List<NoticeList> findDtos = noticeDtoService.findNoticeDtos(saveRecruitment.getRecruitmentNo(), loginUser.getUserNo());
+        List<NoticeDetails> findDtos = noticeDtoService.findNoticeDtos(saveRecruitment.getRecruitmentNo(), loginUser.getUserNo());
 
         //then
         assertThat(findDtos.size()).isEqualTo(3);
-        for(NoticeList dto : findDtos){
+        for(NoticeDetails dto : findDtos){
             assertThat(dto.getIsChecked()).isFalse();
         }
     }
@@ -93,9 +92,9 @@ class NoticeDtoServiceImplTest {
         NoticeDetails noticeDto = noticeDtoService.findNoticeDto(saveRecruitment.getRecruitmentNo(), notice.getNoticeNo(), loginUser.getUserNo());
 
         //then
-        assertThat(noticeDto.getNotice().getContent()).isEqualTo(content);
-        assertThat(noticeDto.getNotice().getIsChecked()).isFalse();
-        assertThat(noticeDto.getNotice().getCheckCnt()).isEqualTo(0);
+        assertThat(noticeDto.getContent()).isEqualTo(content);
+        assertThat(noticeDto.getIsChecked()).isFalse();
+        assertThat(noticeDto.getCheckCnt()).isEqualTo(0);
     }
 
     private void clear() {

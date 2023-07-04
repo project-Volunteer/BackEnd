@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
-import project.volunteer.domain.notice.application.dto.NoticeList;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -27,7 +26,7 @@ public class NoticeDtoServiceImpl implements NoticeDtoService{
     private final ConfirmationRepository checkRepository;
 
     @Override
-    public List<NoticeList> findNoticeDtos(Long recruitmentNo, Long userNo) {
+    public List<NoticeDetails> findNoticeDtos(Long recruitmentNo, Long userNo) {
 
         Recruitment findRecruitment = validateAndGetRecruitment(recruitmentNo);
 
@@ -35,7 +34,7 @@ public class NoticeDtoServiceImpl implements NoticeDtoService{
                 .map(n -> {
                     //공지사항 읽음 확인을 위한 별도 쿼리 사용
                     Boolean isChecked = checkRepository.existsCheck(userNo, RealWorkCode.NOTICE, n.getNoticeNo());
-                    return NoticeList.toDto(n, isChecked);
+                    return NoticeDetails.toDto(n, isChecked);
                 })
                 .collect(Collectors.toList());
     }
