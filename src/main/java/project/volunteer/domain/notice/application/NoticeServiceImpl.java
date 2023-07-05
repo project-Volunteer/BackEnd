@@ -65,8 +65,6 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public void readNotice(Long recruitmentNo, Long noticeNo, Long userNo) {
         //봉사 모집글 검증
-        //기간 만료 시 공지사항 확인/취소 불가능?!
-        //만약 불가능 시 error message 도 수정하기
         validateAndGetRecruitment(recruitmentNo);
 
         //봉사 공지사항 검증
@@ -90,8 +88,6 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public void readCancelNotice(Long recruitmentNo, Long noticeNo, Long userNo) {
         //봉사 모집글 검증
-        //기간 만료 시 공지사항 확인/취소 불가능?!
-        //만약 불가능 시 error message 도 수정하기
         validateAndGetRecruitment(recruitmentNo);
 
         //봉사 공지사항 검증
