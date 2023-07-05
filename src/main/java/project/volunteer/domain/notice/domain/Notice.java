@@ -47,16 +47,16 @@ public class Notice extends BaseTimeEntity {
         createNotice.commentNum = 0;
         return createNotice;
     }
-
     public Notice updateNotice(String content){
         this.content = content;
         return this;
     }
 
     public void delete(){this.isDeleted = IsDeleted.Y;}
-
     public void setRecruitment(Recruitment recruitment){
         this.recruitment = recruitment;
     }
+    public void increaseCheckNum(){this.checkedNum++;}
+    public void decreaseCheckNum(){this.checkedNum--;}
 
 }

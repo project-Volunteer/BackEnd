@@ -56,8 +56,11 @@ public enum ErrorCode {
     NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, "notExist.notice"),
     EXPIRED_PERIOD_NOTICE(HttpStatus.BAD_REQUEST, "expired.period.notice"),
 
-    ;
+    //확인 관련
+    NOT_EXIST_CONFIRMATION(HttpStatus.BAD_REQUEST, "notExist.confirmation"),
+    INVALID_CONFIRMATION(HttpStatus.BAD_REQUEST, "invalid.confirmation")
 
+    ,;
     private final HttpStatus httpStatus; //상태 코드
     private final String propertiesCode; //메시지 코드
 

@@ -15,6 +15,8 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
+import project.volunteer.domain.confirmation.domain.Confirmation;
 import project.volunteer.domain.notice.api.dto.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.NoticeEdit;
 import project.volunteer.domain.notice.dao.NoticeRepository;
@@ -28,10 +30,7 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.Address;
-import project.volunteer.global.common.component.Coordinate;
-import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.common.component.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -50,6 +49,7 @@ class NoticeControllerTest {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired NoticeRepository noticeRepository;
+    @Autowired ConfirmationRepository confirmationRepository;
 
     User writer;
     Recruitment saveRecruitment;
@@ -167,10 +167,49 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.noticeList[2].content").value(addNoticeContent3));
     }
 
+    @Test
+    @DisplayName("봉사 공지사항 읽음 확인에 성공하다.")
+    @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void noticeRead() throws Exception {
+        //given
+        final String addNoticeContent = "add";
+        Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
+
+        //when & then
+        mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/read", saveRecruitment.getRecruitmentNo(),saveNotice.getNoticeNo())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("봉사 공지사항 읽음 해제에 성공하다.")
+    @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void noticeReaCancel() throws Exception {
+        //given
+        final String addNoticeContent = "add";
+        Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
+        읽음_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), writer);
+        saveNotice.increaseCheckNum();
+
+        //when & then
+        mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}/cancel", saveRecruitment.getRecruitmentNo(),saveNotice.getNoticeNo())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
     private Notice 공지사항_등록(String content, Recruitment recruitment){
         Notice createNotice = Notice.createNotice(content);
         createNotice.setRecruitment(recruitment);
         return noticeRepository.save(createNotice);
+    }
+    private Confirmation 읽음_등록(RealWorkCode code, Long no, User user){
+        Confirmation createConfirmation = Confirmation.createConfirmation(code, no);
+        createConfirmation.setUser(user);
+        return confirmationRepository.save(createConfirmation);
     }
     private <T> String toJson(T data) throws JsonProcessingException {
         return objectMapper.writeValueAsString(data);

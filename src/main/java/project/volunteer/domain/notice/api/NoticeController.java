@@ -65,4 +65,21 @@ public class NoticeController {
 
         return ResponseEntity.ok(new NoticeDetailsResponse(noticeDto)); //댓글 details dto 추가 필요
     }
+
+    @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
+    @PostMapping("/{recruitmentNo}/notice/{noticeNo}/read")
+    public ResponseEntity noticeRead(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
+
+        noticeService.readNotice(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        return ResponseEntity.ok().build();
+    }
+
+    @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
+    @DeleteMapping("/{recruitmentNo}/notice/{noticeNo}/cancel")
+    public ResponseEntity noticeReadCancel(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
+
+        noticeService.readCancelNotice(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        return ResponseEntity.ok().build();
+    }
+
 }
