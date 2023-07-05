@@ -110,7 +110,7 @@ public class LogboardServiceImpl implements LogboardService{
 	
 	// 로그 이미 등록 했는지 여부 검증
 	public void isLogboardAlreadyWrite(Long userNo, Long scheduleNo) {
-		if(logboardRepository.existsByUserNoAndSchedulNo(userNo, scheduleNo)) {
+		if(logboardRepository.existsLogboardByUserNoAndSchedulNo(userNo, scheduleNo)) {
 			throw new BusinessException(ErrorCode.DUPLICATE_LOGBOARD,
 					String.format("UserNo = [%d], ScheduleNo = [%d]", userNo, scheduleNo));
 		}
