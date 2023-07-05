@@ -21,7 +21,7 @@ public class ConfirmationRepositoryCustomImpl implements ConfirmationRepositoryC
                 .selectOne()
                 .from(confirmation)
                 .where(
-                        confirmation.confirmationNo.eq(no),
+                        confirmation.no.eq(no),
                         confirmation.realWorkCode.eq(code),
                         confirmation.user.userNo.eq(userNo))
                 .fetchFirst();//limit 1

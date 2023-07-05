@@ -10,4 +10,6 @@ public interface NoticeService {
     public void editNotice(Long recruitmentNo, Long noticeNo, NoticeEdit dto);
     public void deleteNotice(Long recruitmentNo, Long noticeNo);
 
+    public void readNotice(Long recruitmentNo, Long noticeNo, Long userNo);
+    public void readCancelNotice(Long recruitmentNo, Long noticeNo, Long userNo);
 }
