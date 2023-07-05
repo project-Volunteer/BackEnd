@@ -55,13 +55,13 @@ class ParticipationControllerTest {
     @BeforeEach
     public void init(){
         //로그인 사용자 저장
-        User login = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
-                true, true, true, Role.USER, "kakao", "1234", null);
+        User login = User.createUser("pct_login", "pct_login", "pct_login", "pct_login", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "pct_login", null);
         loginUser = userRepository.save(login);
 
         //작성자 저장
-        User writerUser = User.createUser("4321", "4321", "4321", "4321", Gender.M, LocalDate.now(), "4321",
-                true, true, true, Role.USER, "kakao", "4321", null);
+        User writerUser = User.createUser("pct_writer", "pct_writer", "pct_writer", "pct_writer", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "pct_writer", null);
         writer = userRepository.save(writerUser);
 
         //모집글 저장
@@ -96,7 +96,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_성공() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -108,7 +108,7 @@ class ParticipationControllerTest {
                 .andDo(print());
     }
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_없는모집글() throws Exception {
         //given
         final Long recruitmentNo = Long.MAX_VALUE;
@@ -121,7 +121,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_종료된모집글() throws Exception {
         //given
         Timetable newTime = Timetable.builder()
@@ -143,7 +143,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_중복신청() throws Exception {
         //given
         참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
@@ -158,7 +158,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청_실패_참가가능인원초과() throws Exception {
         //given
         Recruitment findRecruitment = 저장된_모집글_가져오기();
@@ -183,7 +183,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청취소_성공() throws Exception {
         //given
         참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
@@ -198,7 +198,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청취소_실패_잘못된상태() throws Exception {
         //given
         참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
@@ -213,7 +213,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_성공() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -230,7 +230,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_실패_권한없음() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -247,7 +247,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_실패_잘못된상태() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -264,7 +264,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀신청승인_실패_승인가능인원초과() throws Exception {
         //given
         //승인 가능인원 1명
@@ -294,7 +294,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀원강제탈퇴_성공() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -311,7 +311,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 봉사모집글_팀원강제탈퇴_실패_잘못된상태() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -328,7 +328,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void notNull_valid_테스트() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -343,7 +343,7 @@ class ParticipationControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "4321", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void notEmpty_valid_테스트() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();

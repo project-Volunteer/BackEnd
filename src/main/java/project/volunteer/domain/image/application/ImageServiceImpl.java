@@ -9,6 +9,7 @@ import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.storage.application.StorageService;

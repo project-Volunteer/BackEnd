@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.api;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -134,6 +135,10 @@ class RecruitmentControllerTestForWrite {
                 .provider("kakao").providerId("1234")
                 .build());
         clear();
+    }
+    @AfterEach
+    private void cleanData(){
+        userRepository.deleteAll();
     }
 
     @Test

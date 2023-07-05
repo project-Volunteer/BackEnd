@@ -181,12 +181,11 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
         clear();
 
         //then
-        List<Schedule> schedules = scheduleRepository.findAll(); //자동으로 저장한 일정 리스트 가져오기
-        assertThat(schedules.size()).isEqualTo(10);
+        assertThat(saveScheduleNos.size()).isEqualTo(10);
     }
 
     @Test
@@ -204,12 +203,11 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
         clear();
 
         //then
-        List<Schedule> schedules = scheduleRepository.findAll();
-        assertThat(schedules.size()).isEqualTo(8);
+        assertThat(saveScheduleNos.size()).isEqualTo(8);
     }
 
 }

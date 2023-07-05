@@ -51,6 +51,11 @@ public enum ErrorCode {
     DUPLICATE_LOGBOARD(HttpStatus.BAD_REQUEST, "duplicate.logboard"),
     INVALID_STATE_LOGBOARD(HttpStatus.BAD_REQUEST, "invalid.state.logboard"),
     FORBIDDEN_LOGBOARD(HttpStatus.FORBIDDEN, "forbidden.logboard"),
+
+    //공지사항 관련
+    NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, "notExist.notice"),
+    EXPIRED_PERIOD_NOTICE(HttpStatus.BAD_REQUEST, "expired.period.notice"),
+
     ;
 
     private final HttpStatus httpStatus; //상태 코드

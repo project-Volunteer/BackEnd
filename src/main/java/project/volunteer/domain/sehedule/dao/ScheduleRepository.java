@@ -1,10 +1,12 @@
 package project.volunteer.domain.sehedule.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
+import javax.persistence.LockModeType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,19 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,Custom
             "where s.scheduleNo=:no " +
             "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
     public Optional<Schedule> findValidSchedule(@Param("no") Long scheduleNo);
+    @Query("select s " +
+            "from Schedule s " +
+            "where s.scheduleNo=:no " +
+            "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    @Lock(LockModeType.OPTIMISTIC) //낙관적 락 사용
+    public Optional<Schedule> findValidScheduleWithOPTIMSTICLock(@Param("no") Long scheduleNo);
+    @Query("select s " +
+            "from Schedule s " +
+            "where s.scheduleNo=:no " +
+            "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    @Lock(LockModeType.PESSIMISTIC_WRITE) //비관적 락 사용
+    public Optional<Schedule> findValidScheduleWithPESSIMISTIC_WRITE_Lock(@Param("no") Long scheduleNo);
+
 
     @Query("select s " +
             "from Schedule s " +
@@ -30,9 +45,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,Custom
 
     @Query("select s " +
             "from Schedule s " +
-            "where s.scheduleNo=:no " +
-            "and s.scheduleTimeTable.endDay > current_date " +
+            "where s.scheduleTimeTable.endDay < current_date " +
             "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    Optional<Schedule> findActivateSchedule(@Param("no")Long scheduleNo);
+    List<Schedule> findCompletedSchedule();
 
 }

@@ -28,7 +28,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
     @Transactional
     public void participate(Long recruitmentNo, Long scheduleNo, Long loginUserNo) {
         //일정 검증(존재 여부, 모집 기간)
-        Schedule findSchedule = isActiveSchedule(scheduleNo);
+        Schedule findSchedule = isActiveScheduleWithPERSSIMITIC_WRITE_Lock(scheduleNo);
 
         //모집 인원 검증
         if(findSchedule.isFullParticipant()){
@@ -61,7 +61,6 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                         }
                 );
 
-        //일정 참가자 수 증가
         findSchedule.increaseParticipant();
     }
 
@@ -117,10 +116,23 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                     sp.updateState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
                 });
     }
-
     private Schedule isActiveSchedule(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
         Schedule findSchedule = scheduleRepository.findValidSchedule(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
+                        String.format("Schedule to participant = [%d]", scheduleNo)));
+
+        //일정 마감 일자 조회
+        if(!findSchedule.isAvailableDate()){
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE,
+                    String.format("ScheduleNo = [%d], participation period = [%s]", findSchedule.getScheduleNo(), findSchedule.getScheduleTimeTable().getEndDay().toString()));
+        }
+
+        return findSchedule;
+    }
+    private Schedule isActiveScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo){
+        //일정 조회(삭제되지 않은지만 검증)
+        Schedule findSchedule = scheduleRepository.findValidScheduleWithPESSIMISTIC_WRITE_Lock(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
 

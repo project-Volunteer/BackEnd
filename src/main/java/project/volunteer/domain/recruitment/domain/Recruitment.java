@@ -169,4 +169,5 @@ public class Recruitment extends BaseTimeEntity {
         return this.VolunteeringTimeTable.getEndDay().isAfter(LocalDate.now());
     }
 
+    public Boolean isDoneDate(){return this.VolunteeringTimeTable.getEndDay().isBefore(LocalDate.now());}
 }

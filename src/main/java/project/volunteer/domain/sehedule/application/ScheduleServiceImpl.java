@@ -19,6 +19,7 @@ import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
@@ -60,7 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public void addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
+    public List<Long> addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(recruitmentNo);
@@ -71,8 +72,8 @@ public class ScheduleServiceImpl implements ScheduleService{
                 (makeDatsOfRegWeek(dto.getTimetable().getStartDay(), dto.getTimetable().getEndDay(), dto.getRepeatPeriodParam().getDays()));
 
         //스케줄 등록
-        scheduleDate.stream()
-                .forEach(date -> {
+        return scheduleDate.stream()
+                .map(date -> {
                     Timetable timetable = Timetable.createTimetable(date, date, dto.getTimetable().getHourFormat(),
                             dto.getTimetable().getStartTime(), dto.getTimetable().getProgressTime());
 
@@ -82,9 +83,13 @@ public class ScheduleServiceImpl implements ScheduleService{
                     Schedule schedule =
                             Schedule.createSchedule(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());
                     schedule.setRecruitment(recruitment);
-
-                    scheduleRepository.save(schedule);
-                });
+                    return schedule;
+                })
+                .map(s -> {
+                    Schedule saveSchedule = scheduleRepository.save(s);
+                    return saveSchedule.getScheduleNo();
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -145,6 +150,21 @@ public class ScheduleServiceImpl implements ScheduleService{
 
         //기간 내에 일정 리스트 조회
         return scheduleRepository.findScheduleWithinPeriod(recruitmentNo, startDay, endDay);
+    }
+
+    @Override
+    @Transactional
+    public void finishSchedules() {
+        //완료된 일정 찾기
+        List<Schedule> completedSchedules = scheduleRepository.findCompletedSchedule();
+
+        for(Schedule schedule : completedSchedules){
+            List<ScheduleParticipation> findSps = scheduleParticipationRepository.findBySchedule_ScheduleNoAndState(schedule.getScheduleNo(), ParticipantState.PARTICIPATING);
+            for(ScheduleParticipation sp : findSps){
+                //일정 참여 완료 미승인 상태로 업데이트
+                sp.updateState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
+            }
+        }
     }
 
 

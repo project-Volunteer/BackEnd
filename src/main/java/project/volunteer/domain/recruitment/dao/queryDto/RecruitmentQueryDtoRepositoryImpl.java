@@ -12,7 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentListQuery;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.*;

@@ -47,8 +47,8 @@ class ScheduleControllerTestForWrite {
     @BeforeEach
     public void setup(){
         //작성자 저장
-        User writer = User.createUser("1234", "1234", "1234", "1234", Gender.M, LocalDate.now(), "1234",
-                true, true, true, Role.USER, "kakao", "1234", null);
+        User writer = User.createUser("sctfw1234", "sctfw1234", "sctfw1234", "sctfw1234", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "sctfw1234", null);
         userRepository.save(writer);
 
         //Embedded 값 세팅
@@ -67,7 +67,7 @@ class ScheduleControllerTestForWrite {
     @DisplayName("수동 일정 등록에 성공하다.")
     @Test
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfw1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void scheduleAdd() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -94,7 +94,7 @@ class ScheduleControllerTestForWrite {
     @DisplayName("방장이 아닌 사용자가 수동 일정 등록을 시도하다.")
     @Test
     @Transactional
-    @WithMockCustomUser(tempValue = "forbidden")
+    @WithMockCustomUser(tempValue = "sctfw_forbidden")
     public void forbidden() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -122,7 +122,7 @@ class ScheduleControllerTestForWrite {
     @DisplayName("수동 일정 등록간 입력값 조건을 위반하다.")
     @Test
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfw1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void beanValidation() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
@@ -150,7 +150,7 @@ class ScheduleControllerTestForWrite {
     @DisplayName("수동 일정 등록간 모집 인원은 봉사 팀원 최대 인원보다 많을 수 없다.")
     @Test
     @Transactional
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "sctfw1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void exceedVolunteerNum() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
