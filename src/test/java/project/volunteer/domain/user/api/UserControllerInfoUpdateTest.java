@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -24,13 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import project.volunteer.domain.image.dao.ImageRepository;
+import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.infra.s3.FileService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,9 +41,17 @@ public class UserControllerInfoUpdateTest {
 	@Autowired ObjectMapper objectMapper;
 	@Autowired UserRepository userRepository;
 	@Autowired MockMvc mockMvc;
+	@Autowired ImageRepository imageRepository;
+	@Autowired FileService fileService;
 	@PersistenceContext EntityManager em;
 
 	private static User saveUser;
+	
+	private MockMultipartFile getFakeMockMultipartFile() throws IOException {
+		return new MockMultipartFile(
+				"picture.uploadImage", "".getBytes());
+	}
+    
 
 	private void clear() {
 		em.flush();
@@ -69,15 +79,6 @@ public class UserControllerInfoUpdateTest {
 				.build());
 		clear();
 	}
-
-    private <T> String toJson(T data) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(data);
-    }
-
-    private MockMultipartFile getRealMockMultipartFile() throws IOException {
-        return new MockMultipartFile(
-                "profile", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
-    }
     
 	@Test
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -90,7 +91,7 @@ public class UserControllerInfoUpdateTest {
         //when & then
         mockMvc.perform(
                 multipart("/user")
-                        .file(getRealMockMultipartFile())
+                        .file(getFakeMockMultipartFile())
                         .params(param)
                 )
                 .andExpect(status().isOk())
@@ -128,5 +129,4 @@ public class UserControllerInfoUpdateTest {
                 .andExpect(status().isBadRequest())
                 .andDo(print());
 	}
-    
 }

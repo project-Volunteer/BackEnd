@@ -45,10 +45,17 @@ public enum ErrorCode {
     NOT_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "notExist.schedule"),
     EXCEED_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "exceed.capacity.participant"),
     INSUFFICIENT_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "insufficient.capacity.participant"),
+    
+    //로그보드 관련
+    NOT_EXIST_LOGBOARD(HttpStatus.BAD_REQUEST, "notExist.logboard"),
+    DUPLICATE_LOGBOARD(HttpStatus.BAD_REQUEST, "duplicate.logboard"),
+    INVALID_STATE_LOGBOARD(HttpStatus.BAD_REQUEST, "invalid.state.logboard"),
+    FORBIDDEN_LOGBOARD(HttpStatus.FORBIDDEN, "forbidden.logboard"),
 
     //공지사항 관련
     NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, "notExist.notice"),
     EXPIRED_PERIOD_NOTICE(HttpStatus.BAD_REQUEST, "expired.period.notice"),
+
     ;
 
     private final HttpStatus httpStatus; //상태 코드

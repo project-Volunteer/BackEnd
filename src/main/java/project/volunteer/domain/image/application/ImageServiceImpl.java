@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
+import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -26,6 +28,7 @@ public class ImageServiceImpl implements ImageService{
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
+    private final LogboardRepository logboardRepository;
 
     @Transactional
     @Override
@@ -77,6 +80,9 @@ public class ImageServiceImpl implements ImageService{
         }else if(code==RealWorkCode.RECRUITMENT){
             recruitmentRepository.findById(no).orElseThrow(() ->
                     new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", no)));
+        }else if(code==RealWorkCode.LOG) {
+        	 logboardRepository.findById(no).orElseThrow(() ->
+                    new BusinessException(ErrorCode.NOT_EXIST_LOGBOARD, String.format("Logboard No = [%d]", no)));
         }
     }
 
