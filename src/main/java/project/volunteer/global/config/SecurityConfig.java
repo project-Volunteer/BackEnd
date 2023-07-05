@@ -107,7 +107,8 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.DELETE, "/recruitment/*/notice/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/recruitment/*/notice").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/recruitment/*/notice/*").hasAuthority("USER")
-
+					.antMatchers(HttpMethod.POST, "/recruitment/*/notice/*/read").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/recruitment/*/notice/*/cancel").hasAuthority("USER")
 
 			.anyRequest().permitAll()
 			.and()
