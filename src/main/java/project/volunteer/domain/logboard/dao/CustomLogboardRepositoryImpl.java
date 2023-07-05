@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import static project.volunteer.domain.logboard.domain.QLogboard.logboard;
 import static project.volunteer.domain.sehedule.domain.QSchedule.schedule;
