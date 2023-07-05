@@ -1,8 +1,6 @@
 package project.volunteer.domain.logboard.application;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.assertj.core.api.Assertions;
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +26,6 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -56,6 +52,7 @@ import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;

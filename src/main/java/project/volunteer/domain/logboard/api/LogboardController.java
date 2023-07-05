@@ -25,7 +25,6 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
 import project.volunteer.domain.logboard.api.dto.request.LogBoardRequestParam;
 import project.volunteer.domain.logboard.api.dto.response.LogboardDetailResponse;
 import project.volunteer.domain.logboard.api.dto.response.LogboardList;
@@ -36,6 +35,7 @@ import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.global.common.component.LogboardSearchType;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.util.SecurityUtil;
 
