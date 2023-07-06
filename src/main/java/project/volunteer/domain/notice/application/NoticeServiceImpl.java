@@ -69,6 +69,7 @@ public class NoticeServiceImpl implements NoticeService{
 
         //봉사 공지사항 검증
         Notice findNotice = validateAndGetNotice(noticeNo);
+//        Notice findNotice = validateAndGetNoticeWithOPTIMSTIC_LOCK(noticeNo); //낙관적 락 사용
 
         //봉사 공지사항 유무 검증
         if(confirmationRepository.existsCheck(userNo, RealWorkCode.NOTICE, findNotice.getNoticeNo())){
@@ -114,6 +115,10 @@ public class NoticeServiceImpl implements NoticeService{
     }
     private Notice validateAndGetNotice(Long noticeNo){
         return noticeRepository.findValidNotice(noticeNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
+    }
+    private Notice validateAndGetNoticeWithOPTIMSTIC_LOCK(Long noticeNo){
+        return noticeRepository.findValidNoticeWithOPTIMSTICLOCK(noticeNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
     }
     private User validateAndGetUser(Long userNo){
