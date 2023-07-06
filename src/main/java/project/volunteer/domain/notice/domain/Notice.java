@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "vlt_notice")
 public class Notice extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +30,9 @@ public class Notice extends BaseTimeEntity {
 
     @Column(name = "comment_num", nullable = false)
     private Integer commentNum;
+
+    @Version //낙관적 락 사용
+    private Integer version;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitmentno")
