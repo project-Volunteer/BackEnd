@@ -1,12 +1,11 @@
-package project.volunteer.domain.notice.application;
+package project.volunteer.concurrent.notice;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
-import project.volunteer.domain.notice.api.dto.NoticeAdd;
-import project.volunteer.domain.notice.api.dto.NoticeEdit;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -17,59 +16,24 @@ import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
-@Service
+//@Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class NoticeServiceImpl implements NoticeService{
+@Slf4j
+public class NoticeConcurrentTestService {
 
     private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final NoticeRepository noticeRepository;
     private final ConfirmationRepository confirmationRepository;
 
-    @Override
     @Transactional
-    public Notice addNotice(Long recruitmentNo, NoticeAdd dto) {
-        //모집글 검증
-        Recruitment findRecruitment = validateAndGetRecruitment(recruitmentNo);
-
-        Notice createNotice = dto.toEntity();
-        createNotice.setRecruitment(findRecruitment);
-
-        return noticeRepository.save(createNotice);
-    }
-
-    @Override
-    @Transactional
-    public void editNotice(Long recruitmentNo, Long noticeNo, NoticeEdit dto) {
-        //모집글 검증
-        validateAndGetRecruitment(recruitmentNo);
-
-        Notice findNotice = noticeRepository.findValidNotice(noticeNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
-        findNotice.updateNotice(dto.getContent());
-    }
-
-    @Override
-    @Transactional
-    public void deleteNotice(Long recruitmentNo, Long noticeNo) {
-        //모집글 검증
-        validateAndGetRecruitment(recruitmentNo);
-
-        Notice findNotice = noticeRepository.findValidNotice(noticeNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
-        findNotice.delete();
-    }
-
-    @Override
-    @Transactional
-    public void readNotice(Long recruitmentNo, Long noticeNo, Long userNo) {
+    public void readNoticeBasic(Long recruitmentNo, Long noticeNo, Long userNo) {
         //봉사 모집글 검증
         validateAndGetRecruitment(recruitmentNo);
 
         //봉사 공지사항 검증
-//        Notice findNotice = validateAndGetNotice(noticeNo);
-        Notice findNotice = validateAndGetNoticeWithOPTIMSTIC_LOCK(noticeNo); //낙관적 락 사용
+        Notice findNotice = validateAndGetNotice(noticeNo);
 
         //봉사 공지사항 유무 검증
         if(confirmationRepository.existsCheck(userNo, RealWorkCode.NOTICE, findNotice.getNoticeNo())){
@@ -85,21 +49,50 @@ public class NoticeServiceImpl implements NoticeService{
         findNotice.increaseCheckNum();
     }
 
-    @Override
     @Transactional
-    public void readCancelNotice(Long recruitmentNo, Long noticeNo, Long userNo) {
+    public void readNoticeOPTIMISTIC_LOCK(Long recruitmentNo, Long noticeNo, Long userNo){
+        //봉사 모집글 검증
+        validateAndGetRecruitment(recruitmentNo);
+
+        //봉사 공지사항 검증
+        Notice findNotice = validateAndGetNotice_OPTIMSTIC_LOCK(noticeNo);
+
+        //봉사 공지사항 유무 검증
+        if (confirmationRepository.existsCheck(userNo, RealWorkCode.NOTICE, findNotice.getNoticeNo())) {
+            throw new BusinessException(ErrorCode.INVALID_CONFIRMATION,
+                    String.format("code = [%s], NoticeNo = [%d], userNo = [%d]", RealWorkCode.NOTICE.name(), noticeNo, userNo));
+        }
+
+        Confirmation createConfirmation = Confirmation.createConfirmation(RealWorkCode.NOTICE, findNotice.getNoticeNo());
+        User loginUser = validateAndGetUser(userNo);
+        createConfirmation.setUser(loginUser);
+
+        confirmationRepository.save(createConfirmation);
+        findNotice.increaseCheckNum();
+    }
+
+    @Transactional
+    public void readNotice_UNIQUE_KEY(Long recruitmentNo, Long noticeNo, Long userNo){
         //봉사 모집글 검증
         validateAndGetRecruitment(recruitmentNo);
 
         //봉사 공지사항 검증
         Notice findNotice = validateAndGetNotice(noticeNo);
 
-        //공지사항 읽음 삭제
-        Confirmation findConfirmation = validateAndGetConfirmation(RealWorkCode.NOTICE, noticeNo, userNo);
-        confirmationRepository.delete(findConfirmation);
+        //봉사 공지사항 유무 검증
+        if (confirmationRepository.existsCheck(userNo, RealWorkCode.NOTICE, findNotice.getNoticeNo())) {
+            throw new BusinessException(ErrorCode.INVALID_CONFIRMATION,
+                    String.format("code = [%s], NoticeNo = [%d], userNo = [%d]", RealWorkCode.NOTICE.name(), noticeNo, userNo));
+        }
 
-        findNotice.decreaseCheckNum();
+        Confirmation createConfirmation = Confirmation.createConfirmation(RealWorkCode.NOTICE, findNotice.getNoticeNo());
+        User loginUser = validateAndGetUser(userNo);
+        createConfirmation.setUser(loginUser);
+
+        confirmationRepository.save(createConfirmation);
+        findNotice.increaseCheckNum();
     }
+
 
     private Recruitment validateAndGetRecruitment(Long recruitmentNo){
         //모집글 검증(출판 and 삭제 x)
@@ -113,21 +106,17 @@ public class NoticeServiceImpl implements NoticeService{
         }
         return findRecruitment;
     }
-    private Notice validateAndGetNotice(Long noticeNo){
-        return noticeRepository.findValidNotice(noticeNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
-    }
-    private Notice validateAndGetNoticeWithOPTIMSTIC_LOCK(Long noticeNo){
-        return noticeRepository.findValidNoticeWithOPTIMSTICLOCK(noticeNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
-    }
     private User validateAndGetUser(Long userNo){
         return userRepository.findByUserNo(userNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_USER, String.format("UserNo = [%d]", userNo)));
     }
-    private Confirmation validateAndGetConfirmation(RealWorkCode code, Long no, Long userNo){
-        return confirmationRepository.findConfirmation(userNo, code, no)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_CONFIRMATION,
-                        String.format("code = [%s], no = [%d], userNo = [%d]", code.name(), no, userNo)));
+
+    private Notice validateAndGetNotice(Long noticeNo){
+        return noticeRepository.findValidNotice(noticeNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
+    }
+    private Notice validateAndGetNotice_OPTIMSTIC_LOCK(Long noticeNo){
+        return noticeRepository.findValidNoticeWithOPTIMSTICLOCK(noticeNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
     }
 }

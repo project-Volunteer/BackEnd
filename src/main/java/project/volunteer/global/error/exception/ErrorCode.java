@@ -58,7 +58,8 @@ public enum ErrorCode {
 
     //확인 관련
     NOT_EXIST_CONFIRMATION(HttpStatus.BAD_REQUEST, "notExist.confirmation"),
-    INVALID_CONFIRMATION(HttpStatus.BAD_REQUEST, "invalid.confirmation")
+    INVALID_CONFIRMATION(HttpStatus.BAD_REQUEST, "invalid.confirmation"),
+    DUPLICATE_CONFIRMATION(HttpStatus.BAD_REQUEST, "duplicate.confirmation")
 
     ,;
     private final HttpStatus httpStatus; //상태 코드

@@ -28,7 +28,7 @@ public class RecruitmentControllerAdvice {
     @ExceptionHandler(BindException.class)
     public BaseErrorResponse BindException(BindException e){
         String message = ms.getMessage(ErrorCode.INVALID_ATTRIBUTE.getPropertiesCode(), null, null);
-        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_ATTRIBUTE, e.getMessage());
+        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_ATTRIBUTE, e.getMessage(), e);
 
         return new BaseErrorResponse(message);
     }

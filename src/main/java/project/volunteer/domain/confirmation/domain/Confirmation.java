@@ -13,6 +13,15 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "vlt_confirmation"
+//        ,uniqueConstraints = { //unique key 사용
+//                @UniqueConstraint(
+//                        name = "unique_userno_code_no",
+//                        columnNames = {"userno", "realwork_code", "no"}
+//                )
+//        }
+)
 public class Confirmation extends BaseTimeEntity {
 
     @Id
