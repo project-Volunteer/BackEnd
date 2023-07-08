@@ -22,7 +22,8 @@ public class Notice extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_deleted", length = 1, nullable = false)
     private IsDeleted isDeleted;
 
     @Column(name = "checked_num", nullable = false)

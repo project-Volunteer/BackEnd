@@ -68,8 +68,8 @@ public class NoticeServiceImpl implements NoticeService{
         validateAndGetRecruitment(recruitmentNo);
 
         //봉사 공지사항 검증
-        Notice findNotice = validateAndGetNotice(noticeNo);
-//        Notice findNotice = validateAndGetNoticeWithOPTIMSTIC_LOCK(noticeNo); //낙관적 락 사용
+//        Notice findNotice = validateAndGetNotice(noticeNo);
+        Notice findNotice = validateAndGetNoticeWithOPTIMSTIC_LOCK(noticeNo); //낙관적 락 사용
 
         //봉사 공지사항 유무 검증
         if(confirmationRepository.existsCheck(userNo, RealWorkCode.NOTICE, findNotice.getNoticeNo())){
