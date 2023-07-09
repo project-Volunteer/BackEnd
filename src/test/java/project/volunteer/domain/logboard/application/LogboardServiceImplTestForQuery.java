@@ -223,9 +223,11 @@ public class LogboardServiceImplTestForQuery {
 		PageRequest page = PageRequest.of(0, 6);
 		
 		//when
-		// 사용자 1의 logboardNo array =  [20, 18, 1, 14, 12, 10,     8, 6, 4, 2]
+		Slice<LogboardListQuery> firstResult = 
+				logboardRepository.findLogboardDtos(page, searchType, saveUser.getUserNo(), null);
+		
 		Slice<LogboardListQuery> result = 
-				logboardRepository.findLogboardDtos(page, searchType, saveUser.getUserNo(), 10L);
+				logboardRepository.findLogboardDtos(page, searchType, saveUser.getUserNo(), firstResult.toList().get(5).getNo());
 		
 		//then
 		Assertions.assertThat(result.getContent().size()).isEqualTo(4);
