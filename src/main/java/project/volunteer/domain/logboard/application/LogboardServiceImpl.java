@@ -1,12 +1,22 @@
 package project.volunteer.domain.logboard.application;
 
+import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import project.volunteer.domain.logboard.api.dto.request.AddLogboardCommentParam;
+import project.volunteer.domain.logboard.api.dto.request.AddLogboardCommentReplyParam;
+import project.volunteer.domain.logboard.api.dto.request.DeleteLogboardReplyParam;
+import project.volunteer.domain.logboard.api.dto.request.EditLogboardReplyParam;
 import project.volunteer.domain.logboard.application.dto.LogboardDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
+import project.volunteer.domain.reply.dao.ReplyRepository;
+import project.volunteer.domain.reply.domain.Reply;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
@@ -14,6 +24,7 @@ import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -26,6 +37,7 @@ public class LogboardServiceImpl implements LogboardService{
 	private final UserRepository userRepository;
 	private final ScheduleRepository scheduleRepository;
 	private final ScheduleParticipationRepository scheduleParticipationRepository;
+	private final ReplyRepository replyRepository;
     
 	@Transactional
 	@Override
@@ -93,6 +105,82 @@ public class LogboardServiceImpl implements LogboardService{
 		findLogboard.delete();
 	}
 
+
+	@Override
+    @Transactional
+	public Long addLogComment(AddLogboardCommentParam dto, Long loginUserNo) {
+		// 사용자 존재 유무 검증
+		User user = isUserExists(loginUserNo);
+
+		// 로그 존재 유무 확인
+		isLogboardExists(dto.getLogNo());
+
+		Reply reply = Reply.createComment(RealWorkCode.LOG, dto.getLogNo(), dto.getContent(), loginUserNo);
+		reply.setWriter(user);
+		
+		replyRepository.save(reply);
+		
+		return reply.getReplyNo();
+	}
+	
+
+	@Override
+	public Long addLogCommentReply(AddLogboardCommentReplyParam dto, Long loginUserNo) {
+		// 사용자 존재 유무 검증
+		User user = isUserExists(loginUserNo);
+
+		// 로그 존재 유무 확인
+		isLogboardExists(dto.getLogNo());
+		
+		// 부모 댓글 유무 확인
+		Reply findComment = isParentReplyExists(dto.getParentNo());
+		
+		// 부모 댓글이 1depth 댓글인지 확인
+		checkParentReplyHasNotParent(findComment);
+
+		Reply reply = Reply.createCommentReply(findComment, RealWorkCode.LOG, dto.getLogNo(), dto.getContent(), loginUserNo);
+		reply.setWriter(user);
+		
+		replyRepository.save(reply);
+		
+		return reply.getReplyNo();
+	}
+
+	@Override
+	public void editLogReply(EditLogboardReplyParam dto, Long loginUserNo) {
+		// 사용자 존재 유무 검증
+		User user = isUserExists(loginUserNo);
+		
+		// 댓글 존재 여부 검증
+		Reply findReply = isReplyExists(dto.getReplyNo());
+
+		// 작성자 여부 검증
+		isEqualParamUserNoAndReplyFindUserNo(loginUserNo, findReply);
+
+		findReply.editReply(dto.getContent(), loginUserNo);
+		replyRepository.save(findReply);
+	}
+	
+
+	@Override
+	public void deleteLogReply(DeleteLogboardReplyParam dto, Long loginUserNo) {
+		// 사용자 존재 유무 검증
+		User user = isUserExists(loginUserNo);
+		
+		// 댓글 존재 여부 검증
+		Reply findReply = isReplyExists(dto.getReplyNo());
+
+		// 작성자 여부 검증
+		isEqualParamUserNoAndReplyFindUserNo(loginUserNo, findReply);
+		
+		// 자식 댓글이 있으면 부모 댓글을 삭제할 수 없도록 처리해야하나?
+		
+		// 로그 삭제 되면 댓글은 어떡하지??
+
+		replyRepository.delete(findReply);
+	}
+	
+	
 	// validation 메서드
 	// 유저 존재 유무 확인
 	public User isUserExists(Long userNo) {
@@ -124,7 +212,7 @@ public class LogboardServiceImpl implements LogboardService{
 							String.format("UserNo = [%d], ScheduleNo = [%d]", userNo, scheduleNo)));
 	}
 	
-	// 일정 참여 후 일정 참가 완료 승인 상태 여부 체크
+	// 봉사 로그 작성자 여부 체크
 	public void isEqualParamUserNoAndFindUserNo(Long ParamUserNo, Logboard findLogboard) {
 		if(!ParamUserNo.equals(findLogboard.getWriter().getUserNo())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN_LOGBOARD, 
@@ -132,11 +220,41 @@ public class LogboardServiceImpl implements LogboardService{
 		}
 	}
 	
-	// 로그 존재 유무 확인
+	// 봉사 로그 존재 유무 확인
 	public Logboard isLogboardExists(Long logboardNo) {
 		return logboardRepository.findById(logboardNo)
 				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_LOGBOARD, 
 						String.format("not found logboard = [%d]", logboardNo)));
+	}
+
+	// 댓글 유무 확인
+	public Reply isReplyExists (Long replyNo) {
+		return replyRepository.findById(replyNo)
+			.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_REPLY, 
+					String.format("not found reply = [%d]", replyNo)));
+	}
+	
+	// 부모 글 유무 확인
+	public Reply isParentReplyExists (Long parentNo) {
+		return replyRepository.findVaildParentReply(parentNo)
+			.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_PARENT_REPLY, 
+					String.format("not found parent reply replyno= [%d]", parentNo)));
+	}
+	
+	// 부모 댓글이 1depth 댓글인지 확인
+	public void checkParentReplyHasNotParent(Reply findComment) {
+		if(findComment.getParent() != null) {
+			throw new BusinessException(ErrorCode.ALREADY_HAS_PARENT_REPLY, 
+					String.format("already parent reply replyno=[%d]", findComment.getParent().getReplyNo()));
+		}
+	}
+
+	// 댓글 작성자 여부 체크
+	public void isEqualParamUserNoAndReplyFindUserNo(Long ParamUserNo, Reply findReply) {
+		if(!ParamUserNo.equals(findReply.getWriter().getUserNo())) {
+			throw new BusinessException(ErrorCode.FORBIDDEN_REPLY, 
+					String.format("forbidden replyno userno=[%d], replyno=[%d]", ParamUserNo, findReply.getReplyNo()));
+		}
 	}
 
 }
