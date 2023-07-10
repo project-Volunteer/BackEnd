@@ -32,6 +32,7 @@ import project.volunteer.domain.logboard.api.dto.request.AddLogboardCommentReply
 import project.volunteer.domain.logboard.api.dto.request.DeleteLogboardReplyParam;
 import project.volunteer.domain.logboard.api.dto.request.EditLogboardReplyParam;
 import project.volunteer.domain.logboard.api.dto.request.LogBoardRequestParam;
+import project.volunteer.domain.logboard.api.dto.response.AddableLogboardListResponse;
 import project.volunteer.domain.logboard.api.dto.response.LogboardDetailResponse;
 import project.volunteer.domain.logboard.api.dto.response.LogboardList;
 import project.volunteer.domain.logboard.api.dto.response.LogboardListResponse;
@@ -39,9 +40,10 @@ import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.logboard.application.dto.LogboardDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
-import project.volunteer.domain.notice.api.dto.NoticeAdd;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
+import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.storage.domain.Storage;
-import project.volunteer.global.common.component.LogboardSearchType;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.util.SecurityUtil;
@@ -54,6 +56,15 @@ public class LogboardController {
 	private final FileService fileService;
 	private final ImageRepository imageRepository;
 	private final LogboardRepository logboardRepository;
+	private final ScheduleParticipationDtoService spDtoService ;
+	
+	@GetMapping("/logboard/schedule")
+	public ResponseEntity<AddableLogboardListResponse> approvalSchedule() {
+		List<ParsingCompleteSchedule> completeScheduleList = spDtoService.findCompleteScheduleList(
+				SecurityUtil.getLoginUserNo(), ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		
+		return ResponseEntity.ok(new AddableLogboardListResponse(completeScheduleList));
+	}
 	
 	@PostMapping("/logboard")
 	public ResponseEntity logboardAdd(@ModelAttribute @Valid LogBoardRequestParam dto) {
