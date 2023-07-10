@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +27,12 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
+import project.volunteer.domain.logboard.api.dto.request.AddLogboardCommentParam;
+import project.volunteer.domain.logboard.api.dto.request.AddLogboardCommentReplyParam;
+import project.volunteer.domain.logboard.api.dto.request.DeleteLogboardReplyParam;
+import project.volunteer.domain.logboard.api.dto.request.EditLogboardReplyParam;
 import project.volunteer.domain.logboard.api.dto.request.LogBoardRequestParam;
+import project.volunteer.domain.logboard.api.dto.response.AddableLogboardListResponse;
 import project.volunteer.domain.logboard.api.dto.response.LogboardDetailResponse;
 import project.volunteer.domain.logboard.api.dto.response.LogboardList;
 import project.volunteer.domain.logboard.api.dto.response.LogboardListResponse;
@@ -33,8 +40,10 @@ import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.logboard.application.dto.LogboardDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
+import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.storage.domain.Storage;
-import project.volunteer.global.common.component.LogboardSearchType;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.util.SecurityUtil;
@@ -47,6 +56,15 @@ public class LogboardController {
 	private final FileService fileService;
 	private final ImageRepository imageRepository;
 	private final LogboardRepository logboardRepository;
+	private final ScheduleParticipationDtoService spDtoService ;
+	
+	@GetMapping("/logboard/schedule")
+	public ResponseEntity<AddableLogboardListResponse> approvalSchedule() {
+		List<ParsingCompleteSchedule> completeScheduleList = spDtoService.findCompleteScheduleList(
+				SecurityUtil.getLoginUserNo(), ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		
+		return ResponseEntity.ok(new AddableLogboardListResponse(completeScheduleList));
+	}
 	
 	@PostMapping("/logboard")
 	public ResponseEntity logboardAdd(@ModelAttribute @Valid LogBoardRequestParam dto) {
@@ -143,6 +161,36 @@ public class LogboardController {
 				);
 		
 		return ResponseEntity.ok(logBoardListResponse);
+	}
+	
+	@PostMapping("/logboard/comment")
+	public ResponseEntity logboardCommentAdd(@RequestBody @Valid AddLogboardCommentParam dto) {
+		logboardService.addLogComment(dto, SecurityUtil.getLoginUserNo());
+
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	
+	@PostMapping("/logboard/comment/reply")
+	public ResponseEntity logboardCommenReplytAdd(@RequestBody @Valid AddLogboardCommentReplyParam dto) {
+		logboardService.addLogCommentReply(dto, SecurityUtil.getLoginUserNo());
+
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+	
+
+	@PutMapping("/logboard/comment")
+	public ResponseEntity logboardReplytEdit(@RequestBody @Valid EditLogboardReplyParam dto) {
+		logboardService.editLogReply(dto, SecurityUtil.getLoginUserNo());
+
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/logboard/comment")
+	public ResponseEntity logboardReplytDelete(@RequestBody @Valid DeleteLogboardReplyParam dto) {
+		logboardService.deleteLogReply(dto, SecurityUtil.getLoginUserNo());
+
+		return ResponseEntity.ok().build();
 	}
 	
 }

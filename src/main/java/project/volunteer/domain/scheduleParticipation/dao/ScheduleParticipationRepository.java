@@ -3,6 +3,8 @@ package project.volunteer.domain.scheduleParticipation.dao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import project.volunteer.domain.scheduleParticipation.dao.dto.CompletedScheduleDetail;
 import project.volunteer.domain.scheduleParticipation.dao.dto.ParticipantDetails;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.global.common.component.ParticipantState;
@@ -53,5 +55,16 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "where sp.schedule.scheduleNo=:scheduleNo " +
             "and sp.state in :states ")
     List<ParticipantDetails> findParticipantsByOptimization(@Param("scheduleNo") Long scheduleNo, @Param("states") List<ParticipantState> states);
+
+    
+
+    @Query("select new project.volunteer.domain.scheduleParticipation.dao.dto.CompletedScheduleDetail(" +
+    		"sp.schedule.scheduleNo, " +
+    		"sp.participant.recruitment.title, " +
+    		"sp.schedule.scheduleTimeTable.endDay) " +
+            "from ScheduleParticipation sp " +
+            "where sp.participant.participant.userNo=:loginUserNo " +
+            "and sp.state=:state")
+	List<CompletedScheduleDetail> findCompletedSchedules(@Param("loginUserNo") Long loginUserNo, @Param("state") ParticipantState state);
 
 }

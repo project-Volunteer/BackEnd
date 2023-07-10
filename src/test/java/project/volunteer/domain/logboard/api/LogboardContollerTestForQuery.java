@@ -40,6 +40,8 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.application.UserDtoService;
@@ -72,6 +74,7 @@ public class LogboardContollerTestForQuery {
 	@Autowired ScheduleRepository scheduleRepository;
 	@Autowired UserDtoService userDtoService;
 	@Autowired LogboardRepository logboardRepository;
+	@Autowired ScheduleParticipationRepository scheduleParticipationRepository;
 	@PersistenceContext EntityManager em;
 
 	List<Logboard> logboardList= new ArrayList<>();
@@ -106,10 +109,14 @@ public class LogboardContollerTestForQuery {
                 .providerId("111111")
                 .build());
 
-        String title = "title";
+        String title = "Recuritment title";
         String content = "content";
         String organizationName = "organization";
         Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
+        Timetable timetable1 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(1), HourFormat.AM, LocalTime.now(), 10);
+        Timetable timetable2 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(2), HourFormat.AM, LocalTime.now(), 10);
+        Timetable timetable3 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(3), HourFormat.AM, LocalTime.now(), 10);
+        Timetable timetable4 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(4), HourFormat.AM, LocalTime.now(), 10);
         Boolean isPublished = true;
         Coordinate coordinate = new Coordinate(3.2F, 3.2F);        
         VolunteeringCategory category = VolunteeringCategory.ADMINSTRATION_ASSISTANCE;
@@ -145,6 +152,44 @@ public class LogboardContollerTestForQuery {
 				Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
 		createSchedule.setRecruitment(recruitment);
 		scheduleRepository.save(createSchedule);
+		
+
+		// 스케줄 저장
+		Schedule schedule1 = Schedule.createSchedule(timetable1, content, organizationName, address, volunteerNum);
+		schedule1.setRecruitment(recruitment);
+		scheduleRepository.save(schedule1);
+
+		Schedule schedule2 = Schedule.createSchedule(timetable2, content, organizationName, address, volunteerNum);
+		schedule2.setRecruitment(recruitment);
+		scheduleRepository.save(schedule2);
+
+		Schedule schedule3 = Schedule.createSchedule(timetable3, content, organizationName, address, volunteerNum);
+		schedule3.setRecruitment(recruitment);
+		scheduleRepository.save(schedule3);
+		
+		Schedule schedule4 = Schedule.createSchedule(timetable4, content, organizationName, address, volunteerNum);
+		schedule4.setRecruitment(recruitment);
+		scheduleRepository.save(schedule4);
+
+		Schedule schedule5 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
+		schedule5.setRecruitment(recruitment);
+		scheduleRepository.save(schedule5);
+		
+		// 방장 스케줄 참여
+		ScheduleParticipation scheduleParticipation1 = ScheduleParticipation.createScheduleParticipation(schedule1, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		scheduleParticipationRepository.save(scheduleParticipation1);
+
+		ScheduleParticipation scheduleParticipation2 = ScheduleParticipation.createScheduleParticipation(schedule2, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		scheduleParticipationRepository.save(scheduleParticipation2);
+
+		ScheduleParticipation scheduleParticipation3 = ScheduleParticipation.createScheduleParticipation(schedule3, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		scheduleParticipationRepository.save(scheduleParticipation3);
+
+		ScheduleParticipation scheduleParticipation4 = ScheduleParticipation.createScheduleParticipation(schedule4, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		scheduleParticipationRepository.save(scheduleParticipation4);
+
+		ScheduleParticipation  scheduleParticipation5 = ScheduleParticipation.createScheduleParticipation(schedule5, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		scheduleParticipationRepository.save(scheduleParticipation5);
 		
         // 봉사 로그 저장(한 모집글에 20개)
         for(int i = 0; i < 20; i++){
@@ -207,5 +252,14 @@ public class LogboardContollerTestForQuery {
     }
     
     // 봉사 로그 참여 봉사 선택
+    @Test
+    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void 참여완료_스케줄_리스트_조회() throws Exception {
+        //when & then
+        mockMvc.perform(
+                get("/logboard/schedule"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
     
 }
