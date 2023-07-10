@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
@@ -62,5 +63,14 @@ public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipatio
                     return new CompletedParticipantList(sp.getUserNo(), sp.getNickname(), sp.getEmail(), sp.getProfile(), state.name());
                 })
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<ParsingCompleteSchedule> findCompleteScheduleList(Long loginUserNo, ParticipantState state) {
+    	return scheduleParticipationRepository.findCompletedSchedules(loginUserNo, state).stream()
+    			.map(cs -> {
+    				return new ParsingCompleteSchedule(cs.getScheduleNo(), cs.getRecruitmentTitle(), cs.getEndDay().toString());
+    			})
+    			.collect(Collectors.toList());
     }
 }
