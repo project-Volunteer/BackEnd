@@ -61,4 +61,10 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             "and p.state=project.volunteer.global.common.component.ParticipantState.JOIN_APPROVAL")
     Boolean existRecruitmentTeamMember(@Param("recruitmentNo") Long recruitmentNo, @Param("userNo") Long userNo);
 
+    @Query("select p " +
+           "from Participant p " +
+           "where p.participant.userNo=:loginUserNo ")
+    List<Participant> findJoinStatusByTeamUserno(@Param("loginUserNo") Long loginUserNo);
+
+
 }

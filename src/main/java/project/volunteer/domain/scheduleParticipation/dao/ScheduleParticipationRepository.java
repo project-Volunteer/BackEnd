@@ -54,4 +54,9 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "and sp.state in :states ")
     List<ParticipantDetails> findParticipantsByOptimization(@Param("scheduleNo") Long scheduleNo, @Param("states") List<ParticipantState> states);
 
+    @Query("select sp " +
+            "from ScheduleParticipation sp " +
+            "where sp.participant.participant.userNo=:loginUserNo " +
+            "and sp.state=project.volunteer.global.common.component.ParticipantState.PARTICIPATION_COMPLETE_APPROVAL ")
+    List<ScheduleParticipation> findScheduleJoinHistoryByUserno(@Param("loginUserNo")Long loginUserNo);
 }

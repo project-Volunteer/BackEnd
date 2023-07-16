@@ -41,4 +41,11 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             "and r.isPublished=true")
     Optional<Recruitment> findActivatedRecruitment(@Param("no") Long recruitmentNo);
 
+
+    @Query("select count(r) " +
+            "from Recruitment r " +
+            "where r.writer.userNo=:loginUserNo " +
+            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
+            "and r.isPublished=:isPublished")
+    Integer findRecruitmentByUserNoAndPublishedYn(@Param("loginUserNo")Long loginUserNo,@Param("isPublished") boolean isPublished);
 }
