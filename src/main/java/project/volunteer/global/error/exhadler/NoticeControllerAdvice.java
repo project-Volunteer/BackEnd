@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,10 +27,18 @@ public class NoticeControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public BaseErrorResponse MethodArgumentNotValidException(MethodArgumentNotValidException e){
-
         String message = ms.getMessage(ErrorCode.INVALID_PAYLOAD.getPropertiesCode(), null, null);
-        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_PAYLOAD, e.getMessage());
+        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_PAYLOAD, e.getMessage(), e);
 
+        return new BaseErrorResponse(message);
+    }
+
+    //낙관적 락 사용시 예외 처리
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public BaseErrorResponse ObjectOptimisticLockingFailureException(ObjectOptimisticLockingFailureException e){
+        String message = ms.getMessage(ErrorCode.DUPLICATE_CONFIRMATION.getPropertiesCode(), null, null);
+        log.info("Error Code = {}, Details = {}", ErrorCode.DUPLICATE_CONFIRMATION, e.getMessage(), e);
         return new BaseErrorResponse(message);
     }
 

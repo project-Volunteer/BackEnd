@@ -28,7 +28,7 @@ public class ScheduleParticipationControllerAdvice {
     public BaseErrorResponse MethodArgumentNotValidException(MethodArgumentNotValidException e){
 
         String message = ms.getMessage(ErrorCode.INVALID_PAYLOAD.getPropertiesCode(), null, null);
-        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_PAYLOAD, e.getMessage());
+        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_PAYLOAD, e.getMessage(), e);
 
         return new BaseErrorResponse(message);
     }
