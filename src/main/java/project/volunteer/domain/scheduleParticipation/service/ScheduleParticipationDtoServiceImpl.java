@@ -14,6 +14,7 @@ import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,9 @@ public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipatio
     public List<ParsingCompleteSchedule> findCompleteScheduleList(Long loginUserNo, ParticipantState state) {
     	return scheduleParticipationRepository.findCompletedSchedules(loginUserNo, state).stream()
     			.map(cs -> {
-    				return new ParsingCompleteSchedule(cs.getScheduleNo(), cs.getRecruitmentTitle(), cs.getEndDay().toString());
+    				return new ParsingCompleteSchedule(cs.getScheduleNo()
+                                                     , cs.getRecruitmentTitle()
+                                                     , cs.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")));
     			})
     			.collect(Collectors.toList());
     }
