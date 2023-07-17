@@ -13,10 +13,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddLogboardCommentParam {
-    @NotNull
-	private Long logNo;
-
+public class CommentContentParam {
     @NotNull
     @Length(min = 1, max = 255)
 	private String content;
