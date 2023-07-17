@@ -32,10 +32,7 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.logboard.api.dto.request.AddLogboardCommentParam;
-import project.volunteer.domain.logboard.api.dto.request.AddLogboardCommentReplyParam;
-import project.volunteer.domain.logboard.api.dto.request.DeleteLogboardReplyParam;
-import project.volunteer.domain.logboard.api.dto.request.EditLogboardReplyParam;
+import project.volunteer.domain.logboard.api.dto.request.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -69,19 +66,21 @@ import project.volunteer.global.infra.s3.FileService;
 @Transactional
 public class LogboardControllerTestForComment {
 	@Autowired MockMvc mockMvc;
-	@Autowired UserRepository userRepository;
-	@Autowired ParticipantRepository participantRepository;
-	@Autowired RecruitmentRepository recruitmentRepository;
-	@Autowired ImageRepository imageRepository;
+	@Autowired ObjectMapper objectMapper;
+	@Autowired UserService userService;
+	@Autowired UserDtoService userDtoService;
 	@Autowired RecruitmentService recruitmentService;
 	@Autowired ImageService imageService;
 	@Autowired FileService fileService;
-	@Autowired UserService userService;
+
+	@Autowired UserRepository userRepository;
+	@Autowired RecruitmentRepository recruitmentRepository;
+	@Autowired ImageRepository imageRepository;
+	@Autowired ParticipantRepository participantRepository;
 	@Autowired ScheduleRepository scheduleRepository;
-	@Autowired UserDtoService userDtoService;
 	@Autowired LogboardRepository logboardRepository;
-	@Autowired ObjectMapper objectMapper;
 	@Autowired ReplyRepository replyRepository;
+
 	@PersistenceContext EntityManager em;
 	
 	List<Logboard> logboardList= new ArrayList<>();
@@ -199,8 +198,8 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	void 로그보드_댓글작성_성공() throws Exception {
 		//when & then
-		AddLogboardCommentParam  param = new AddLogboardCommentParam(logboardNo1, "test comment");
-		mockMvc.perform(post("/logboard/comment")
+		CommentContentParam param = new CommentContentParam("test comment");
+		mockMvc.perform(post("/logboard/"+logboardNo1+"/comment")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isCreated())
@@ -211,8 +210,8 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void vaildation체크_없는_봉사로그() throws Exception {
 		//when & then
-		AddLogboardCommentParam  param = new AddLogboardCommentParam(10000L, "write test comment");
-		mockMvc.perform(post("/logboard/comment")
+		CommentContentParam param = new CommentContentParam("write test comment");
+		mockMvc.perform(post("/logboard/10000/comment")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isBadRequest())
@@ -223,8 +222,8 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void validation체크_댓글내용_누락() throws Exception {
 		//when & then
-		AddLogboardCommentParam  param = new AddLogboardCommentParam(logboardNo1, "");
-		mockMvc.perform(post("/logboard/comment")
+		CommentContentParam param = new CommentContentParam("");
+		mockMvc.perform(post("/logboard/"+logboardNo1+"/comment")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isBadRequest())
@@ -240,8 +239,8 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply);
 		
 		//when & then
-		AddLogboardCommentReplyParam  param = new AddLogboardCommentReplyParam(logboardNo1, reply.getReplyNo(), "test comment");
-		mockMvc.perform(post("/logboard/comment/reply")
+		CommentContentParam param = new CommentContentParam("test comment");
+		mockMvc.perform(post("/logboard/"+logboardNo1+"/comment/"+ reply.getReplyNo()+"/reply")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(toJson(param)))
 			.andExpect(status().isCreated())
@@ -257,8 +256,8 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply);
 		
 		//when & then
-		AddLogboardCommentReplyParam  param = new AddLogboardCommentReplyParam(1000L, reply.getReplyNo(), "test comment");
-		mockMvc.perform(post("/logboard/comment/reply")
+		CommentContentParam param = new CommentContentParam("test comment");
+		mockMvc.perform(post("/logboard/10000/comment/"+reply.getReplyNo()+"/reply")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isBadRequest())
@@ -274,8 +273,8 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply);
 		
 		//when & then
-		AddLogboardCommentReplyParam  param = new AddLogboardCommentReplyParam(logboardNo1, reply.getReplyNo(), "");
-		mockMvc.perform(post("/logboard/comment/reply")
+		CommentContentParam param = new CommentContentParam("");
+		mockMvc.perform(post("/logboard/"+logboardNo1+"/comment/"+reply.getReplyNo()+"/reply")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isBadRequest())
@@ -295,8 +294,8 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply2);
 		
 		//when & then
-		AddLogboardCommentReplyParam  param = new AddLogboardCommentReplyParam(logboardNo1, reply2.getReplyNo(), "Test Comment Reply Reply");
-		mockMvc.perform(post("/logboard/comment/reply")
+		CommentContentParam param = new CommentContentParam("Test Comment Reply Reply");
+		mockMvc.perform(post("/logboard/"+logboardNo1+"/comment/"+reply2.getReplyNo()+"/reply")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isBadRequest())
@@ -310,10 +309,10 @@ public class LogboardControllerTestForComment {
 		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
 		reply.setWriter(saveUser);
 		replyRepository.save(reply);
-		
+
 		//when & then
-		EditLogboardReplyParam  param = new EditLogboardReplyParam(reply.getReplyNo(), "Test Comment Edit");
-		mockMvc.perform(put("/logboard/comment")
+		CommentContentParam  param = new CommentContentParam("Test Comment Edit");
+		mockMvc.perform(put("/logboard/"+logboardNo1+"/comment/"+reply.getReplyNo())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isOk())
@@ -329,8 +328,8 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply);
 		
 		//when & then
-		EditLogboardReplyParam  param = new EditLogboardReplyParam(reply.getReplyNo(), "Test Comment Edit");
-		mockMvc.perform(put("/logboard/comment")
+		CommentContentParam  param = new CommentContentParam("Test Comment Edit");
+		mockMvc.perform(put("/logboard/"+logboardNo1+"/comment/"+reply.getReplyNo())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isForbidden())
@@ -347,8 +346,8 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply);
 		
 		//when & then
-		EditLogboardReplyParam  param = new EditLogboardReplyParam(10000L, "Test Comment Edit");
-		mockMvc.perform(put("/logboard/comment")
+		CommentContentParam  param = new CommentContentParam("Test Comment Edit");
+		mockMvc.perform(put("/logboard/"+logboardNo1+"/comment/10000")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(param)))
 				.andExpect(status().isBadRequest())
@@ -369,10 +368,7 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply2);
 		
 		//when & then
-		DeleteLogboardReplyParam  param = new DeleteLogboardReplyParam(reply2.getReplyNo());
-		mockMvc.perform(delete("/logboard/comment")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(toJson(param)))
+		mockMvc.perform(delete("/logboard/"+logboardNo1+"/comment/"+reply2.getReplyNo()))
 				.andExpect(status().isOk())
 				.andDo(print());
 	}
@@ -390,10 +386,7 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply2);
 		
 		//when & then
-		DeleteLogboardReplyParam  param = new DeleteLogboardReplyParam(reply2.getReplyNo());
-		mockMvc.perform(delete("/logboard/comment")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(toJson(param)))
+		mockMvc.perform(delete("/logboard/"+logboardNo1+"/comment/"+reply2.getReplyNo()))
 				.andExpect(status().isForbidden())
 				.andDo(print());
 	}
@@ -411,10 +404,7 @@ public class LogboardControllerTestForComment {
 		replyRepository.save(reply2);
 		
 		//when & then
-		DeleteLogboardReplyParam  param = new DeleteLogboardReplyParam(1000L);
-		mockMvc.perform(delete("/logboard/comment")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(toJson(param)))
+		mockMvc.perform(delete("/logboard/"+logboardNo1+"/comment/10000"))
 				.andExpect(status().isBadRequest())
 				.andDo(print());
 	}
