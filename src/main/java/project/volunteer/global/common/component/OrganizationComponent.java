@@ -6,6 +6,8 @@ import org.springframework.web.servlet.HandlerMapping;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.reply.domain.Reply;
+import project.volunteer.global.common.validate.ReplyValidate;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -17,9 +19,11 @@ import java.util.Map;
 public class OrganizationComponent {
 
     private final String RECRUITMENT_NO = "recruitmentNo";
+    private final String REPLY_NO = "replyNo";
 
     private final RecruitmentRepository recruitmentRepository;
     private final ParticipantRepository participantRepository;
+    private final ReplyValidate replyValidate;
 
     //봉사 모집글 방장 검증 메서드
     public void validRecruitmentOwner(HttpServletRequest request, Long loginUserNo){
@@ -36,6 +40,13 @@ public class OrganizationComponent {
         Recruitment findRecruitment = getRecruitment(request);
         //단방향 연관관계이므로 별도의 메서드로 검증
         isRecruitmentTeam(findRecruitment, loginUserNo);
+    }
+
+    public void validateReplyWriter(HttpServletRequest request, Long loginUserNo) {
+        final Map<String, String> path = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        Long replyNo = Long.valueOf(path.get(REPLY_NO));
+        Reply findReply =  replyValidate.validateAndGetReply(replyNo);
+        replyValidate.vaildateEqualParamUserNoAndReplyFindUserNo(loginUserNo, findReply);
     }
 
     //Request 정보에서 봉사 모집글 검색 메서드

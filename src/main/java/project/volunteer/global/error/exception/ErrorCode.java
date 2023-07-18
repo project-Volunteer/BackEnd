@@ -58,7 +58,14 @@ public enum ErrorCode {
 
     //확인 관련
     NOT_EXIST_CONFIRMATION(HttpStatus.BAD_REQUEST, "notExist.confirmation"),
-    INVALID_CONFIRMATION(HttpStatus.BAD_REQUEST, "invalid.confirmation")
+    INVALID_CONFIRMATION(HttpStatus.BAD_REQUEST, "invalid.confirmation"),
+    DUPLICATE_CONFIRMATION(HttpStatus.BAD_REQUEST, "duplicate.confirmation"),
+    
+    //댓글 관련
+    NOT_EXIST_PARENT_REPLY(HttpStatus.BAD_REQUEST, "notExist.parentReply"),
+    NOT_EXIST_REPLY(HttpStatus.BAD_REQUEST, "notExist.reply"),
+    ALREADY_HAS_PARENT_REPLY(HttpStatus.BAD_REQUEST, "already.hasParentReply"),
+    FORBIDDEN_REPLY(HttpStatus.FORBIDDEN, "forbidden.reply")
 
     ,;
     private final HttpStatus httpStatus; //상태 코드

@@ -10,5 +10,4 @@ public interface LogboardService {
 	public void editLog(Long logboardNo, Long userNo, String content, Long scheduleNo, Boolean isPublished);
 
 	public void deleteLog(Long userNo, Long logboardNo);
-
 }
