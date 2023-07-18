@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
@@ -13,6 +14,7 @@ import project.volunteer.global.common.response.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,5 +64,16 @@ public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipatio
                     return new CompletedParticipantList(sp.getUserNo(), sp.getNickname(), sp.getEmail(), sp.getProfile(), state.name());
                 })
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<ParsingCompleteSchedule> findCompleteScheduleList(Long loginUserNo, ParticipantState state) {
+    	return scheduleParticipationRepository.findCompletedSchedules(loginUserNo, state).stream()
+    			.map(cs -> {
+    				return new ParsingCompleteSchedule(cs.getScheduleNo()
+                                                     , cs.getRecruitmentTitle()
+                                                     , cs.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")));
+    			})
+    			.collect(Collectors.toList());
     }
 }

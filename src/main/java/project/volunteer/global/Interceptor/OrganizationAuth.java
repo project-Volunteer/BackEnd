@@ -13,6 +13,7 @@ public @interface OrganizationAuth {
 
     enum Auth{
         ORGANIZATION_ADMIN, //봉사 모집글 방장
-        ORGANIZATION_TEAM //봉사 모집글 팀원
+        ORGANIZATION_TEAM, //봉사 모집글 팀원
+        REPLY_WRITER // 댓글 작성자
     }
 }

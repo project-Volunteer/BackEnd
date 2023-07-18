@@ -135,7 +135,6 @@ public class UserControllerJoinRequestTest {
 		ImageParam staticImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
 				.no(no1).staticImageCode("imgname").uploadImage(null).build();
 		Long saveId1 = imageService.addImage(staticImageDto);
-		deleteS3ImageNoList.add(saveId1); // S3에 저장된 이미지 추후 삭제 예정
 
 		ImageParam uploadImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.UPLOAD)
 				.no(no2).staticImageCode(null).uploadImage(getMockMultipartFile()).build();
