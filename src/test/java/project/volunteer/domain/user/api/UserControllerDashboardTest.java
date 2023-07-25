@@ -1,11 +1,15 @@
 package project.volunteer.domain.user.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +28,8 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
+import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -35,8 +41,10 @@ import javax.persistence.PersistenceContext;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,6 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerDashboardTest {
     @PersistenceContext EntityManager em;
     @Autowired MockMvc mockMvc;
+    @Autowired ObjectMapper objectMapper;
     @Autowired UserRepository userRepository;
     @Autowired ParticipantRepository participantRepository;
     @Autowired RecruitmentService recruitmentService;
@@ -57,6 +66,8 @@ public class UserControllerDashboardTest {
 
     private static User user1;
     private static User user2;
+    private static List<Long> deleteRecruitmentNoList = new ArrayList<>();
+    private static List<Long> deleteLogboardNoList = new ArrayList<>();
 
 
     private void clear() {
@@ -118,7 +129,9 @@ public class UserControllerDashboardTest {
         /*  모집글 상세
 			모집글 1, 2 - 사용자1이 저장
 			모집글 3 - 사용자1이 임시저장
-			모집글 4, 5, 6, 7 - 사용자2가 만듦 */
+			모집글 4, 5, 6, 7 - 사용자2가 만듦
+			모집글 8, 9, 10, 11 - 사용자2가 임시저장
+			*/
         Long rNo1 = recruitmentService.addRecruitment(user1.getUserNo(), makeRecruitmentParam(1, 3 , true ));
         Long rNo2 = recruitmentService.addRecruitment(user1.getUserNo(), makeRecruitmentParam(2, 3 , true ));
         Long rNo3 = recruitmentService.addRecruitment(user1.getUserNo(), makeRecruitmentParam(3, 3 , false ));
@@ -126,6 +139,16 @@ public class UserControllerDashboardTest {
         Long rNo5 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(5, 2 , true ));
         Long rNo6 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(6, 2 , true ));
         Long rNo7 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(7, 1 , true ));
+
+        Long rNo8 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(8, 3 , false ));
+        Long rNo9 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(9, 3 , false ));
+        Long rNo10 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(0, 3 , false ));
+        Long rNo11 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(1, 3 , false ));
+
+        deleteRecruitmentNoList.add(rNo9);
+        deleteRecruitmentNoList.add(rNo10);
+        deleteRecruitmentNoList.add(rNo11);
+
 
 
         /*  봉사 모집 참여
@@ -180,8 +203,9 @@ public class UserControllerDashboardTest {
 			모집글 1 - 스케줄 1, 2, 3 - 사용자1 참여 완료
 			모집글 1 - 스케줄 1 - 사용자2 참여 완료
 			모집글 1 - 스케줄 2 - 사용자2 참여 완료 대기
-			모집글 5 - 스케줄 4, 5, 6 - 사용자1 참여 완료
-			모집글 6 - 스케줄 7, 8 - 사용자1 참여완료 대기 */
+			모집글 6 - 스케줄 4, 5, 6 - 사용자1 참여 완료
+			모집글 6 - 스케줄 4, 5, 6 - 사용자2 일정 참여중
+			모집글 7 - 스케줄 7, 8 - 사용자1 참여완료 대기 */
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
             scheduleRepository.findById(sNo1).get(), r1p1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
@@ -206,6 +230,13 @@ public class UserControllerDashboardTest {
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
                 scheduleRepository.findById(sNo2).get(), r1p7, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
 
+        spRepository.save(ScheduleParticipation.createScheduleParticipation(
+                scheduleRepository.findById(sNo4).get(), r1p7, ParticipantState.PARTICIPATING));
+        spRepository.save(ScheduleParticipation.createScheduleParticipation(
+                scheduleRepository.findById(sNo5).get(), r1p7, ParticipantState.PARTICIPATING));
+        spRepository.save(ScheduleParticipation.createScheduleParticipation(
+                scheduleRepository.findById(sNo6).get(), r1p7, ParticipantState.PARTICIPATING));
+
 
         /*  로그 상세
             모집글 1 - 스케줄 1, 2, 3 - 사용자 1이 log 작성
@@ -215,9 +246,14 @@ public class UserControllerDashboardTest {
         logboardService.addLog(user1.getUserNo(), "test contents2", sNo2, true);
         logboardService.addLog(user1.getUserNo(), "test contents3", sNo3, true);
 
-        logboardService.addLog(user1.getUserNo(), "test contents4", sNo4, false);
-        logboardService.addLog(user1.getUserNo(), "test contents5", sNo5, false);
-        logboardService.addLog(user1.getUserNo(), "test contents6", sNo6, false);
+        Long log1= logboardService.addLog(user1.getUserNo(), "test contents4", sNo4, false);
+        Long log2= logboardService.addLog(user1.getUserNo(), "test contents5", sNo5, false);
+        Long log3= logboardService.addLog(user1.getUserNo(), "test contents6", sNo6, false);
+
+        deleteLogboardNoList.add(log1);
+        deleteLogboardNoList.add(log2);
+        deleteLogboardNoList.add(log3);
+
 
         logboardService.addLog(user2.getUserNo(), "test contents5", sNo1, false);
 
@@ -264,6 +300,124 @@ public class UserControllerDashboardTest {
 
     }
 
+    @Test
+    @DisplayName("user1의 마이페이지 봉사이력 조회")
+    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_hisotry() throws Exception {
+        // when & then
+        mockMvc.perform(
+                get("/user/history?page=1"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("user2의 마이페이지 참여중인 일정 리스트 조회")
+    @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_join_schedule() throws Exception {
+        // when & then
+        mockMvc.perform(
+                        get("/user/schedule"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("user1의 마이페이지 참여중인 모집글 리스트 조회")
+    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_join_recruitment() throws Exception {
+        // when & then
+        mockMvc.perform(
+                        get("/user/recruitment"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("user2의 마이페이지 임시저장 모집글 리스트 조회")
+    @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_temp_recruitment() throws Exception {
+        // when & then
+        mockMvc.perform(
+                        get("/user/recruitment/temp"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("user1의 마이페이지 임시저장 봉사로그 리스트 조회")
+    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_temp_logboard() throws Exception {
+        // when & then
+        mockMvc.perform(
+                        get("/user/logboard/temp"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("user2의 마이페이지 임시저장 모집글 리스트 삭제")
+    @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_temp_recruitment_delete() throws Exception {
+        RecruitmentListRequestParam dto = new RecruitmentListRequestParam(deleteRecruitmentNoList);
+        // when
+        mockMvc.perform(
+                        delete("/user/recruitment/temp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toJson(dto)))
+                .andExpect(status().isOk())
+                .andDo(print());
+        // then
+        mockMvc.perform(
+                        get("/user/recruitment/temp"))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("user1의 마이페이지 임시저장 봉사로그 리스트 삭제")
+    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_temp_logboard_delete() throws Exception {
+        LogboardListRequestParam dto = new LogboardListRequestParam(deleteLogboardNoList);
+        // when
+        mockMvc.perform(
+                        delete("/user/logboard/temp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toJson(dto)))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        // then
+        mockMvc.perform(
+                        get("/user/logboard/temp"))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("user2의 마이페이지 임시저장 모집글 번호 누락으로 리스트 삭제 실패")
+    @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_temp_recruitment_delete_fail() throws Exception {
+        // when & then
+        mockMvc.perform(
+                        delete("/user/recruitment/temp"))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("user1의 마이페이지 임시저장 봉사로그 번호 누락으로 리스트 삭제 실패")
+    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void myPage_temp_logboard_delete_fail() throws Exception {
+        // when & then
+        mockMvc.perform(
+                        delete("/user/logboard/temp"))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
     public RecruitmentParam makeRecruitmentParam(int num, int progressTime, boolean published){
         return new RecruitmentParam(
                  "recruitment title "+num
@@ -274,7 +428,7 @@ public class UserControllerDashboardTest {
                 , 10
                 , true
                 , "recruitment organizationName "+num
-                , Address.createAddress("sido","sigungu","detail"+num)
+                , Address.createAddress("Rido"+num,"Rigungu"+num,"detail"+num)
                 , Coordinate.createCoordinate(Float.valueOf(num+num+num+num), Float.valueOf(num+num+num))
                 , Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(1), HourFormat.AM, LocalTime.now(), progressTime)
                 , published);
@@ -284,9 +438,18 @@ public class UserControllerDashboardTest {
         return new ScheduleParam(
                   Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), progressTime)
                 , "schedule organizationName"+num
-                , Address.createAddress("sido", "sigungu", "details"+num)
+                , Address.createAddress("Sido"+num, "Sigungu"+num, "details"+num)
                 , "schedule content"+num
                 , 10);
     }
 
+    private <T> String toJson(T data) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(data);
+    }
+
+    @AfterEach
+    public void clearList(){
+        deleteLogboardNoList = new ArrayList<>();
+        deleteRecruitmentNoList = new ArrayList<>();
+    }
 }
