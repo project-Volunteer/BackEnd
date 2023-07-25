@@ -1,13 +1,21 @@
 package project.volunteer.domain.user.api;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +24,14 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
+import project.volunteer.domain.logboard.application.LogboardService;
+import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
+import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;
 import project.volunteer.domain.user.api.dto.response.*;
+import project.volunteer.domain.user.dao.queryDto.UserQueryDtoRepository;
+import project.volunteer.domain.user.dao.queryDto.dto.UserHistoryQuery;
+import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.user.api.dto.request.UserAlarmRequestParam;
 import project.volunteer.domain.user.api.dto.request.UserInfoRequestParam;
@@ -30,8 +45,21 @@ public class UserController {
 	private final UserService userService;
 	private final UserDtoService userDtoService;
 	private final ImageService imageService;
-    private final ImageRepository imageRepository; 
-	
+	private final RecruitmentService recruitmentService;
+	private final LogboardService logboardService;
+    private final ImageRepository imageRepository;
+	private final UserQueryDtoRepository userQueryDtoRepository;
+
+	@DeleteMapping("/logout")
+	public HttpEntity logOut(HttpServletRequest request, HttpServletResponse response) {
+		userService.userRefreshTokenUpdate(SecurityUtil.getLoginUserNo(),"");
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication != null) {
+			new SecurityContextLogoutHandler().logout(request,response,authentication);
+		}
+		return ResponseEntity.ok().build();
+	}
+
 	@GetMapping("/user/request")
 	public HttpEntity<UserJoinRequestListResponse> myJoinRequestList() {
 		return ResponseEntity.ok(userDtoService.findUserJoinRequest(SecurityUtil.getLoginUserNo()));
@@ -44,7 +72,7 @@ public class UserController {
 	
 	@GetMapping("/user/alarm")
 	public ResponseEntity<UserAlarmResponse> myAlarm() {
-		return ResponseEntity.ok(userDtoService.findUserAlarm(SecurityUtil.getLoginUserNo()));
+		return ResponseEntity.ok(userService.findUserAlarm(SecurityUtil.getLoginUserNo()));
 	}
 	
 	@PutMapping("/user/alarm")
@@ -72,12 +100,56 @@ public class UserController {
 	
 	@GetMapping("/user/info")
 	public ResponseEntity<UserDashboardResponse> myInfo(){
-		UserInfo userInfo = userDtoService.findUserInfo(SecurityUtil.getLoginUserNo());
+		UserInfo userInfo = userService.findUserInfo(SecurityUtil.getLoginUserNo());
 		HistoryTimeInfo historyTimeInfo = userDtoService.findHistoryTimeInfo(SecurityUtil.getLoginUserNo());
 		ActivityInfo activityInfo = userDtoService.findActivityInfo(SecurityUtil.getLoginUserNo());
 
 		return ResponseEntity.ok(new UserDashboardResponse(userInfo, historyTimeInfo, activityInfo));
 	}
 
+	@GetMapping("/user/history")
+	public ResponseEntity<HistoryListResponse> myHistory(@PageableDefault(size = 6) Pageable pageable,
+														 @RequestParam(required = false) Long last_id) {
+		Slice<UserHistoryQuery> result = userQueryDtoRepository.findHistoryDtos(SecurityUtil.getLoginUserNo(), pageable, last_id);
 
+		//response DTO 변환
+		List<HistoriesList> dtos = result.getContent().stream().map(dto -> new HistoriesList(dto)).collect(Collectors.toList());
+		return ResponseEntity.ok(new HistoryListResponse(dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
+	}
+
+	@GetMapping("/user/recruitment/temp")
+	public ResponseEntity<RecruitmentTempListResponse> myRecruitmentTemp() {
+		return ResponseEntity.ok(userDtoService.findRecruitmentTempDtos(SecurityUtil.getLoginUserNo()));
+	}
+
+	@GetMapping("/user/logboard/temp")
+	public ResponseEntity<LogboardTempListResponse> myLogboardTemp() {
+		return ResponseEntity.ok(userDtoService.findLoboardTempDtos(SecurityUtil.getLoginUserNo()));
+	}
+
+	@OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
+	@DeleteMapping ("/user/recruitment/temp")
+	public ResponseEntity myRecruitmentTempDelete(@RequestBody @Valid RecruitmentListRequestParam dto) {
+		for(Long recruitmentNo : dto.getRecruitmentList()){
+			recruitmentService.deleteRecruitment(recruitmentNo);
+		}
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/user/logboard/temp")
+	public ResponseEntity myLogboardTempDelete(@RequestBody @Valid LogboardListRequestParam dto) {
+		for(Long recruitmentNo : dto.getLogboardList()){
+			logboardService.deleteLog(SecurityUtil.getLoginUserNo(), recruitmentNo);
+		}
+		return ResponseEntity.ok().build();
+	}
+	@GetMapping("/user/schedule")
+	public ResponseEntity<JoinScheduleListResponse> mySchedule() {
+		return ResponseEntity.ok(userDtoService.findUserSchedule(SecurityUtil.getLoginUserNo()));
+	}
+
+	@GetMapping("/user/recruitment")
+	public ResponseEntity<JoinRecruitmentListResponse> myRecruitment() {
+		return ResponseEntity.ok(userDtoService.findUserRecruitment(SecurityUtil.getLoginUserNo()));
+	}
 }
