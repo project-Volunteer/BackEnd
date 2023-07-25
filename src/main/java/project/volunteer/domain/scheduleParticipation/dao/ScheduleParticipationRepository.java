@@ -56,20 +56,19 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "and sp.state in :states ")
     List<ParticipantDetails> findParticipantsByOptimization(@Param("scheduleNo") Long scheduleNo, @Param("states") List<ParticipantState> states);
 
-    @Query("select new project.volunteer.domain.scheduleParticipation.dao.dto.CompletedScheduleDetail(" +
-            "sp.schedule.scheduleNo, " +
-            "sp.participant.recruitment.title, " +
-            "sp.schedule.scheduleTimeTable.endDay) " +
+    @Query("select new project.volunteer.domain.scheduleParticipation.dao.dto.CompletedScheduleDetail" +
+            "(sp.schedule.scheduleNo " +
+            ",sp.participant.recruitment.title " +
+            ",sp.schedule.scheduleTimeTable.endDay) " +
             "from ScheduleParticipation sp " +
             "where sp.participant.participant.userNo=:loginUserNo " +
             "and sp.state=:state")
     List<CompletedScheduleDetail> findCompletedSchedules(@Param("loginUserNo") Long loginUserNo, @Param("state") ParticipantState state);
 
-
     @Query("select sp " +
             "from ScheduleParticipation sp " +
             "where sp.participant.participant.userNo=:loginUserNo " +
-            "and sp.state=project.volunteer.global.common.component.ParticipantState.PARTICIPATION_COMPLETE_APPROVAL ")
-    List<ScheduleParticipation> findScheduleJoinHistoryByUserno(@Param("loginUserNo")Long loginUserNo);
+            "and sp.state=:state")
+    List<ScheduleParticipation> findScheduleListByUsernoAndStatus(@Param("loginUserNo")Long loginUserNo, @Param("state") ParticipantState state);
 
 }

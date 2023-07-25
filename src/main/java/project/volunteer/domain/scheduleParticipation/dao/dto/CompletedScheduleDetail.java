@@ -5,12 +5,18 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Getter @Setter
 public class CompletedScheduleDetail {
     Long scheduleNo;
     String recruitmentTitle;
     LocalDate endDay;
+
+    public CompletedScheduleDetail(Long scheduleNo, String recruitmentTitle, LocalDate endDay) {
+        this.scheduleNo = scheduleNo;
+        this.recruitmentTitle = recruitmentTitle;
+        this.endDay = endDay;
+    }
 }

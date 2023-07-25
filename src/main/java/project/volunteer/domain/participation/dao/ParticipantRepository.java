@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
+import project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails;
 import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.global.common.component.ParticipantState;
 
 import java.util.List;
@@ -63,8 +65,32 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     @Query("select p " +
            "from Participant p " +
-           "where p.participant.userNo=:loginUserNo ")
+           "where p.participant.userNo=:loginUserNo")
     List<Participant> findJoinStatusByTeamUserno(@Param("loginUserNo") Long loginUserNo);
 
+    @Query("select new project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails" +
+                "(p.recruitment.recruitmentNo" +
+                ", i.staticImageName" +
+                ", s.imagePath" +
+                ", p.recruitment.VolunteeringTimeTable.startDay" +
+                ", p.recruitment.VolunteeringTimeTable.endDay" +
+                ", p.recruitment.title" +
+                ", p.recruitment.address.sido" +
+                ", p.recruitment.address.sigungu" +
+                ", p.recruitment.address.details" +
+                ", p.recruitment.volunteeringCategory" +
+                ", p.recruitment.volunteeringType"+
+                ", p.recruitment.isIssued" +
+                ", p.recruitment.volunteerType) "+
+            "from Participant p " +
+            "left join Image i " +
+            "on p.recruitment.recruitmentNo=(i.no) " +
+            "and i.realWorkCode=project.volunteer.global.common.component.RealWorkCode.RECRUITMENT " +
+            "and i.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
+            "left join i.storage as s " +
+            "where p.participant.userNo=:loginUserNo " +
+            "and p.state=:state " +
+            "and p.recruitment.isDeleted=project.volunteer.global.common.component.IsDeleted.N ")
+    List<UserRecruitmentDetails> findRecuitmentByUsernoAndStatus(@Param("loginUserNo")Long loginUserNo, @Param("state") ParticipantState state);
 
 }
