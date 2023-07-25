@@ -12,6 +12,7 @@ import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class OrganizationComponent {
 
     private final String RECRUITMENT_NO = "recruitmentNo";
     private final String REPLY_NO = "replyNo";
+    private final String RECRUITMENT_LIST = "recruitmentList";
 
     private final RecruitmentRepository recruitmentRepository;
     private final ParticipantRepository participantRepository;
@@ -49,6 +51,18 @@ public class OrganizationComponent {
         replyValidate.vaildateEqualParamUserNoAndReplyFindUserNo(loginUserNo, findReply);
     }
 
+    public void validRecruitmentListOwner(HttpServletRequest request, Long loginUserNo) {
+        List<Long> recruitmentNoList = getRecruitmentNoList(request);
+        for(Long no : recruitmentNoList){
+            Recruitment findRecruitment = getRecruitmentByRecuritmentNo(no);
+            //DDD 설계 살려서
+            if(!findRecruitment.isRecruitmentOwner(loginUserNo)){
+                throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                        String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(), loginUserNo));
+            }
+        }
+    }
+
     //Request 정보에서 봉사 모집글 검색 메서드
     private Recruitment getRecruitment(HttpServletRequest request){
 
@@ -69,5 +83,16 @@ public class OrganizationComponent {
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
         }
+    }
+
+    private List<Long> getRecruitmentNoList(HttpServletRequest request){
+        //PathVariable 정보 Map으로 추출
+        final Map<String, Object> path = (Map<String, Object>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        return (List<Long>) path.get(RECRUITMENT_LIST);
+    }
+
+    private Recruitment getRecruitmentByRecuritmentNo(Long recruitmentNo){
+        return recruitmentRepository.findValidRecruitment(recruitmentNo)
+                .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
     }
 }

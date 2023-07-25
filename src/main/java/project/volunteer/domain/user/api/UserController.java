@@ -127,7 +127,7 @@ public class UserController {
 		return ResponseEntity.ok(userDtoService.findLoboardTempDtos(SecurityUtil.getLoginUserNo()));
 	}
 
-	@OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
+	@OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_LIST_ADMIN)
 	@DeleteMapping ("/user/recruitment/temp")
 	public ResponseEntity myRecruitmentTempDelete(@RequestBody @Valid RecruitmentListRequestParam dto) {
 		for(Long recruitmentNo : dto.getRecruitmentList()){
