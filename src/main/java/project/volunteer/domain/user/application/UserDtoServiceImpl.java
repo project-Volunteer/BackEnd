@@ -1,15 +1,21 @@
 package project.volunteer.domain.user.application;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
+import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
+import project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.dto.PictureDetails;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.user.api.dto.response.*;
@@ -19,6 +25,7 @@ import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitingQuery;
 import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitmentJoinRequestQuery;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.validate.UserValidate;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -26,6 +33,7 @@ import project.volunteer.global.error.exception.ErrorCode;
 @Service
 @RequiredArgsConstructor
 public class UserDtoServiceImpl implements UserDtoService{
+	private final UserValidate userValidate;
 	
 	private final UserRepository userRepository;
 	private final UserQueryDtoRepository userQueryDtoRepository;
@@ -37,39 +45,23 @@ public class UserDtoServiceImpl implements UserDtoService{
 
 	@Override
 	public UserJoinRequestListResponse findUserJoinRequest(Long userNo) {
-		isUserExists(userNo);
 		List<UserRecruitmentJoinRequestQuery> data = userQueryDtoRepository.findUserRecruitmentJoinRequestDto(userNo);
-		
 		return new UserJoinRequestListResponse(data);
 	}
 
 	@Override
 	public UserRecruitingListResponse findUserRecruiting(Long userNo) {
-		isUserExists(userNo);
 		List<UserRecruitingQuery> data = userQueryDtoRepository.findUserRecruitingDto(userNo);
-		
 		return new UserRecruitingListResponse(data);
-	}
-
-	@Override
-	public UserAlarmResponse findUserAlarm(Long userNo) {
-		User user = isUserExists(userNo);
-		
-		return new UserAlarmResponse(user.getJoinAlarmYn(), user.getNoticeAlarmYn(), user.getBeforeAlarmYn());
-	}
-
-	@Override
-	public UserInfo findUserInfo(Long loginUserNo) {
-		User user = isUserExists(loginUserNo);
-		return new UserInfo(user.getNickName(), user.getEmail(), user.getPicture());
 	}
 
 	@Override
 	public HistoryTimeInfo findHistoryTimeInfo(Long loginUserNo) {
 		HistoryTimeInfo historyTimeInfo = new HistoryTimeInfo();
 		int sumProgressTime = 0;
-		List<ScheduleParticipation> scheduleParticipationList = scheduleParticipationRepository.findScheduleJoinHistoryByUserno(loginUserNo);
-		for(ScheduleParticipation sp :scheduleParticipationList){
+		List<ScheduleParticipation> scheduleParticipationList =
+				scheduleParticipationRepository.findScheduleListByUsernoAndStatus(loginUserNo, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+		for(ScheduleParticipation sp : scheduleParticipationList){
 			sumProgressTime += sp.getSchedule().getScheduleTimeTable().getProgressTime();
 		}
 		historyTimeInfo.setTotalCnt(scheduleParticipationList.size());
@@ -80,8 +72,9 @@ public class UserDtoServiceImpl implements UserDtoService{
 	@Override
 	public ActivityInfo findActivityInfo(Long loginUserNo) {
 		ActivityInfo activityInfo = new ActivityInfo();
-		int joinApprovalCnt=0;
-		int joinRequestCnt=0;
+		int joinApprovalCnt = 0;
+		int joinRequestCnt = 0;
+		int tempSavingCnt = 0;
 
 		List <Participant> participantList = participantRepository.findJoinStatusByTeamUserno(loginUserNo);
 		for(Participant p : participantList){
@@ -91,12 +84,10 @@ public class UserDtoServiceImpl implements UserDtoService{
 				joinRequestCnt+=1;
 			}
 		}
-		int tempSavingCnt =0;
-		tempSavingCnt += recruitmentRepository.findRecruitmentByUserNoAndPublishedYn(loginUserNo,false);
-		tempSavingCnt += logboardRepository.findNotPublishedByUserNo(loginUserNo);
+		tempSavingCnt += recruitmentRepository.findRecruitmentListByUserNoAndPublishedYn(loginUserNo,false).size();
+		tempSavingCnt += logboardRepository.findLogboardListByUserNoAndPublishedYn(loginUserNo,false).size();
 
-
-		activityInfo.setRecruitingCnt(recruitmentRepository.findRecruitmentByUserNoAndPublishedYn(loginUserNo,true));
+		activityInfo.setRecruitingCnt(recruitmentRepository.findRecruitmentListByUserNoAndPublishedYn(loginUserNo,true).size());
 		activityInfo.setJoinApprovalCnt(joinApprovalCnt);
 		activityInfo.setJoinRequestCnt(joinRequestCnt);
 		activityInfo.setTempSavingCnt(tempSavingCnt);
@@ -104,10 +95,65 @@ public class UserDtoServiceImpl implements UserDtoService{
 		return activityInfo;
 	}
 
-	// 유저 존재 유무 확인
-	public User isUserExists(Long userNo) {
-		return userRepository.findByUserNo(userNo)
-				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_USER, 
-						String.format("not found user = [%d]", userNo)));
+	@Override
+	public JoinScheduleListResponse findUserSchedule(Long loginUserNo) {
+		List<ScheduleParticipation> scheduleParticipationList =
+				scheduleParticipationRepository.findScheduleListByUsernoAndStatus(loginUserNo, ParticipantState.PARTICIPATING);
+		return new JoinScheduleListResponse(scheduleParticipationList.stream().map(dto->{
+			return new JoinScheduleList(dto.getScheduleParticipationNo()
+					, dto.getSchedule().getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+					, dto.getSchedule().getAddress().getSido()
+					, dto.getSchedule().getAddress().getSigungu()
+					, dto.getSchedule().getAddress().getDetails()
+					, dto.getSchedule().getOrganizationName()
+					, dto.getSchedule().getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+					, dto.getSchedule().getScheduleTimeTable().getHourFormat().getViewName()
+					, dto.getSchedule().getScheduleTimeTable().getProgressTime()
+					);
+		}).collect(Collectors.toList()));
+	}
+
+	@Override
+	public JoinRecruitmentListResponse findUserRecruitment(Long loginUserNo) {
+		List<UserRecruitmentDetails> userRecruitmentDetails = participantRepository.findRecuitmentByUsernoAndStatus(loginUserNo, ParticipantState.JOIN_APPROVAL);
+		return new JoinRecruitmentListResponse(userRecruitmentDetails.stream().map(dto->{
+			return new JoinRecruitmentList(
+						  dto.getNo()
+						, new PictureDetails(dto.getStaticImageName(), dto.getImagePath())
+						, dto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+						, dto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+						, dto.getTitle()
+						, dto.getSido()
+						, dto.getSigungu()
+						, dto.getDetails()
+						, dto.getVolunteeringCategory().getDesc()
+						, dto.getVolunteeringType().getViewName()
+						, dto.getIsIssued()
+						, dto.getVolunteerType().getDesc());
+		}).collect(Collectors.toList()));
+	}
+
+	@Override
+	public RecruitmentTempListResponse findRecruitmentTempDtos(Long loginUserNo) {
+		List<Recruitment> tempList = recruitmentRepository.findRecruitmentListByUserNoAndPublishedYn(loginUserNo, false);
+		return new RecruitmentTempListResponse(tempList.stream().map(t ->{
+				return new RecruitmentTempList(
+						 t.getRecruitmentNo()
+						,t.getTitle()
+						,t.getCreatedDate().format(DateTimeFormatter.ofPattern("HH:mm")).toString()
+						,t.getCreatedDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")).toString());
+			}).collect(Collectors.toList()));
+	}
+
+	@Override
+	public LogboardTempListResponse findLoboardTempDtos(Long loginUserNo) {
+		List<Logboard> tempList = logboardRepository.findLogboardListByUserNoAndPublishedYn(loginUserNo, false);
+		return new LogboardTempListResponse(tempList.stream().map(t ->{
+			return new LogboardTempList(
+					 t.getLogboardNo()
+					,t.getContent()
+					,t.getCreatedDate().format(DateTimeFormatter.ofPattern("HH:mm")).toString()
+					,t.getCreatedDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")).toString());
+		}).collect(Collectors.toList()));
 	}
 }

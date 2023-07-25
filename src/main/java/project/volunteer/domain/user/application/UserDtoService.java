@@ -8,11 +8,15 @@ public interface UserDtoService {
 
 	public UserRecruitingListResponse findUserRecruiting(Long userNo);
 
-	public UserAlarmResponse findUserAlarm(Long userNo);
-
-	public UserInfo findUserInfo(Long loginUserNo);
-
 	public HistoryTimeInfo findHistoryTimeInfo(Long loginUserNo);
 
 	public ActivityInfo findActivityInfo(Long loginUserNo);
+
+	public JoinScheduleListResponse findUserSchedule(Long loginUserNo);
+
+	public JoinRecruitmentListResponse findUserRecruitment(Long loginUserNo);
+
+	public RecruitmentTempListResponse findRecruitmentTempDtos(Long loginUserNo);
+
+	public LogboardTempListResponse findLoboardTempDtos(Long loginUserNo);
 }
