@@ -1,7 +1,7 @@
 package project.volunteer.global.security.dto;
 
 import lombok.Data;
-import project.volunteer.global.common.response.BaseResponse;
+import project.volunteer.global.common.dto.BaseResponse;
 
 @Data
 public class UserLoginResponse extends BaseResponse{

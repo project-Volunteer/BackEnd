@@ -21,7 +21,7 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.logboard.api.dto.request.CommentContentParam;
+import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;

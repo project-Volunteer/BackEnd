@@ -24,7 +24,7 @@ import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.response.StateResponse;
+import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 

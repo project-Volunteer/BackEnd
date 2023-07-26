@@ -1,4 +1,4 @@
-package project.volunteer.global.common.response;
+package project.volunteer.global.common.dto;
 
 public enum StateResponse {
 

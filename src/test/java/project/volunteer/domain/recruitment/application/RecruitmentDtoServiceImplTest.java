@@ -34,7 +34,7 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.response.StateResponse;
+import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 

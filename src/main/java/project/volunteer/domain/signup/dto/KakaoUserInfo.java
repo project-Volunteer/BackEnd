@@ -3,7 +3,6 @@ package project.volunteer.domain.signup.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.global.common.response.BaseResponse;
 
 @Getter
 @Setter
