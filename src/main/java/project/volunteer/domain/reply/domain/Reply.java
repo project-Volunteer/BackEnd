@@ -29,6 +29,7 @@ public class Reply extends BaseTimeEntity {
 	@Column(name = "replyno")
 	private Long replyNo;
 
+	//TODO: cascade 옵션이 없어도 될까요? 부모 댓글이 삭제될때 자식 댓글 리스트들이 자동으로 삭제되어야 할거 같아요.
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentno")
     private Reply parent;
