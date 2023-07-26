@@ -66,6 +66,8 @@ public class RecruitmentController {
                             form.getContent(), form.getVolunteerNum(), periodParam));
         }
 
+        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
+        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
         //이미지 저장
         imageService.addImage(
                 new ImageParam(RealWorkCode.RECRUITMENT, recruitmentNo, form.getPicture()));
@@ -138,6 +140,8 @@ public class RecruitmentController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/recruitment/{recruitmentNo}")
     public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
+        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
+        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
 
         //모집글 관련 엔티티들 삭제
         recruitmentService.deleteRecruitment(no);
