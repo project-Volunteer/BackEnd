@@ -2,7 +2,6 @@ package project.volunteer.concurrent.notice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
@@ -101,7 +100,7 @@ public class NoticeConcurrentTestService {
 
         //모집글 공지사항 작성 가능 일자 검증
         if(findRecruitment.isDoneDate()){
-            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_NOTICE,
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_ACTIVITY_RECRUITMENT,
                     String.format("RecruitmentNo = [%d], Recruitment EndDay = [%s]", recruitmentNo, findRecruitment.getVolunteeringTimeTable().getEndDay().toString()));
         }
         return findRecruitment;

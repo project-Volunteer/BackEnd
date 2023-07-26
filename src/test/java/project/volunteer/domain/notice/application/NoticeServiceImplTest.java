@@ -90,7 +90,7 @@ class NoticeServiceImplTest {
         //when & then
         assertThatThrownBy(() -> noticeService.addNotice(saveRecruitment.getRecruitmentNo(), dto))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_NOTICE.name());
+                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_ACTIVITY_RECRUITMENT.name());
     }
 
     @Test
