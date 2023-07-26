@@ -12,6 +12,7 @@ import javax.persistence.PersistenceContext;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -289,6 +290,7 @@ public class LogboardServiceImplTestForComment {
 	}
 	
 	@Test
+	@Disabled(value = "인터셉터로 권한 검증 분리됨.")
 	public void 댓글_수정_권한_없음으로_실패() throws Exception {
 		// given
 		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser2.getUserNo());

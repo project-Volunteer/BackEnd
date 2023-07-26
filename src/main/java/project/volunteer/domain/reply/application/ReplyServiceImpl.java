@@ -47,6 +47,7 @@ public class ReplyServiceImpl implements ReplyService {
 	
 
 	@Override
+	@Transactional
 	public Long addCommentReply(Long loginUserNo, RealWorkCode code, Long no, Long parentNo, String content) {
 		// 사용자 존재 유무 검증
 		User user = userValidate.validateAndGetUser(loginUserNo);
@@ -67,18 +68,19 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 
 	@Override
+	@Transactional
 	public void editReply(Long loginUserNo, Long replyNo, String content) {
 		// 댓글 존재 여부 검증
 		Reply findReply = replyValidate.validateAndGetReply(replyNo);
 
 		// 작성자 여부 검증
-		replyValidate.vaildateEqualParamUserNoAndReplyFindUserNo(loginUserNo, findReply);
+//		replyValidate.vaildateEqualParamUserNoAndReplyFindUserNo(loginUserNo, findReply);
 
 		findReply.editReply(content, loginUserNo);
-		replyRepository.save(findReply);
 	}
 
 	@Override
+	@Transactional
 	public void deleteReply(Long replyNo) {
 		// 댓글 존재 여부 검증
 		Reply findReply = replyValidate.validateAndGetReply(replyNo);
