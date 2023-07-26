@@ -19,25 +19,16 @@ import project.volunteer.domain.recruitment.dto.PictureDetails;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.user.api.dto.response.*;
-import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.dao.queryDto.UserQueryDtoRepository;
 import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitingQuery;
 import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitmentJoinRequestQuery;
-import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.validate.UserValidate;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDtoServiceImpl implements UserDtoService{
-	private final UserValidate userValidate;
-	
-	private final UserRepository userRepository;
 	private final UserQueryDtoRepository userQueryDtoRepository;
-
 	private final ParticipantRepository participantRepository;
 	private final RecruitmentRepository recruitmentRepository;
 	private final LogboardRepository logboardRepository;
@@ -71,7 +62,6 @@ public class UserDtoServiceImpl implements UserDtoService{
 
 	@Override
 	public ActivityInfo findActivityInfo(Long loginUserNo) {
-		ActivityInfo activityInfo = new ActivityInfo();
 		int joinApprovalCnt = 0;
 		int joinRequestCnt = 0;
 		int tempSavingCnt = 0;
@@ -87,10 +77,11 @@ public class UserDtoServiceImpl implements UserDtoService{
 		tempSavingCnt += recruitmentRepository.findRecruitmentListByUserNoAndPublishedYn(loginUserNo,false).size();
 		tempSavingCnt += logboardRepository.findLogboardListByUserNoAndPublishedYn(loginUserNo,false).size();
 
-		activityInfo.setRecruitingCnt(recruitmentRepository.findRecruitmentListByUserNoAndPublishedYn(loginUserNo,true).size());
-		activityInfo.setJoinApprovalCnt(joinApprovalCnt);
-		activityInfo.setJoinRequestCnt(joinRequestCnt);
-		activityInfo.setTempSavingCnt(tempSavingCnt);
+		ActivityInfo activityInfo = ActivityInfo.makeActivityInfo(
+				recruitmentRepository.findRecruitmentListByUserNoAndPublishedYn(loginUserNo,true).size()
+				,joinApprovalCnt
+				,joinRequestCnt
+				,tempSavingCnt);
 
 		return activityInfo;
 	}

@@ -113,7 +113,7 @@ public class UserController {
 		Slice<UserHistoryQuery> result = userQueryDtoRepository.findHistoryDtos(SecurityUtil.getLoginUserNo(), pageable, last_id);
 
 		//response DTO 변환
-		List<HistoriesList> dtos = result.getContent().stream().map(dto -> new HistoriesList(dto)).collect(Collectors.toList());
+		List<HistoriesList> dtos = result.getContent().stream().map(dto -> HistoriesList.makeHistoriesList(dto)).collect(Collectors.toList());
 		return ResponseEntity.ok(new HistoryListResponse(dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
 	}
 

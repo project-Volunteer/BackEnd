@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class ActivityInfo {
     int joinApprovalCnt;
@@ -13,10 +12,12 @@ public class ActivityInfo {
     int recruitingCnt;
     int tempSavingCnt;
 
-    public ActivityInfo(int joinApprovalCnt, int joinRequestCnt, int recruitingCnt, int tempSavingCnt) {
-        this.joinApprovalCnt = joinApprovalCnt;
-        this.joinRequestCnt = joinRequestCnt;
-        this.recruitingCnt = recruitingCnt;
-        this.tempSavingCnt = tempSavingCnt;
+    public static ActivityInfo makeActivityInfo(int joinApprovalCnt, int joinRequestCnt, int recruitingCnt, int tempSavingCnt) {
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.joinApprovalCnt = joinApprovalCnt;
+        activityInfo.joinRequestCnt = joinRequestCnt;
+        activityInfo.recruitingCnt = recruitingCnt;
+        activityInfo.tempSavingCnt = tempSavingCnt;
+        return activityInfo;
     }
 }
