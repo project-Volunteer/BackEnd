@@ -109,10 +109,9 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 
 	// no-offset 방식 처리하는 메서드
 	private BooleanExpression ltscheduleParticipationNo(Long scheduleParticipationNo) {
-		if (scheduleParticipationNo == null) {
-			return null;
-		}
-		return scheduleParticipation.scheduleParticipationNo.lt(scheduleParticipationNo);
+		return (scheduleParticipationNo != null)
+				?scheduleParticipation.scheduleParticipationNo.lt(scheduleParticipationNo)
+				:null;
 	}
 
 	// 무한 스크롤 방식 처리하는 메서드
