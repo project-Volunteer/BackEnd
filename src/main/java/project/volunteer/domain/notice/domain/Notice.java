@@ -63,5 +63,7 @@ public class Notice extends BaseTimeEntity {
     }
     public void increaseCheckNum(){this.checkedNum++;}
     public void decreaseCheckNum(){this.checkedNum--;}
+    public void increaseCommentNum(){this.commentNum++;}
+    public void decreaseCommentNum(){this.commentNum--;}
 
 }
