@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
+import project.volunteer.domain.reply.application.dto.CommentDetails;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,6 +14,5 @@ import project.volunteer.domain.notice.application.dto.NoticeDetails;
 public class NoticeDetailsResponse {
 
     NoticeDetails notice;
-    //댓글 details dto 추가 필요
-
+    List<CommentDetails> commentsList;
 }

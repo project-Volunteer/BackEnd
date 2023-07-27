@@ -11,7 +11,10 @@ import project.volunteer.domain.notice.api.dto.response.NoticeListResponse;
 import project.volunteer.domain.notice.application.NoticeDtoService;
 import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
+import project.volunteer.domain.reply.application.ReplyService;
+import project.volunteer.domain.reply.application.dto.CommentDetails;
 import project.volunteer.global.Interceptor.OrganizationAuth;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -25,6 +28,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
     private final NoticeDtoService noticeDtoService;
+    private final ReplyService replyService;
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @PostMapping("/{recruitmentNo}/notice")
@@ -61,11 +65,13 @@ public class NoticeController {
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/notice/{noticeNo}")
     public ResponseEntity<NoticeDetailsResponse> noticeDetails(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-
+        //공지사항 상세 조회
         NoticeDetails noticeDto = noticeDtoService.findNoticeDto(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
-        //댓글 details dto 추가 필요
 
-        return ResponseEntity.ok(new NoticeDetailsResponse(noticeDto)); //댓글 details dto 추가 필요
+        //댓글 리스트 조회
+        List<CommentDetails> commentReplyList = replyService.getCommentReplyList(RealWorkCode.NOTICE, noticeNo);
+
+        return ResponseEntity.ok(new NoticeDetailsResponse(noticeDto, commentReplyList));
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
