@@ -91,5 +91,9 @@ public class Reply extends BaseTimeEntity {
     public void setWriter(User user){
         this.writer = user;
     }
-    
+
+	@Override
+	public String toString() {
+		return "replyNo="+ replyNo + " code=" + realWorkCode + " no=" + no + " content=" + content;
+	}
 }
