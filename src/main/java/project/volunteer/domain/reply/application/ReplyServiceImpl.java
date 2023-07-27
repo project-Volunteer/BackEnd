@@ -3,28 +3,28 @@ package project.volunteer.domain.reply.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.logboard.dao.LogboardRepository;
-import project.volunteer.domain.logboard.domain.Logboard;
+import project.volunteer.domain.reply.application.dto.CommentDetails;
+import project.volunteer.domain.reply.application.dto.CommentReplyDetails;
 import project.volunteer.domain.reply.dao.ReplyRepository;
+import project.volunteer.domain.reply.dao.queryDto.ReplyQueryDtoRepository;
+import project.volunteer.domain.reply.dao.queryDto.dto.CommentMapperDto;
 import project.volunteer.domain.reply.domain.Reply;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
-import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
-import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.validate.ReplyValidate;
 import project.volunteer.global.common.validate.UserValidate;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReplyServiceImpl implements ReplyService {
 	private final ReplyRepository replyRepository;
+	private final ReplyQueryDtoRepository replyQueryDtoRepository;
 	private final ReplyValidate replyValidate;
 	private final UserValidate userValidate;
 
@@ -86,5 +86,29 @@ public class ReplyServiceImpl implements ReplyService {
 		Reply findReply = replyValidate.validateAndGetReply(replyNo);
 
 		replyRepository.delete(findReply);
+	}
+	@Override
+	public List<CommentDetails>  getCommentReplyList(RealWorkCode code, Long no) {
+		List<CommentMapperDto> commentMapperDtos = replyQueryDtoRepository.getCommentMapperDtos(code, no);
+
+		//부모-자식 댓글 매핑
+		List<CommentDetails> commentDetailList = new ArrayList<>();
+		Map<Long, CommentDetails> map = new HashMap<>();
+
+		for(CommentMapperDto mapperDto : commentMapperDtos){
+			//부모 댓글
+			if(mapperDto.getParentNo()==null){
+				CommentDetails commentDetails = CommentDetails.from(mapperDto);
+
+				commentDetailList.add(commentDetails);
+				map.put(mapperDto.getNo(), commentDetails);
+			}
+			//자식 댓글
+			else{
+				CommentReplyDetails commentReplyDetails = CommentReplyDetails.from(mapperDto);
+				map.get(mapperDto.getParentNo()).addReplyDetails(commentReplyDetails);
+			}
+		}
+		return commentDetailList;
 	}
 }
