@@ -17,7 +17,7 @@ public class Scheduler {
     public void scheduleCompletionValidation(){
 
         log.info("마감 일정 참가자 상태 자동 업데이트 스케줄러 시작");
-        scheduleService.finishSchedules();
+        scheduleService.scheduleParticipantStateUpdateProcess();
     }
 
 }
