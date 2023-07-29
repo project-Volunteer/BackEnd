@@ -43,6 +43,11 @@ public class OrganizationAuthInterceptor implements HandlerInterceptor {
             organizationComponent.validRecruitmentTeam(request, loginUserNo);
         }
 
+        // 봉사 모집글리스트 방장
+        if(organizationAuth.auth().equals(Auth.ORGANIZATION_ADMIN)){
+            organizationComponent.validRecruitmentListOwner(request, loginUserNo);
+        }
+
         // 댓글 작성자 검증
         if(organizationAuth.auth().equals(Auth.REPLY_WRITER)){
             organizationComponent.validateReplyWriter(request, loginUserNo);

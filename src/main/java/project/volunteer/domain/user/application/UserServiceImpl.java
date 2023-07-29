@@ -5,30 +5,35 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.user.dao.UserRepository;
+import project.volunteer.domain.user.api.dto.response.UserAlarmResponse;
+import project.volunteer.domain.user.api.dto.response.UserInfo;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
+import project.volunteer.global.common.validate.UserValidate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
-	private final UserRepository userRepository;
+	private final UserValidate userValidate;
+
+	@Transactional
+	@Override
+	public void userRefreshTokenUpdate(Long userNo, String refreshToken) {
+		User user = userValidate.validateAndGetUser(userNo);
+		user.setRefreshToken(refreshToken);
+	}
 
 	@Transactional
 	@Override
 	public void userAlarmUpdate(Long userNo, Boolean joinAlarm, Boolean noticeAlarm, Boolean beforeAlarm) {
-		User user = isUserExists(userNo);
-		
+		User user = userValidate.validateAndGetUser(userNo);
 		user.changeAlarm(joinAlarm, noticeAlarm, beforeAlarm);
-		
 	}
 
 	@Transactional
 	@Override
 	public void userInfoUpdate(Long userNo, String nickname, String email, String picture) {
-		User user = isUserExists(userNo);
+		User user = userValidate.validateAndGetUser(userNo);
 		
 		if(picture == null) {
 			picture = user.getPicture();
@@ -36,11 +41,16 @@ public class UserServiceImpl implements UserService{
 		
 		user.changeProfile(nickname, email, picture);
 	}
-	
-	// 유저 존재 유무 확인
-	public User isUserExists(Long userNo) {
-		return userRepository.findByUserNo(userNo)
-				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_USER, 
-						String.format("not found user = [%d]", userNo)));
+
+	@Override
+	public UserAlarmResponse findUserAlarm(Long userNo) {
+		User user = userValidate.validateAndGetUser(userNo);
+		return new UserAlarmResponse(user.getJoinAlarmYn(), user.getNoticeAlarmYn(), user.getBeforeAlarmYn());
+	}
+
+	@Override
+	public UserInfo findUserInfo(Long loginUserNo) {
+		User user = userValidate.validateAndGetUser(loginUserNo);
+		return new UserInfo(user.getNickName(), user.getEmail(), user.getPicture());
 	}
 }
