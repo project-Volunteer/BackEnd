@@ -333,7 +333,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	void 나의_메일수신동의여부_조회() throws Exception{
-		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
+		UserAlarmResponse result = userService.findUserAlarm(saveUser.getUserNo());
 		Assertions.assertThat(result.getJoinAlarm().TRUE);
 		Assertions.assertThat(result.getNoticeAlarm().TRUE);
 		Assertions.assertThat(result.getBeforeAlarm().TRUE);
@@ -343,7 +343,7 @@ public class UserServiceImplTest {
 	@Test
 	void 나의_메일수신동의여부_수정() throws Exception{
 		userService.userAlarmUpdate(saveUser.getUserNo(),Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
-		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
+		UserAlarmResponse result = userService.findUserAlarm(saveUser.getUserNo());
 		Assertions.assertThat(result.getJoinAlarm().FALSE);
 		Assertions.assertThat(result.getNoticeAlarm().FALSE);
 		Assertions.assertThat(result.getBeforeAlarm().FALSE);

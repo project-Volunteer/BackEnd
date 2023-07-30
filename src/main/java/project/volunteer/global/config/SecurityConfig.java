@@ -114,6 +114,22 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.PUT, "/recruitment/*/notice/*/comment/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.DELETE, "/recruitment/*/notice/*/comment/*").hasAuthority("USER")
 
+					//마이페이지 관리
+					.antMatchers(HttpMethod.GET, "/user/info").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/history").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/request").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/recruiting").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/recruitment/temp").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/logboard/temp").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/user/recruitment/temp").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/user/logboard/temp").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/schedule").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/recruitment").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/alarm").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/user/alarm").hasAuthority("USER")
+					.antMatchers(HttpMethod.PUT, "/user/alarm").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/user").hasAuthority("USER")
+
 			.anyRequest().permitAll()
 			.and()
 			.build();
