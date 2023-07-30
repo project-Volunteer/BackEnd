@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
-import project.volunteer.domain.notice.api.dto.NoticeAdd;
-import project.volunteer.domain.notice.api.dto.NoticeEdit;
+import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
+import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -90,7 +90,7 @@ class NoticeServiceImplTest {
         //when & then
         assertThatThrownBy(() -> noticeService.addNotice(saveRecruitment.getRecruitmentNo(), dto))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_NOTICE.name());
+                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_ACTIVITY_RECRUITMENT.name());
     }
 
     @Test

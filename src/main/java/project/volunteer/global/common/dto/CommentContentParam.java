@@ -1,4 +1,4 @@
-package project.volunteer.domain.logboard.api.dto.request;
+package project.volunteer.global.common.dto;
 
 import javax.validation.constraints.NotNull;
 

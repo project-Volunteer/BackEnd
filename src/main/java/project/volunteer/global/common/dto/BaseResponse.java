@@ -1,4 +1,4 @@
-package project.volunteer.global.common.response;
+package project.volunteer.global.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

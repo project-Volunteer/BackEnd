@@ -47,8 +47,6 @@ public class NoticeDtoServiceImpl implements NoticeDtoService{
         Notice findNotice = validateAndGetNotice(noticeNo);
         Boolean isChecked = checkRepository.existsCheck(userNo, RealWorkCode.NOTICE, findNotice.getNoticeNo());
 
-        //댓글 조회 및 DTO 추가 필요
-
         return NoticeDetails.toDto(findNotice, isChecked);
     }
 

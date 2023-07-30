@@ -17,8 +17,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
-import project.volunteer.domain.notice.api.dto.NoticeAdd;
-import project.volunteer.domain.notice.api.dto.NoticeEdit;
+import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
+import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -26,6 +26,8 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.reply.dao.ReplyRepository;
+import project.volunteer.domain.reply.domain.Reply;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -50,6 +52,7 @@ class NoticeControllerTest {
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired NoticeRepository noticeRepository;
     @Autowired ConfirmationRepository confirmationRepository;
+    @Autowired ReplyRepository replyRepository;
 
     User writer;
     Recruitment saveRecruitment;
@@ -122,29 +125,58 @@ class NoticeControllerTest {
     }
 
     @Test
-    @DisplayName("봉사 공지사항 단일 조회 요청에 성공하다.")
+    @DisplayName("봉사 공지사항 상세 조회 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void noticeDetailsRequest() throws Exception {
         //given
-        final String addNoticeContent = "add";
-        Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
+        Notice saveNotice = 공지사항_등록("add", saveRecruitment);
 
-        //when
-        ResultActions resultActions = mockMvc.perform(get("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+        User user1 = 사용자_등록("user1");
+        User user2 = 사용자_등록("user2");
+        User user3 = 사용자_등록("user3");
+        User user4 = 사용자_등록("user4");
+
+        Reply parent1 = 댓글_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), "parent1", user1);
+        saveNotice.increaseCommentNum();
+        Reply children1_1 = 대댓글_등록(parent1, RealWorkCode.NOTICE, saveNotice.getNoticeNo(), "children1-1", user2);
+        saveNotice.increaseCommentNum();
+        Reply children1_2 = 대댓글_등록(parent1, RealWorkCode.NOTICE, saveNotice.getNoticeNo(), "children1-2", user3);
+        saveNotice.increaseCommentNum();
+        Reply parent2 = 댓글_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), "parent2", user4);
+        saveNotice.increaseCommentNum();
+
+        //when & then
+        mockMvc.perform(get("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print());
-
-        //then
-        resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.notice.content").value(addNoticeContent))
+                .andExpect(jsonPath("$.notice.no").value(saveNotice.getNoticeNo()))
+                .andExpect(jsonPath("$.notice.content").value(saveNotice.getContent()))
                 .andExpect(jsonPath("$.notice.checkCnt").value(0))
-                .andExpect(jsonPath("$.notice.commentsCnt").value(0))
-                .andExpect(jsonPath("$.notice.isChecked").value(false));
+                .andExpect(jsonPath("$.notice.commentsCnt").value(4))
+                .andExpect(jsonPath("$.notice.isChecked").value(false))
+                .andExpect(jsonPath("$.commentsList[0].no").value(parent1.getReplyNo()))
+                .andExpect(jsonPath("$.commentsList[0].profile").value(user1.getPicture()))
+                .andExpect(jsonPath("$.commentsList[0].nickName").value(user1.getNickName()))
+                .andExpect(jsonPath("$.commentsList[0].content").value(parent1.getContent()))
+                .andExpect(jsonPath("$.commentsList[0].commentsCnt").value(2))
+                .andExpect(jsonPath("$.commentsList[0].replies[0].no").value(children1_1.getReplyNo()))
+                .andExpect(jsonPath("$.commentsList[0].replies[0].profile").value(user2.getPicture()))
+                .andExpect(jsonPath("$.commentsList[0].replies[0].nickName").value(user2.getNickName()))
+                .andExpect(jsonPath("$.commentsList[0].replies[0].content").value(children1_1.getContent()))
+                .andExpect(jsonPath("$.commentsList[0].replies[1].no").value(children1_2.getReplyNo()))
+                .andExpect(jsonPath("$.commentsList[0].replies[1].profile").value(user3.getPicture()))
+                .andExpect(jsonPath("$.commentsList[0].replies[1].nickName").value(user3.getNickName()))
+                .andExpect(jsonPath("$.commentsList[0].replies[1].content").value(children1_2.getContent()))
+                .andExpect(jsonPath("$.commentsList[1].no").value(parent2.getReplyNo()))
+                .andExpect(jsonPath("$.commentsList[1].profile").value(user4.getPicture()))
+                .andExpect(jsonPath("$.commentsList[1].nickName").value(user4.getNickName()))
+                .andExpect(jsonPath("$.commentsList[1].content").value(parent2.getContent()))
+                .andExpect(jsonPath("$.commentsList[1].commentsCnt").value(0))
+                .andDo(print());
     }
 
     @Test
-    @DisplayName("봉사 공지사항 복수 조회 요청에 성공하다.")
+    @DisplayName("봉사 공지사항 리스트 조회 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void noticeListRequest() throws Exception {
         //given
@@ -210,6 +242,21 @@ class NoticeControllerTest {
         Confirmation createConfirmation = Confirmation.createConfirmation(code, no);
         createConfirmation.setUser(user);
         return confirmationRepository.save(createConfirmation);
+    }
+    private User 사용자_등록(String value){
+        User user = User.createUser(value, "password", value, "email", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", value, null);
+        return userRepository.save(user);
+    }
+    private Reply 댓글_등록(RealWorkCode code, Long no, String content, User writer){
+        Reply comment = Reply.createComment(code, no, content);
+        comment.setWriter(writer);
+        return replyRepository.save(comment);
+    }
+    private Reply 대댓글_등록(Reply parent, RealWorkCode code, Long no, String content, User writer){
+        Reply reply = Reply.createCommentReply(parent, code, no, content);
+        reply.setWriter(writer);
+        return replyRepository.save(reply);
     }
     private <T> String toJson(T data) throws JsonProcessingException {
         return objectMapper.writeValueAsString(data);

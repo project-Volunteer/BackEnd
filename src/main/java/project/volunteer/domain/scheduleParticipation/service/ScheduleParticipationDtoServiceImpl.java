@@ -10,7 +10,7 @@ import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParti
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.response.StateResponse;
+import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 

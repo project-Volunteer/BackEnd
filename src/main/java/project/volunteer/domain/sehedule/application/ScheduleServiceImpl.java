@@ -152,9 +152,10 @@ public class ScheduleServiceImpl implements ScheduleService{
         return scheduleRepository.findScheduleWithinPeriod(recruitmentNo, startDay, endDay);
     }
 
+    //TODO: 단일 쿼리로 리펙토링 필요
     @Override
     @Transactional
-    public void finishSchedules() {
+    public void scheduleParticipantStateUpdateProcess() {
         //완료된 일정 찾기
         List<Schedule> completedSchedules = scheduleRepository.findCompletedSchedule();
 

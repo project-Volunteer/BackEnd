@@ -25,7 +25,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.response.StateResponse;
+import project.volunteer.global.common.dto.StateResponse;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

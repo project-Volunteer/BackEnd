@@ -12,6 +12,7 @@ import javax.persistence.PersistenceContext;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +22,7 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.logboard.api.dto.request.CommentContentParam;
+import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -193,7 +194,6 @@ public class LogboardServiceImplTestForComment {
 		Reply createReply = replyRepository.findReply(RealWorkCode.LOG, logboardNo1, commentNo).get();
 
 		Assertions.assertThat(createReply.getContent().equals("test comment"));
-		Assertions.assertThat(createReply.getCreateUserNo().equals(saveUser.getUserNo()));
 		Assertions.assertThat(!createReply.getCreatedDate().toString().isEmpty());
 	}
 
@@ -222,7 +222,7 @@ public class LogboardServiceImplTestForComment {
 	@Test
 	void 로그보드_대댓글작성_성공() throws Exception {
 		// given 
-		Reply createComment = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser.getUserNo());
+		Reply createComment = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		createComment.setWriter(saveUser);
 		replyRepository.save(createComment);
 
@@ -235,7 +235,6 @@ public class LogboardServiceImplTestForComment {
 		Reply createCommentReply = replyRepository.findReply(RealWorkCode.LOG, logboardNo1, commentReplyNo).get();
 
 		Assertions.assertThat(createCommentReply.getContent().equals("Test Comment Reply"));
-		Assertions.assertThat(createCommentReply.getCreateUserNo().equals(saveUser.getUserNo()));
 		Assertions.assertThat(!createCommentReply.getCreatedDate().toString().isEmpty());
 	}
 
@@ -253,11 +252,11 @@ public class LogboardServiceImplTestForComment {
 	@Test
 	public void 대대댓글_추가() throws Exception {
 		// given
-		Reply createComment = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply createComment = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		createComment.setWriter(saveUser);
 		replyRepository.save(createComment);
 		
-		Reply createCommentReply = Reply.createCommentReply(createComment, RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser.getUserNo());
+		Reply createCommentReply = Reply.createCommentReply(createComment, RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		createCommentReply.setWriter(saveUser);
 		replyRepository.save(createCommentReply);
 		
@@ -272,7 +271,7 @@ public class LogboardServiceImplTestForComment {
 	@Test
 	public void 댓글_수정_성공() throws Exception {
 		// given
-		Reply createComment = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply createComment = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		createComment.setWriter(saveUser);
 		replyRepository.save(createComment);
 		
@@ -284,14 +283,14 @@ public class LogboardServiceImplTestForComment {
 		Reply modifyComment = replyRepository.findReply(RealWorkCode.LOG, logboardNo1, createComment.getReplyNo()).get();
 		
 		Assertions.assertThat(modifyComment.getContent().equals("Test Comment Edit"));
-		Assertions.assertThat(modifyComment.getModifiedUserNo().equals(saveUser.getUserNo()));
 		Assertions.assertThat(!modifyComment.getModifiedDate().toString().isEmpty());
 	}
 	
 	@Test
+	@Disabled(value = "인터셉터로 권한 검증 분리됨.")
 	public void 댓글_수정_권한_없음으로_실패() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser2.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser2);
 		replyRepository.save(reply);
 		
@@ -307,7 +306,7 @@ public class LogboardServiceImplTestForComment {
 	@Test
 	public void 수정하고자하는_댓글_없음으로_실패() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser);
 		replyRepository.save(reply);
 		
@@ -323,11 +322,11 @@ public class LogboardServiceImplTestForComment {
 	@Test
 	public void 댓글_삭제_성공() throws Exception {
 		// given
-		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply1.setWriter(saveUser);
 		replyRepository.save(reply1);
 		
-		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser.getUserNo());
+		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		reply2.setWriter(saveUser);
 		replyRepository.save(reply2);
 		
@@ -345,11 +344,11 @@ public class LogboardServiceImplTestForComment {
 	@Test
 	public void 삭제하고자하는_댓글_없음() throws Exception {
 		// given
-		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply1.setWriter(saveUser);
 		replyRepository.save(reply1);
 		
-		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser2.getUserNo());
+		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		reply2.setWriter(saveUser2);
 		replyRepository.save(reply2);
 		

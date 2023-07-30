@@ -1,6 +1,5 @@
 package project.volunteer.domain.sehedule.api;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.response.StateResponse;
+import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.test.WithMockCustomUser;
 
 import java.time.LocalDate;

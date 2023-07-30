@@ -65,7 +65,6 @@ public class OrganizationComponent {
 
     //Request 정보에서 봉사 모집글 검색 메서드
     private Recruitment getRecruitment(HttpServletRequest request){
-
         //PathVariable 정보 Map으로 추출
         final Map<String, String> path = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
          Long recruitmentNo = Long.valueOf(path.get(RECRUITMENT_NO));
@@ -75,7 +74,6 @@ public class OrganizationComponent {
         return recruitmentRepository.findValidRecruitment(recruitmentNo)
                 .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
     }
-
     private void isRecruitmentTeam(Recruitment recruitment, Long loginUserNo){
         //기본 Spring OSIV 모드 트랜잭션 읽기 모드 사용(수정 변경 불가, 단순 읽기만, 영속 상태)
         //팀원 or 방장

@@ -29,6 +29,7 @@ public class Reply extends BaseTimeEntity {
 	@Column(name = "replyno")
 	private Long replyNo;
 
+	//TODO: cascade 옵션이 없어도 될까요? 부모 댓글이 삭제될때 자식 댓글 리스트들이 자동으로 삭제되어야 할거 같아요.
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentno")
     private Reply parent;
@@ -46,47 +47,35 @@ public class Reply extends BaseTimeEntity {
 
 	@Column(columnDefinition = "LONGTEXT", nullable = false)
 	private String content;
-	
-    @Column(name = "create_by", nullable = false)
-    private Long createUserNo;
-
-    @Column(name = "modified_by")
-    private Long modifiedUserNo;
-
-    public static Reply createReply(){
-    	Reply reply = new Reply();
-    	
-    	
-        return reply;
-    }
     
-    public static Reply createComment(RealWorkCode code, Long no, String content, Long userNo){
+    public static Reply createComment(RealWorkCode code, Long no, String content){
     	Reply createReply = new Reply();
     	createReply.realWorkCode = code;
     	createReply.no = no;
     	createReply.content = content;
-    	createReply.createUserNo = userNo;
         return createReply;
     }
 
-    public static Reply createCommentReply(Reply parent, RealWorkCode code, Long no, String content, Long userNo){
+    public static Reply createCommentReply(Reply parent, RealWorkCode code, Long no, String content){
     	Reply createReply = new Reply();
     	createReply.parent = parent;
     	createReply.realWorkCode = code;
     	createReply.no = no;
     	createReply.content = content;
-    	createReply.createUserNo = userNo;
         return createReply;
     }
 
-	public void editReply(String content, Long userNo) {
+	public void editReply(String content) {
     	this.content = content;
-    	this.modifiedUserNo = userNo;
 	}
 
     
     public void setWriter(User user){
         this.writer = user;
     }
-    
+
+	@Override
+	public String toString() {
+		return "replyNo="+ replyNo + " code=" + realWorkCode + " no=" + no + " content=" + content;
+	}
 }

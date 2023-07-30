@@ -49,6 +49,8 @@ public class RecruitmentController {
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
+        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
+        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
 
         //모집글 정보 저장
         Long recruitmentNo = recruitmentService.addRecruitment(SecurityUtil.getLoginUserNo(), new RecruitmentParam(form));
@@ -138,6 +140,9 @@ public class RecruitmentController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/recruitment/{recruitmentNo}")
     public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
+        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
+        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
+        //TODO: 계층적 삭제 기능 구현 필요
 
         //모집글 관련 엔티티들 삭제
         recruitmentService.deleteRecruitment(no);

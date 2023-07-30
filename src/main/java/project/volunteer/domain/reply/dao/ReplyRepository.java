@@ -30,4 +30,17 @@ public interface ReplyRepository extends JpaRepository<Reply, Long>{
 	"where r.realWorkCode=:realWorkCode " +
 	"and r.no=:no")
 	List<Reply> findReplyList(@Param("realWorkCode") RealWorkCode code,@Param("no") Long no);
+
+	//테스트 쿼리
+	@Query("select p " +
+			"from Reply p " +
+			"join p.writer u " +
+			"left join Image img " +
+			"on img.realWorkCode=project.volunteer.global.common.component.RealWorkCode.USER " +
+			"and img.no=u.userNo and img.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
+			"left join img.storage sto " +
+			"left join p.parent c " +
+			"where p.realWorkCode=:realWorkCode and p.no=:no " +
+			"order by c.replyNo asc, p.replyNo asc ")
+	List<Reply> findCommentReplyList(@Param("realWorkCode") RealWorkCode code,@Param("no") Long no);
 }

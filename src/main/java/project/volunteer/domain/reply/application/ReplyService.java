@@ -1,6 +1,9 @@
 package project.volunteer.domain.reply.application;
 
+import project.volunteer.domain.reply.application.dto.CommentDetails;
 import project.volunteer.global.common.component.RealWorkCode;
+
+import java.util.List;
 
 public interface ReplyService {
 	public Long addComment(Long loginUserNo, RealWorkCode code, Long no, String content);
@@ -11,4 +14,5 @@ public interface ReplyService {
 
 	public void deleteReply(Long replyNo);
 
+	public List<CommentDetails> getCommentReplyList(RealWorkCode code, Long no);
 }

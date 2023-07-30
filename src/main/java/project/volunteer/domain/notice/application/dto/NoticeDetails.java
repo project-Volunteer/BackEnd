@@ -20,8 +20,6 @@ public class NoticeDetails {
     private Integer commentsCnt;
     private Boolean isChecked;
 
-    //댓글 DTO 추가 필요
-
     public static NoticeDetails toDto(Notice notice, Boolean isChecked){
         NoticeDetails dto = new NoticeDetails();
         dto.no = notice.getNoticeNo();
@@ -31,8 +29,6 @@ public class NoticeDetails {
         dto.checkCnt = notice.getCheckedNum();
         dto.commentsCnt = notice.getCommentNum();
         dto.isChecked = isChecked;
-
-        //댓글 DTO 추가 필요
 
         return dto;
     }

@@ -109,6 +109,10 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.GET, "/recruitment/*/notice/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.POST, "/recruitment/*/notice/*/read").hasAuthority("USER")
 					.antMatchers(HttpMethod.DELETE, "/recruitment/*/notice/*/cancel").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/*/notice/*/comment").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/recruitment/*/notice/*/comment/*/reply").hasAuthority("USER")
+					.antMatchers(HttpMethod.PUT, "/recruitment/*/notice/*/comment/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/recruitment/*/notice/*/comment/*").hasAuthority("USER")
 
 					//마이페이지 관리
 					.antMatchers(HttpMethod.GET, "/user/info").hasAuthority("USER")

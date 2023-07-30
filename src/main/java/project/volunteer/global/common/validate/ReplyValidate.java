@@ -2,6 +2,7 @@ package project.volunteer.global.common.validate;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.reply.dao.ReplyRepository;
 import project.volunteer.domain.reply.domain.Reply;
 import project.volunteer.global.common.component.RealWorkCode;
@@ -13,6 +14,7 @@ import project.volunteer.global.error.exception.ErrorCode;
 public class ReplyValidate {
     private final ReplyRepository replyRepository;
     private final LogboardValidate logboardValidate;
+    private final NoticeRepository noticeRepository;
 
     // 댓글 유무 확인
     public Reply validateAndGetReply (Long replyNo) {
@@ -49,6 +51,10 @@ public class ReplyValidate {
     public void validateRealWorkDomain(RealWorkCode code, Long no) {
         if(code == RealWorkCode.LOG){
             logboardValidate.validateAndGetLogboard(no);
+        }else if(code == RealWorkCode.NOTICE){
+            //TODO: validate 리펙토링 필요
+            noticeRepository.findValidNotice(no)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", no)));
         }
 
     }
