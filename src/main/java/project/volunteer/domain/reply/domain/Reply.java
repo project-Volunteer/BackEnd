@@ -47,44 +47,26 @@ public class Reply extends BaseTimeEntity {
 
 	@Column(columnDefinition = "LONGTEXT", nullable = false)
 	private String content;
-
-	//TODO: JPA Auditing를 사용하면 작성자, 변경자를 자동으로 넣을 수 있는데, 직접 넣으신 이유가 있을까요?
-	//TODO: 리펙토링 필요해 보임.
-    @Column(name = "create_by", nullable = false)
-    private Long createUserNo;
-
-    @Column(name = "modified_by")
-    private Long modifiedUserNo;
-
-    public static Reply createReply(){
-    	Reply reply = new Reply();
-    	
-    	
-        return reply;
-    }
     
-    public static Reply createComment(RealWorkCode code, Long no, String content, Long userNo){
+    public static Reply createComment(RealWorkCode code, Long no, String content){
     	Reply createReply = new Reply();
     	createReply.realWorkCode = code;
     	createReply.no = no;
     	createReply.content = content;
-    	createReply.createUserNo = userNo;
         return createReply;
     }
 
-    public static Reply createCommentReply(Reply parent, RealWorkCode code, Long no, String content, Long userNo){
+    public static Reply createCommentReply(Reply parent, RealWorkCode code, Long no, String content){
     	Reply createReply = new Reply();
     	createReply.parent = parent;
     	createReply.realWorkCode = code;
     	createReply.no = no;
     	createReply.content = content;
-    	createReply.createUserNo = userNo;
         return createReply;
     }
 
-	public void editReply(String content, Long userNo) {
+	public void editReply(String content) {
     	this.content = content;
-    	this.modifiedUserNo = userNo;
 	}
 
     

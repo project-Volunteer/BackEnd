@@ -164,7 +164,7 @@ public class NoticeReplyControllerTest {
 
 
     private Long 댓글_추가(Long no, String content, User writer){
-        Reply comment = Reply.createComment(RealWorkCode.NOTICE, no, content, writer.getUserNo());
+        Reply comment = Reply.createComment(RealWorkCode.NOTICE, no, content);
         comment.setWriter(writer);
         return replyRepository.save(comment).getReplyNo();
     }

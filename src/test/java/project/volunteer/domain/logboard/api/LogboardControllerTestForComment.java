@@ -234,7 +234,7 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	void 로그보드_대댓글작성_성공() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser);
 		replyRepository.save(reply);
 		
@@ -251,7 +251,7 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 대댓글_vaildation체크_없는_봉사로그() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser);
 		replyRepository.save(reply);
 		
@@ -268,7 +268,7 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void validation체크_대댓글_내용_누락() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser);
 		replyRepository.save(reply);
 		
@@ -285,11 +285,11 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 대대댓글_추가() throws Exception {
 		// given
-		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply1.setWriter(saveUser);
 		replyRepository.save(reply1);
 		
-		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser.getUserNo());
+		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		reply2.setWriter(saveUser);
 		replyRepository.save(reply2);
 		
@@ -306,7 +306,7 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 댓글_수정_성공() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser);
 		replyRepository.save(reply);
 
@@ -323,7 +323,7 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 댓글_수정_권한_없음으로_실패() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser2.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser2);
 		replyRepository.save(reply);
 		
@@ -341,7 +341,7 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정하고자하는_댓글_없음() throws Exception {
 		// given
-		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply.setWriter(saveUser);
 		replyRepository.save(reply);
 		
@@ -359,11 +359,11 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 댓글_삭제_성공() throws Exception {
 		// given
-		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply1.setWriter(saveUser);
 		replyRepository.save(reply1);
 		
-		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser.getUserNo());
+		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		reply2.setWriter(saveUser);
 		replyRepository.save(reply2);
 		
@@ -377,11 +377,11 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 댓글_삭제_권한_없음으로_실패() throws Exception {
 		// given
-		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply1.setWriter(saveUser);
 		replyRepository.save(reply1);
 		
-		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser2.getUserNo());
+		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		reply2.setWriter(saveUser2);
 		replyRepository.save(reply2);
 		
@@ -395,11 +395,11 @@ public class LogboardControllerTestForComment {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 삭제하고자하는_댓글_없음() throws Exception {
 		// given
-		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment", saveUser.getUserNo());
+		Reply reply1 = Reply.createComment(RealWorkCode.LOG, logboardNo1, "Test Comment");
 		reply1.setWriter(saveUser);
 		replyRepository.save(reply1);
 		
-		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply", saveUser2.getUserNo());
+		Reply reply2 = Reply.createCommentReply(reply1, RealWorkCode.LOG, logboardNo1, "Test Comment Reply");
 		reply2.setWriter(saveUser2);
 		replyRepository.save(reply2);
 		

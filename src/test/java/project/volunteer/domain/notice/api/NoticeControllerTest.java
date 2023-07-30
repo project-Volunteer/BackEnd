@@ -249,12 +249,12 @@ class NoticeControllerTest {
         return userRepository.save(user);
     }
     private Reply 댓글_등록(RealWorkCode code, Long no, String content, User writer){
-        Reply comment = Reply.createComment(code, no, content, writer.getUserNo());
+        Reply comment = Reply.createComment(code, no, content);
         comment.setWriter(writer);
         return replyRepository.save(comment);
     }
     private Reply 대댓글_등록(Reply parent, RealWorkCode code, Long no, String content, User writer){
-        Reply reply = Reply.createCommentReply(parent, code, no, content, writer.getUserNo());
+        Reply reply = Reply.createCommentReply(parent, code, no, content);
         reply.setWriter(writer);
         return replyRepository.save(reply);
     }

@@ -106,12 +106,12 @@ class ReplyRepositoryTest {
     }
 
     private Reply saveComment(RealWorkCode code, Long no, String content, User writer){
-        Reply comment = Reply.createComment(code, no, content, writer.getUserNo());
+        Reply comment = Reply.createComment(code, no, content);
         comment.setWriter(writer);
         return replyRepository.save(comment);
     }
     private Reply saveCommentReply(Reply parent, RealWorkCode code, Long no, String content, User writer){
-        Reply reply = Reply.createCommentReply(parent, code, no, content, writer.getUserNo());
+        Reply reply = Reply.createCommentReply(parent, code, no, content);
         reply.setWriter(writer);
         return replyRepository.save(reply);
     }

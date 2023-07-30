@@ -37,7 +37,7 @@ public class ReplyServiceImpl implements ReplyService {
 		// 댓글의 모글(도메인) 검증
 		replyValidate.validateRealWorkDomain(code, no);
 
-		Reply reply = Reply.createComment(code, no, content, loginUserNo);
+		Reply reply = Reply.createComment(code, no, content);
 		reply.setWriter(user);
 		
 		replyRepository.save(reply);
@@ -61,7 +61,7 @@ public class ReplyServiceImpl implements ReplyService {
 		// 부모 댓글이 1depth 댓글인지 확인
 		replyValidate.vaildateParentReplyHasNotParent(findComment);
 
-		Reply reply = Reply.createCommentReply(findComment, RealWorkCode.LOG, no, content, loginUserNo);
+		Reply reply = Reply.createCommentReply(findComment, RealWorkCode.LOG, no, content);
 		reply.setWriter(user);
 		
 		return replyRepository.save(reply).getReplyNo();
@@ -73,10 +73,7 @@ public class ReplyServiceImpl implements ReplyService {
 		// 댓글 존재 여부 검증
 		Reply findReply = replyValidate.validateAndGetReply(replyNo);
 
-		// 작성자 여부 검증
-//		replyValidate.vaildateEqualParamUserNoAndReplyFindUserNo(loginUserNo, findReply);
-
-		findReply.editReply(content, loginUserNo);
+		findReply.editReply(content);
 	}
 
 	@Override
