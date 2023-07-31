@@ -79,7 +79,7 @@ public class NoticeController {
     public ResponseEntity noticeRead(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
 
         noticeService.readNotice(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)

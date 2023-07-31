@@ -324,11 +324,6 @@ class NoticeControllerTest {
                         )
                 );
     }
-
-
-
-
-
     @Test
     @DisplayName("봉사 공지사항 읽음 확인에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -337,12 +332,29 @@ class NoticeControllerTest {
         final String addNoticeContent = "add";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
 
-        //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/read", saveRecruitment.getRecruitmentNo(),saveNotice.getNoticeNo())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/read", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isCreated())
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/notice/POST-Read",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                )
+                        )
+                );
     }
 
     @Test
@@ -355,12 +367,29 @@ class NoticeControllerTest {
         읽음_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), writer);
         saveNotice.increaseCheckNum();
 
-        //when & then
-        mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}/cancel", saveRecruitment.getRecruitmentNo(),saveNotice.getNoticeNo())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}/cancel", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/notice/DELETE-Cancel",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                )
+                        )
+                );
     }
 
     private Notice 공지사항_등록(String content, Recruitment recruitment){

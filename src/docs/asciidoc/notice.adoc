@@ -145,3 +145,60 @@ include::{snippets}/APIs/volunteering/notice/DELETE/path-parameters.adoc[]
 ==== 응답
 *HTTP Response*
 include::{snippets}/APIs/volunteering/notice/DELETE/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 읽음
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 해당 정보를 이미 확인한 상태입니다. +
+- 해당 사용자 정보를 찾을 수 없습니다.
+|401| -
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/notice/POST-Read/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/notice/POST-Read/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/notice/POST-Read/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/notice/POST-Read/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 읽음 해제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 읽음 확인 정보를 찾을 수 없습니다.
+|401| -
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/http-response.adoc[]
