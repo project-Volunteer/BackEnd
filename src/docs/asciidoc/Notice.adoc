@@ -1,0 +1,98 @@
+[[Notice-API]]
+== Notice API
+
+[[Notice-등록]]
+=== Notice 등록
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/notice/POST/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/notice/POST/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/notice/POST/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/APIs/notice/POST/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/notice/POST/http-response.adoc[]
+
+
+[[Notice-상세-조회]]
+=== Notice 상세 조회
+==== 요청
+*Http Request*
+include::{snippets}/APIs/notice/Details-GET/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/notice/Details-GET/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/notice/Details-GET/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/notice/Details-GET/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/APIs/notice/Details-GET/response-fields.adoc[]
+
+
+[[Notice-리스트-조회]]
+=== Notice 리스트 조회
+==== 요청
+*Http Request*
+include::{snippets}/APIs/notice/List-GET/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/notice/List-GET/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/notice/List-GET/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/notice/List-GET/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/APIs/notice/List-GET/response-fields.adoc[]
+
+
+[[Notice-수정]]
+=== Notice 수정
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/notice/PUT/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/notice/PUT/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/notice/PUT/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/APIs/notice/PUT/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/notice/PUT/http-response.adoc[]
+
+
+[[Notice-삭제]]
+=== Notice 삭제
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/notice/DELETE/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/notice/DELETE/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/notice/DELETE/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/notice/DELETE/http-response.adoc[]

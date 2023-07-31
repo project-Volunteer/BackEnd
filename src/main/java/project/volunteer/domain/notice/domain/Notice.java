@@ -19,7 +19,7 @@ public class Notice extends BaseTimeEntity {
     @Column(name = "noticeno")
     private Long noticeNo;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String content;
 
     @Enumerated(EnumType.STRING)
