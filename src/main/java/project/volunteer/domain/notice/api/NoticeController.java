@@ -35,7 +35,7 @@ public class NoticeController {
     public ResponseEntity noticeAdd(@PathVariable Long recruitmentNo, @RequestBody @Valid NoticeAdd dto){
 
         noticeService.addNotice(recruitmentNo, dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)

@@ -103,7 +103,7 @@ class NoticeControllerTest {
         );
 
         //then
-        result.andExpect(status().isOk())
+        result.andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(
                         document("APIs/volunteering/notice/POST",
@@ -242,7 +242,7 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.commentsList[0].replies[1].content").value(children1_2.getContent()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/notice/Details-GET",
+                        document("APIs/volunteering/notice/GET-Details",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
@@ -303,7 +303,7 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.noticeList[1].content").value(addNoticeContent2))
                 .andExpect(jsonPath("$.noticeList[2].content").value(addNoticeContent3))
                 .andDo(
-                        document("APIs/volunteering/notice/List-GET",
+                        document("APIs/volunteering/notice/GET-List",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
