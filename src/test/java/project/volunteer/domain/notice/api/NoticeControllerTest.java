@@ -106,7 +106,7 @@ class NoticeControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/notice/POST",
+                        document("APIs/volunteering/notice/POST",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
@@ -145,7 +145,7 @@ class NoticeControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/notice/PUT",
+                        document("APIs/volunteering/notice/PUT",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
@@ -182,7 +182,7 @@ class NoticeControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/notice/DELETE",
+                        document("APIs/volunteering/notice/DELETE",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
@@ -242,7 +242,7 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.commentsList[0].replies[1].content").value(children1_2.getContent()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/notice/Details-GET",
+                        document("APIs/volunteering/notice/Details-GET",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
@@ -303,7 +303,7 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.noticeList[1].content").value(addNoticeContent2))
                 .andExpect(jsonPath("$.noticeList[2].content").value(addNoticeContent3))
                 .andDo(
-                        document("APIs/notice/List-GET",
+                        document("APIs/volunteering/notice/List-GET",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
