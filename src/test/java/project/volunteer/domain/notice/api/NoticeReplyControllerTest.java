@@ -6,13 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
@@ -35,13 +37,24 @@ import project.volunteer.global.common.dto.CommentContentParam;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 public class NoticeReplyControllerTest {
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -51,6 +64,7 @@ public class NoticeReplyControllerTest {
     @Autowired ParticipantRepository participantRepository;
     @Autowired ReplyRepository replyRepository;
 
+    final String AUTHORIZATION_HEADER = "accessToken";
     final String adminUserName = "nrt_admin";
     final String teamAndReplyWriterName = "nrt_team_user";
     Recruitment saveRecruitment;
@@ -91,12 +105,33 @@ public class NoticeReplyControllerTest {
         //given
         final CommentContentParam dto = new CommentContentParam("test comment");
 
-        //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
-                .andExpect(status().isCreated())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .content(toJson(dto))
+        );
+
+        //then
+        result.andExpect(status().isCreated())
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/comment/POST-Comment",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                ),
+                                requestFields(
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .attributes(key("constraints").value("1이상 255이하")).description("댓글 내용")
+                                )
+                        )
+                );
     }
     @Test
     @DisplayName("봉사 공지사항 대댓글 작성에 성공하다.")
@@ -106,13 +141,35 @@ public class NoticeReplyControllerTest {
         final CommentContentParam dto = new CommentContentParam("test comment reply");
         Long commentNo = 댓글_추가(saveNotice.getNoticeNo(), "test reply", replyWriter);
 
-        //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment/{parentNo}/reply",
-                        saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), commentNo)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
-                .andExpect(status().isCreated())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment/{parentNo}/reply",
+                saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), commentNo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .content(toJson(dto))
+        );
+
+        //then
+        result.andExpect(status().isCreated())
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/comment/POST-Reply",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK"),
+                                        parameterWithName("parentNo").description("댓글 고유키 PK")
+                                ),
+                                requestFields(
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .attributes(key("constraints").value("1이상 255이하")).description("대댓글 내용")
+                                )
+                        )
+                );
     }
     @Test
     @DisplayName("봉사 공지사항 댓글 수정에 성공하다.")
@@ -122,13 +179,35 @@ public class NoticeReplyControllerTest {
         final CommentContentParam dto = new CommentContentParam("test edit comment");
         Long commentNo = 댓글_추가(saveNotice.getNoticeNo(), "test comment", replyWriter);
 
-        //when & then
-        mockMvc.perform(put("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment/{replyNo}",
-                        saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), commentNo)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
-                .andExpect(status().isOk())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(put("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment/{replyNo}",
+                saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), commentNo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .content(toJson(dto))
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/comment/PUT",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK"),
+                                        parameterWithName("replyNo").description("댓글/대댓글 고유키 PK")
+                                ),
+                                requestFields(
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .attributes(key("constraints").value("1이상 255이하")).description("댓글/대댓글 수정 내용")
+                                )
+                        )
+                );
     }
     @Test
     @DisplayName("봉사 공지사항 댓글 작성자가 아닌 다른 사용자가 수정을 시도하다.")
@@ -154,12 +233,30 @@ public class NoticeReplyControllerTest {
         //given
         Long commentNo = 댓글_추가(saveNotice.getNoticeNo(), "test comment", replyWriter);
 
-        //when & then
-        mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment/{replyNo}",
-                        saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), commentNo)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}/comment/{replyNo}",
+                saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), commentNo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/comment/DELETE",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK"),
+                                        parameterWithName("replyNo").description("댓글/대댓글 고유키 PK")
+                                )
+                        )
+                );
     }
 
 

@@ -11,4 +11,8 @@ endif::[]
 
 = Volunteer API 문서
 
-include::Notice.adoc[]
+include::notice.adoc[]
+
+include::notice-comment.adoc[]
+
+
