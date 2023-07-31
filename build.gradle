@@ -12,6 +12,10 @@ plugins {
 
 	// querydsl 추가
 	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+
+	// Asciidoctor 플러그인 사용
+	// gradle 7.0 이상부터는 jvm 사용하기
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 group = 'project'
@@ -19,6 +23,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
+	asciidoctorExtensions // dependencies 에서 적용한 것 추가
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -67,6 +72,15 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	// build/generated-snippets 에 생기는 .adoc 조각들을 프로젝트 내의 .adoc 파일을 읽어들 일 수 있도록 연동해준다.
+	// 이로 인해, .adoc 파일에서 operation 같은 매크로르 사용하여 스니펫 조작들을 연동할 수 있다.
+	// 최종적으로 .adoc 파일을 HTML로 만들어 export 해준다.
+	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
+	// restdocs-mockmvc 의 testCompile 구성 -> mockvMvc를 사용해서 snippets 조각들을 뽑아 낼 수 있다.
+	// MockMvc 대신 WebTestClient을 사용하려면 spring-restdocs-webtestclient 추가
+	// MockMvc 대신 REST Assured를 사용하려면 spring-restdocs-restassured 를 추가
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 // querydsl 세팅 시작
@@ -88,4 +102,53 @@ compileQuerydsl {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+//Rest docs 설정
+ext {
+	// 아래에서 사용할 변수 선언
+	snippetsDir = file('build/generated-snippets')
+}
+test {
+	//위의 snippetsDir 디펙토리를 test의 output으로 구성하는 설정
+	//스니펫 조각들이 build/generated-snippets로 출력된다.
+	useJUnitPlatform()
+	outputs.dir snippetsDir
+}
+asciidoctor { //asciidoctor 관련 설정
+	dependsOn test //test 작업 이후에 작동하도록 구성하는 설정
+	configurations 'asciidoctorExtensions' //위에서 작성한 configuration 적용
+	inputs.dir snippetsDir //snippets 를 입력으로 구성한다.
+
+	// source 가 없으면 .adoc 파일을 전부 html로 만들어버림.
+	// source 지정시 특정 .adoc 파일만 html로 만듬.
+	sources{
+		include("**/index.adoc")
+	}
+
+	// 특정 .adoc에 다른 adoc 파일을 가져와서(include) 사용하고 싶을 경우 경로를 baseDir로 맞춰주는 설정입니다.
+	// 개별 adoc으로 운영한다면 필요 없는 옵션입니다.
+	baseDirFollowsSourceFile()
+}
+// 기존에 만들어진 adoc 삭제
+asciidoctor.doFirst {
+	delete file('src/main/resources/static/docs')
+}
+// asciidoctor 작업 이후 생성된 HTML 파일을 static/docs 로 copy
+task copyDocument(type: Copy) {
+	dependsOn asciidoctor
+	from file("build/docs/asciidoc")
+	into file("src/main/resources/static/docs")
+}
+// build 시 copyDocument 를 의존합니다.
+build {
+	dependsOn copyDocument
+}
+// bootjar 와 관련된 설정이며, 스니펫을 이용해 문서 작성 후,
+// build - docs - asciidoc 하위에 생기는 html 파일을 /static/docs로 복사해줍니다.
+bootJar {
+	dependsOn asciidoctor
+	from ("${asciidoctor.outputDir}"){
+		into 'static/docs'
+	}
 }
