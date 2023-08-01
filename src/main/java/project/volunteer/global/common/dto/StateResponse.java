@@ -1,6 +1,8 @@
 package project.volunteer.global.common.dto;
 
-public enum StateResponse {
+import project.volunteer.global.common.converter.CodeCommonType;
+
+public enum StateResponse implements CodeCommonType {
 
     AVAILABLE("신청 가능"),
     PENDING("승인 대기"),
@@ -17,5 +19,14 @@ public enum StateResponse {
     private String des;
     StateResponse(String dec) {
         this.des = dec;
+    }
+
+    @Override
+    public String getId() {
+        return this.name();
+    }
+    @Override
+    public String getDesc() {
+        return this.des;
     }
 }
