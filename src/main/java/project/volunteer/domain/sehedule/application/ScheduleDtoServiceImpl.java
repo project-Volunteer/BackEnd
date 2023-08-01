@@ -73,6 +73,7 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
      * L4 : 일정 참여 가능 인원 초과
      * L5 : 일정 참여 가능, 일정 취소 승인
      */
+    //TODO: 코드상 case 구문도 괜찮은 듯?
     private String converterParticipantState(Schedule schedule, Long loginUserNo){
         //일정 신청 내역 조회
         Optional<ScheduleParticipation> findSp =

@@ -178,6 +178,7 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
      * L3 : 팀 신청 인원 마감
      * L4 : 팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴)
      */
+    //TODO: 코드상 case 구문도 괜찮은 듯?
     private String converterTeamMemberState(Recruitment findRecruitment, Long loginUserNo){
         Optional<Participant> findParticipant = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
                 findRecruitment.getRecruitmentNo(), loginUserNo);
