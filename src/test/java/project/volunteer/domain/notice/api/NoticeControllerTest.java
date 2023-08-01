@@ -319,7 +319,7 @@ class NoticeControllerTest {
                                         fieldWithPath("noticeList[].content").type(JsonFieldType.STRING).description("공지사항 본문"),
                                         fieldWithPath("noticeList[].checkCnt").type(JsonFieldType.NUMBER).description("공지사항 읽음 개수"),
                                         fieldWithPath("noticeList[].commentsCnt").type(JsonFieldType.NUMBER).description("공지사항 댓글/대댓글 총 개수"),
-                                        fieldWithPath("noticeList[].isChecked").type(JsonFieldType.BOOLEAN).description("공지사항 읽음 여부(true/false)")
+                                        fieldWithPath("noticeList[].isChecked").type(JsonFieldType.BOOLEAN).description("공지사항 읽음 여부")
                                 )
                         )
                 );
