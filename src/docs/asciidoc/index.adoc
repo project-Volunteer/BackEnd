@@ -15,4 +15,7 @@ include::notice.adoc[]
 
 include::notice-comment.adoc[]
 
+include::schedule.adoc[]
+
+include::enums.adoc[]
 

@@ -1,0 +1,8 @@
+[[Code]]
+== Code
+
+=== ClientState
+include::{snippets}/enums/custom-response-fields-clientState.adoc[]
+
+=== HourFormat
+include::{snippets}/enums/custom-response-fields-hourFormat.adoc[]
