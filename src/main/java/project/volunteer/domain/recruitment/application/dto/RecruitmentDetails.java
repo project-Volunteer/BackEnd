@@ -50,7 +50,8 @@ public class RecruitmentDetails {
         this.volunteerNum = recruitment.getVolunteerNum();
         this.startDay = recruitment.getVolunteeringTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         this.endDay = recruitment.getVolunteeringTimeTable().getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.hourFormat = recruitment.getVolunteeringTimeTable().getHourFormat().getViewName();
+        //this.hourFormat = recruitment.getVolunteeringTimeTable().getHourFormat().getViewName();
+        this.hourFormat = recruitment.getVolunteeringTimeTable().getHourFormat().getDesc();
         this.startTime = recruitment.getVolunteeringTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH-mm"));
         this.progressTime = recruitment.getVolunteeringTimeTable().getProgressTime();
         this.title = recruitment.getTitle();

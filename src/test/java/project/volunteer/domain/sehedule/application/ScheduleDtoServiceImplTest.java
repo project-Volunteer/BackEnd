@@ -121,7 +121,7 @@ class ScheduleDtoServiceImplTest {
                 () -> assertThat(closestSchedule.getContent()).isEqualTo(schedule3.getContent()),
                 () -> assertThat(closestSchedule.getStartDay()).isEqualTo(schedule3.getScheduleTimeTable()
                         .getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))),
-                () -> assertThat(closestSchedule.getHourFormat()).isEqualTo(schedule3.getScheduleTimeTable().getHourFormat().getViewName()),
+                () -> assertThat(closestSchedule.getHourFormat()).isEqualTo(schedule3.getScheduleTimeTable().getHourFormat().getDesc()),
                 () -> assertThat(closestSchedule.getStartTime()).isEqualTo(schedule3.getScheduleTimeTable()
                         .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
                 () -> assertThat(closestSchedule.getVolunteerNum()).isEqualTo(schedule3.getVolunteerNum()),
@@ -296,7 +296,7 @@ class ScheduleDtoServiceImplTest {
                 () -> assertThat(closestSchedule.getContent()).isEqualTo(schedule3.getContent()),
                 () -> assertThat(closestSchedule.getStartDay()).isEqualTo(schedule3.getScheduleTimeTable()
                         .getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))),
-                () -> assertThat(closestSchedule.getHourFormat()).isEqualTo(schedule3.getScheduleTimeTable().getHourFormat().getViewName()),
+                () -> assertThat(closestSchedule.getHourFormat()).isEqualTo(schedule3.getScheduleTimeTable().getHourFormat().getDesc()),
                 () -> assertThat(closestSchedule.getStartTime()).isEqualTo(schedule3.getScheduleTimeTable()
                         .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
                 () -> assertThat(closestSchedule.getVolunteerNum()).isEqualTo(schedule3.getVolunteerNum()),
@@ -320,7 +320,7 @@ class ScheduleDtoServiceImplTest {
                 () -> assertThat(scheduleDetails.getContent()).isEqualTo(schedule.getContent()),
                 () -> assertThat(scheduleDetails.getStartDay()).isEqualTo(schedule.getScheduleTimeTable()
                         .getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))),
-                () -> assertThat(scheduleDetails.getHourFormat()).isEqualTo(schedule.getScheduleTimeTable().getHourFormat().getViewName()),
+                () -> assertThat(scheduleDetails.getHourFormat()).isEqualTo(schedule.getScheduleTimeTable().getHourFormat().getDesc()),
                 () -> assertThat(scheduleDetails.getStartTime()).isEqualTo(schedule.getScheduleTimeTable()
                         .getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))),
                 () -> assertThat(scheduleDetails.getVolunteerNum()).isEqualTo(schedule.getVolunteerNum()),

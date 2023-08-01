@@ -1,8 +1,8 @@
 package project.volunteer.global.common.component;
 
-import project.volunteer.global.common.converter.LegacyCodeCommonType;
+import project.volunteer.global.common.converter.CodeCommonType;
 
-public enum ParticipantState implements LegacyCodeCommonType {
+public enum ParticipantState implements CodeCommonType {
 
     JOIN_REQUEST("r1", "팀 신청"),
     JOIN_APPROVAL("r2", "팀 신청 승인"),
@@ -29,7 +29,7 @@ public enum ParticipantState implements LegacyCodeCommonType {
     }
 
     @Override
-    public String getLegacyCode() {
+    public String getId() {
         return this.code;
     }
 

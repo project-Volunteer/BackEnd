@@ -11,7 +11,7 @@ import javax.persistence.AttributeConverter;
  * 공통 컨버터
  */
 @Getter
-public class AbstractLegacyEnumAttributeConverter<E extends Enum<E> & LegacyCodeCommonType> implements AttributeConverter<E, String> {
+public class AbstractEnumAttributeConverter<E extends Enum<E> & CodeCommonType> implements AttributeConverter<E, String> {
 
     /**
      * 대상 Enum 클래스 객체{@link Class}
@@ -23,7 +23,7 @@ public class AbstractLegacyEnumAttributeConverter<E extends Enum<E> & LegacyCode
      */
     private String enumName;
 
-    public AbstractLegacyEnumAttributeConverter(Class<E> element, String enumName) {
+    public AbstractEnumAttributeConverter(Class<E> element, String enumName) {
         this.targetEnumClass = element;
         this.enumName = enumName;
     }
