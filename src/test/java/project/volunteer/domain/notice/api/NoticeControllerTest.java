@@ -17,7 +17,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import project.DocumentFormatGenerator;
+import project.volunteer.restdocs.document.util.DocumentFormatGenerator;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
 import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
@@ -50,8 +50,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static project.DocumentFormatGenerator.getDateFormat;
-import static project.DocumentFormatGenerator.getTimeFormat;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc

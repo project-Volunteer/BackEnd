@@ -1,4 +1,4 @@
-package project;
+package project.volunteer.restdocs.document.util;
 
 import org.springframework.restdocs.snippet.Attributes;
 
