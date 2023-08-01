@@ -1,0 +1,184 @@
+[[Schedlue-API]]
+== Schedule API
+
+=== 봉사 일정 조회
+- *현재 날짜 이후* 이면서 *모집 중인 가장 가까운 봉사 스케줄을* 반환합니다.
+- 봉사 스케줄이 없을 시 *NULL* 를 반환합니다.
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다.
+|401| -
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/schedule/GET/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/schedule/GET/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/schedule/GET/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/schedule/GET/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/APIs/volunteering/schedule/GET/response-fields.adoc[]
+
+
+=== 봉사 일정 등록
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 일정 모집 인원은 팀원 최대 가능 인원을 초과할 수 없습니다.
+|401| -
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/schedule/POST/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/schedule/POST/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/schedule/POST/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/APIs/volunteering/schedule/POST/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/schedule/POST/http-response.adoc[]
+
+
+=== 봉사 일정 수정
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 해당 일정 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 일정 모집 인원은 팀원 최대 가능 인원을 초과할 수 없습니다. +
+- 일정 모집 인원은 현재 일정 참여자 수보다 적을 수 없습니다.
+|401| -
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/schedule/PUT/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/schedule/PUT/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/schedule/PUT/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/APIs/volunteering/schedule/PUT/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/schedule/PUT/http-response.adoc[]
+
+
+=== 봉사 일정 삭제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 해당 일정 정보를 찾을 수 없습니다.
+|401| -
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/schedule/DELETE/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/schedule/DELETE/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/schedule/DELETE/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/schedule/DELETE/http-response.adoc[]
+
+
+=== 봉사 일정 리스트 캘린더 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다.
+|401| -
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/path-parameters.adoc[]
+
+*Request Parameters*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/request-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/response-fields.adoc[]
+
+
+=== 봉사 일정 리스트 캘린더 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 해당 일정 정보를 찾을 수 없습니다.
+|401| -
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-Details/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-Details/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-Details/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-Details/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/APIs/volunteering/schedule/GET-Calendar-Details/response-fields.adoc[]
+
+
+
+

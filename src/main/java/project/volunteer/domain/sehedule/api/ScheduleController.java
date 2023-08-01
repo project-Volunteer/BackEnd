@@ -1,11 +1,13 @@
 package project.volunteer.domain.sehedule.api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
+import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleListResponse;
 import project.volunteer.domain.sehedule.application.ScheduleDtoService;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
@@ -57,7 +59,7 @@ public class ScheduleController {
                         .volunteerNum(saveDto.getVolunteerNum())
                         .build());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
@@ -95,7 +97,7 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar")
-    public ResponseEntity<List<CalendarScheduleList>> scheduleList(@PathVariable("recruitmentNo")Long recruitmentNo,
+    public ResponseEntity<CalendarScheduleListResponse> scheduleList(@PathVariable("recruitmentNo")Long recruitmentNo,
                                        @RequestParam("year")Integer year,
                                        @RequestParam("mon")Integer mon){
 
@@ -108,7 +110,7 @@ public class ScheduleController {
         List<CalendarScheduleList> list = calendarSchedules.stream()
                 .map(c -> CalendarScheduleList.createCalendarSchedule(c.getScheduleNo(), c.getScheduleTimeTable().getStartDay()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(new CalendarScheduleListResponse(list));
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
