@@ -11,11 +11,13 @@ endif::[]
 
 = Volunteer API 문서
 
+include::schedule.adoc[]
+
+include::schedule-management.adoc[]
+
 include::notice.adoc[]
 
 include::notice-comment.adoc[]
-
-include::schedule.adoc[]
 
 include::enums.adoc[]
 
