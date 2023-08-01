@@ -151,7 +151,7 @@ include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/http-response.a
 include::{snippets}/APIs/volunteering/schedule/GET-Calendar-List/response-fields.adoc[]
 
 
-=== 봉사 일정 리스트 캘린더 조회
+=== 봉사 일정 상세 캘린더 조회
 ==== 발생 가능 예외
 |===
 |HTTP 상태코드|메시지
