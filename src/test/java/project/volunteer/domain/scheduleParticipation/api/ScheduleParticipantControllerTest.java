@@ -493,10 +493,6 @@ class ScheduleParticipantControllerTest {
         ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, state);
         return scheduleParticipationRepository.save(sp);
     }
-    private void clear() {
-        em.flush();
-        em.clear();
-    }
     private <T> String toJson(T data) throws JsonProcessingException {
         return objectMapper.writeValueAsString(data);
     }
