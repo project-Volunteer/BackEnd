@@ -4,12 +4,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,45 +19,56 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.global.common.component.RealWorkCode;
+import project.volunteer.domain.recruitment.domain.VolunteerType;
+import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
+import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
+import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.repeatPeriod.domain.Period;
+import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
+import project.volunteer.domain.repeatPeriod.domain.Week;
+import project.volunteer.global.common.component.*;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
-import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.storage.dao.StorageRepository;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.infra.s3.FileService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.FileInputStream;
 import java.io.IOException;
-
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
 class RecruitmentControllerTestForQuery {
 
     @Autowired UserRepository userRepository;
@@ -64,287 +77,498 @@ class RecruitmentControllerTestForQuery {
     @Autowired ImageRepository imageRepository;
     @Autowired StorageRepository storageRepository;
     @Autowired RecruitmentService recruitmentService;
-    @Autowired RepeatPeriodService repeatPeriodService;
+    @Autowired RepeatPeriodRepository repeatPeriodRepository;
     @Autowired ImageService imageService;
     @Autowired FileService fileService;
-    @PersistenceContext EntityManager em;
     @Autowired MockMvc mockMvc;
 
-    private static final String FIND_ALL_URL = "/recruitment";
-    private static final String COUNT_ALL_URL = "/recruitment/count";
-    private static final String FIND_URL = "/recruitment/";
-    private static User saveUser;
-    private List<Long> deleteS3ImageNoList = new ArrayList<>();
-    private List<Long> saveRecruitmentNoList = new ArrayList<>();
-    private void clear() {
-        em.flush();
-        em.clear();
+    final String AUTHORIZATION_HEADER = "accessToken";
+    private User writer;
+    private List<Recruitment> saveRecruitmentList = new ArrayList<>();
+    private List<Image> saveRecruitmentUploadImageList = new ArrayList<>();
+    private List<RepeatPeriod> saveRepeatPeriodList = new ArrayList<>();
+    private List<Participant> saveJoinApprovalnParticipantList = new ArrayList<>();
+    private List<Image> saveJoinApprovalnParticipantUploadImageList = new ArrayList<>();
+    private List<Participant> saveJoinRequestParticipantList = new ArrayList<>();
+
+    @BeforeEach
+    void setUp() throws IOException {
+        //작성자 저장
+        writer = User.createUser("rctfq1234", "rctfq1234", "rctfq1234", "rctfq1234", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "rctfq1234", null);
+        userRepository.save(writer);
+
+        //봉사 모집글 10개 저장
+        Address recruitmentAddress = Address.createAddress("11", "1111", "details");
+        Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
+
+        Recruitment saveRecruitment1 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(1), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment1.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment1));
+
+        Recruitment saveRecruitment2 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(2), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment2.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment2));
+
+        Recruitment saveRecruitment3 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment3.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment3));
+
+        Recruitment saveRecruitment4 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(4), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment4.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment4));
+
+        Recruitment saveRecruitment5 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(5), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment5.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment5));
+
+        Recruitment saveRecruitment6 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(6), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment6.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment6));
+
+        Recruitment saveRecruitment7 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.RESIDENTIAL_ENV, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(7), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment7.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment7));
+
+        Recruitment saveRecruitment8 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.HOMELESS_DOG, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(8), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment8.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment8));
+
+        Recruitment saveRecruitment9 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.FRAM_VILLAGE, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(9), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment9.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment9));
+
+        Recruitment saveRecruitment10 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.HEALTH_MEDICAL, VolunteeringType.IRREG,
+                VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
+                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(10), HourFormat.AM, LocalTime.now(), 10), true);
+        saveRecruitment10.setWriter(writer);
+        saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment10));
+
+        //static & upload 이미지 저장
+        ImageParam staticImageDto1 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.UPLOAD)
+                .no(saveRecruitment1.getRecruitmentNo())
+                .staticImageCode(null)
+                .uploadImage(getMockMultipartFile())
+                .build();
+        Long imageNo1 = imageService.addImage(staticImageDto1);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo1).get());
+        ImageParam staticImageDto2 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.UPLOAD)
+                .no(saveRecruitment2.getRecruitmentNo())
+                .staticImageCode(null)
+                .uploadImage(getMockMultipartFile())
+                .build();
+        Long imageNo2 = imageService.addImage(staticImageDto2);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo2).get());
+        ImageParam staticImageDto3 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment3.getRecruitmentNo())
+                .staticImageCode("image3")
+                .uploadImage(null)
+                .build();
+        Long imageNo3 = imageService.addImage(staticImageDto3);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo3).get());
+        ImageParam staticImageDto4 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment4.getRecruitmentNo())
+                .staticImageCode("image4")
+                .uploadImage(null)
+                .build();
+        Long imageNo4 = imageService.addImage(staticImageDto4);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo4).get());
+        ImageParam staticImageDto5 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment5.getRecruitmentNo())
+                .staticImageCode("image5")
+                .uploadImage(null)
+                .build();
+        Long imageNo5 = imageService.addImage(staticImageDto5);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo5).get());
+        ImageParam staticImageDto6 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment6.getRecruitmentNo())
+                .staticImageCode("image6")
+                .uploadImage(null)
+                .build();
+        Long imageNo6 = imageService.addImage(staticImageDto6);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo6).get());
+        ImageParam staticImageDto7 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment7.getRecruitmentNo())
+                .staticImageCode("image7")
+                .uploadImage(null)
+                .build();
+        Long imageNo7 = imageService.addImage(staticImageDto7);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo7).get());
+        ImageParam staticImageDto8 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment8.getRecruitmentNo())
+                .staticImageCode("image8")
+                .uploadImage(null)
+                .build();
+        Long imageNo8 = imageService.addImage(staticImageDto8);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo8).get());
+        ImageParam staticImageDto9 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment9.getRecruitmentNo())
+                .staticImageCode("image9")
+                .uploadImage(null)
+                .build();
+        Long imageNo9 = imageService.addImage(staticImageDto9);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo9).get());
+        ImageParam staticImageDto10 = ImageParam.builder()
+                .code(RealWorkCode.RECRUITMENT)
+                .imageType(ImageType.STATIC)
+                .no(saveRecruitment10.getRecruitmentNo())
+                .staticImageCode("image10")
+                .uploadImage(null)
+                .build();
+        Long imageNo10 = imageService.addImage(staticImageDto10);
+        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo10).get());
+
+        //반복 주기 저장 -> 봉사 모집글 1
+        RepeatPeriod period1 = RepeatPeriod.builder()
+                .period(Period.MONTH)
+                .week(Week.FIRST)
+                .day(Day.MON)
+                .build();
+        period1.setRecruitment(saveRecruitment1);
+        saveRepeatPeriodList.add(repeatPeriodRepository.save(period1));
+        RepeatPeriod period2 = RepeatPeriod.builder()
+                .period(Period.MONTH)
+                .week(Week.FIRST)
+                .day(Day.TUES)
+                .build();
+        period2.setRecruitment(saveRecruitment1);
+        saveRepeatPeriodList.add(repeatPeriodRepository.save(period2));
+
+        //팀원 & 신청자 저장 -> 봉사 모집글 1
+        User user1 = User.createUser("rctfqt", "rctfqt", "rctfqt", "rctfqt", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "rctfqt", null);
+        userRepository.save(user1);
+        ImageParam staticImageDto = ImageParam.builder()
+                .code(RealWorkCode.USER)
+                .imageType(ImageType.UPLOAD)
+                .no(user1.getUserNo())
+                .staticImageCode(null)
+                .uploadImage(getMockMultipartFile())
+                .build();
+        Long imageNo11 = imageService.addImage(staticImageDto);
+        saveJoinApprovalnParticipantUploadImageList.add(imageRepository.findById(imageNo11).get());
+        Participant participant1 = Participant.builder()
+                .recruitment(saveRecruitment1)
+                .participant(user1)
+                .state(ParticipantState.JOIN_APPROVAL)
+                .build();
+        saveJoinApprovalnParticipantList.add(participantRepository.save(participant1));
+
+        User user2 = User.createUser("rctfqtt", "rctfqtt", "rctfqtt", "rctfqtt", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "rctfqtt", null);
+        userRepository.save(user2);
+        Participant participant2 = Participant.builder()
+                .recruitment(saveRecruitment1)
+                .participant(user2)
+                .state(ParticipantState.JOIN_APPROVAL)
+                .build();
+        saveJoinApprovalnParticipantList.add(participantRepository.save(participant2));
+
+        User user3 = User.createUser("rctfqttt", "rctfqttt", "rctfqttt", "rctfqttt", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", "rctfqttt", null);
+        userRepository.save(user3);
+        Participant participant3 = Participant.builder()
+                .recruitment(saveRecruitment1)
+                .participant(user3)
+                .state(ParticipantState.JOIN_REQUEST)
+                .build();
+        saveJoinRequestParticipantList.add(participantRepository.save(participant3));
     }
+
+    @AfterEach
+    void deleteUploadImage(){
+        List<Storage> storages = storageRepository.findAll();
+        storages.stream()
+                .forEach(s -> fileService.deleteFile(s.getFakeImageName()));
+
+        saveRecruitmentList = new ArrayList<>();
+    }
+
+    @Test
+    public void 모집글_전체조회_모든필터링_성공() throws Exception {
+        //given
+        MultiValueMap<String,String> info = new LinkedMultiValueMap();
+        info.add("page", "0");
+        info.add("volunteering_category", "001");
+        info.add("volunteering_category", "002");
+        info.add("sido", "11");
+        info.add("sigungu","1111");
+        info.add("volunteering_type", VolunteeringType.IRREG.getId());
+        info.add("volunteer_type", VolunteerType.TEENAGER.getId());
+        info.add("is_issued", "true");
+
+        //when
+        ResultActions result = mockMvc.perform(get("/recruitment")
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .params(info)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.recruitmentList[0].no").value(saveRecruitmentList.get(0).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteeringCategory").value(saveRecruitmentList.get(0).getVolunteeringCategory().getId()))
+                .andExpect(jsonPath("$.recruitmentList[0].title").value(saveRecruitmentList.get(0).getTitle()))
+                .andExpect(jsonPath("$.recruitmentList[0].sido").value(saveRecruitmentList.get(0).getAddress().getSido()))
+                .andExpect(jsonPath("$.recruitmentList[0].sigungu").value(saveRecruitmentList.get(0).getAddress().getSigungu()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteeringType").value(saveRecruitmentList.get(0).getVolunteeringType().getId()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteerType").value(saveRecruitmentList.get(0).getVolunteerType().getId()))
+                .andExpect(jsonPath("$.recruitmentList[0].isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteerNum").value(saveRecruitmentList.get(0).getVolunteerNum()))
+                .andExpect(jsonPath("$.recruitmentList[0].currentVolunteerNum").value(2))
+                .andExpect(jsonPath("$.recruitmentList[0].picture.type").value(ImageType.UPLOAD.getId()))
+                .andExpect(jsonPath("$.recruitmentList[0].picture.staticImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[0].picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
+                .andExpect(jsonPath("$.recruitmentList[1].no").value(saveRecruitmentList.get(1).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[1].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[1].picture.type").value(ImageType.UPLOAD.getId()))
+                .andExpect(jsonPath("$.recruitmentList[1].picture.staticImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[1].picture.uploadImage").value(saveRecruitmentUploadImageList.get(1).getStorage().getImagePath()))
+                .andExpect(jsonPath("$.recruitmentList[2].no").value(saveRecruitmentList.get(2).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[2].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[2].picture.type").value(ImageType.STATIC.getId()))
+                .andExpect(jsonPath("$.recruitmentList[2].picture.staticImage").value(saveRecruitmentUploadImageList.get(2).getStaticImageName()))
+                .andExpect(jsonPath("$.recruitmentList[2].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[3].no").value(saveRecruitmentList.get(3).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[3].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[3].picture.type").value(ImageType.STATIC.getId()))
+                .andExpect(jsonPath("$.recruitmentList[3].picture.staticImage").value(saveRecruitmentUploadImageList.get(3).getStaticImageName()))
+                .andExpect(jsonPath("$.recruitmentList[3].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[4].no").value(saveRecruitmentList.get(4).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[4].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[4].picture.type").value(ImageType.STATIC.getId()))
+                .andExpect(jsonPath("$.recruitmentList[4].picture.staticImage").value(saveRecruitmentUploadImageList.get(4).getStaticImageName()))
+                .andExpect(jsonPath("$.recruitmentList[4].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[5].no").value(saveRecruitmentList.get(5).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[5].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[5].picture.type").value(ImageType.STATIC.getId()))
+                .andExpect(jsonPath("$.recruitmentList[5].picture.staticImage").value(saveRecruitmentUploadImageList.get(5).getStaticImageName()))
+                .andExpect(jsonPath("$.recruitmentList[5].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.isLast").value(true))
+                .andExpect(jsonPath("$.lastId").value(saveRecruitmentList.get(5).getRecruitmentNo()))
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/recruitment/GET-List",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
+                                ),
+                                requestParameters(
+                                        parameterWithName("page").optional().description("페이지 번호"),
+                                        parameterWithName("volunteering_category").optional().description("Code VolunteeringCategory 참고바람(다중 선택 가능)"),
+                                        parameterWithName("sido").optional().description("시/도 코드"),
+                                        parameterWithName("sigungu").optional().description("시/군/구 코드"),
+                                        parameterWithName("volunteering_type").optional().description("Code VolunteeringType 참고바람."),
+                                        parameterWithName("volunteer_type").optional().description("Code VolunteerType 참고바람."),
+                                        parameterWithName("is_issued").optional().description("봉사 시간 인증 가능 여부")
+                                ),
+                                responseFields(
+                                        fieldWithPath("recruitmentList[].no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("recruitmentList[].volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("recruitmentList[].picture.type").type(JsonFieldType.STRING).description("Code ImageType 참고바람."),
+                                        fieldWithPath("recruitmentList[].picture.staticImage").type(JsonFieldType.STRING).optional().description("정적 이미지 코드, ImageType이 UPLOAD 일 경우 NULL"),
+                                        fieldWithPath("recruitmentList[].picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, ImageType이 STATIC 일 경우 NULL"),
+                                        fieldWithPath("recruitmentList[].title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
+                                        fieldWithPath("recruitmentList[].sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("recruitmentList[].sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
+                                        fieldWithPath("recruitmentList[].startDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집 시작 날짜"),
+                                        fieldWithPath("recruitmentList[].endDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집 종료 날짜"),
+                                        fieldWithPath("recruitmentList[].volunteeringType").type(JsonFieldType.STRING).description("Code VolunteeringType 참고바람"),
+                                        fieldWithPath("recruitmentList[].isIssued").type(JsonFieldType.BOOLEAN).description("봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("recruitmentList[].volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
+                                        fieldWithPath("recruitmentList[].currentVolunteerNum").type(JsonFieldType.NUMBER).description("현재 봉사 모집글 참여(승인된) 인원"),
+                                        fieldWithPath("recruitmentList[].volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
+                                        fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 봉사 모집글 유무"),
+                                        fieldWithPath("lastId").type(JsonFieldType.NUMBER).description("응답 봉사 모집글 리스트 중 마지막 모집글 고유키 PK")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    public void 모집글_전체카운트_모든필터링_성공() throws Exception {
+        //given
+        MultiValueMap<String,String> info = new LinkedMultiValueMap();
+        info.add("volunteering_category", "001");
+        info.add("volunteering_category", "002");
+        info.add("sido", "11");
+        info.add("sigungu","1111");
+        info.add("volunteering_type", VolunteeringType.IRREG.getId());
+        info.add("volunteer_type", VolunteerType.TEENAGER.getId());
+        info.add("is_issued", "true");
+
+        //when
+        ResultActions result = mockMvc.perform(get("/recruitment/count")
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .params(info)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("totalCnt").value(6))
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/recruitment/GET-Count",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
+                                ),
+                                requestParameters(
+                                        parameterWithName("volunteering_category").optional().description("Code VolunteeringCategory 참고바람(다중 선택 가능)"),
+                                        parameterWithName("sido").optional().description("시/도 코드"),
+                                        parameterWithName("sigungu").optional().description("시/군/구 코드"),
+                                        parameterWithName("volunteering_type").optional().description("Code VolunteeringType 참고바람."),
+                                        parameterWithName("volunteer_type").optional().description("Code VolunteerType 참고바람."),
+                                        parameterWithName("is_issued").optional().description("봉사 시간 인증 가능 여부")
+                                ),
+                                responseFields(
+                                     fieldWithPath("totalCnt").type(JsonFieldType.NUMBER).description("필터링된 봉사 모집글 개수")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    public void 모집글_전체카운트_빈필터링_성공() throws Exception {
+        //init
+        mockMvc.perform(get("/recruitment/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("totalCnt").value(10));
+    }
+
+    @Test
+    public void 모집글_상세조회_성공() throws Exception {
+        //given & then
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{no}", saveRecruitmentList.get(0).getRecruitmentNo())
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.no").value(saveRecruitmentList.get(0).getRecruitmentNo()))
+                .andExpect(jsonPath("$.volunteeringCategory").value(saveRecruitmentList.get(0).getVolunteeringCategory().getId()))
+                .andExpect(jsonPath("$.organizationName").value(saveRecruitmentList.get(0).getOrganizationName()))
+                .andExpect(jsonPath("$.address.sido").value(saveRecruitmentList.get(0).getAddress().getSido()))
+                .andExpect(jsonPath("$.address.sigungu").value(saveRecruitmentList.get(0).getAddress().getSigungu()))
+                .andExpect(jsonPath("$.address.details").value(saveRecruitmentList.get(0).getAddress().getDetails()))
+                .andExpect(jsonPath("$.address.latitude").value(saveRecruitmentList.get(0).getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.address.longitude").value(saveRecruitmentList.get(0).getCoordinate().getLongitude()))
+                .andExpect(jsonPath("$.isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
+                .andExpect(jsonPath("$.volunteeringType").value(saveRecruitmentList.get(0).getVolunteeringType().getId()))
+                .andExpect(jsonPath("$.volunteerType").value(saveRecruitmentList.get(0).getVolunteerType().getId()))
+                .andExpect(jsonPath("$.volunteerNum").value(saveRecruitmentList.get(0).getVolunteerNum()))
+                .andExpect(jsonPath("$.title").value(saveRecruitmentList.get(0).getTitle()))
+                .andExpect(jsonPath("$.content").value(saveRecruitmentList.get(0).getContent()))
+                .andExpect(jsonPath("$.approvalVolunteer[0].userNo").value(saveJoinApprovalnParticipantList.get(0).getParticipant().getUserNo()))
+                .andExpect(jsonPath("$.approvalVolunteer[0].nickName").value(saveJoinApprovalnParticipantList.get(0).getParticipant().getNickName()))
+                .andExpect(jsonPath("$.approvalVolunteer[0].imageUrl").value(saveJoinApprovalnParticipantUploadImageList.get(0).getStorage().getImagePath()))
+                .andExpect(jsonPath("$.approvalVolunteer[1].userNo").value(saveJoinApprovalnParticipantList.get(1).getParticipant().getUserNo()))
+                .andExpect(jsonPath("$.approvalVolunteer[1].nickName").value(saveJoinApprovalnParticipantList.get(1).getParticipant().getNickName()))
+                .andExpect(jsonPath("$.approvalVolunteer[1].imageUrl").value(saveJoinApprovalnParticipantList.get(1).getParticipant().getPicture()))
+                .andExpect(jsonPath("$.requiredVolunteer[0].userNo").value(saveJoinRequestParticipantList.get(0).getParticipant().getUserNo()))
+                .andExpect(jsonPath("$.requiredVolunteer[0].nickName").value(saveJoinRequestParticipantList.get(0).getParticipant().getNickName()))
+                .andExpect(jsonPath("$.requiredVolunteer[0].imageUrl").value(saveJoinRequestParticipantList.get(0).getParticipant().getPicture()))
+                .andExpect(jsonPath("$.author.nickName").value(writer.getNickName()))
+                .andExpect(jsonPath("$.author.imageUrl").value(writer.getPicture()))
+                .andExpect(jsonPath("$.repeatPeriod.period").value(saveRepeatPeriodList.get(0).getPeriod().getId()))
+                .andExpect(jsonPath("$.repeatPeriod.week").value(saveRepeatPeriodList.get(0).getWeek().getId()))
+                .andExpect(jsonPath("$.repeatPeriod.days[0]").value(saveRepeatPeriodList.get(0).getDay().getId()))
+                .andExpect(jsonPath("$.repeatPeriod.days[1]").value(saveRepeatPeriodList.get(1).getDay().getId()))
+                .andExpect(jsonPath("$.picture.type").value(ImageType.UPLOAD.getId()))
+                .andExpect(jsonPath("$.picture.staticImage").isEmpty())
+                .andExpect(jsonPath("$.picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/recruitment/GET-Details",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("organizationName").type(JsonFieldType.STRING).description("기관 이름"),
+                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN).description("봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
+                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
+                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("endDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(key("format").value("HH:mm")).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
+                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("정기 봉사 일정 진행 시간"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("봉사 모집글 본문"),
+
+                                        fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("address.sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
+                                        fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("address.latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                        fieldWithPath("address.longitude").type(JsonFieldType.NUMBER).description("경도"),
+
+                                        fieldWithPath("approvalVolunteer[].userNo").type(JsonFieldType.NUMBER).description("봉사 참가 승인된 참가자(유저) 고유키 PK"),
+                                        fieldWithPath("approvalVolunteer[].nickName").type(JsonFieldType.STRING).description("봉사 참가 승인된 참가자 닉네임"),
+                                        fieldWithPath("approvalVolunteer[].imageUrl").type(JsonFieldType.STRING).description("봉사 참가 승인된 참가자 이미지 URL"),
+
+                                        fieldWithPath("requiredVolunteer[].userNo").type(JsonFieldType.NUMBER).description("봉사 참가 미승인된 참가자(유저) 고유키 PK"),
+                                        fieldWithPath("requiredVolunteer[].nickName").type(JsonFieldType.STRING).description("봉사 참가 미승인된 참가자 닉네임"),
+                                        fieldWithPath("requiredVolunteer[].imageUrl").type(JsonFieldType.STRING).description("봉사 참가 미승인된 참가자 이미지 URL"),
+
+                                        fieldWithPath("author.nickName").type(JsonFieldType.STRING).description("봉사 모집글 작성자 닉네임"),
+                                        fieldWithPath("author.imageUrl").type(JsonFieldType.STRING).description("봉사 모집글 이미지 URL"),
+
+                                        fieldWithPath("repeatPeriod.period").type(JsonFieldType.STRING).optional().description("Code Period 참고바람. 비정기일 경우 NULL"),
+                                        fieldWithPath("repeatPeriod.week").type(JsonFieldType.STRING).optional().description("Code Week 참고바람. 비정기 혹은 Period가 매주일 경우 NULL"),
+                                        fieldWithPath("repeatPeriod.days").type(JsonFieldType.ARRAY).optional().description("Code Day 참고바람. 비정기일 경우 NULL"),
+
+                                        fieldWithPath("picture.type").type(JsonFieldType.STRING).description("Code ImageType 참고바람."),
+                                        fieldWithPath("picture.staticImage").type(JsonFieldType.STRING).optional().description("정적 이미지 코드, ImageType이 UPLOAD 일 경우 NULL"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, ImageType이 STATIC 일 경우 NULL")
+                                )
+                        )
+                );
+    }
+
     private MockMultipartFile getMockMultipartFile() throws IOException {
         return new MockMultipartFile(
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
-    }
-    private void setData() throws IOException {
-        //모집글 데이터
-        String category1 = "001";
-        String category2 = "002";
-        String volunteeringType1 = VolunteeringType.IRREG.name();
-        String volunteeringType2 = VolunteeringType.REG.name();
-        String volunteerType1 = "1"; //all
-        String volunteerType2 = "3"; //teenager
-        Boolean isIssued1 = true;
-        Boolean isIssued2 = false;
-        String sido1 = "11";
-        String sido2 = "22";
-        String sigungu1 = "1111";
-        String sigungu2 = "2222";
-        String organizationName ="name";
-        String details = "details";
-        Float latitude = 3.2F , longitude = 3.2F;
-        Integer volunteerNum = 9999;
-        String startDay = "01-01-2000";
-        String endDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String title = "title", content = "content";
-        Boolean isPublished = true;
-
-        //반복 주기 데이터
-        String period = "week";
-        int week = 0;
-        List<Integer> days = List.of(Day.MON.getValue(), Day.TUES.getValue());
-
-        for(int i=0;i<5;i++){
-
-            //모집글 저장
-            //no1: 단기 + static 이미지 + 참여자 1명(승인)   -> 총 5개 저장
-            //no2: 장기 + upload 이미지 + 참여자 1명(미승인)  -> 총 5개 저장
-            RecruitmentParam saveRecruitDto1 = new RecruitmentParam(category1, organizationName, sido1, sigungu1, details, latitude, longitude,
-                    isIssued1, volunteerType1, volunteerNum, volunteeringType1, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-            RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2, details, latitude, longitude,
-                    isIssued2, volunteerType2, volunteerNum, volunteeringType2, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-            Long no1 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto1);
-            Long no2 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto2);
-
-            saveRecruitmentNoList.add(no1);
-            saveRecruitmentNoList.add(no2);
-
-            //반복 주기 저장
-            RepeatPeriodParam savePeriodDto = new RepeatPeriodParam(period, week, days);
-            repeatPeriodService.addRepeatPeriod(no2, savePeriodDto);
-
-            //이미지 저장
-            ImageParam staticImageDto = ImageParam.builder()
-                    .code(RealWorkCode.RECRUITMENT)
-                    .imageType(ImageType.STATIC)
-                    .no(no1)
-                    .staticImageCode(String.valueOf(i))
-                    .uploadImage(null)
-                    .build();
-            Long saveId1 = imageService.addImage(staticImageDto);
-
-            ImageParam uploadImageDto = ImageParam.builder()
-                    .code(RealWorkCode.RECRUITMENT)
-                    .imageType(ImageType.UPLOAD)
-                    .no(no2)
-                    .staticImageCode(null)
-                    .uploadImage(getMockMultipartFile())
-                    .build();
-            Long saveId2 = imageService.addImage(uploadImageDto);
-            deleteS3ImageNoList.add(saveId2); //S3에 저장된 이미지 추후 삭제 예정
-
-            //참여자 저장
-            Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
-            Participant participant1 = Participant.builder()
-                    .participant(saveUser)
-                    .recruitment(recruitment1)
-                    .state(ParticipantState.JOIN_APPROVAL) //참여 승인
-                    .build();
-            participantRepository.save(participant1);
-
-            Recruitment recruitment2 = recruitmentRepository.findById(no2).get();
-            Participant participant2 = Participant.builder()
-                    .participant(saveUser)
-                    .recruitment(recruitment2)
-                    .state(ParticipantState.JOIN_REQUEST) //참여 미승인
-                    .build();
-            participantRepository.save(participant2); //참여 미승인
-        }
-        clear();
-    }
-    private List<Long> addParticipant(int count, ParticipantState state, Long recruitmentNo){
-        List<Long> participantNoList = new ArrayList<>();
-
-        for(int i=0;i<count;i++){
-            User joinUser = userRepository.save(User.builder()
-                    .id("1234" + i)
-                    .password("1234" + i)
-                    .nickName("nickname" + i)
-                    .email("email" + i + "@gmail.com")
-                    .gender(Gender.M)
-                    .birthDay(LocalDate.now())
-                    .picture("picture" + i)
-                    .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
-                    .role(Role.USER)
-                    .provider("kakao").providerId("1234" + i)
-                    .build());
-
-            Storage storage = storageRepository.save(
-                    Storage.builder()
-                            .imagePath("1234" + i)
-                            .fakeImageName("1234" + i)
-                            .realImageName("1234" + i)
-                            .extName(".jpg")
-                            .build());
-
-            Image save = imageRepository.save(
-                    Image.builder()
-                            .realWorkCode(RealWorkCode.USER)
-                            .no(joinUser.getUserNo())
-                            .build());
-            save.setStorage(storage);
-
-            participantRepository.save(Participant.builder()
-                    .participant(joinUser)
-                    .recruitment(recruitmentRepository.findById(recruitmentNo).get())
-                    .state(state)
-                    .build());
-
-            participantNoList.add(joinUser.getUserNo());
-        }
-        return participantNoList;
-    }
-    @BeforeEach
-    public void initUser(){
-        saveUser = userRepository.save(User.builder()
-                .id("rctfq1234")
-                .password("rctfq1234")
-                .nickName("rctfq1234")
-                .email("rctfq1234@gmail.com")
-                .gender(Gender.M)
-                .birthDay(LocalDate.now())
-                .picture("picture")
-                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
-                .role(Role.USER)
-                .provider("kakao").providerId("rctfq1234")
-                .build());
-        clear();
-    }
-    @AfterEach
-    public void deleteS3Image() { //S3에 테스트를 위해 저장한 이미지 삭제
-        for(Long id : deleteS3ImageNoList){
-            Image image = imageRepository.findById(id).get();
-            Storage storage = image.getStorage();
-            fileService.deleteFile(storage.getFakeImageName());
-        }
-    }
-
-    @Test
-    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_전체조회_모든필터링_성공() throws Exception {
-        //init
-        setData();
-
-        //given: 페이지 & 필터링 조건
-        MultiValueMap<String,String> info = new LinkedMultiValueMap();
-        info.add("page", "0");
-        info.add("volunteering_category", "001");
-        info.add("sido", "11");
-        info.add("sigungu","1111");
-        info.add("volunteering_type", VolunteeringType.IRREG.name());
-        info.add("volunteer_type", "1"); //all
-        info.add("is_issued", "true");
-
-        //when & then
-        mockMvc.perform(
-                get(FIND_ALL_URL).params(info))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_전체조회_다중카테고리필터링_성공() throws Exception {
-        //init
-        setData();
-
-        //given: 페이지 & 필터링 조건
-        MultiValueMap<String,String> info = new LinkedMultiValueMap();
-        info.add("page", "0");
-        info.add("volunteering_category", "001,002");
-
-        //when & then
-        mockMvc.perform(
-                        get(FIND_ALL_URL).params(info))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_전체카운트_모든필터링_성공() throws Exception {
-        //init
-        setData();
-
-        //given
-        MultiValueMap<String,String> info = new LinkedMultiValueMap();
-        info.add("volunteering_category", "001");
-        info.add("sido", "11");
-        info.add("sigungu","1111");
-        info.add("volunteering_type", VolunteeringType.IRREG.name());
-        info.add("volunteer_type", "1"); //all
-        info.add("is_issued", "true");
-
-        //when & then
-        mockMvc.perform(
-                        get(COUNT_ALL_URL).params(info))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_전체카운트_빈필터링_성공() throws Exception {
-        //init
-        setData();
-
-        mockMvc.perform(
-                        get(COUNT_ALL_URL))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_상세조회_성공() throws Exception {
-        //given
-        setData();
-        addParticipant(200, ParticipantState.JOIN_APPROVAL, saveRecruitmentNoList.get(1));
-        addParticipant(100, ParticipantState.JOIN_REQUEST, saveRecruitmentNoList.get(1));
-        clear();
-
-        //when && then
-        mockMvc.perform(get(FIND_URL + saveRecruitmentNoList.get(1)))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @WithUserDetails(value = "rctfq1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_상세조회_실패_삭제된게시글() throws Exception {
-        //given
-        setData();
-
-        //when
-        Recruitment recruitment = recruitmentRepository.findById(saveRecruitmentNoList.get(1)).get();
-        recruitment.setDeleted(); //게시글 삭제하기
-        clear();
-
-        //then
-        mockMvc.perform(get(FIND_URL + saveRecruitmentNoList.get(1)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
     }
 }

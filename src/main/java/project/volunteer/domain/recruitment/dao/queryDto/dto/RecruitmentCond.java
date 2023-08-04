@@ -32,11 +32,10 @@ public class RecruitmentCond {
 
     @Builder
     public RecruitmentCond(List<String> category, String sido, String sigungu, String volunteeringType, String volunteerType, Boolean isIssued) {
-
         this.category = Optional.ofNullable(category)
                 .orElseGet(Collections::emptyList)
-                        .stream()
-                                .map(c -> LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, c))
+                .stream()
+                .map(c -> LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, c))
                                         .collect(Collectors.toList());
         this.sido = sido;
         this.sigungu = sigungu;
