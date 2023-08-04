@@ -39,5 +39,5 @@ out/
 ### project ignore ###
 src/main/resources/config/
 application.yml
-src/main/resources/static/docs/index.html
+src/main/resources/static/docs/
 
