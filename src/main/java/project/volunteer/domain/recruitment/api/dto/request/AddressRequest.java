@@ -27,9 +27,9 @@ public class AddressRequest {
     @Length(min = 1, max = 50)
     private String details;
 
-    @NotEmpty
+    @NotNull
     private Float latitude;
 
-    @NotEmpty
+    @NotNull
     private Float longitude;
 }

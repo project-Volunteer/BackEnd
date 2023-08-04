@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -23,6 +24,8 @@ public class RecruitmentRequest {
     @Length(min = 1, max = 50)
     private String organizationName;
 
+    @Valid
+    @NotNull
     private AddressRequest address;
 
     @NotNull
@@ -56,15 +59,14 @@ public class RecruitmentRequest {
     @Range(min=1, max = 24)
     private Integer progressTime;
 
-    @NotNull
     private String period;
 
-    @NotNull
-    private Integer week;
+    private String week;
 
-    @NotNull
-    private List<Integer> days;
+    private List<String> days;
 
+    @Valid
+    @NotNull
     private PictureRequest picture;
 
     @NotNull
