@@ -19,14 +19,14 @@ public class ParticipationController {
 
     private final ParticipationService participationService;
 
-    @PostMapping("/{recruitmentNo}/join")
+    @PutMapping("/{recruitmentNo}/join")
     public ResponseEntity participationRequest(@PathVariable("recruitmentNo")Long no){
 
         participationService.participate(SecurityUtil.getLoginUserNo(), no);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{recruitmentNo}/cancel")
+    @PutMapping("/{recruitmentNo}/cancel")
     public ResponseEntity participationCancel(@PathVariable("recruitmentNo")Long no){
 
         participationService.cancelParticipation(SecurityUtil.getLoginUserNo(), no);
@@ -34,7 +34,7 @@ public class ParticipationController {
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
-    @PostMapping("/{recruitmentNo}/approval")
+    @PutMapping("/{recruitmentNo}/approval")
     public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto, @PathVariable("recruitmentNo")Long no){
 
         participationService.approvalParticipant(no, dto.getUserNos());
@@ -42,7 +42,7 @@ public class ParticipationController {
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
-    @PostMapping("/{recruitmentNo}/kick")
+    @PutMapping("/{recruitmentNo}/kick")
     public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto, @PathVariable("recruitmentNo")Long no){
 
         participationService.deportParticipant(no, dto.getUserNo());
