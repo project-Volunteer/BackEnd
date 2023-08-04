@@ -11,6 +11,8 @@ endif::[]
 
 = Volunteer API 문서
 
+include::recruitment.adoc[]
+
 include::schedule.adoc[]
 
 include::schedule-management.adoc[]
