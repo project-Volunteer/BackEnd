@@ -185,25 +185,25 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
 
         //봉사 모집 기간 만료
         if(!findRecruitment.isAvailableDate()){
-            return StateResponse.DONE.name();
+            return StateResponse.DONE.getId();
         }
 
         //팀 신청
         if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
-            return StateResponse.PENDING.name();
+            return StateResponse.PENDING.getId();
         }
 
         //팀 신청 승인
         if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
-            return StateResponse.APPROVED.name();
+            return StateResponse.APPROVED.getId();
         }
 
         //팀 신청 인원 마감
         if(findRecruitment.isFullTeamMember()){
-            return StateResponse.FULL.name();
+            return StateResponse.FULL.getId();
         }
 
         //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
-        return StateResponse.AVAILABLE.name();
+        return StateResponse.AVAILABLE.getId();
     }
 }
