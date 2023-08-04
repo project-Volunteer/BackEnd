@@ -107,6 +107,35 @@ include::{snippets}/APIs/volunteering/recruitment/GET-Details/http-response.adoc
 include::{snippets}/APIs/volunteering/recruitment/GET-Details/response-fields.adoc[]
 
 
+=== 봉사 모집글 클라이언트 상태 조회
+- 봉사 모집글 상세 조회간 *로그인 사용자* 일경우 신청 상태를 별도의 API로 조회합니다.
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/APIs/volunteering/recruitment/GET-Status/http-request.adoc[]
+
+*Request Path*
+include::{snippets}/APIs/volunteering/recruitment/GET-Status/path-parameters.adoc[]
+
+*Request Header*
+include::{snippets}/APIs/volunteering/recruitment/GET-Status/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/APIs/volunteering/recruitment/GET-Status/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/APIs/volunteering/recruitment/GET-Status/response-fields.adoc[]
+
+
 === 봉사 모집글 삭제
 ==== 발생 가능 예외
 |===

@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +43,7 @@ import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.infra.s3.FileService;
 
 import java.io.FileInputStream;
@@ -562,6 +565,35 @@ class RecruitmentControllerTestForQuery {
                                         fieldWithPath("picture.type").type(JsonFieldType.STRING).description("Code ImageType 참고바람."),
                                         fieldWithPath("picture.staticImage").type(JsonFieldType.STRING).optional().description("정적 이미지 코드, ImageType이 UPLOAD 일 경우 NULL"),
                                         fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, ImageType이 STATIC 일 경우 NULL")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @WithUserDetails(value = "rctfqt", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void 봉사모집글_참여_상태조회() throws Exception {
+        //given & when
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{no}/status",saveRecruitmentList.get(0).getRecruitmentNo())
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("status").value(StateResponse.APPROVED.getId()))
+                .andDo(print())
+                .andDo(
+                        document("APIs/volunteering/recruitment/GET-Status",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("no").description("봉사 모집글 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("status").type(JsonFieldType.STRING).description("Code ClientState 참고바람.")
                                 )
                         )
                 );
