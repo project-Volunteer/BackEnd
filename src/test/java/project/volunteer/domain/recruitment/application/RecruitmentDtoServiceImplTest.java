@@ -176,12 +176,12 @@ class RecruitmentDtoServiceImplTest {
 
         //then
         assertAll(
-                () -> assertThat(details.getVolunteeringCategory()).isEqualTo(saveRecruitment.getVolunteeringCategory().getDesc()),
+                () -> assertThat(details.getVolunteeringCategory()).isEqualTo(saveRecruitment.getVolunteeringCategory().getId()),
                 () -> assertThat(details.getOrganizationName()).isEqualTo(saveRecruitment.getOrganizationName()),
                 () -> assertThat(details.getIsIssued()).isEqualTo(saveRecruitment.getIsIssued()),
-                () -> assertThat(details.getVolunteerType()).isEqualTo(saveRecruitment.getVolunteerType().getDesc()),
+                () -> assertThat(details.getVolunteerType()).isEqualTo(saveRecruitment.getVolunteerType().getId()),
                 () -> assertThat(details.getVolunteerNum()).isEqualTo(saveRecruitment.getVolunteerNum()),
-                () -> assertThat(details.getVolunteeringType()).isEqualTo(saveRecruitment.getVolunteeringType().getViewName()),
+                () -> assertThat(details.getVolunteeringType()).isEqualTo(saveRecruitment.getVolunteeringType().getId()),
                 () -> assertThat(details.getTitle()).isEqualTo(saveRecruitment.getTitle()),
                 () -> assertThat(details.getContent()).isEqualTo(saveRecruitment.getContent()),
                 () -> assertThat(details.getAuthor().getNickName()).isEqualTo(writer.getNickName()),
@@ -225,7 +225,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(StateResponse.AVAILABLE.name());
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.getId());
     }
 
     @DisplayName("모집글 팀 탈퇴로 인해 로그인 사용자 상태가 신청 가능 상태가 된다.")
@@ -240,7 +240,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //then
-        assertThat(status).isEqualTo(StateResponse.AVAILABLE.name());
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.getId());
     }
 
     @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
@@ -255,7 +255,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //then
-        assertThat(status).isEqualTo(StateResponse.PENDING.name());
+        assertThat(status).isEqualTo(StateResponse.PENDING.getId());
     }
 
     @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
@@ -270,7 +270,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //then
-        assertThat(status).isEqualTo(StateResponse.APPROVED.name());
+        assertThat(status).isEqualTo(StateResponse.APPROVED.getId());
     }
 
     @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
@@ -290,7 +290,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(StateResponse.DONE.name());
+        assertThat(status).isEqualTo(StateResponse.DONE.getId());
     }
 
     @DisplayName("팀원 모집인원 초과로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
@@ -315,7 +315,7 @@ class RecruitmentDtoServiceImplTest {
         String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
 
         //then
-        assertThat(status).isEqualTo(StateResponse.FULL.name());
+        assertThat(status).isEqualTo(StateResponse.FULL.getId());
     }
 
     @Test
