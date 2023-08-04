@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class RecruitmentList {
     private Long no;
+    private String volunteeringCategory;
     private PictureDetails picture;
     private String title;
     private String sido;
@@ -25,24 +26,24 @@ public class RecruitmentList {
     private Boolean isIssued;
     private Integer volunteerNum;
     private Integer currentVolunteerNum;
-    private Integer progressTime;
-    private List<String> repeatDay;
     private String volunteerType;
 
+    //TODO: 정적 팩터리 메서드 리팩토링
     public RecruitmentList(RecruitmentListQuery recruitmentDto) {
         this.no = recruitmentDto.getNo();
+        this.volunteeringCategory = recruitmentDto.getCategory().getId();
         this.picture = new PictureDetails(recruitmentDto.getStaticImage(), recruitmentDto.getUploadImage());
         this.title = recruitmentDto.getTitle();
         this.sido = recruitmentDto.getSido();
         this.sigungu = recruitmentDto.getSigungu();
         this.startDay = recruitmentDto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         this.endDay = recruitmentDto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.volunteeringType = recruitmentDto.getVolunteeringType().getViewName();
+        this.volunteeringType = recruitmentDto.getVolunteeringType().getId();
         this.volunteerNum = recruitmentDto.getVolunteerNum();
+        this.isIssued = recruitmentDto.getIsIssued();
+        //TODO: 쿼리에서 Integer로 조회가 안되서?
         this.currentVolunteerNum = recruitmentDto.getCurrentVolunteerNum().intValue(); //Long 이지만 int 를 실제로 넘을수 없다.(모집 인원수가 int로 정해져있어서)
-        this.progressTime = recruitmentDto.getProgressTime();
-        this.repeatDay = recruitmentDto.getDays().stream().map(d -> d.getViewName()).collect(Collectors.toList());
-        this.volunteerType = recruitmentDto.getVolunteerType().getDesc();
+        this.volunteerType = recruitmentDto.getVolunteerType().getId();
     }
 
 }

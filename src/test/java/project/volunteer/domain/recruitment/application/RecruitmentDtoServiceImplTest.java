@@ -184,11 +184,11 @@ class RecruitmentDtoServiceImplTest {
                 () -> assertThat(details.getVolunteeringType()).isEqualTo(saveRecruitment.getVolunteeringType().getViewName()),
                 () -> assertThat(details.getTitle()).isEqualTo(saveRecruitment.getTitle()),
                 () -> assertThat(details.getContent()).isEqualTo(saveRecruitment.getContent()),
-                () -> assertThat(details.getAuthor().getNickname()).isEqualTo(writer.getNickName()),
-                () -> assertThat(details.getRepeatPeriod().getPeriod()).isEqualTo(saveRegPeriod.getPeriod().getViewName()),
-                () -> assertThat(details.getRepeatPeriod().getWeek()).isEqualTo(saveRegPeriod.getWeek().getViewName()),
+                () -> assertThat(details.getAuthor().getNickName()).isEqualTo(writer.getNickName()),
+                () -> assertThat(details.getRepeatPeriod().getPeriod()).isEqualTo(saveRegPeriod.getPeriod().getId()),
+                () -> assertThat(details.getRepeatPeriod().getWeek()).isEqualTo(saveRegPeriod.getWeek().getId()),
                 () -> assertThat(details.getRepeatPeriod().getDays().size()).isEqualTo(1),
-                () -> assertThat(details.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getValue())
+                () -> assertThat(details.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getId())
         );
     }
 

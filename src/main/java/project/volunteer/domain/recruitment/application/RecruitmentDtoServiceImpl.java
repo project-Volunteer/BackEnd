@@ -108,9 +108,9 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     private void makeRepeatPeriodDto(RecruitmentDetails dto, Long recruitmentNo){
         List<RepeatPeriod> repeatPeriods = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
 
-        String period = repeatPeriods.get(0).getPeriod().getViewName();
-        String week = (period.equals(Period.MONTH.getViewName()))?(repeatPeriods.get(0).getWeek().getViewName()):"";
-        List<String> days = repeatPeriods.stream().map(r -> r.getDay().getViewName()).collect(Collectors.toList());
+        String period = repeatPeriods.get(0).getPeriod().getId();
+        String week = (period.equals(Period.MONTH.getId()))?(repeatPeriods.get(0).getWeek().getId()):null;
+        List<String> days = repeatPeriods.stream().map(r -> r.getDay().getId()).collect(Collectors.toList());
 
         dto.setRepeatPeriod(new RepeatPeriodDetails(period, week, days));
     }
