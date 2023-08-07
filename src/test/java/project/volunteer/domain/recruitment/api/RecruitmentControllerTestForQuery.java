@@ -36,7 +36,6 @@ import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.storage.dao.StorageRepository;
 import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -73,7 +72,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureRestDocs
 class RecruitmentControllerTestForQuery {
-
     @Autowired UserRepository userRepository;
     @Autowired ParticipantRepository participantRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
@@ -111,31 +109,31 @@ class RecruitmentControllerTestForQuery {
         saveRecruitment1.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment1));
 
-        Recruitment saveRecruitment2 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+        Recruitment saveRecruitment2 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(2), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment2.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment2));
 
-        Recruitment saveRecruitment3 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+        Recruitment saveRecruitment3 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment3.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment3));
 
-        Recruitment saveRecruitment4 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+        Recruitment saveRecruitment4 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(4), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment4.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment4));
 
-        Recruitment saveRecruitment5 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.IRREG,
+        Recruitment saveRecruitment5 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(5), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment5.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment5));
 
-        Recruitment saveRecruitment6 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
+        Recruitment saveRecruitment6 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(6), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment6.setWriter(writer);
@@ -332,7 +330,7 @@ class RecruitmentControllerTestForQuery {
         info.add("volunteering_category", "002");
         info.add("sido", "11");
         info.add("sigungu","1111");
-        info.add("volunteering_type", VolunteeringType.IRREG.getId());
+        info.add("volunteering_type", VolunteeringType.REG.getId());
         info.add("volunteer_type", VolunteerType.TEENAGER.getId());
         info.add("is_issued", "true");
 
@@ -432,7 +430,7 @@ class RecruitmentControllerTestForQuery {
         info.add("volunteering_category", "002");
         info.add("sido", "11");
         info.add("sigungu","1111");
-        info.add("volunteering_type", VolunteeringType.IRREG.getId());
+        info.add("volunteering_type", VolunteeringType.REG.getId());
         info.add("volunteer_type", VolunteerType.TEENAGER.getId());
         info.add("is_issued", "true");
 
