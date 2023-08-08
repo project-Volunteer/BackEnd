@@ -108,9 +108,9 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     private void makeRepeatPeriodDto(RecruitmentDetails dto, Long recruitmentNo){
         List<RepeatPeriod> repeatPeriods = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
 
-        String period = repeatPeriods.get(0).getPeriod().getViewName();
-        String week = (period.equals(Period.MONTH.getViewName()))?(repeatPeriods.get(0).getWeek().getViewName()):"";
-        List<String> days = repeatPeriods.stream().map(r -> r.getDay().getViewName()).collect(Collectors.toList());
+        String period = repeatPeriods.get(0).getPeriod().getId();
+        String week = (period.equals(Period.MONTH.getId()))?(repeatPeriods.get(0).getWeek().getId()):null;
+        List<String> days = repeatPeriods.stream().map(r -> r.getDay().getId()).collect(Collectors.toList());
 
         dto.setRepeatPeriod(new RepeatPeriodDetails(period, week, days));
     }
@@ -178,31 +178,32 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
      * L3 : 팀 신청 인원 마감
      * L4 : 팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴)
      */
+    //TODO: 코드상 case 구문도 괜찮은 듯?
     private String converterTeamMemberState(Recruitment findRecruitment, Long loginUserNo){
         Optional<Participant> findParticipant = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
                 findRecruitment.getRecruitmentNo(), loginUserNo);
 
         //봉사 모집 기간 만료
         if(!findRecruitment.isAvailableDate()){
-            return StateResponse.DONE.name();
+            return StateResponse.DONE.getId();
         }
 
         //팀 신청
         if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
-            return StateResponse.PENDING.name();
+            return StateResponse.PENDING.getId();
         }
 
         //팀 신청 승인
         if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
-            return StateResponse.APPROVED.name();
+            return StateResponse.APPROVED.getId();
         }
 
         //팀 신청 인원 마감
         if(findRecruitment.isFullTeamMember()){
-            return StateResponse.FULL.name();
+            return StateResponse.FULL.getId();
         }
 
         //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
-        return StateResponse.AVAILABLE.name();
+        return StateResponse.AVAILABLE.getId();
     }
 }

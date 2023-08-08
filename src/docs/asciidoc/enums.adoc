@@ -1,0 +1,29 @@
+[[Code]]
+== Code
+
+=== VolunteeringCategory
+include::{snippets}/enums/custom-response-fields-volunteeringCategory.adoc[]
+
+=== VolunteerType
+include::{snippets}/enums/custom-response-fields-volunteerType.adoc[]
+
+=== VolunteeringType
+include::{snippets}/enums/custom-response-fields-volunteeringType.adoc[]
+
+=== Period
+include::{snippets}/enums/custom-response-fields-period.adoc[]
+
+=== Week
+include::{snippets}/enums/custom-response-fields-week.adoc[]
+
+=== Day
+include::{snippets}/enums/custom-response-fields-day.adoc[]
+
+=== HourFormat
+include::{snippets}/enums/custom-response-fields-hourFormat.adoc[]
+
+=== ImageType
+include::{snippets}/enums/custom-response-fields-imageType.adoc[]
+
+=== ClientState
+include::{snippets}/enums/custom-response-fields-clientState.adoc[]

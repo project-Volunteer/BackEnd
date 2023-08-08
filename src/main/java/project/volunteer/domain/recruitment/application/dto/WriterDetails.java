@@ -9,6 +9,6 @@ import lombok.*;
 @ToString
 public class WriterDetails {
 
-    private String nickname;
+    private String nickName;
     private String imageUrl;
 }

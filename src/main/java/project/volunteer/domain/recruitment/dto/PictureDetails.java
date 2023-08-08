@@ -13,16 +13,16 @@ import project.volunteer.domain.image.domain.ImageType;
 @ToString
 public class PictureDetails {
 
-    private Integer type;
+    private String type;
     private String staticImage;
     private String uploadImage;
 
     public PictureDetails(String staticImage, String uploadImage){
 
         if(StringUtils.hasText(staticImage))
-            this.type = ImageType.STATIC.getValue();
+            this.type = ImageType.STATIC.getId();
         else if(StringUtils.hasText(uploadImage))
-            this.type = ImageType.UPLOAD.getValue();
+            this.type = ImageType.UPLOAD.getId();
 
         this.staticImage = staticImage;
         this.uploadImage = uploadImage;

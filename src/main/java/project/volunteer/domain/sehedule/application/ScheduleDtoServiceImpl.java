@@ -73,6 +73,7 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
      * L4 : 일정 참여 가능 인원 초과
      * L5 : 일정 참여 가능, 일정 취소 승인
      */
+    //TODO: 코드상 case 구문도 괜찮은 듯?
     private String converterParticipantState(Schedule schedule, Long loginUserNo){
         //일정 신청 내역 조회
         Optional<ScheduleParticipation> findSp =
@@ -80,36 +81,36 @@ public class ScheduleDtoServiceImpl implements ScheduleDtoService{
 
         //일정 참가 완료 미승인
         if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)){
-            return StateResponse.COMPLETE_UNAPPROVED.name();
+            return StateResponse.COMPLETE_UNAPPROVED.getId();
         }
 
         //일정 참가 완료 승인
         if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)){
-            return StateResponse.COMPLETE_APPROVED.name();
+            return StateResponse.COMPLETE_APPROVED.getId();
         }
 
         //일정 참여 기간 만료
         if(!schedule.isAvailableDate()){
-            return StateResponse.DONE.name();
+            return StateResponse.DONE.getId();
         }
 
         //참여 중
         if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATING)){
-            return StateResponse.PARTICIPATING.name();
+            return StateResponse.PARTICIPATING.getId();
         }
 
         //취소 요청
         if(findSp.isPresent() && findSp.get().isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
-            return StateResponse.CANCELLING.name();
+            return StateResponse.CANCELLING.getId();
         }
 
         //인원 초과
         if(schedule.isFullParticipant()){
-            return StateResponse.FULL.name();
+            return StateResponse.FULL.getId();
         }
 
         //신청 가능
-        return StateResponse.AVAILABLE.name();
+        return StateResponse.AVAILABLE.getId();
     }
 
 }

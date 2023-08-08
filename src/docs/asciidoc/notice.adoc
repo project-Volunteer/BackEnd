@@ -1,0 +1,204 @@
+[[Notice-API]]
+== Notice API
+
+=== 봉사 모집글 공지사항 등록
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+    - 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+    - 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-controller-test/save-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-controller-test/save-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-controller-test/save-notice/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/notice-controller-test/save-notice/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-controller-test/save-notice/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 상세 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+    - 해당 공지사항 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*Http Request*
+include::{snippets}/notice-controller-test/find-details-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-controller-test/find-details-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-controller-test/find-details-notice/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-controller-test/find-details-notice/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/notice-controller-test/find-details-notice/response-fields.adoc[]
+
+
+=== 봉사 모집글 공지사항 리스트 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*Http Request*
+include::{snippets}/notice-controller-test/find-list-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-controller-test/find-list-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-controller-test/find-list-notice/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-controller-test/find-list-notice/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/notice-controller-test/find-list-notice/response-fields.adoc[]
+
+
+=== 봉사 모집글 공지사항 수정
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-controller-test/edit-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-controller-test/edit-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-controller-test/edit-notice/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/notice-controller-test/edit-notice/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-controller-test/edit-notice/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 삭제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-controller-test/delete-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-controller-test/delete-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-controller-test/delete-notice/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-controller-test/delete-notice/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 읽음
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 해당 정보를 이미 확인한 상태입니다. +
+- 해당 사용자 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-controller-test/read-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-controller-test/read-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-controller-test/read-notice/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-controller-test/read-notice/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 읽음 해제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 읽음 확인 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-controller-test/read-cancel-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-controller-test/read-cancel-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-controller-test/read-cancel-notice/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-controller-test/read-cancel-notice/http-response.adoc[]

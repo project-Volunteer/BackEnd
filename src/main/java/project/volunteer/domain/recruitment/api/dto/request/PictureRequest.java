@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Range;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -17,12 +18,10 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class PictureRequest {
 
-    @NotNull
-    @Range(min = 0, max = 1)
-    private Integer type; //0(static),1(upload)
+    @NotEmpty
+    private String type;
 
-    @NotNull
-    @Length(min = 1, max = 10)
+    @Length(max = 2)
     private String staticImage;
 
     private MultipartFile uploadImage;

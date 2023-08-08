@@ -1,6 +1,6 @@
 package project.volunteer.global.common.converter;
 
-public interface LegacyCodeCommonType {
+public interface CodeCommonType {
 
     /**
      * 공통으로 존재하는 Getter 기능
@@ -8,7 +8,7 @@ public interface LegacyCodeCommonType {
      * Enum 기능을 계승해서 사용하기 위해 인터페이스 사용
      * @Return string(legacy code, view name)
      */
-    String getLegacyCode();
+    String getId();
     String getDesc();
 
 }

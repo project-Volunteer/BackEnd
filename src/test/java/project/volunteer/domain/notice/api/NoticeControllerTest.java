@@ -7,14 +7,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.restdocs.document.util.DocumentFormatGenerator;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
 import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
@@ -37,13 +43,22 @@ import project.volunteer.global.common.component.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
+@Import(RestDocsConfiguration.class)
 class NoticeControllerTest {
 
     @Autowired MockMvc mockMvc;
@@ -53,7 +68,9 @@ class NoticeControllerTest {
     @Autowired NoticeRepository noticeRepository;
     @Autowired ConfirmationRepository confirmationRepository;
     @Autowired ReplyRepository replyRepository;
+    @Autowired RestDocumentationResultHandler restDocs;
 
+    final String AUTHORIZATION_HEADER = "accessToken";
     User writer;
     Recruitment saveRecruitment;
     @BeforeEach
@@ -75,66 +92,117 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 등록 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeAddRequest() throws Exception {
+    public void saveNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         NoticeAdd dto = new NoticeAdd(addNoticeContent);
 
-        //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/notice", saveRecruitment.getRecruitmentNo())
+        //when
+        ResultActions result = mockMvc.perform(post("/recruitment/{recruitmentNo}/notice", saveRecruitment.getRecruitmentNo())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(toJson(dto)))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .content(toJson(dto))
+        );
+
+        //then
+        result.andExpect(status().isCreated())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
+                                ),
+                                requestFields(
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .attributes(key("constraints").value("1이상 50이하")).description("본문 내용")
+                                )
+                        )
+                );
     }
 
     @Test
     @DisplayName("봉사 공지사항 수정 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeEditRequest() throws Exception {
+    public void editNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         final String editNoticeContent = "edit";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
         NoticeEdit dto = new NoticeEdit(editNoticeContent);
 
-        //when & then
-        mockMvc.perform(put("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+        //when
+        ResultActions result = mockMvc.perform(put("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .content(toJson(dto)))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .content(toJson(dto))
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                ),
+                                requestFields(
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .attributes(key("constraints").value("1이상 50이하")).description("본문 내용")
+                                )
+                        )
+                );
     }
 
     @Test
     @DisplayName("봉사 공지사항 삭제 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeDeleteRequest() throws Exception {
+    public void deleteNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
 
-        //when & then
-        mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+        //when
+        ResultActions result = mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                )
+                        )
+                );
     }
 
     @Test
     @DisplayName("봉사 공지사항 상세 조회 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeDetailsRequest() throws Exception {
+    public void findDetailsNotice() throws Exception {
         //given
         Notice saveNotice = 공지사항_등록("add", saveRecruitment);
 
         User user1 = 사용자_등록("user1");
         User user2 = 사용자_등록("user2");
         User user3 = 사용자_등록("user3");
-        User user4 = 사용자_등록("user4");
 
         Reply parent1 = 댓글_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), "parent1", user1);
         saveNotice.increaseCommentNum();
@@ -142,17 +210,19 @@ class NoticeControllerTest {
         saveNotice.increaseCommentNum();
         Reply children1_2 = 대댓글_등록(parent1, RealWorkCode.NOTICE, saveNotice.getNoticeNo(), "children1-2", user3);
         saveNotice.increaseCommentNum();
-        Reply parent2 = 댓글_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), "parent2", user4);
-        saveNotice.increaseCommentNum();
 
-        //when & then
-        mockMvc.perform(get("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+        //when
+        ResultActions result = mockMvc.perform(get("/recruitment/{recruitmentNo}/notice/{noticeNo}", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.notice.no").value(saveNotice.getNoticeNo()))
                 .andExpect(jsonPath("$.notice.content").value(saveNotice.getContent()))
                 .andExpect(jsonPath("$.notice.checkCnt").value(0))
-                .andExpect(jsonPath("$.notice.commentsCnt").value(4))
+                .andExpect(jsonPath("$.notice.commentsCnt").value(3))
                 .andExpect(jsonPath("$.notice.isChecked").value(false))
                 .andExpect(jsonPath("$.commentsList[0].no").value(parent1.getReplyNo()))
                 .andExpect(jsonPath("$.commentsList[0].profile").value(user1.getPicture()))
@@ -167,18 +237,47 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.commentsList[0].replies[1].profile").value(user3.getPicture()))
                 .andExpect(jsonPath("$.commentsList[0].replies[1].nickName").value(user3.getNickName()))
                 .andExpect(jsonPath("$.commentsList[0].replies[1].content").value(children1_2.getContent()))
-                .andExpect(jsonPath("$.commentsList[1].no").value(parent2.getReplyNo()))
-                .andExpect(jsonPath("$.commentsList[1].profile").value(user4.getPicture()))
-                .andExpect(jsonPath("$.commentsList[1].nickName").value(user4.getNickName()))
-                .andExpect(jsonPath("$.commentsList[1].content").value(parent2.getContent()))
-                .andExpect(jsonPath("$.commentsList[1].commentsCnt").value(0))
-                .andDo(print());
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("notice.no").type(JsonFieldType.NUMBER).description("공지사항 고유키 PK"),
+                                        fieldWithPath("notice.createdAt").type(JsonFieldType.STRING).attributes(getDateFormat()).description("공지사항 작성 일자"),
+                                        fieldWithPath("notice.createdTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("공지사항 작성 시간"),
+                                        fieldWithPath("notice.content").type(JsonFieldType.STRING).description("공지사항 본문"),
+                                        fieldWithPath("notice.checkCnt").type(JsonFieldType.NUMBER).description("공지사항 읽음 개수"),
+                                        fieldWithPath("notice.commentsCnt").type(JsonFieldType.NUMBER).description("공지사항 댓글/대댓글 총 개수"),
+                                        fieldWithPath("notice.isChecked").type(JsonFieldType.BOOLEAN).description("공지사항 읽음 여부(true/false)"),
+
+                                        fieldWithPath("commentsList[].no").type(JsonFieldType.NUMBER).description("댓글 고유키 PK"),
+                                        fieldWithPath("commentsList[].profile").type(JsonFieldType.STRING).description("댓글 작성자 프로필 URL"),
+                                        fieldWithPath("commentsList[].nickName").type(JsonFieldType.STRING).description("댓글 작성자 닉네임"),
+                                        fieldWithPath("commentsList[].content").type(JsonFieldType.STRING).description("댓글 본문"),
+                                        fieldWithPath("commentsList[].commentDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("댓글 작성 일자"),
+                                        fieldWithPath("commentsList[].commentTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("댓글 작성 시간"),
+                                        fieldWithPath("commentsList[].commentsCnt").type(JsonFieldType.NUMBER).description("대댓글 개수"),
+                                        fieldWithPath("commentsList[].replies[].no").type(JsonFieldType.NUMBER).description("대댓글 고유키 PK"),
+                                        fieldWithPath("commentsList[].replies[].profile").type(JsonFieldType.STRING).description("대댓글 작성자 프로필 URL"),
+                                        fieldWithPath("commentsList[].replies[].nickName").type(JsonFieldType.STRING).description("대댓글 작성자 닉네임"),
+                                        fieldWithPath("commentsList[].replies[].replyDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("대댓글 작성 일자"),
+                                        fieldWithPath("commentsList[].replies[].replyTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("대댓글 작성 시간"),
+                                        fieldWithPath("commentsList[].replies[].content").type(JsonFieldType.STRING).description("대댓글 본문")
+                                )
+                        )
+                );
     }
 
     @Test
     @DisplayName("봉사 공지사항 리스트 조회 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeListRequest() throws Exception {
+    public void findListNotice() throws Exception {
         //given
         final String addNoticeContent1 = "add1";
         final String addNoticeContent2 = "add2";
@@ -188,49 +287,99 @@ class NoticeControllerTest {
         Notice saveNotice3 = 공지사항_등록(addNoticeContent3, saveRecruitment);
 
         //when
-        ResultActions resultActions = mockMvc.perform(get("/recruitment/{recruitmentNo}/notice", saveRecruitment.getRecruitmentNo())
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print());
+        ResultActions result = mockMvc.perform(get("/recruitment/{recruitmentNo}/notice", saveRecruitment.getRecruitmentNo())
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
 
         //then
-        resultActions.andExpect(status().isOk())
+        result.andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(jsonPath("$.noticeList[0].content").value(addNoticeContent1))
                 .andExpect(jsonPath("$.noticeList[1].content").value(addNoticeContent2))
-                .andExpect(jsonPath("$.noticeList[2].content").value(addNoticeContent3));
+                .andExpect(jsonPath("$.noticeList[2].content").value(addNoticeContent3))
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("noticeList[].no").type(JsonFieldType.NUMBER).description("공지사항 고유키 PK"),
+                                        fieldWithPath("noticeList[].createdAt").type(JsonFieldType.STRING).attributes(getDateFormat()).description("공지사항 작성 일자"),
+                                        fieldWithPath("noticeList[].createdTime").type(JsonFieldType.STRING).attributes(DocumentFormatGenerator.getTimeFormat()).description("공지사항 작성 시간"),
+                                        fieldWithPath("noticeList[].content").type(JsonFieldType.STRING).description("공지사항 본문"),
+                                        fieldWithPath("noticeList[].checkCnt").type(JsonFieldType.NUMBER).description("공지사항 읽음 개수"),
+                                        fieldWithPath("noticeList[].commentsCnt").type(JsonFieldType.NUMBER).description("공지사항 댓글/대댓글 총 개수"),
+                                        fieldWithPath("noticeList[].isChecked").type(JsonFieldType.BOOLEAN).description("공지사항 읽음 여부")
+                                )
+                        )
+                );
     }
-
     @Test
     @DisplayName("봉사 공지사항 읽음 확인에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeRead() throws Exception {
+    public void readNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
 
-        //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/read", saveRecruitment.getRecruitmentNo(),saveNotice.getNoticeNo())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(post("/recruitment/{recruitmentNo}/notice/{noticeNo}/read", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isCreated())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                )
+                        )
+                );
     }
 
     @Test
     @DisplayName("봉사 공지사항 읽음 해제에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeReaCancel() throws Exception {
+    public void readCancelNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
         읽음_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), writer);
         saveNotice.increaseCheckNum();
 
-        //when & then
-        mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}/cancel", saveRecruitment.getRecruitmentNo(),saveNotice.getNoticeNo())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+        //when
+        ResultActions result = mockMvc.perform(delete("/recruitment/{recruitmentNo}/notice/{noticeNo}/cancel", saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("noticeNo").description("봉사 공지사항 고유키 PK")
+                                )
+                        )
+                );
     }
 
     private Notice 공지사항_등록(String content, Recruitment recruitment){

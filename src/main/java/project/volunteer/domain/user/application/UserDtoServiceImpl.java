@@ -98,7 +98,8 @@ public class UserDtoServiceImpl implements UserDtoService{
 					, dto.getSchedule().getAddress().getDetails()
 					, dto.getSchedule().getOrganizationName()
 					, dto.getSchedule().getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))
-					, dto.getSchedule().getScheduleTimeTable().getHourFormat().getViewName()
+					//, dto.getSchedule().getScheduleTimeTable().getHourFormat().getViewName()
+					, dto.getSchedule().getScheduleTimeTable().getHourFormat().getDesc()
 					, dto.getSchedule().getScheduleTimeTable().getProgressTime()
 					);
 		}).collect(Collectors.toList()));

@@ -1,0 +1,12 @@
+|===
+|파라미터|필수값|제약조건|포멧|설명
+
+{{#parameters}}
+|{{name}}
+|{{^optional}}true{{/optional}}{{#optional}}false{{/optional}}
+|{{#constraints}}{{.}}{{/constraints}}
+|{{#format}}{{.}}{{/format}}
+|{{description}}
+
+{{/parameters}}
+|===

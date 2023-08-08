@@ -1,0 +1,202 @@
+[[Schedlue-Management-API]]
+== Schedule Management API
+
+=== 봉사 일정 참여
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 일정 정보를 찾을 수 없습니다. +
+- 일정 모집 기간이 종료 되었습니다. +
+- 모집인원이 마감되었습니다. +
+- 중복 신청을 할 수 없습니다. 신청 현황을 확인해주십시오. +
+-  사용자의 팀원 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/schedule-participant-controller-test/participate-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/schedule-participant-controller-test/participate-schedule/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/schedule-participant-controller-test/participate-schedule/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/schedule-participant-controller-test/participate-schedule/http-response.adoc[]
+
+
+=== 봉사 일정 참여 취소 요청
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 일정 정보를 찾을 수 없습니다. +
+- 일정 모집 기간이 종료 되었습니다. +
+- 해당 작업을 진행할 수 없습니다. 신청 상태를 다시 확인해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/http-response.adoc[]
+
+
+=== 봉사 일정 취소 요청 승인
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 일정 정보를 찾을 수 없습니다. +
+- 일정 모집 기간이 종료 되었습니다. +
+- 해당 작업을 진행할 수 없습니다. 신청 상태를 다시 확인해주십시오. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/http-response.adoc[]
+
+
+=== 봉사 일정 참여 완료 승인
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 일정 정보를 찾을 수 없습니다. +
+- 해당 작업을 진행할 수 없습니다. 신청 상태를 다시 확인해주십시오. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/http-response.adoc[]
+
+
+=== 봉사 일정 참여자 리스트 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 일정 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/response-fields.adoc[]
+
+
+=== 봉사 일정 참가 취소자 리스트 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 일정 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/response-fields.adoc[]
+
+
+=== 봉사 일정 참가 완료자 리스트 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 일정 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/response-fields.adoc[]

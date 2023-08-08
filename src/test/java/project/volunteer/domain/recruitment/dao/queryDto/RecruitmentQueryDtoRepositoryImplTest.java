@@ -205,7 +205,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String sido = "11";
         String sigungu = "1111";
         String volunteeringType = VolunteeringType.IRREG.name();
-        String volunteerType = VolunteerType.TEENAGER.getLegacyCode();
+        String volunteerType = VolunteerType.TEENAGER.getId();
         Boolean isIssued = null;
 
         RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
@@ -227,7 +227,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String sido = "11";
         String sigungu = "1111";
         String volunteeringType = VolunteeringType.IRREG.name();
-        String volunteerType = VolunteerType.ALL.getLegacyCode();
+        String volunteerType = VolunteerType.ALL.getId();
         Boolean isIssued = true;
 
         RecruitmentCond searchType = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
@@ -271,7 +271,7 @@ class RecruitmentQueryDtoRepositoryImplTest {
         String sido = "11";
         String sigungu = "1111";
         String volunteeringType = VolunteeringType.IRREG.name();
-        String volunteerType = VolunteerType.ALL.getLegacyCode();
+        String volunteerType = VolunteerType.ALL.getId();
         Boolean isIssued = true;
         RecruitmentCond cond = new RecruitmentCond(category, sido, sigungu, volunteeringType, volunteerType, isIssued);
 

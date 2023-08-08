@@ -1,10 +1,10 @@
 package project.volunteer.global.common.component;
 
 import lombok.Getter;
-import project.volunteer.global.common.converter.LegacyCodeCommonType;
+import project.volunteer.global.common.converter.CodeCommonType;
 
 @Getter
-public enum RealWorkCode implements LegacyCodeCommonType {
+public enum RealWorkCode implements CodeCommonType {
     USER("1", "유저"),
     RECRUITMENT("2", "모집글"),
     LOG("3", "로그"),
@@ -21,7 +21,7 @@ public enum RealWorkCode implements LegacyCodeCommonType {
     }
 
     @Override
-    public String getLegacyCode() {
+    public String getId() {
         return this.code;
     }
 
