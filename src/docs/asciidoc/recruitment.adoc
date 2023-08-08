@@ -12,23 +12,23 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/recruitment/POST/http-request.adoc[]
+include::{snippets}/recruitment-write-controller-test/save-recruitment/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/recruitment/POST/request-headers.adoc[]
+include::{snippets}/recruitment-write-controller-test/save-recruitment/request-headers.adoc[]
 
 *Request parts*
-include::{snippets}/APIs/volunteering/recruitment/POST/request-parts.adoc[]
+include::{snippets}/recruitment-write-controller-test/save-recruitment/request-parts.adoc[]
 
 *Request Parameters*
-include::{snippets}/APIs/volunteering/recruitment/POST/request-parameters.adoc[]
+include::{snippets}/recruitment-write-controller-test/save-recruitment/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/recruitment/POST/http-response.adoc[]
+include::{snippets}/recruitment-write-controller-test/save-recruitment/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/recruitment/POST/response-fields.adoc[]
+include::{snippets}/recruitment-write-controller-test/save-recruitment/response-fields.adoc[]
 
 
 === 봉사 모집글 리스트 조회
@@ -43,20 +43,20 @@ include::{snippets}/APIs/volunteering/recruitment/POST/response-fields.adoc[]
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/recruitment/GET-List/http-request.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/recruitment/GET-List/request-headers.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/request-headers.adoc[]
 
 *Request Parameters*
-include::{snippets}/APIs/volunteering/recruitment/GET-List/request-parameters.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/recruitment/GET-List/http-response.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/recruitment/GET-List/response-fields.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/response-fields.adoc[]
 
 
 === 봉사 모집글 카운트 조회
@@ -68,20 +68,20 @@ include::{snippets}/APIs/volunteering/recruitment/GET-List/response-fields.adoc[
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/recruitment/GET-Count/http-request.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/recruitment/GET-Count/request-headers.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/request-headers.adoc[]
 
 *Request Parameters*
-include::{snippets}/APIs/volunteering/recruitment/GET-Count/request-parameters.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/recruitment/GET-Count/http-response.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/recruitment/GET-Count/response-fields.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/response-fields.adoc[]
 
 
 === 봉사 모집글 상세조회
@@ -94,17 +94,17 @@ include::{snippets}/APIs/volunteering/recruitment/GET-Count/response-fields.adoc
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/recruitment/GET-Details/http-request.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/recruitment/GET-Details/request-headers.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/request-headers.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/recruitment/GET-Details/http-response.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/recruitment/GET-Details/response-fields.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/response-fields.adoc[]
 
 
 === 봉사 모집글 클라이언트 상태 조회
@@ -120,20 +120,20 @@ include::{snippets}/APIs/volunteering/recruitment/GET-Details/response-fields.ad
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/recruitment/GET-Status/http-request.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-participant-state/http-request.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/recruitment/GET-Status/path-parameters.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-participant-state/path-parameters.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/recruitment/GET-Status/request-headers.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-participant-state/request-headers.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/recruitment/GET-Status/http-response.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-participant-state/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/recruitment/GET-Status/response-fields.adoc[]
+include::{snippets}/recruitment-query-controller-test/find-participant-state/response-fields.adoc[]
 
 
 === 봉사 모집글 삭제
@@ -148,15 +148,15 @@ include::{snippets}/APIs/volunteering/recruitment/GET-Status/response-fields.ado
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/recruitment/DELETE/http-request.adoc[]
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/recruitment/DELETE/request-headers.adoc[]
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/recruitment/DELETE/path-parameters.adoc[]
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/recruitment/DELETE/http-response.adoc[]
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/http-response.adoc[]
 

@@ -16,20 +16,20 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/notice/POST/http-request.adoc[]
+include::{snippets}/notice-controller-test/save-notice/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/notice/POST/request-headers.adoc[]
+include::{snippets}/notice-controller-test/save-notice/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/notice/POST/path-parameters.adoc[]
+include::{snippets}/notice-controller-test/save-notice/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/APIs/volunteering/notice/POST/request-fields.adoc[]
+include::{snippets}/notice-controller-test/save-notice/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/notice/POST/http-response.adoc[]
+include::{snippets}/notice-controller-test/save-notice/http-response.adoc[]
 
 
 === 봉사 모집글 공지사항 상세 조회
@@ -45,20 +45,20 @@ include::{snippets}/APIs/volunteering/notice/POST/http-response.adoc[]
 
 ==== 요청
 *Http Request*
-include::{snippets}/APIs/volunteering/notice/GET-Details/http-request.adoc[]
+include::{snippets}/notice-controller-test/find-details-notice/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/notice/GET-Details/request-headers.adoc[]
+include::{snippets}/notice-controller-test/find-details-notice/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/notice/GET-Details/path-parameters.adoc[]
+include::{snippets}/notice-controller-test/find-details-notice/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/notice/GET-Details/http-response.adoc[]
+include::{snippets}/notice-controller-test/find-details-notice/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/notice/GET-Details/response-fields.adoc[]
+include::{snippets}/notice-controller-test/find-details-notice/response-fields.adoc[]
 
 
 === 봉사 모집글 공지사항 리스트 조회
@@ -73,20 +73,20 @@ include::{snippets}/APIs/volunteering/notice/GET-Details/response-fields.adoc[]
 
 ==== 요청
 *Http Request*
-include::{snippets}/APIs/volunteering/notice/GET-List/http-request.adoc[]
+include::{snippets}/notice-controller-test/find-list-notice/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/notice/GET-List/request-headers.adoc[]
+include::{snippets}/notice-controller-test/find-list-notice/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/notice/GET-List/request-headers.adoc[]
+include::{snippets}/notice-controller-test/find-list-notice/request-headers.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/notice/GET-List/http-response.adoc[]
+include::{snippets}/notice-controller-test/find-list-notice/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/notice/GET-List/response-fields.adoc[]
+include::{snippets}/notice-controller-test/find-list-notice/response-fields.adoc[]
 
 
 === 봉사 모집글 공지사항 수정
@@ -104,20 +104,20 @@ include::{snippets}/APIs/volunteering/notice/GET-List/response-fields.adoc[]
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/notice/PUT/http-request.adoc[]
+include::{snippets}/notice-controller-test/edit-notice/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/notice/PUT/request-headers.adoc[]
+include::{snippets}/notice-controller-test/edit-notice/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/notice/PUT/path-parameters.adoc[]
+include::{snippets}/notice-controller-test/edit-notice/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/APIs/volunteering/notice/PUT/request-fields.adoc[]
+include::{snippets}/notice-controller-test/edit-notice/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/notice/PUT/http-response.adoc[]
+include::{snippets}/notice-controller-test/edit-notice/http-response.adoc[]
 
 
 === 봉사 모집글 공지사항 삭제
@@ -134,17 +134,17 @@ include::{snippets}/APIs/volunteering/notice/PUT/http-response.adoc[]
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/notice/DELETE/http-request.adoc[]
+include::{snippets}/notice-controller-test/delete-notice/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/notice/DELETE/request-headers.adoc[]
+include::{snippets}/notice-controller-test/delete-notice/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/notice/DELETE/path-parameters.adoc[]
+include::{snippets}/notice-controller-test/delete-notice/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/notice/DELETE/http-response.adoc[]
+include::{snippets}/notice-controller-test/delete-notice/http-response.adoc[]
 
 
 === 봉사 모집글 공지사항 읽음
@@ -163,17 +163,17 @@ include::{snippets}/APIs/volunteering/notice/DELETE/http-response.adoc[]
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/notice/POST-Read/http-request.adoc[]
+include::{snippets}/notice-controller-test/read-notice/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/notice/POST-Read/request-headers.adoc[]
+include::{snippets}/notice-controller-test/read-notice/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/notice/POST-Read/path-parameters.adoc[]
+include::{snippets}/notice-controller-test/read-notice/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/notice/POST-Read/http-response.adoc[]
+include::{snippets}/notice-controller-test/read-notice/http-response.adoc[]
 
 
 === 봉사 모집글 공지사항 읽음 해제
@@ -191,14 +191,14 @@ include::{snippets}/APIs/volunteering/notice/POST-Read/http-response.adoc[]
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/http-request.adoc[]
+include::{snippets}/notice-controller-test/read-cancel-notice/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/request-headers.adoc[]
+include::{snippets}/notice-controller-test/read-cancel-notice/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/path-parameters.adoc[]
+include::{snippets}/notice-controller-test/read-cancel-notice/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/notice/DELETE-Cancel/http-response.adoc[]
+include::{snippets}/notice-controller-test/read-cancel-notice/http-response.adoc[]

@@ -17,17 +17,17 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participation/http-request.adoc[]
+include::{snippets}/schedule-participant-controller-test/participate-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participation/request-headers.adoc[]
+include::{snippets}/schedule-participant-controller-test/participate-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participation/path-parameters.adoc[]
+include::{snippets}/schedule-participant-controller-test/participate-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participation/http-response.adoc[]
+include::{snippets}/schedule-participant-controller-test/participate-schedule/http-response.adoc[]
 
 
 === 봉사 일정 참여 취소 요청
@@ -44,17 +44,17 @@ include::{snippets}/APIs/volunteering/schedule-management/PUT-Participation/http
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation/http-request.adoc[]
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation/request-headers.adoc[]
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation/path-parameters.adoc[]
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation/http-response.adoc[]
+include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/http-response.adoc[]
 
 
 === 봉사 일정 취소 요청 승인
@@ -72,20 +72,20 @@ include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation/http-
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation-Approval/http-request.adoc[]
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation-Approval/request-headers.adoc[]
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation-Approval/path-parameters.adoc[]
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation-Approval/request-fields.adoc[]
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation-Approval/http-response.adoc[]
+include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/http-response.adoc[]
 
 
 === 봉사 일정 참여 완료 승인
@@ -102,20 +102,20 @@ include::{snippets}/APIs/volunteering/schedule-management/PUT-Cancellation-Appro
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participant-Completed-Approval/http-request.adoc[]
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participant-Completed-Approval/request-headers.adoc[]
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participant-Completed-Approval/path-parameters.adoc[]
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participant-Completed-Approval/request-fields.adoc[]
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/schedule-management/PUT-Participant-Completed-Approval/http-response.adoc[]
+include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/http-response.adoc[]
 
 
 === 봉사 일정 참여자 리스트 조회
@@ -130,20 +130,20 @@ include::{snippets}/APIs/volunteering/schedule-management/PUT-Participant-Comple
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-List/http-request.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-List/request-headers.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-List/path-parameters.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-List/http-response.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-List/response-fields.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/response-fields.adoc[]
 
 
 === 봉사 일정 참가 취소자 리스트 조회
@@ -158,20 +158,20 @@ include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-List/r
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Cancellation-Requester-List/http-request.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Cancellation-Requester-List/request-headers.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Cancellation-Requester-List/path-parameters.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Cancellation-Requester-List/http-response.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Cancellation-Requester-List/response-fields.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/response-fields.adoc[]
 
 
 === 봉사 일정 참가 완료자 리스트 조회
@@ -186,17 +186,17 @@ include::{snippets}/APIs/volunteering/schedule-management/GET-Cancellation-Reque
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-Completed-List/http-request.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-Completed-List/request-headers.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-Completed-List/path-parameters.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-Completed-List/http-response.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/APIs/volunteering/schedule-management/GET-Participant-Completed-List/response-fields.adoc[]
+include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/response-fields.adoc[]
