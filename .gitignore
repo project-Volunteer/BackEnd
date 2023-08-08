@@ -40,4 +40,5 @@ out/
 src/main/resources/config/
 application.yml
 src/main/resources/static/docs/
+Dockerfile
 
