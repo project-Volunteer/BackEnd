@@ -15,8 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ParticipantAddParam {
 
-    @NotNull
-    private Long recruitmentNo;
     @NotEmpty
     private List<Long> userNos;
 

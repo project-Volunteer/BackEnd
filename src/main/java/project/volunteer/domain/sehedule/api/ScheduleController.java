@@ -1,16 +1,20 @@
 package project.volunteer.domain.sehedule.api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
+import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleListResponse;
 import project.volunteer.domain.sehedule.application.ScheduleDtoService;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.global.Interceptor.OrganizationAuth;
+import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
 import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
@@ -21,23 +25,26 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/schedule")
+@RequestMapping("/recruitment")
 public class ScheduleController {
 
     private final ScheduleDtoService scheduleDtoService;
     private final ScheduleService scheduleService;
 
-    @GetMapping(value = "/{recruitmentNo}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
+    @GetMapping(value = "/{recruitmentNo}/schedule", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ScheduleDetails> scheduleDetails(@PathVariable Long recruitmentNo){
 
         ScheduleDetails details = scheduleDtoService.findClosestSchedule(recruitmentNo, SecurityUtil.getLoginUserNo());
         return ResponseEntity.ok(details);
     }
 
-    @PostMapping
-    public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleRequest saveDto){
+    @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
+    @PostMapping("/{recruitmentNo}/schedule")
+    public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleRequest saveDto,
+                                      @PathVariable("recruitmentNo")Long no){
 
-        Long saveScheduleNo = scheduleService.addSchedule(saveDto.getNo(), SecurityUtil.getLoginUserNo(),
+        Long saveScheduleNo = scheduleService.addSchedule(no,
                 ScheduleParam.builder()
                         .startDay(saveDto.getStartDay())
                         .endDay(saveDto.getStartDay())
@@ -52,13 +59,16 @@ public class ScheduleController {
                         .volunteerNum(saveDto.getVolunteerNum())
                         .build());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping
-    public ResponseEntity scheduleEdit(@RequestBody @Valid ScheduleRequest editDto){
+    @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
+    @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}")
+    public ResponseEntity scheduleEdit(@RequestBody @Valid ScheduleRequest editDto,
+                                       @PathVariable("scheduleNo")Long scheduleNo,
+                                       @PathVariable("recruitmentNo")Long recruitmentNo){
 
-        scheduleService.editSchedule(editDto.getNo(), SecurityUtil.getLoginUserNo(),
+        scheduleService.editSchedule(scheduleNo,
                 ScheduleParam.builder()
                         .startDay(editDto.getStartDay())
                         .endDay(editDto.getStartDay())
@@ -76,30 +86,34 @@ public class ScheduleController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{scheduleNo}")
-    public ResponseEntity scheduleDelete(@PathVariable Long scheduleNo){
+    @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
+    @DeleteMapping("/{recruitmentNo}/schedule/{scheduleNo}")
+    public ResponseEntity scheduleDelete(@PathVariable("scheduleNo") Long scheduleNo,
+                                         @PathVariable("recruitmentNo") Long recruitmentNo){
 
-        scheduleService.deleteSchedule(scheduleNo, SecurityUtil.getLoginUserNo());
+        scheduleService.deleteSchedule(scheduleNo);
         return ResponseEntity.ok().build();
     }
 
+    @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar")
-    public ResponseEntity<List<CalendarScheduleList>> scheduleList(@PathVariable("recruitmentNo")Long recruitmentNo,
+    public ResponseEntity<CalendarScheduleListResponse> scheduleList(@PathVariable("recruitmentNo")Long recruitmentNo,
                                        @RequestParam("year")Integer year,
                                        @RequestParam("mon")Integer mon){
 
         LocalDate startDay = LocalDate.of(year, mon, 1);
         LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
 
-        List<Schedule> calendarSchedules = scheduleService.findCalendarSchedules(recruitmentNo, SecurityUtil.getLoginUserNo(), startDay, endDay);
+        List<Schedule> calendarSchedules = scheduleService.findCalendarSchedules(recruitmentNo, startDay, endDay);
 
         //response
         List<CalendarScheduleList> list = calendarSchedules.stream()
                 .map(c -> CalendarScheduleList.createCalendarSchedule(c.getScheduleNo(), c.getScheduleTimeTable().getStartDay()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(new CalendarScheduleListResponse(list));
     }
 
+    @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar/{scheduleNo}")
     public ResponseEntity<ScheduleDetails> calendarScheduleDetails(@PathVariable("recruitmentNo")Long recruitmentNo,
                                                   @PathVariable("scheduleNo")Long scheduleNo){

@@ -29,7 +29,7 @@ public class ScheduleControllerAdvice {
     public BaseErrorResponse MethodArgumentNotValidException(MethodArgumentNotValidException e){
 
         String message = ms.getMessage(ErrorCode.INVALID_PAYLOAD.getPropertiesCode(), null, null);
-        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_PAYLOAD, e.getMessage());
+        log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_PAYLOAD, e.getMessage(), e);
 
         return new BaseErrorResponse(message);
     }
@@ -53,7 +53,7 @@ public class ScheduleControllerAdvice {
     public BaseErrorResponse HttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e){
 
         String message = ms.getMessage(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getPropertiesCode(), null, null);
-        log.info("Error Code = {}, Details = {}", ErrorCode.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
+        log.info("Error Code = {}, Details = {}", ErrorCode.UNSUPPORTED_MEDIA_TYPE, e.getMessage(), e);
         return new BaseErrorResponse(message);
     }
 
@@ -63,7 +63,7 @@ public class ScheduleControllerAdvice {
     public BaseErrorResponse MissingServletRequestParameterException(MissingServletRequestParameterException e){
 
         String message = ms.getMessage(ErrorCode.MISSING_REQUEST_PARAMETER.getPropertiesCode(), null, null);
-        log.info("Error Code = {} , Details = {}", ErrorCode.MISSING_REQUEST_PARAMETER, e.getMessage());
+        log.info("Error Code = {} , Details = {}", ErrorCode.MISSING_REQUEST_PARAMETER, e.getMessage(), e);
         return new BaseErrorResponse(message);
     }
 

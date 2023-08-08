@@ -21,7 +21,6 @@ public class ScheduleDetails {
     private int progressTime;
     private int volunteerNum;
     private String content;
-    private int currentVolunteerNum;
     private int activeVolunteerNum; //활동 중인 참여자 수
     private String state; //팀원의 일정 신청 상태
 
@@ -35,19 +34,19 @@ public class ScheduleDetails {
         String details;
     }
 
-    public static ScheduleDetails createScheduleDetails(Schedule schedule, int activeVolunteerNum, String state) {
+    public static ScheduleDetails createScheduleDetails(Schedule schedule, String state) {
 
         ScheduleDetails scheduleDetails = new ScheduleDetails();
         scheduleDetails.no = schedule.getScheduleNo();
         scheduleDetails.address = new Address(schedule.getAddress().getSido(), schedule.getAddress().getSigungu(), schedule.getAddress().getDetails());
         scheduleDetails.startDay = schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         scheduleDetails.startTime = schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-        scheduleDetails.hourFormat = schedule.getScheduleTimeTable().getHourFormat().getViewName();
+       // scheduleDetails.hourFormat = schedule.getScheduleTimeTable().getHourFormat().getViewName();
+        scheduleDetails.hourFormat = schedule.getScheduleTimeTable().getHourFormat().getDesc();
         scheduleDetails.progressTime = schedule.getScheduleTimeTable().getProgressTime();
         scheduleDetails.volunteerNum = schedule.getVolunteerNum();
         scheduleDetails.content = schedule.getContent();
-        scheduleDetails.currentVolunteerNum = schedule.getVolunteerNum();
-        scheduleDetails.activeVolunteerNum = activeVolunteerNum;
+        scheduleDetails.activeVolunteerNum = schedule.getCurrentVolunteerNum();
         scheduleDetails.state = state;
         return scheduleDetails;
     }

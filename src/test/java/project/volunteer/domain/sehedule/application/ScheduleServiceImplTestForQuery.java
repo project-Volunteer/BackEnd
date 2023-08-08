@@ -1,6 +1,7 @@
 package project.volunteer.domain.sehedule.application;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +43,6 @@ class ScheduleServiceImplTestForQuery {
     @Autowired ScheduleService scheduleService;
 
     Recruitment saveRecruitment;
-    List<Participant> teamMembers = new ArrayList<>();
     @BeforeEach
     private void init() {
         //작성자 저장
@@ -69,9 +68,8 @@ class ScheduleServiceImplTestForQuery {
                     true, true, true, Role.USER, "kakao", "test" + i, null);
             User saveUser = userRepository.save(createUser);
 
-            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, State.JOIN_APPROVAL);
-            Participant save = participantRepository.save(createParticipant);
-            teamMembers.add(save);
+            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, ParticipantState.JOIN_APPROVAL);
+            participantRepository.save(createParticipant);
         }
 
         clear();
@@ -107,19 +105,20 @@ class ScheduleServiceImplTestForQuery {
 
         //when
         List<Schedule> schedules = scheduleService.findCalendarSchedules(
-                saveRecruitment.getRecruitmentNo(), teamMembers.get(0).getParticipant().getUserNo(),
+                saveRecruitment.getRecruitmentNo(),
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31));
 
         //then
         assertThat(schedules.size()).isEqualTo(6);
     }
 
+    @Disabled
     @Test
     @DisplayName("팀원이 아닌 사용자가 캘린더 스케줄 조회를 시도하다.")
     @Transactional
     public void forbidden(){
         assertThatThrownBy(() -> scheduleService.findCalendarSchedules(
-                saveRecruitment.getRecruitmentNo(), Long.MAX_VALUE,
+                saveRecruitment.getRecruitmentNo(),
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31)))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("FORBIDDEN_RECRUITMENT_TEAM");

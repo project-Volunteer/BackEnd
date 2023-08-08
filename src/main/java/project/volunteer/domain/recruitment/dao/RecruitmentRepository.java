@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
@@ -28,8 +29,9 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
 
     //삭제되지 않은 게시물
     @Query("select r from Recruitment  r " +
-            "where r.recruitmentNo=:no and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    Optional<Recruitment> findValidByRecruitmentNo(@Param("no") Long recruitmentNo);
+            "where r.recruitmentNo=:no " +
+            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    Optional<Recruitment> findValidRecruitment(@Param("no") Long recruitmentNo);
 
 
     //모집중인 봉사 모집글(삭제 x, 임시 저장 x, 봉사 모집 종료일 내)
@@ -40,4 +42,10 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             "and r.isPublished=true")
     Optional<Recruitment> findActivatedRecruitment(@Param("no") Long recruitmentNo);
 
+    @Query("select r " +
+            "from Recruitment r " +
+            "where r.writer.userNo=:loginUserNo " +
+            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
+            "and r.isPublished=:isPublished")
+    List<Recruitment> findRecruitmentListByUserNoAndPublishedYn(@Param("loginUserNo")Long loginUserNo, @Param("isPublished") boolean isPublished);
 }

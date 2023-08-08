@@ -27,7 +27,7 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
@@ -46,11 +46,8 @@ import project.volunteer.domain.user.dao.queryDto.dto.UserRecruitmentJoinRequest
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.Address;
-import project.volunteer.global.common.component.Coordinate;
-import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.State;
-import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.common.component.*;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.infra.s3.FileService;
 
 
@@ -239,55 +236,55 @@ public class UserServiceImplTest {
 		// 참여자 저장
 		Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
 		Participant participant1 = Participant.builder().participant(saveUser).recruitment(recruitment1)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant1);
 
 		
 		Recruitment recruitment2 = recruitmentRepository.findById(no2).get();
 		Participant participant2 = Participant.builder().participant(saveUser).recruitment(recruitment2)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant2);
 
 
 		Recruitment recruitment3 = recruitmentRepository.findById(no2).get();
 		Participant participant3 = Participant.builder().participant(userNo2).recruitment(recruitment3)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant3);
 
 
 		Recruitment recruitment4 = recruitmentRepository.findById(no1).get();
 		Participant participant4 = Participant.builder().participant(userNo3).recruitment(recruitment4)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant4);
 
 
 		Recruitment recruitment5 = recruitmentRepository.findById(no1).get();
 		Participant participant5 = Participant.builder().participant(userNo4).recruitment(recruitment5)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant5);
 
 
 		Recruitment recruitment6 = recruitmentRepository.findById(no2).get();
 		Participant participant6 = Participant.builder().participant(userNo3).recruitment(recruitment6)
-				.state(State.JOIN_APPROVAL)
+				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant6);
 
 
 		Recruitment recruitment7 = recruitmentRepository.findById(no3).get();
 		Participant participant7 = Participant.builder().participant(saveUser).recruitment(recruitment7)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant7);
 		
 		Recruitment recruitment8 = recruitmentRepository.findById(no4).get();
 		Participant participant8 = Participant.builder().participant(saveUser).recruitment(recruitment8)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant8);
 		
@@ -336,7 +333,7 @@ public class UserServiceImplTest {
 	
 	@Test
 	void 나의_메일수신동의여부_조회() throws Exception{
-		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
+		UserAlarmResponse result = userService.findUserAlarm(saveUser.getUserNo());
 		Assertions.assertThat(result.getJoinAlarm().TRUE);
 		Assertions.assertThat(result.getNoticeAlarm().TRUE);
 		Assertions.assertThat(result.getBeforeAlarm().TRUE);
@@ -346,7 +343,7 @@ public class UserServiceImplTest {
 	@Test
 	void 나의_메일수신동의여부_수정() throws Exception{
 		userService.userAlarmUpdate(saveUser.getUserNo(),Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
-		UserAlarmResponse result = userDtoService.findUserAlarm(saveUser.getUserNo());
+		UserAlarmResponse result = userService.findUserAlarm(saveUser.getUserNo());
 		Assertions.assertThat(result.getJoinAlarm().FALSE);
 		Assertions.assertThat(result.getNoticeAlarm().FALSE);
 		Assertions.assertThat(result.getBeforeAlarm().FALSE);

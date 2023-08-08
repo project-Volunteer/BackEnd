@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.repeatPeriod.domain.Day;
@@ -20,6 +19,7 @@ import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
@@ -39,17 +39,13 @@ public class ScheduleServiceImpl implements ScheduleService{
     private final ScheduleRepository scheduleRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final ScheduleParticipationRepository scheduleParticipationRepository;
-    private final ParticipantRepository participantRepository;
 
     @Override
     @Transactional
-    public Long addSchedule(Long recruitmentNo, Long loginUserNo, ScheduleParam dto) {
+    public Long addSchedule(Long recruitmentNo, ScheduleParam dto) {
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(recruitmentNo);
-
-        //모집글 방장 검증
-        isRecruitmentOwner(recruitment, loginUserNo);
 
         //일정 참여가능 최대 수는 봉사 팀원 가능 인원보다 많을 수 없음.
         if(recruitment.getVolunteerNum() < dto.getVolunteerNum()){
@@ -65,7 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public void addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
+    public List<Long> addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(recruitmentNo);
@@ -76,8 +72,8 @@ public class ScheduleServiceImpl implements ScheduleService{
                 (makeDatsOfRegWeek(dto.getTimetable().getStartDay(), dto.getTimetable().getEndDay(), dto.getRepeatPeriodParam().getDays()));
 
         //스케줄 등록
-        scheduleDate.stream()
-                .forEach(date -> {
+        return scheduleDate.stream()
+                .map(date -> {
                     Timetable timetable = Timetable.createTimetable(date, date, dto.getTimetable().getHourFormat(),
                             dto.getTimetable().getStartTime(), dto.getTimetable().getProgressTime());
 
@@ -87,23 +83,24 @@ public class ScheduleServiceImpl implements ScheduleService{
                     Schedule schedule =
                             Schedule.createSchedule(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());
                     schedule.setRecruitment(recruitment);
-
-                    scheduleRepository.save(schedule);
-                });
+                    return schedule;
+                })
+                .map(s -> {
+                    Schedule saveSchedule = scheduleRepository.save(s);
+                    return saveSchedule.getScheduleNo();
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public Long editSchedule(Long scheduleNo, Long loginUserNo, ScheduleParam dto) {
+    public Long editSchedule(Long scheduleNo, ScheduleParam dto) {
 
         //일정 검증
         Schedule findSchedule = isValidSchedule(scheduleNo);
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(findSchedule.getRecruitment().getRecruitmentNo());
-
-        //모집글 방장 검증
-        isRecruitmentOwner(recruitment, loginUserNo);
 
         //수정할 참여 인원수는 현재 일정에 참여중인 인원수보다 적을 수 없음.
         Integer activeVolunteerNum = scheduleParticipationRepository.countActiveParticipant(scheduleNo);
@@ -127,16 +124,13 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public void deleteSchedule(Long scheduleNo, Long loginUserNo) {
+    public void deleteSchedule(Long scheduleNo) {
 
         //일정 검증
         Schedule findSchedule = isValidSchedule(scheduleNo);
 
         //봉사 모집글 검증
         Recruitment recruitment = isValidRecruitment(findSchedule.getRecruitment().getRecruitmentNo());
-
-        //모집글 방장 검증
-        isRecruitmentOwner(recruitment, loginUserNo);
 
         //일정 삭제
         findSchedule.delete();
@@ -149,16 +143,29 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public List<Schedule> findCalendarSchedules(Long recruitmentNo, Long loginUserNo, LocalDate startDay, LocalDate endDay) {
+    public List<Schedule> findCalendarSchedules(Long recruitmentNo, LocalDate startDay, LocalDate endDay) {
 
         //모집글 검증
         Recruitment findRecruitment = isValidRecruitment(recruitmentNo);
 
-        //봉사 팀원 검증
-        isRecruitmentTeamMember(findRecruitment, loginUserNo);
-
         //기간 내에 일정 리스트 조회
         return scheduleRepository.findScheduleWithinPeriod(recruitmentNo, startDay, endDay);
+    }
+
+    //TODO: 단일 쿼리로 리펙토링 필요
+    @Override
+    @Transactional
+    public void scheduleParticipantStateUpdateProcess() {
+        //완료된 일정 찾기
+        List<Schedule> completedSchedules = scheduleRepository.findCompletedSchedule();
+
+        for(Schedule schedule : completedSchedules){
+            List<ScheduleParticipation> findSps = scheduleParticipationRepository.findBySchedule_ScheduleNoAndState(schedule.getScheduleNo(), ParticipantState.PARTICIPATING);
+            for(ScheduleParticipation sp : findSps){
+                //일정 참여 완료 미승인 상태로 업데이트
+                sp.updateState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
+            }
+        }
     }
 
 
@@ -216,7 +223,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
    //일정 유효성 검사
     private Schedule isValidSchedule(Long scheduleNo){
-        return scheduleRepository.findValidByScheduleNo(scheduleNo)
+        return scheduleRepository.findValidSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
     }
 
@@ -224,21 +231,6 @@ public class ScheduleServiceImpl implements ScheduleService{
     private Recruitment isValidRecruitment(Long recruitmentNo){
         return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
-    }
-
-    //모집글 방장 검증 메서드
-    private void isRecruitmentOwner(Recruitment recruitment, Long loginUserNo){
-        if(!recruitment.getWriter().getUserNo().equals(loginUserNo)){
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
-    }
-
-    private void isRecruitmentTeamMember(Recruitment recruitment, Long loginUserNo){
-        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo)){
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
-        }
     }
 
 }

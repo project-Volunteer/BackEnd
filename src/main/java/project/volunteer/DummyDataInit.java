@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -182,15 +182,15 @@ public class DummyDataInit {
         imageRepository.save(dummyImage9);
 
         //팀원 더미데이터 세팅
-        Participant dummyParticipant1 = Participant.createParticipant(dummyRecruitment1, dummyUser2, State.JOIN_REQUEST);
-        Participant dummyParticipant2 = Participant.createParticipant(dummyRecruitment1, dummyUser3, State.JOIN_REQUEST);
-        Participant dummyParticipant3 = Participant.createParticipant(dummyRecruitment1, dummyUser4, State.JOIN_REQUEST);
-        Participant dummyParticipant4 = Participant.createParticipant(dummyRecruitment1, dummyUser5, State.JOIN_REQUEST);
-        Participant dummyParticipant5 = Participant.createParticipant(dummyRecruitment1, dummyUser6, State.JOIN_APPROVAL);
-        Participant dummyParticipant6 = Participant.createParticipant(dummyRecruitment1, dummyUser7, State.JOIN_APPROVAL);
-        Participant dummyParticipant7 = Participant.createParticipant(dummyRecruitment1, dummyUser8, State.JOIN_APPROVAL);
-        Participant dummyParticipant8 = Participant.createParticipant(dummyRecruitment1, dummyUser9, State.JOIN_APPROVAL);
-        Participant dummyParticipant9 = Participant.createParticipant(dummyRecruitment1, dummyUser10, State.JOIN_APPROVAL);
+        Participant dummyParticipant1 = Participant.createParticipant(dummyRecruitment1, dummyUser2, ParticipantState.JOIN_REQUEST);
+        Participant dummyParticipant2 = Participant.createParticipant(dummyRecruitment1, dummyUser3, ParticipantState.JOIN_REQUEST);
+        Participant dummyParticipant3 = Participant.createParticipant(dummyRecruitment1, dummyUser4, ParticipantState.JOIN_REQUEST);
+        Participant dummyParticipant4 = Participant.createParticipant(dummyRecruitment1, dummyUser5, ParticipantState.JOIN_REQUEST);
+        Participant dummyParticipant5 = Participant.createParticipant(dummyRecruitment1, dummyUser6, ParticipantState.JOIN_APPROVAL);
+        Participant dummyParticipant6 = Participant.createParticipant(dummyRecruitment1, dummyUser7, ParticipantState.JOIN_APPROVAL);
+        Participant dummyParticipant7 = Participant.createParticipant(dummyRecruitment1, dummyUser8, ParticipantState.JOIN_APPROVAL);
+        Participant dummyParticipant8 = Participant.createParticipant(dummyRecruitment1, dummyUser9, ParticipantState.JOIN_APPROVAL);
+        Participant dummyParticipant9 = Participant.createParticipant(dummyRecruitment1, dummyUser10, ParticipantState.JOIN_APPROVAL);
         participantRepository.save(dummyParticipant1);
         participantRepository.save(dummyParticipant2);
         participantRepository.save(dummyParticipant3);
@@ -215,11 +215,11 @@ public class DummyDataInit {
         scheduleRepository.save(dummySchedule2);
 
         //일정 참여자 더미 데이터 세팅
-        ScheduleParticipation dummySp1 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant5, State.PARTICIPATING);
-        ScheduleParticipation dummySp2 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant6, State.PARTICIPATING);
-        ScheduleParticipation dummySp3 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant7, State.PARTICIPATING);
-        ScheduleParticipation dummySp4 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant8, State.PARTICIPATING);
-        ScheduleParticipation dummySp5 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant9, State.PARTICIPATING);
+        ScheduleParticipation dummySp1 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant5, ParticipantState.PARTICIPATING);
+        ScheduleParticipation dummySp2 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant6, ParticipantState.PARTICIPATING);
+        ScheduleParticipation dummySp3 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant7, ParticipantState.PARTICIPATING);
+        ScheduleParticipation dummySp4 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant8, ParticipantState.PARTICIPATING);
+        ScheduleParticipation dummySp5 = ScheduleParticipation.createScheduleParticipation(dummySchedule1, dummyParticipant9, ParticipantState.PARTICIPATING);
         scheduleParticipationRepository.save(dummySp1);
         scheduleParticipationRepository.save(dummySp2);
         scheduleParticipationRepository.save(dummySp3);

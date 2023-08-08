@@ -3,7 +3,7 @@ package project.volunteer.global.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
-import project.volunteer.global.common.converter.LegacyCodeCommonType;
+import project.volunteer.global.common.converter.CodeCommonType;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -17,7 +17,7 @@ import java.util.EnumSet;
 public class LegacyCodeEnumValueConverterUtils {
 
     //legacy code -> Enum 변환
-    public static <T extends Enum<T> & LegacyCodeCommonType> T ofLegacyCode(Class<T> enumClass, String legacyCode){
+    public static <T extends Enum<T> & CodeCommonType> T ofLegacyCode(Class<T> enumClass, String legacyCode){
 
         /**
          * 1.DTO 내부 Enum 타입으로 변환간 NULL,"" 값 체크를 하면 되지만, 2.필터링 Dto(SearchType)에서 "" 값이 들어올수 있기 때문에 NULL 반환
@@ -28,7 +28,7 @@ public class LegacyCodeEnumValueConverterUtils {
         }
 
         return EnumSet.allOf(enumClass).stream()
-                .filter(e -> e.getLegacyCode().equals(legacyCode))
+                .filter(e -> e.getId().equals(legacyCode))
                 .findAny()
                 .orElseThrow(() ->
                         new BusinessException(ErrorCode.UNKNOWN_ENUM_CODE,
@@ -37,8 +37,8 @@ public class LegacyCodeEnumValueConverterUtils {
     }
 
     //Enum -> legacy code
-    public static <T extends Enum<T> & LegacyCodeCommonType>String toLegacyCode(T enumValue){
-        return enumValue.getLegacyCode();
+    public static <T extends Enum<T> & CodeCommonType>String toLegacyCode(T enumValue){
+        return enumValue.getId();
     }
 
 }

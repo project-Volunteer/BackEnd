@@ -19,6 +19,8 @@ public enum ErrorCode {
 
     //모집글 관련
     NOT_EXIST_RECRUITMENT(HttpStatus.BAD_REQUEST, "notExist.recruitment"),
+    EXPIRED_PERIOD_RECRUITMENT(HttpStatus.BAD_REQUEST, "expired.period.recruitment"),
+    EXPIRED_PERIOD_ACTIVITY_RECRUITMENT(HttpStatus.BAD_REQUEST, "expired.period.activity.recruitment"),
     FORBIDDEN_RECRUITMENT(HttpStatus.FORBIDDEN, "forbidden.recruitment"),
     FORBIDDEN_RECRUITMENT_TEAM(HttpStatus.FORBIDDEN, "forbidden.recruitment.team"),
 
@@ -33,17 +35,39 @@ public enum ErrorCode {
     S3_UPLOAD_IO_EX(HttpStatus.INTERNAL_SERVER_ERROR, "io.file.upload"),
 
     //모집글 팀원 관련
+    NOT_EXIST_PARTICIPATION(HttpStatus.BAD_REQUEST, "notExist.participation"),
     DUPLICATE_PARTICIPATION(HttpStatus.BAD_REQUEST, "duplicate.participation"),
     INVALID_STATE(HttpStatus.BAD_REQUEST, "invalid.state"),
     INSUFFICIENT_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.capacity"),
     INSUFFICIENT_APPROVAL_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.approval.capacity"),
 
     //일정 관련
+    EXPIRED_PERIOD_SCHEDULE(HttpStatus.BAD_REQUEST, "expired.period.schedule"),
     NOT_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "notExist.schedule"),
     EXCEED_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "exceed.capacity.participant"),
     INSUFFICIENT_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "insufficient.capacity.participant"),
-    ;
+    
+    //로그보드 관련
+    NOT_EXIST_LOGBOARD(HttpStatus.BAD_REQUEST, "notExist.logboard"),
+    DUPLICATE_LOGBOARD(HttpStatus.BAD_REQUEST, "duplicate.logboard"),
+    INVALID_STATE_LOGBOARD(HttpStatus.BAD_REQUEST, "invalid.state.logboard"),
+    FORBIDDEN_LOGBOARD(HttpStatus.FORBIDDEN, "forbidden.logboard"),
 
+    //공지사항 관련
+    NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, "notExist.notice"),
+
+    //확인 관련
+    NOT_EXIST_CONFIRMATION(HttpStatus.BAD_REQUEST, "notExist.confirmation"),
+    INVALID_CONFIRMATION(HttpStatus.BAD_REQUEST, "invalid.confirmation"),
+    DUPLICATE_CONFIRMATION(HttpStatus.BAD_REQUEST, "duplicate.confirmation"),
+    
+    //댓글 관련
+    NOT_EXIST_PARENT_REPLY(HttpStatus.BAD_REQUEST, "notExist.parentReply"),
+    NOT_EXIST_REPLY(HttpStatus.BAD_REQUEST, "notExist.reply"),
+    ALREADY_HAS_PARENT_REPLY(HttpStatus.BAD_REQUEST, "already.hasParentReply"),
+    FORBIDDEN_REPLY(HttpStatus.FORBIDDEN, "forbidden.reply")
+
+    ,;
     private final HttpStatus httpStatus; //상태 코드
     private final String propertiesCode; //메시지 코드
 

@@ -2,14 +2,13 @@ package project.volunteer.domain.participation.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
 import project.volunteer.domain.participation.api.dto.ParticipantRemoveParam;
-import project.volunteer.domain.participation.api.dto.ParticipationParam;
 import project.volunteer.domain.participation.application.ParticipationService;
+import project.volunteer.global.Interceptor.OrganizationAuth;
+import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
+import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
 
@@ -20,31 +19,33 @@ public class ParticipationController {
 
     private final ParticipationService participationService;
 
-    @PostMapping("/join")
-    public ResponseEntity participationRequest(@RequestBody @Valid ParticipationParam dto){
+    @PutMapping("/{recruitmentNo}/join")
+    public ResponseEntity participationRequest(@PathVariable("recruitmentNo")Long no){
 
-        participationService.participate(dto.getNo());
+        participationService.participate(SecurityUtil.getLoginUserNo(), no);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/cancel")
-    public ResponseEntity participationCancel(@RequestBody @Valid ParticipationParam dto){
+    @PutMapping("/{recruitmentNo}/cancel")
+    public ResponseEntity participationCancel(@PathVariable("recruitmentNo")Long no){
 
-        participationService.cancelParticipation(dto.getNo());
+        participationService.cancelParticipation(SecurityUtil.getLoginUserNo(), no);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/approval")
-    public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto){
+    @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
+    @PutMapping("/{recruitmentNo}/approval")
+    public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto, @PathVariable("recruitmentNo")Long no){
 
-        participationService.approvalParticipant(dto.getRecruitmentNo(), dto.getUserNos());
+        participationService.approvalParticipant(no, dto.getUserNos());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/kick")
-    public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto){
+    @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
+    @PutMapping("/{recruitmentNo}/kick")
+    public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto, @PathVariable("recruitmentNo")Long no){
 
-        participationService.deportParticipant(dto.getRecruitmentNo(), dto.getUserNo());
+        participationService.deportParticipant(no, dto.getUserNo());
         return ResponseEntity.ok().build();
     }
 

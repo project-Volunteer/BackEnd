@@ -17,9 +17,6 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 public class ScheduleRequest {
 
-    @NotNull
-    private Long no;
-
     private AddressRequest address;
 
     @NotEmpty

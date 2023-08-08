@@ -1,8 +1,8 @@
 package project.volunteer.domain.recruitment.domain;
 
-import project.volunteer.global.common.converter.LegacyCodeCommonType;
+import project.volunteer.global.common.converter.CodeCommonType;
 
-public enum VolunteeringCategory implements LegacyCodeCommonType {
+public enum VolunteeringCategory implements CodeCommonType {
 
     ADMINSTRATION_ASSISTANCE("001", "행정보조"), CULTURAL_EVENT("002","문화행사"), RESIDENTIAL_ENV("003", "주거환경"),
     HOMELESS_DOG("004", "유기견봉사"), FRAM_VILLAGE("005", "농촌봉사"), HEALTH_MEDICAL("006","보건의료"),
@@ -17,7 +17,7 @@ public enum VolunteeringCategory implements LegacyCodeCommonType {
     }
 
     @Override
-    public String getLegacyCode() {
+    public String getId() {
         return this.code;
     }
 

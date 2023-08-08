@@ -1,6 +1,7 @@
 package project.volunteer.domain.sehedule.application;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,7 @@ class ScheduleServiceImplTestForWrite {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when
-        Long saveScheduleNo = scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), writer.getUserNo(), param);
+        Long saveScheduleNo = scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), param);
         clear();
 
         //then
@@ -123,11 +124,12 @@ class ScheduleServiceImplTestForWrite {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(Long.MAX_VALUE, writer.getUserNo(), param))
+        assertThatThrownBy(() -> scheduleService.addSchedule(Long.MAX_VALUE, param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("NOT_EXIST_RECRUITMENT");
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("방장이 아닌 사용자가 일정을 등록을 시도하여 권한에러가 발생한다.")
@@ -141,7 +143,7 @@ class ScheduleServiceImplTestForWrite {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), Long.MAX_VALUE, param))
+        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("FORBIDDEN_RECRUITMENT");
     }
@@ -159,7 +161,7 @@ class ScheduleServiceImplTestForWrite {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), writer.getUserNo(), param))
+        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("EXCEED_CAPACITY_PARTICIPANT");
     }
@@ -179,12 +181,11 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
         clear();
 
         //then
-        List<Schedule> schedules = scheduleRepository.findAll(); //자동으로 저장한 일정 리스트 가져오기
-        assertThat(schedules.size()).isEqualTo(10);
+        assertThat(saveScheduleNos.size()).isEqualTo(10);
     }
 
     @Test
@@ -202,12 +203,11 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
         clear();
 
         //then
-        List<Schedule> schedules = scheduleRepository.findAll();
-        assertThat(schedules.size()).isEqualTo(8);
+        assertThat(saveScheduleNos.size()).isEqualTo(8);
     }
 
 }

@@ -12,14 +12,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentListQuery;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.*;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.global.common.component.IsDeleted;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 
 import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
 import static project.volunteer.domain.image.domain.QImage.image;
@@ -37,17 +37,18 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
 
     @Override
     public Slice<RecruitmentListQuery> findRecruitmentDtos(Pageable pageable, RecruitmentCond searchType) {
-
+        //TODO: 비지니스 로직으로 빼는것도 생각해보기, DTO 세팅이 들어있음.
         //전체 모집글,이미지,저장소 join 조회(Slice 처리)
         Slice<RecruitmentListQuery> result = findRecruitmentJoinImageBySearchType(pageable, searchType);
 
         result.getContent().stream()
                 .forEach(dto -> {
+                    //TODO: 현재 디자인 버전에서는 보이지 않음. 확인해보기
                     //각 모집글에 해당 하는 반복주기 엔티티 리스트 조회(반복주기 엔티티는 N 이므로 별도 조회)
-                    if(dto.getVolunteeringType().equals(VolunteeringType.REG)) {
-                        List<Day> days = findDays(dto.getNo());
-                        dto.setDays(days);
-                    }
+//                    if(dto.getVolunteeringType().equals(VolunteeringType.REG)) {
+//                        List<Day> days = findDays(dto.getNo());
+//                        dto.setDays(days);
+//                    }
 
                     //각 모집글에 참여자 리스트 count(참여자 엔티티는 N 이므로 별도 조회)
                     Long currentParticipantNum = countParticipants(dto.getNo());
@@ -58,11 +59,10 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
          * 현재 root 쿼리 1번 결과만큼(모집글 개수) 쿼리 N번(참여자 수 count 쿼리 + 장기일경우 반복주기 쿼리) 발생
          * 추후 최적화가 필요한 부분
          */
-
         return result;
     }
 
-    //offset 기반 Slice -> 추후 no offset 으로 성능 최적화 가능
+    //TODO: 추후 no offset 으로 성능 최적화 고려해보기
     @Override
     public Slice<RecruitmentListQuery> findRecruitmentJoinImageBySearchType(Pageable pageable, RecruitmentCond searchType) {
 
@@ -71,14 +71,18 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         //이미지에 저장소가 없을수 있으니 : leftJoin
         List<RecruitmentListQuery> content = jpaQueryFactory
                 .select(
-                        new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.title,
+                        new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.volunteeringCategory,recruitment.title,
                                 recruitment.address.sido, recruitment.address.sigungu,
                                 recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
-                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, recruitment.VolunteeringTimeTable.progressTime,
+                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum,
                                 image.staticImageName, storage.imagePath))
                 .from(recruitment)
-                .leftJoin(image).on(recruitment.recruitmentNo.eq(image.no)) //recruitment, image left join
-                .leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT)) //image, storage left join & 사진 타입이 모집글인거만
+                .leftJoin(image)
+                .on(
+                        recruitment.recruitmentNo.eq(image.no),
+                        image.realWorkCode.eq(RealWorkCode.RECRUITMENT)
+                )
+                .leftJoin(image.storage, storage)
                 .where(
                         containCategory(searchType.getCategory()),
                         eqSidoCode(searchType.getSido()),
@@ -117,13 +121,13 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .fetchOne();
     }
 
-    private List<Day> findDays(Long recruitmentNo){
-        return jpaQueryFactory
-                .select(repeatPeriod.day)
-                .from(repeatPeriod)
-                .where(repeatPeriod.recruitment.recruitmentNo.eq(recruitmentNo))
-                .fetch();
-    }
+//    private List<Day> findDays(Long recruitmentNo){
+//        return jpaQueryFactory
+//                .select(repeatPeriod.day)
+//                .from(repeatPeriod)
+//                .where(repeatPeriod.recruitment.recruitmentNo.eq(recruitmentNo))
+//                .fetch();
+//    }
 
     private Long countParticipants(Long recruitmentNo){
         return jpaQueryFactory
@@ -131,7 +135,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .from(participant1)
                 .where(
                         participant1.recruitment.recruitmentNo.eq(recruitmentNo),
-                        participant1.state.eq(State.JOIN_APPROVAL)) //참여 승인자만
+                        participant1.state.eq(ParticipantState.JOIN_APPROVAL)) //참여 승인자만
                 .fetchOne();
     }
 
@@ -159,7 +163,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 }
             }
         }
-        return new OrderSpecifier(Order.ASC, recruitment.createdDate); //default: 최신순
+        return new OrderSpecifier(Order.ASC, recruitment.recruitmentNo); //default: 생성 오름차순
     }
 
     private BooleanExpression containCategory(List<VolunteeringCategory> categories) {

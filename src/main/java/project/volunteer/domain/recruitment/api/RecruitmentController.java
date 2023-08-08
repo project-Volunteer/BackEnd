@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
@@ -25,13 +25,16 @@ import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
 import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
-import project.volunteer.global.aop.LogExecutionTime;
+import project.volunteer.global.Interceptor.OrganizationAuth;
+import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static project.volunteer.global.Interceptor.OrganizationAuth.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,9 +49,11 @@ public class RecruitmentController {
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
+        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
+        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
 
         //모집글 정보 저장
-        Long recruitmentNo = recruitmentService.addRecruitment(new RecruitmentParam(form));
+        Long recruitmentNo = recruitmentService.addRecruitment(SecurityUtil.getLoginUserNo(), new RecruitmentParam(form));
 
         //정기일 경우
         if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())) {
@@ -122,8 +127,22 @@ public class RecruitmentController {
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/recruitment/{no}")
-    public ResponseEntity recruitmentDelete(@PathVariable Long no) {
+    @GetMapping("/recruitment/{no}/status")
+    public ResponseEntity<Map<String,Object>> teamStateDetails(@PathVariable Long no){
+        String status = recruitmentDtoService.findRecruitmentTeamStatus(no, SecurityUtil.getLoginUserNo());
+
+        //response
+        Map<String,Object> result = new HashMap<>();
+        result.put("status", status);
+        return ResponseEntity.ok(result);
+    }
+
+    @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
+    @DeleteMapping("/recruitment/{recruitmentNo}")
+    public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
+        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
+        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
+        //TODO: 계층적 삭제 기능 구현 필요
 
         //모집글 관련 엔티티들 삭제
         recruitmentService.deleteRecruitment(no);

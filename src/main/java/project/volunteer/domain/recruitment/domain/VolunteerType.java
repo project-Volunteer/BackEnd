@@ -1,8 +1,8 @@
 package project.volunteer.domain.recruitment.domain;
 
-import project.volunteer.global.common.converter.LegacyCodeCommonType;
+import project.volunteer.global.common.converter.CodeCommonType;
 
-public enum VolunteerType implements LegacyCodeCommonType {
+public enum VolunteerType implements CodeCommonType {
 
     ALL("1", "모두"), ADULT("2", "성인"), TEENAGER("3", "청소년");
 
@@ -14,7 +14,7 @@ public enum VolunteerType implements LegacyCodeCommonType {
     }
 
     @Override
-    public String getLegacyCode() {
+    public String getId() {
         return this.code;
     }
 

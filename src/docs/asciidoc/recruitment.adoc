@@ -1,0 +1,162 @@
+[[Recruitment-API]]
+== Recruitment API
+
+=== 봉사 모집글 등록
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-write-controller-test/save-recruitment/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-write-controller-test/save-recruitment/request-headers.adoc[]
+
+*Request parts*
+include::{snippets}/recruitment-write-controller-test/save-recruitment/request-parts.adoc[]
+
+*Request Parameters*
+include::{snippets}/recruitment-write-controller-test/save-recruitment/request-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-write-controller-test/save-recruitment/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/recruitment-write-controller-test/save-recruitment/response-fields.adoc[]
+
+
+=== 봉사 모집글 리스트 조회
+- 페이지 당 개수는 **6개**로 고정되어있습니다.
+- 첫 페이지 요청시 **page** 필드를 **NULL or 0**으로 요청해주시면 됩니다.
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/request-headers.adoc[]
+
+*Request Parameters*
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/request-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/recruitment-query-controller-test/find-list-recruitment/response-fields.adoc[]
+
+
+=== 봉사 모집글 카운트 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/request-headers.adoc[]
+
+*Request Parameters*
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/request-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/recruitment-query-controller-test/find-count-recruitment/response-fields.adoc[]
+
+
+=== 봉사 모집글 상세조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/recruitment-query-controller-test/find-details-recruitment/response-fields.adoc[]
+
+
+=== 봉사 모집글 클라이언트 상태 조회
+- 봉사 모집글 상세 조회간 *로그인 사용자* 일경우 신청 상태를 별도의 API로 조회합니다.
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-query-controller-test/find-participant-state/http-request.adoc[]
+
+*Request Path*
+include::{snippets}/recruitment-query-controller-test/find-participant-state/path-parameters.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-query-controller-test/find-participant-state/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-query-controller-test/find-participant-state/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/recruitment-query-controller-test/find-participant-state/response-fields.adoc[]
+
+
+=== 봉사 모집글 삭제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 모집글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-edit-controller-test/delete-recruitment/http-response.adoc[]
+

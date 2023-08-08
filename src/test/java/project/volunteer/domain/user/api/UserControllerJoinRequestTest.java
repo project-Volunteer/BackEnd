@@ -30,7 +30,7 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
@@ -44,7 +44,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.infra.s3.FileService;
 
 @SpringBootTest
@@ -124,8 +124,8 @@ public class UserControllerJoinRequestTest {
 		RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2,
 				details, latitude, longitude, isIssued2, volunteerType2, volunteerNum, volunteeringType, startDay,
 				endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-		Long no1 = recruitmentService.addRecruitment(saveRecruitDto1);
-		Long no2 = recruitmentService.addRecruitment(saveRecruitDto2);
+		Long no1 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto1);
+		Long no2 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto2);
 
 		saveRecruitmentNoList.add(no1);
 		saveRecruitmentNoList.add(no2);
@@ -145,13 +145,13 @@ public class UserControllerJoinRequestTest {
 		// 참여자 저장
 		Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
 		Participant participant1 = Participant.builder().participant(saveUser).recruitment(recruitment1)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant1);
 
 		Recruitment recruitment2 = recruitmentRepository.findById(no2).get();
 		Participant participant2 = Participant.builder().participant(saveUser).recruitment(recruitment2)
-				.state(State.JOIN_REQUEST)
+				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant2);
 		

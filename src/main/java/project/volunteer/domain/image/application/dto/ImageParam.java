@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.api.dto.request.PictureRequest;
 
 @Getter
@@ -33,9 +33,7 @@ public class ImageParam {
         this.code = code;
         this.no = no;
         this.imageType = ImageType.of(form.getType());
-        //업로드 이미지일 경우 "staticImageCode" 컬럼은 null
-        this.staticImageCode = (this.imageType.name().equals(ImageType.UPLOAD.name()))
-                ?null: form.getStaticImage();
+        this.staticImageCode = form.getStaticImage();
         this.uploadImage = form.getUploadImage();
     }
 }

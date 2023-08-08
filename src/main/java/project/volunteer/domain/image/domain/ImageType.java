@@ -1,28 +1,33 @@
 package project.volunteer.domain.image.domain;
 
+import project.volunteer.global.common.converter.CodeCommonType;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.Arrays;
 
-public enum ImageType {
-    STATIC(0), UPLOAD(1);
+public enum ImageType implements CodeCommonType {
+    STATIC("정적 이미지"), UPLOAD("업로드 이미지");
 
-    private final Integer value;
+    private final String des;
 
-    ImageType(int value) {
-        this.value = value;
+    ImageType(String des) {
+        this.des = des;
     }
 
-    public int getValue() {
-        return this.value;
-    }
-
-    public static ImageType of(int value){
-
+    public static ImageType of(String value){
         return Arrays.stream(ImageType.values())
-                .filter(v -> v.value==value)
+                .filter(v -> v.getId().equals(value.toUpperCase()))
                 .findAny()
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ENUM_VALUE, String.format("ImageType Value = [%s]", value)));
+    }
+
+    @Override
+    public String getId() {
+        return this.name();
+    }
+    @Override
+    public String getDesc() {
+        return this.des;
     }
 }

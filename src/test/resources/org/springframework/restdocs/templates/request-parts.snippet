@@ -1,0 +1,11 @@
+|===
+|Part|필수값|제약조건|설명
+
+{{#requestParts}}
+|{{name}}
+|{{^optional}}true{{/optional}}{{#optional}}false{{/optional}}
+|{{#constraints}}{{.}}{{/constraints}}
+|{{description}}
+
+{{/requestParts}}
+|===

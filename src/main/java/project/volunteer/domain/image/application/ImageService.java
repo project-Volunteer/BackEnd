@@ -1,7 +1,7 @@
 package project.volunteer.domain.image.application;
 
 import project.volunteer.domain.image.application.dto.ImageParam;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 
 public interface ImageService {
 

@@ -1,0 +1,124 @@
+[[Notice-Comment-API]]
+== Notice-Comment API
+
+=== 봉사 모집글 공지사항 댓글 등록
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-comment-controller-test/save-comment-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-comment-controller-test/save-comment-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-comment-controller-test/save-comment-notice/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/notice-comment-controller-test/save-comment-notice/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-comment-controller-test/save-comment-notice/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 대댓글 등록
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 부모댓글을 찾을 수 없습니다. +
+- 대댓글에 댓글을 추가할 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 봉사 팀원에게만 공개되는 정보입니다. 팀원 참여 후 이용해주시길 바랍니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-comment-controller-test/save-comment-reply-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-comment-controller-test/save-comment-reply-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-comment-controller-test/save-comment-reply-notice/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/notice-comment-controller-test/save-comment-reply-notice/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-comment-controller-test/save-comment-reply-notice/http-response.adoc[]
+
+
+=== 봉사 모집글 공지사항 댓글/대댓글 수정
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 댓글을 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 댓글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-comment-controller-test/edit-comment-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-comment-controller-test/edit-comment-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-comment-controller-test/edit-comment-notice/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/notice-comment-controller-test/edit-comment-notice/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-comment-controller-test/edit-comment-notice/http-response.adoc[]
+
+=== 봉사 모집글 공지사항 댓글/대댓글 삭제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집글 활동 가능 기간이 종료되었습니다. +
+- 해당 공지사항 정보를 찾을 수 없습니다. +
+- 댓글을 찾을 수 없습니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| - 해당 댓글에 대한 권한이 없습니다.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/notice-comment-controller-test/delete-comment-notice/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/notice-comment-controller-test/delete-comment-notice/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/notice-comment-controller-test/delete-comment-notice/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/notice-comment-controller-test/delete-comment-notice/http-response.adoc[]

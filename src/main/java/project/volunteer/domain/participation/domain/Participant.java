@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
-import project.volunteer.global.common.component.State;
+import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.domain.participation.converter.StateConverter;
 
 import javax.persistence.*;
@@ -31,16 +31,16 @@ public class Participant extends BaseTimeEntity {
 
     @Convert(converter = StateConverter.class)
     @Column(length = 3, nullable = false)
-    private State state;
+    private ParticipantState state;
 
     @Builder
-    public Participant(Recruitment recruitment, User participant, State state){
+    public Participant(Recruitment recruitment, User participant, ParticipantState state){
         this.recruitment = recruitment;
         this.participant = participant;
         this.state = state;
     }
 
-    public static Participant createParticipant(Recruitment recruitment, User participant, State state){
+    public static Participant createParticipant(Recruitment recruitment, User participant, ParticipantState state){
         Participant createParticipant = new Participant();
         createParticipant.recruitment = recruitment;
         createParticipant.participant = participant;
@@ -48,12 +48,7 @@ public class Participant extends BaseTimeEntity {
         return createParticipant;
     }
 
-    public void joinRequest(){ //참가 요청
-        this.state = State.JOIN_REQUEST;
-    }
-    public void joinCancel(){ this.state = State.JOIN_CANCEL; }
-    public void joinApprove() { //참가 승인
-        this.state = State.JOIN_APPROVAL;
-    }
-    public void deport() {this.state = State.DEPORT; }
+    public Boolean isEqualState(ParticipantState state) {return this.state.equals(state);}
+
+    public void updateState(ParticipantState state) {this.state = state;}
 }

@@ -1,13 +1,12 @@
 package project.volunteer.domain.repeatPeriod.domain;
 
-import lombok.Getter;
+import project.volunteer.global.common.converter.CodeCommonType;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.Arrays;
 
-@Getter
-public enum Period {
+public enum Period implements CodeCommonType {
 
     WEEK("매주"), MONTH("매월");
 
@@ -17,16 +16,20 @@ public enum Period {
         this.viewName = label;
     }
 
-    public String getViewName() {
-        return viewName;
-    }
-
     public static Period of(String value){
 
         return Arrays.stream(Period.values())
-                .filter(v -> v.name().equals(value.toUpperCase()))
+                .filter(v -> v.getId().equals(value.toUpperCase()))
                 .findAny()
                 .orElseThrow(()-> new BusinessException(ErrorCode.UNKNOWN_ENUM_VALUE, String.format("Period Value = [%s]", value)));
     }
 
+    @Override
+    public String getId() {
+        return this.name();
+    }
+    @Override
+    public String getDesc() {
+        return this.viewName;
+    }
 }

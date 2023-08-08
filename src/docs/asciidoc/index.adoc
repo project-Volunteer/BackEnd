@@ -1,0 +1,25 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= Volunteer API 문서
+
+include::recruitment.adoc[]
+
+include::schedule.adoc[]
+
+include::schedule-management.adoc[]
+
+include::notice.adoc[]
+
+include::notice-comment.adoc[]
+
+include::enums.adoc[]
+

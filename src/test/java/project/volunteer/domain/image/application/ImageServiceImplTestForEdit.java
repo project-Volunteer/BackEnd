@@ -14,7 +14,7 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.ImageType;
-import project.volunteer.domain.image.domain.RealWorkCode;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -46,6 +46,7 @@ class ImageServiceImplTestForEdit {
     @Autowired ImageRepository imageRepository;
     @Autowired FileService fileService;
 
+    User writer;
     private Long saveRecruitmentNo;
     private List<Long> uploadImageNoList = new ArrayList<>();
     private void clear() {
@@ -72,7 +73,7 @@ class ImageServiceImplTestForEdit {
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-        saveRecruitmentNo = recruitmentService.addRecruitment(saveRecruitDto);
+        saveRecruitmentNo = recruitmentService.addRecruitment(writer.getUserNo(), saveRecruitDto);
     }
     private void setUploadImage(RealWorkCode realWorkCode, Long no) throws IOException {
         ImageParam imageParam = ImageParam.builder()
@@ -90,7 +91,7 @@ class ImageServiceImplTestForEdit {
     }
     @BeforeEach
     private void initUser() {
-        userRepository.save(User.builder()
+        writer = userRepository.save(User.builder()
                 .id("1234")
                 .password("1234")
                 .nickName("nickname")
