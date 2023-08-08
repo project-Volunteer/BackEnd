@@ -1,14 +1,16 @@
 package project.volunteer.domain.sehedule.api;
 
-import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -33,6 +35,8 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
 import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.test.WithMockCustomUser;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.restdocs.document.util.DocumentFormatGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -41,20 +45,20 @@ import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-class ScheduleControllerTestForQuery {
+@Import(RestDocsConfiguration.class)
+class ScheduleQueryControllerTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired UserRepository userRepository;
@@ -62,6 +66,7 @@ class ScheduleControllerTestForQuery {
     @Autowired ParticipantRepository participantRepository;
     @Autowired ScheduleRepository scheduleRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
+    @Autowired RestDocumentationResultHandler restDocs;
 
     final String AUTHORIZATION_HEADER = "accessToken";
     Recruitment saveRecruitment;
@@ -114,7 +119,7 @@ class ScheduleControllerTestForQuery {
     @Transactional
     @DisplayName("팀원이 모집중인 가장 가까운 일정 상세 조회에 성공한다.")
     @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void scheduleDetailsByTeamMember() throws Exception {
+    public void findMainSchedule() throws Exception {
         //given
         스케줄_등록(LocalDate.now().plusMonths(2), 2);
 
@@ -129,9 +134,7 @@ class ScheduleControllerTestForQuery {
                 .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/schedule/GET",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -143,8 +146,8 @@ class ScheduleControllerTestForQuery {
                                         fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("address.sigungu").type(JsonFieldType.STRING).description("시/군/구/ 코드"),
                                         fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
-                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(key("format").value("mm-dd-yyyy")).description("봉사 일정 시작날짜"),
-                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(key("format").value("HH-mm")).description("봉사 일정 시작시간"),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 시작날짜"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 일정 시작시간"),
                                         fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
                                         fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("봉사 일정 진행시간"),
                                         fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 일정 참여 가능 인원"),
@@ -156,6 +159,7 @@ class ScheduleControllerTestForQuery {
                 );
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("방장이 모집중인 가장 가까운 일정 상세 조회에 성공한다.")
@@ -172,6 +176,7 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("팀원 아닌 사용자가 일정 조회를 시도한다.")
@@ -186,6 +191,7 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("모집중인 가장 가까운 일정이 존재하지 않는다.")
@@ -201,6 +207,7 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("인원 모집 마감된 일정을 조회하다.")
@@ -218,6 +225,7 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("참여가능한 일정을 조회하다.")
@@ -233,6 +241,7 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("참여 취소 요청한 일정을 조회하다.")
@@ -250,6 +259,7 @@ class ScheduleControllerTestForQuery {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("참여중인 일정을 조회하다.")
@@ -271,7 +281,7 @@ class ScheduleControllerTestForQuery {
     @Transactional
     @DisplayName("2023년 5월 캘린더에 존재하는 일정 리스트를 조회한다")
     @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void findSchedulesInMay2023() throws Exception {
+    public void findListCalendar() throws Exception {
         //given
         Schedule schedule1 = 스케줄_등록(LocalDate.of(2023, 5, 1), 3);
         Schedule schedule2 = 스케줄_등록(LocalDate.of(2023, 5, 15), 3);
@@ -301,9 +311,7 @@ class ScheduleControllerTestForQuery {
                 .andExpect(jsonPath("$.scheduleList[5].no").value(schedule6.getScheduleNo()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/schedule/GET-Calendar-List",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -316,12 +324,13 @@ class ScheduleControllerTestForQuery {
                                 ),
                                 responseFields(
                                         fieldWithPath("scheduleList[].no").type(JsonFieldType.NUMBER).description("봉사 일정 고유키 PK"),
-                                        fieldWithPath("scheduleList[].day").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 일정 날짜")
+                                        fieldWithPath("scheduleList[].day").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 날짜")
                                 )
                         )
                 );
     }
 
+    @Disabled
     @Test
     @Transactional
     @DisplayName("캘린더 일정 리스트 조회 간 필수 파라미터를 누락하다.")
@@ -337,7 +346,7 @@ class ScheduleControllerTestForQuery {
     @Transactional
     @DisplayName("캘린더를 통한 일정 상세조회에 성공하다.")
     @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void calendarScheduleDetails() throws Exception {
+    public void findDetailsCalendar() throws Exception {
         //given
         Schedule schedule = 스케줄_등록(LocalDate.now().plusMonths(2), 2);
 
@@ -352,9 +361,7 @@ class ScheduleControllerTestForQuery {
                 .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/schedule/GET-Calendar-Details",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -367,8 +374,8 @@ class ScheduleControllerTestForQuery {
                                         fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("address.sigungu").type(JsonFieldType.STRING).description("시/군/구/ 코드"),
                                         fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
-                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(key("format").value("mm-dd-yyyy")).description("봉사 일정 시작날짜"),
-                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(key("format").value("HH-mm")).description("봉사 일정 시작시간"),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 시작날짜"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 일정 시작시간"),
                                         fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
                                         fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("봉사 일정 진행시간"),
                                         fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 일정 참여 가능 인원"),

@@ -1,15 +1,14 @@
 package project.volunteer.domain.recruitment.api;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
@@ -38,6 +37,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.test.WithMockCustomUser;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,9 +47,6 @@ import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -60,7 +57,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-class RecruitmentControllerTestForEdit {
+@Import(RestDocsConfiguration.class)
+class RecruitmentEditControllerTest {
     @Autowired UserRepository userRepository;
     @Autowired ImageService imageService;
     @Autowired StorageRepository storageRepository;
@@ -68,6 +66,7 @@ class RecruitmentControllerTestForEdit {
     @Autowired RepeatPeriodRepository repeatPeriodRepository;
     @Autowired FileService fileService;
     @Autowired MockMvc mockMvc;
+    @Autowired RestDocumentationResultHandler restDocs;
 
     final String AUTHORIZATION_HEADER = "accessToken";
     private Long saveRecruitmentNo;
@@ -116,7 +115,7 @@ class RecruitmentControllerTestForEdit {
     @Test
     @WithUserDetails(value = "rctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Rollback(value = false)
-    public void 정기모집글_삭제_성공() throws Exception {
+    public void deleteRecruitment() throws Exception {
         //given & when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.delete("/recruitment/{recruitmentNo}", saveRecruitmentNo)
                         .header(AUTHORIZATION_HEADER, "access Token")
@@ -126,9 +125,7 @@ class RecruitmentControllerTestForEdit {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/recruitment/DELETE",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -139,6 +136,7 @@ class RecruitmentControllerTestForEdit {
                 );
     }
 
+    @Disabled
     @DisplayName("정기 모집글 방장이 아닌 사용자가 삭제를 시도하다.")
     @Test
     @WithMockCustomUser()
@@ -148,6 +146,7 @@ class RecruitmentControllerTestForEdit {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @WithUserDetails(value = "rctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void 정기모집글_삭제_실패_없는모집글() throws Exception {

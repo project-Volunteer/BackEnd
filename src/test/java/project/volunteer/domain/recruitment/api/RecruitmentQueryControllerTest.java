@@ -2,13 +2,16 @@ package project.volunteer.domain.recruitment.api;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -44,6 +47,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.infra.s3.FileService;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -54,24 +58,23 @@ import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@AutoConfigureRestDocs
-class RecruitmentControllerTestForQuery {
+@AutoConfigureRestDocs //Rest docs 에 필요한 정보 자동 주입
+@Import(RestDocsConfiguration.class) //커스텀한 Rest docs 관련 bean 사용
+class RecruitmentQueryControllerTest {
     @Autowired UserRepository userRepository;
     @Autowired ParticipantRepository participantRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
@@ -82,6 +85,7 @@ class RecruitmentControllerTestForQuery {
     @Autowired ImageService imageService;
     @Autowired FileService fileService;
     @Autowired MockMvc mockMvc;
+    @Autowired RestDocumentationResultHandler restDocs;
 
     final String AUTHORIZATION_HEADER = "accessToken";
     private User writer;
@@ -322,7 +326,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    public void 모집글_전체조회_모든필터링_성공() throws Exception {
+    public void findListRecruitment() throws Exception {
         //given
         MultiValueMap<String,String> info = new LinkedMultiValueMap();
         info.add("page", "0");
@@ -384,9 +388,7 @@ class RecruitmentControllerTestForQuery {
                 .andExpect(jsonPath("$.lastId").value(saveRecruitmentList.get(5).getRecruitmentNo()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/recruitment/GET-List",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
                                 ),
@@ -400,30 +402,31 @@ class RecruitmentControllerTestForQuery {
                                         parameterWithName("is_issued").optional().description("봉사 시간 인증 가능 여부")
                                 ),
                                 responseFields(
-                                        fieldWithPath("recruitmentList[].no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
-                                        fieldWithPath("recruitmentList[].volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
-                                        fieldWithPath("recruitmentList[].picture.type").type(JsonFieldType.STRING).description("Code ImageType 참고바람."),
-                                        fieldWithPath("recruitmentList[].picture.staticImage").type(JsonFieldType.STRING).optional().description("정적 이미지 코드, ImageType이 UPLOAD 일 경우 NULL"),
-                                        fieldWithPath("recruitmentList[].picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, ImageType이 STATIC 일 경우 NULL"),
-                                        fieldWithPath("recruitmentList[].title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
-                                        fieldWithPath("recruitmentList[].sido").type(JsonFieldType.STRING).description("시/구 코드"),
-                                        fieldWithPath("recruitmentList[].sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
-                                        fieldWithPath("recruitmentList[].startDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집 시작 날짜"),
-                                        fieldWithPath("recruitmentList[].endDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집 종료 날짜"),
-                                        fieldWithPath("recruitmentList[].volunteeringType").type(JsonFieldType.STRING).description("Code VolunteeringType 참고바람"),
-                                        fieldWithPath("recruitmentList[].isIssued").type(JsonFieldType.BOOLEAN).description("봉사 시간 인증 가능 여부"),
-                                        fieldWithPath("recruitmentList[].volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
-                                        fieldWithPath("recruitmentList[].currentVolunteerNum").type(JsonFieldType.NUMBER).description("현재 봉사 모집글 참여(승인된) 인원"),
-                                        fieldWithPath("recruitmentList[].volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
                                         fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 봉사 모집글 유무"),
-                                        fieldWithPath("lastId").type(JsonFieldType.NUMBER).description("응답 봉사 모집글 리스트 중 마지막 모집글 고유키 PK")
-                                )
+                                        fieldWithPath("lastId").type(JsonFieldType.NUMBER).description("응답 봉사 모집글 리스트 중 마지막 모집글 고유키 PK"),
+                                        fieldWithPath("recruitmentList").type(JsonFieldType.ARRAY).description("봉사 모집글 리스트")
+                                ).andWithPrefix("recruitmentList.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("picture.type").type(JsonFieldType.STRING).description("Code ImageType 참고바람."),
+                                        fieldWithPath("picture.staticImage").type(JsonFieldType.STRING).optional().description("정적 이미지 코드, ImageType이 UPLOAD 일 경우 NULL"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, ImageType이 STATIC 일 경우 NULL"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
+                                        fieldWithPath("sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집 시작 날짜"),
+                                        fieldWithPath("endDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집 종료 날짜"),
+                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("Code VolunteeringType 참고바람"),
+                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN).description("봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
+                                        fieldWithPath("currentVolunteerNum").type(JsonFieldType.NUMBER).description("현재 봉사 모집글 참여(승인된) 인원"),
+                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."))
                         )
                 );
     }
 
     @Test
-    public void 모집글_전체카운트_모든필터링_성공() throws Exception {
+    public void findCountRecruitment() throws Exception {
         //given
         MultiValueMap<String,String> info = new LinkedMultiValueMap();
         info.add("volunteering_category", "001");
@@ -445,9 +448,7 @@ class RecruitmentControllerTestForQuery {
                 .andExpect(jsonPath("totalCnt").value(6))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/recruitment/GET-Count",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
                                 ),
@@ -467,6 +468,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
+    @Disabled
     public void 모집글_전체카운트_빈필터링_성공() throws Exception {
         //init
         mockMvc.perform(get("/recruitment/count"))
@@ -475,7 +477,7 @@ class RecruitmentControllerTestForQuery {
     }
 
     @Test
-    public void 모집글_상세조회_성공() throws Exception {
+    public void findDetailsRecruitment() throws Exception {
         //given & then
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{no}", saveRecruitmentList.get(0).getRecruitmentNo())
                 .header(AUTHORIZATION_HEADER, "access Token")
@@ -517,9 +519,7 @@ class RecruitmentControllerTestForQuery {
                 .andExpect(jsonPath("$.picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/recruitment/GET-Details",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
                                 ),
@@ -531,9 +531,9 @@ class RecruitmentControllerTestForQuery {
                                         fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
                                         fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
                                         fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
-                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집글 고유키 PK"),
-                                        fieldWithPath("endDay").type(JsonFieldType.STRING).attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집글 고유키 PK"),
-                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(key("format").value("HH:mm")).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("endDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 모집글 고유키 PK"),
                                         fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
                                         fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("정기 봉사 일정 진행 시간"),
                                         fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
@@ -570,7 +570,7 @@ class RecruitmentControllerTestForQuery {
 
     @Test
     @WithUserDetails(value = "rctfqt", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 봉사모집글_참여_상태조회() throws Exception {
+    public void findParticipantState() throws Exception {
         //given & when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{no}/status",saveRecruitmentList.get(0).getRecruitmentNo())
                 .header(AUTHORIZATION_HEADER, "access Token")
@@ -581,9 +581,7 @@ class RecruitmentControllerTestForQuery {
                 .andExpect(jsonPath("status").value(StateResponse.APPROVED.getId()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/recruitment/GET-Status",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),

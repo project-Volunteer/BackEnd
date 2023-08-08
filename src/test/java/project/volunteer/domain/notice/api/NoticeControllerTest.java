@@ -10,13 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 import project.volunteer.restdocs.document.util.DocumentFormatGenerator;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
@@ -42,9 +45,7 @@ import java.time.LocalTime;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -57,6 +58,7 @@ import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.g
 @AutoConfigureMockMvc
 @Transactional
 @AutoConfigureRestDocs
+@Import(RestDocsConfiguration.class)
 class NoticeControllerTest {
 
     @Autowired MockMvc mockMvc;
@@ -66,6 +68,7 @@ class NoticeControllerTest {
     @Autowired NoticeRepository noticeRepository;
     @Autowired ConfirmationRepository confirmationRepository;
     @Autowired ReplyRepository replyRepository;
+    @Autowired RestDocumentationResultHandler restDocs;
 
     final String AUTHORIZATION_HEADER = "accessToken";
     User writer;
@@ -89,7 +92,7 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 등록 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeAddRequest() throws Exception {
+    public void saveNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         NoticeAdd dto = new NoticeAdd(addNoticeContent);
@@ -106,9 +109,7 @@ class NoticeControllerTest {
         result.andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/notice/POST",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -126,7 +127,7 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 수정 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeEditRequest() throws Exception {
+    public void editNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         final String editNoticeContent = "edit";
@@ -145,9 +146,7 @@ class NoticeControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/notice/PUT",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -166,7 +165,7 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 삭제 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeDeleteRequest() throws Exception {
+    public void deleteNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
@@ -182,9 +181,7 @@ class NoticeControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/notice/DELETE",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -199,7 +196,7 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 상세 조회 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeDetailsRequest() throws Exception {
+    public void findDetailsNotice() throws Exception {
         //given
         Notice saveNotice = 공지사항_등록("add", saveRecruitment);
 
@@ -242,9 +239,7 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.commentsList[0].replies[1].content").value(children1_2.getContent()))
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/notice/GET-Details",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -260,6 +255,7 @@ class NoticeControllerTest {
                                         fieldWithPath("notice.checkCnt").type(JsonFieldType.NUMBER).description("공지사항 읽음 개수"),
                                         fieldWithPath("notice.commentsCnt").type(JsonFieldType.NUMBER).description("공지사항 댓글/대댓글 총 개수"),
                                         fieldWithPath("notice.isChecked").type(JsonFieldType.BOOLEAN).description("공지사항 읽음 여부(true/false)"),
+
                                         fieldWithPath("commentsList[].no").type(JsonFieldType.NUMBER).description("댓글 고유키 PK"),
                                         fieldWithPath("commentsList[].profile").type(JsonFieldType.STRING).description("댓글 작성자 프로필 URL"),
                                         fieldWithPath("commentsList[].nickName").type(JsonFieldType.STRING).description("댓글 작성자 닉네임"),
@@ -281,7 +277,7 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 리스트 조회 요청에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeListRequest() throws Exception {
+    public void findListNotice() throws Exception {
         //given
         final String addNoticeContent1 = "add1";
         final String addNoticeContent2 = "add2";
@@ -303,9 +299,7 @@ class NoticeControllerTest {
                 .andExpect(jsonPath("$.noticeList[1].content").value(addNoticeContent2))
                 .andExpect(jsonPath("$.noticeList[2].content").value(addNoticeContent3))
                 .andDo(
-                        document("APIs/volunteering/notice/GET-List",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -327,7 +321,7 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 읽음 확인에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeRead() throws Exception {
+    public void readNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
@@ -343,9 +337,7 @@ class NoticeControllerTest {
         result.andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/notice/POST-Read",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -360,7 +352,7 @@ class NoticeControllerTest {
     @Test
     @DisplayName("봉사 공지사항 읽음 해제에 성공하다.")
     @WithUserDetails(value = "nct_1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void noticeReaCancel() throws Exception {
+    public void readCancelNotice() throws Exception {
         //given
         final String addNoticeContent = "add";
         Notice saveNotice = 공지사항_등록(addNoticeContent, saveRecruitment);
@@ -378,9 +370,7 @@ class NoticeControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/notice/DELETE-Cancel",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),

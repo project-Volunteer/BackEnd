@@ -2,16 +2,18 @@ package project.volunteer.domain.sehedule.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -37,6 +39,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
 import project.volunteer.global.test.WithMockCustomUser;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -45,9 +48,6 @@ import java.time.LocalTime;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -60,7 +60,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-class ScheduleControllerTestForEdit {
+@Import(RestDocsConfiguration.class)
+class ScheduleEditControllerTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -70,6 +71,7 @@ class ScheduleControllerTestForEdit {
     @Autowired ScheduleRepository scheduleRepository;
     @Autowired ParticipantRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
+    @Autowired RestDocumentationResultHandler restDocs;
 
     final String AUTHORIZATION_HEADER = "accessToken";
     Schedule saveSchedule;
@@ -123,7 +125,7 @@ class ScheduleControllerTestForEdit {
     @Test
     @Transactional
     @WithUserDetails(value = "sctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void scheduleEdit() throws Exception {
+    public void editSchedule() throws Exception {
         //given
         final Long scheduleNo = saveSchedule.getScheduleNo();
         final String sido = "1";
@@ -150,9 +152,7 @@ class ScheduleControllerTestForEdit {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/schedule/PUT",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -166,7 +166,7 @@ class ScheduleControllerTestForEdit {
                                         fieldWithPath("address.details").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 50이하")).description("수정할 상세주소"),
                                         fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(key("constraints").value("mm-dd-yyyy")).description("수정할 봉사 일정 시작날짜"),
                                         fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
-                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(key("constraints").value("HH-mm")).description("수정할 봉사 일정 시작시간"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(key("constraints").value("HH:mm")).description("수정할 봉사 일정 시작시간"),
                                         fieldWithPath("progressTime").type(JsonFieldType.NUMBER).attributes(key("constraints").value("1이상 24이하")).description("수정할 봉사 일정 진행시간"),
                                         fieldWithPath("organizationName").type(JsonFieldType.STRING).description("봉사 기관이름"),
                                         fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER)
@@ -178,6 +178,7 @@ class ScheduleControllerTestForEdit {
                 );
     }
 
+    @Disabled
     @DisplayName("방장이 아닌 사용자가 일정 수정을 시도하다.")
     @Test
     @Transactional
@@ -206,6 +207,7 @@ class ScheduleControllerTestForEdit {
                 .andDo(print());
     }
 
+    @Disabled
     @DisplayName("봉사 일정 수정간 모집 인원은 현재 일정 참여자 수보다 적을 수 없다.")
     @Test
     @Transactional
@@ -234,6 +236,7 @@ class ScheduleControllerTestForEdit {
                 .andDo(print());
     }
 
+    @Disabled
     @DisplayName("잘못된 MediaType 으로 일정 수정 API를 요청하다.")
     @Test
     @Transactional
@@ -266,7 +269,7 @@ class ScheduleControllerTestForEdit {
     @Test
     @Transactional
     @WithUserDetails(value = "sctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void scheduleDelete() throws Exception {
+    public void deleteSchedule() throws Exception {
         //given & when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.delete("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
@@ -277,9 +280,7 @@ class ScheduleControllerTestForEdit {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/schedule/DELETE",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),

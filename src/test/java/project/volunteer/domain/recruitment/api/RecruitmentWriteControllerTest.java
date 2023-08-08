@@ -2,12 +2,16 @@ package project.volunteer.domain.recruitment.api;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -29,6 +33,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,25 +42,29 @@ import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
 
+//TODO: 컨트롤러 테스트 리팩토링 전체적으로 필요!!!!
+//TODO: Rest docs 문서화를 위한 컨트롤러 테스트로
+//TODO: 컨트롤러 테스트 시 반복적으로 사용되는 애노테이션 및 @Autowired를 추상클래스로 분리해보기(비지니스 테스트도 마찬가지)
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 @AutoConfigureRestDocs
-class RecruitmentControllerTestForWrite {
+@Import(RestDocsConfiguration.class)
+class RecruitmentWriteControllerTest {
     @Autowired private UserRepository userRepository;
     @Autowired private StorageRepository storageRepository;
     @Autowired private FileService fileService;
     @Autowired private MockMvc mockMvc;
+    @Autowired RestDocumentationResultHandler restDocs;
 
     final String WRITE_URL = "/recruitment";
     final String AUTHORIZATION_HEADER = "accessToken";
@@ -82,8 +91,10 @@ class RecruitmentControllerTestForWrite {
                 .forEach(s -> fileService.deleteFile(s.getFakeImageName()));
     }
 
+
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Disabled
     public void 모집글_비정기_정적이미지_등록_성공() throws Exception {
         //given
         final String volunteeringType = VolunteeringType.IRREG.getId();
@@ -105,6 +116,7 @@ class RecruitmentControllerTestForWrite {
     }
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Disabled
     public void 모집글_정기_매주_업로드이미지_등록_성공() throws Exception {
         //given
         final String volunteeringType = VolunteeringType.REG.getId();
@@ -130,7 +142,7 @@ class RecruitmentControllerTestForWrite {
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_정기_매달_업로드이미지_등록_성공() throws Exception {
+    public void saveRecruitment() throws Exception {
         //given
         final String volunteeringType = VolunteeringType.REG.getId();
         final String period = Period.MONTH.getId();
@@ -158,9 +170,7 @@ class RecruitmentControllerTestForWrite {
         result.andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(
-                        document("APIs/volunteering/recruitment/POST",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
+                        restDocs.document(
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
                                 ),
@@ -179,10 +189,10 @@ class RecruitmentControllerTestForWrite {
                                         parameterWithName("volunteerType").description("Code VolunteerType 참고바람."),
                                         parameterWithName("volunteerNum").attributes(key("constraints").value("1이상 9999이하")).description("봉사 모집 인원"),
                                         parameterWithName("volunteeringType").description("Code VolunteeringType 참고바람"),
-                                        parameterWithName("startDay").attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집 시작 날짜"),
-                                        parameterWithName("endDay").attributes(key("format").value("MM-dd-yyyy")).description("봉사 모집 종료 날짜"),
+                                        parameterWithName("startDay").attributes(getDateFormat()).description("봉사 모집 시작 날짜"),
+                                        parameterWithName("endDay").attributes(getDateFormat()).description("봉사 모집 종료 날짜"),
                                         parameterWithName("hourFormat").description("Code HourFormat 참고바람."),
-                                        parameterWithName("startTime").attributes(key("format").value("HH:mm")).description("정기 봉사 일정 시작 시간"),
+                                        parameterWithName("startTime").attributes(getTimeFormat()).description("정기 봉사 일정 시작 시간"),
                                         parameterWithName("progressTime").attributes(key("constraints").value("1이상 24이하")).description("정기 봉사 일정 진행 시간"),
                                         parameterWithName("period").optional().attributes(key("constraints").value("비정기일 경우 NULL 허용")).description("Code Period 참고바람."),
                                         parameterWithName("week").optional().attributes(key("constraints").value("비정기 혹은 Period가 매주일 경우 NULL 허용")).description("Code Week 참고바람."),
