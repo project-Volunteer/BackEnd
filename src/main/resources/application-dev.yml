@@ -1,7 +1,6 @@
 server:
   port: 8888
 
----
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -53,11 +52,6 @@ spring:
           starttls:
             enable: true
 
-  #Spring boot 2.6 이상 & swagger 3.0 사용시 호완 오류
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
----
 cloud:
   aws:
     credentials:
@@ -74,7 +68,6 @@ cloud:
     stack:
       auto: false
 
----
 jwt:
   token:
     secret-key: ${jwt-secret-key}
@@ -83,7 +76,6 @@ jwt:
   refresh-token:
     expire-length: 1209600000
 
----
 logging:
   level:
     root: info
