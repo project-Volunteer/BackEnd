@@ -26,6 +26,7 @@
 ## More info
 <details>
   <summary>ERD</summary>
+  
   ![volunteer (1)](https://github.com/BonSik-Koo/Volunteer_project/assets/96917871/c4725ea5-8318-43ad-9aef-fd88e73d4c14)
 </details>
 
