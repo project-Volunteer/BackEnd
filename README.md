@@ -2,7 +2,6 @@
 
 ![image](https://github.com/project-Volunteer/BackEnd/assets/96917871/c3e3975b-7899-43cb-a64f-2564d41558d0)
 
-# 봉사 활동 매칭 서비스
 2023.03 ~ 진행중
 
 ## 팀 구성
