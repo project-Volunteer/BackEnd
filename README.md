@@ -26,7 +26,7 @@
 <details>
   <summary>ERD</summary>
   
-  ![volunteer (1)](https://github.com/BonSik-Koo/Volunteer_project/assets/96917871/c4725ea5-8318-43ad-9aef-fd88e73d4c14)
+  ![volunteer (3)](https://github.com/project-Volunteer/BackEnd/assets/96917871/7544e53d-fd54-4301-a9e9-873880225e1e)
 </details>
 
 ## Links
