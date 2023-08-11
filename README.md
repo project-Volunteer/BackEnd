@@ -10,7 +10,7 @@
 |정종찬☘|[https://github.com/YouHaveToDo](https://github.com/YouHaveToDo)|기획,프론트엔드(현직)|
 |진정수|[https://github.com/youhavetosleep](https://github.com/youhavetosleep)|프론트엔드(현직)|
 |신항민|[https://github.com/ssinking91](https://github.com/ssinking91)|프론트엔드(현직)|
-|정진우|[https://github.com/ojino88](https://github.com/ojino88)|백엔드(현직)|
+|안진우|[https://github.com/ojino88](https://github.com/ojino88)|백엔드(현직)|
 |구본식|[https://github.com/BonSik-Koo](https://github.com/BonSik-Koo)|백엔드(학생)|
 |기하은||UI/UX 디자이너(취준생)|
 
