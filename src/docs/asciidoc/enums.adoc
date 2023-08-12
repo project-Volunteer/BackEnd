@@ -22,8 +22,5 @@ include::{snippets}/enums/custom-response-fields-day.adoc[]
 === HourFormat
 include::{snippets}/enums/custom-response-fields-hourFormat.adoc[]
 
-=== ImageType
-include::{snippets}/enums/custom-response-fields-imageType.adoc[]
-
 === ClientState
 include::{snippets}/enums/custom-response-fields-clientState.adoc[]
