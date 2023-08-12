@@ -35,5 +35,10 @@ public class LogboardValidate {
                         String.format("not found logboard = [%d]", logboardNo)));
     }
 
+    public Logboard validateAndGetLogboardWithOPTIMSTIC_LOCK(Long logboardNo) {
+        return logboardRepository.findValidLogboardWithOPTIMSTICLOCK(logboardNo)
+                .orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_LOGBOARD,
+                        String.format("not found logboard = [%d]", logboardNo)));
+    }
 
 }

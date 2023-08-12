@@ -11,17 +11,17 @@ import project.volunteer.domain.logboard.domain.Logboard;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LogboardDetail {
-	private List<String> picture = new ArrayList<>();
+public class LogboardEditDetail {
+	private List<String> pictures = new ArrayList<>();
 	private String content;
 	private Long scheduleNo;
 	
-	public LogboardDetail(Logboard logboard) {
+	public LogboardEditDetail(Logboard logboard) {
         this.content = logboard.getContent();
         this.scheduleNo = logboard.getSchedule().getScheduleNo();
 	}
 	
-	public void setPicture(List<String> picture) {
-		this.picture = picture;
+	public void setPicture(List<String> pictures) {
+		this.pictures = pictures;
 	}
 }
