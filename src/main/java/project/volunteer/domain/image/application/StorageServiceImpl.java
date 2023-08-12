@@ -1,4 +1,4 @@
-package project.volunteer.domain.storage.application;
+package project.volunteer.domain.image.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.storage.dao.StorageRepository;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.dao.StorageRepository;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.global.infra.s3.FileFolder;
 import project.volunteer.global.infra.s3.FileService;
 
