@@ -1,10 +1,9 @@
 package project.volunteer.domain.user.dao.queryDto;
 
-import static project.volunteer.domain.storage.domain.QStorage.storage;
-
 import java.util.List;
 
 import static project.volunteer.domain.image.domain.QImage.image;
+import static project.volunteer.domain.image.domain.QStorage.storage;
 import static project.volunteer.domain.participation.domain.QParticipant.participant1;
 import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
 import static project.volunteer.domain.scheduleParticipation.domain.QScheduleParticipation.scheduleParticipation;
@@ -35,14 +34,14 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 		return jpaQueryFactory
 				.select(
 						new QUserRecruitmentJoinRequestQuery(
-								recruitment.recruitmentNo, image.staticImageName, storage.imagePath,
+								recruitment.recruitmentNo, storage.imagePath,
 								recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay,
 								recruitment.title, recruitment.address.sido, recruitment.address.sigungu,
 								recruitment.volunteeringCategory, recruitment.volunteeringType, recruitment.isIssued,
 								recruitment.volunteerType))
 				.from(recruitment)
 				.innerJoin(participant1).on(participant1.recruitment.recruitmentNo.eq(recruitment.recruitmentNo))
-				.innerJoin(image).on(recruitment.recruitmentNo.eq(image.no)) 
+				.leftJoin(image).on(recruitment.recruitmentNo.eq(image.no))
 				.leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT)) 
 				.where(
 						participant1.state.eq(ParticipantState.JOIN_REQUEST),
@@ -56,7 +55,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 	public List<UserRecruitingQuery> findUserRecruitingDto(Long userNo) {
 		return jpaQueryFactory
 				.select(new QUserRecruitingQuery(
-							recruitment.recruitmentNo, image.staticImageName, storage.imagePath,
+							recruitment.recruitmentNo, storage.imagePath,
 							recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay,
 							recruitment.title, recruitment.address.sido, recruitment.address.sigungu,
 							recruitment.volunteeringCategory, recruitment.volunteeringType, recruitment.isIssued,
@@ -72,7 +71,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 								"currentVolunteerNum")
 				))
 				.from(recruitment)
-				.innerJoin(image).on(recruitment.recruitmentNo.eq(image.no))
+				.leftJoin(image).on(recruitment.recruitmentNo.eq(image.no))
 				.leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT))
 				.where(
 						recruitment.writer.userNo.eq(userNo),
@@ -86,7 +85,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 		List<UserHistoryQuery> results =
 			jpaQueryFactory
 				.select(new QUserHistoryQuery(
-					scheduleParticipation.scheduleParticipationNo, image.staticImageName, storage.imagePath,
+					scheduleParticipation.scheduleParticipationNo, storage.imagePath,
 					scheduleParticipation.schedule.scheduleTimeTable.endDay, scheduleParticipation.participant.recruitment.title,
 					scheduleParticipation.schedule.address.sido, scheduleParticipation.schedule.address.sigungu,
 					scheduleParticipation.participant.recruitment.volunteeringCategory, scheduleParticipation.participant.recruitment.volunteeringType,

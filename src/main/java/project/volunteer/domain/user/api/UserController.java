@@ -23,7 +23,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
@@ -87,7 +86,7 @@ public class UserController {
 		
 		if(dto.getProfile() != null) {
 			imageService.deleteImage(RealWorkCode.USER, SecurityUtil.getLoginUserNo());
-			ImageParam uploadUserProfile = new ImageParam(RealWorkCode.USER, SecurityUtil.getLoginUserNo(), ImageType.UPLOAD, null, dto.getProfile());
+			ImageParam uploadUserProfile = new ImageParam(RealWorkCode.USER, SecurityUtil.getLoginUserNo(), dto.getProfile());
 			imageService.addImage(uploadUserProfile);
 			Optional<Image> savedImg = imageRepository.findEGStorageByCodeAndNo(RealWorkCode.USER, SecurityUtil.getLoginUserNo());
 			

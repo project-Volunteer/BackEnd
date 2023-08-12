@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserHistoryQuery {
     private Long no;
-    private String staticImage;
     private String uploadImage;
     private LocalDate endDay;
     private String title;
@@ -29,11 +28,10 @@ public class UserHistoryQuery {
 
 
     @QueryProjection
-    public UserHistoryQuery(Long no, String staticImage, String uploadImage, LocalDate endDay, String title
+    public UserHistoryQuery(Long no, String uploadImage, LocalDate endDay, String title
                             , String sido, String sigungu, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType
                             , Boolean isIssued, VolunteerType volunteerType, Integer progressTime) {
         this.no = no;
-        this.staticImage = staticImage;
         this.uploadImage = uploadImage;
         this.endDay = endDay;
         this.title = title;

@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserRecruitmentDetails {
     private Long no;
-    private String staticImageName;
     private String imagePath;
     private LocalDate startDay;
     private LocalDate endDay;
@@ -26,12 +25,11 @@ public class UserRecruitmentDetails {
     private Boolean isIssued;
     private VolunteerType volunteerType;
 
-    public UserRecruitmentDetails(Long no, String staticImageName, String imagePath, LocalDate startDay, LocalDate endDay,
+    public UserRecruitmentDetails(Long no, String imagePath, LocalDate startDay, LocalDate endDay,
                                   String title, String sido, String sigungu, String details,
                                   VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
                                   Boolean isIssued, VolunteerType volunteerType) {
         this.no = no;
-        this.staticImageName = staticImageName;
         this.imagePath = imagePath;
         this.startDay = startDay;
         this.endDay = endDay;
