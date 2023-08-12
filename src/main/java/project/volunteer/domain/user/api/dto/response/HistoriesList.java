@@ -24,7 +24,11 @@ public class HistoriesList {
     public static HistoriesList makeHistoriesList(UserHistoryQuery userHistorydto) {
         HistoriesList historiesList = new HistoriesList();
         historiesList.no = userHistorydto.getNo();
-        historiesList.picture = new PictureDetails(userHistorydto.getStaticImage(), userHistorydto.getUploadImage());
+        if(userHistorydto.getUploadImage()==null){
+            historiesList.picture = new PictureDetails(true, null);
+        }else{
+            historiesList.picture = new PictureDetails(false, userHistorydto.getUploadImage());
+        }
         historiesList.title = userHistorydto.getTitle();
         historiesList.date = userHistorydto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         historiesList.sido = userHistorydto.getSido();

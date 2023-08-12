@@ -22,11 +22,10 @@ public class JoinRecruitmentList {
     private Boolean isIssued;
     private String volunteerType;
 
-    public JoinRecruitmentList(Long no, PictureDetails picture, String startDay, String endDay, String title,
+    public JoinRecruitmentList(Long no, String startDay, String endDay, String title,
                                String sido, String sigungu, String details, String volunteeringCategory,
                                String volunteeringType, Boolean isIssued, String volunteerType) {
         this.no = no;
-        this.picture = picture;
         this.startDay = startDay;
         this.endDay = endDay;
         this.title = title;

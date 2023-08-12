@@ -33,7 +33,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -48,7 +47,7 @@ import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationR
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.application.UserDtoService;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -142,11 +141,6 @@ public class LogboardControllerTestForEdit {
 		create.setWriter(saveUser);
 		recruitmentRepository.save(create);
 		Long no = create.getRecruitmentNo();
-
-		// static 이미지 저장
-		ImageParam staticImageDto1 = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no).staticImageCode("imgname1").uploadImage(null).build();
-		imageService.addImage(staticImageDto1);
 
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
@@ -543,10 +537,10 @@ public class LogboardControllerTestForEdit {
 		Long logboardNo = logboardRepository.save(logboard).getLogboardNo();
 		
 
-		ImageParam uploadLogboardImg1 = new ImageParam(RealWorkCode.LOG, logboardNo, ImageType.UPLOAD, null, getMockMultipartFile());
+		ImageParam uploadLogboardImg1 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile());
 		Long saveId1 = imageService.addImage(uploadLogboardImg1);
 
-		ImageParam uploadLogboardImg2 = new ImageParam(RealWorkCode.LOG, logboardNo, ImageType.UPLOAD, null, getMockMultipartFile());
+		ImageParam uploadLogboardImg2 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile());
 		Long saveId2 = imageService.addImage(uploadLogboardImg2);
 
 		
