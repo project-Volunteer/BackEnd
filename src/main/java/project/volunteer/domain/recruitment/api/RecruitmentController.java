@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentList;
+import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.api.dto.response.*;
@@ -16,7 +18,6 @@ import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.application.RecruitmentDtoService;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
-import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
@@ -42,10 +43,10 @@ public class RecruitmentController {
 
     private final RecruitmentService recruitmentService;
     private final RecruitmentDtoService recruitmentDtoService;
+    private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
     private final RepeatPeriodService repeatPeriodService;
     private final ScheduleService scheduleService;
     private final ImageService imageService;
-    private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
@@ -69,8 +70,13 @@ public class RecruitmentController {
         }
 
         //이미지 저장
-        imageService.addImage(
-                new ImageParam(RealWorkCode.RECRUITMENT, recruitmentNo, form.getPicture()));
+        if(!form.getPicture().getIsStaticImage()) {
+            imageService.addImage(ImageParam.builder()
+                    .code(RealWorkCode.RECRUITMENT)
+                    .no(recruitmentNo)
+                    .uploadImage(form.getPicture().getUploadImage())
+                    .build());
+        }
 
         //response
         Map<String, Object> result = new HashMap<>();
@@ -88,12 +94,8 @@ public class RecruitmentController {
                                                                    @RequestParam(required = false) String volunteer_type,
                                                                    @RequestParam(required = false) Boolean is_issued) {
 
-        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentDtos(pageable,
-                new RecruitmentCond(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued));
-
-        //response DTO 변환
-        List<RecruitmentList> dtos = result.getContent().stream().map(dto -> new RecruitmentList(dto)).collect(Collectors.toList());
-        return ResponseEntity.ok(new RecruitmentListResponse(dtos, result.isLast(), (dtos.isEmpty())?null:(dtos.get(dtos.size()-1).getNo())));
+        return ResponseEntity.ok(recruitmentDtoService.findRecruitmentDtos(pageable,
+                new RecruitmentCond(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued)));
     }
 
     @GetMapping("/recruitment/count")
@@ -123,7 +125,7 @@ public class RecruitmentController {
     @GetMapping("/recruitment/{no}")
     public ResponseEntity<RecruitmentDetails> recruitmentDetails(@PathVariable Long no){
 
-        RecruitmentDetails dto = recruitmentDtoService.findRecruitment(no);
+        RecruitmentDetails dto = recruitmentDtoService.findRecruitmentDto(no);
         return ResponseEntity.ok(dto);
     }
 

@@ -17,14 +17,12 @@ import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentListQue
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.*;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
-import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
 
+import static project.volunteer.domain.image.domain.QStorage.storage;
 import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
 import static project.volunteer.domain.image.domain.QImage.image;
-import static project.volunteer.domain.storage.domain.QStorage.storage;
-import static project.volunteer.domain.repeatPeriod.domain.QRepeatPeriod.repeatPeriod;
 import static project.volunteer.domain.participation.domain.QParticipant.participant1;
 
 import java.util.List;
@@ -43,13 +41,6 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
 
         result.getContent().stream()
                 .forEach(dto -> {
-                    //TODO: 현재 디자인 버전에서는 보이지 않음. 확인해보기
-                    //각 모집글에 해당 하는 반복주기 엔티티 리스트 조회(반복주기 엔티티는 N 이므로 별도 조회)
-//                    if(dto.getVolunteeringType().equals(VolunteeringType.REG)) {
-//                        List<Day> days = findDays(dto.getNo());
-//                        dto.setDays(days);
-//                    }
-
                     //각 모집글에 참여자 리스트 count(참여자 엔티티는 N 이므로 별도 조회)
                     Long currentParticipantNum = countParticipants(dto.getNo());
                     dto.setCurrentVolunteerNum(currentParticipantNum);
@@ -65,17 +56,13 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
     //TODO: 추후 no offset 으로 성능 최적화 고려해보기
     @Override
     public Slice<RecruitmentListQuery> findRecruitmentJoinImageBySearchType(Pageable pageable, RecruitmentCond searchType) {
-
-        //모집글&이미지&저장소 모두 1:1이니 한번에 받아오기
-        //모집글에 반드시 이미지가 존재?(static, upload) : innerJoin, leftJoin
-        //이미지에 저장소가 없을수 있으니 : leftJoin
+        //모집글 이미지 같이 조회(최적화)
         List<RecruitmentListQuery> content = jpaQueryFactory
                 .select(
                         new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.volunteeringCategory,recruitment.title,
                                 recruitment.address.sido, recruitment.address.sigungu,
                                 recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
-                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum,
-                                image.staticImageName, storage.imagePath))
+                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, storage.imagePath))
                 .from(recruitment)
                 .leftJoin(image)
                 .on(
@@ -120,14 +107,6 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 )
                 .fetchOne();
     }
-
-//    private List<Day> findDays(Long recruitmentNo){
-//        return jpaQueryFactory
-//                .select(repeatPeriod.day)
-//                .from(repeatPeriod)
-//                .where(repeatPeriod.recruitment.recruitmentNo.eq(recruitmentNo))
-//                .fetch();
-//    }
 
     private Long countParticipants(Long recruitmentNo){
         return jpaQueryFactory
