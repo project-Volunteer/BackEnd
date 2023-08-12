@@ -13,12 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -78,9 +77,7 @@ class ImageServiceImplTestForEdit {
     private void setUploadImage(RealWorkCode realWorkCode, Long no) throws IOException {
         ImageParam imageParam = ImageParam.builder()
                 .code(realWorkCode)
-                .imageType(ImageType.UPLOAD)
                 .no(no)
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         uploadImageNoList.add(imageService.addImage(imageParam));
