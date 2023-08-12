@@ -24,7 +24,7 @@ public class NoticeDetails {
         NoticeDetails dto = new NoticeDetails();
         dto.no = notice.getNoticeNo();
         dto.createdAt = notice.getCreatedDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        dto.createdTime = notice.getCreatedDate().format(DateTimeFormatter.ofPattern("HH-mm"));
+        dto.createdTime = notice.getCreatedDate().format(DateTimeFormatter.ofPattern("HH:mm"));
         dto.content = notice.getContent();
         dto.checkCnt = notice.getCheckedNum();
         dto.commentsCnt = notice.getCommentNum();
