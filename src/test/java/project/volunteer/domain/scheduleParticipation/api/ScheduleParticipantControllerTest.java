@@ -22,7 +22,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
@@ -38,7 +37,7 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -487,9 +486,7 @@ class ScheduleParticipantControllerTest {
     private Image 업로드_이미지_등록(Long no, RealWorkCode code) throws IOException {
         ImageParam imageDto = ImageParam.builder()
                 .code(code)
-                .imageType(ImageType.UPLOAD)
                 .no(no)
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         Long imageNo = imageService.addImage(imageDto);
