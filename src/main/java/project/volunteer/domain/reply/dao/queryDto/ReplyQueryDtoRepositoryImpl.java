@@ -26,7 +26,7 @@ public class ReplyQueryDtoRepositoryImpl implements ReplyQueryDtoRepository{
         return jpaQueryFactory
                 .select(
                         new QCommentMapperDto(children.replyNo, parent.replyNo,storage.imagePath.coalesce(user.picture).as("profile"),
-                                user.nickName, children.content, children.createdDate))
+                                user.nickName, children.content, children.createdDate, children.isDeleted))
                 .from(children)
                 .join(children.writer, user)
                 .leftJoin(image).on(
