@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
@@ -20,10 +19,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.repeatPeriod.domain.Period;
-import project.volunteer.domain.storage.dao.StorageRepository;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.dao.StorageRepository;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Week;
@@ -98,13 +96,11 @@ class RecruitmentWriteControllerTest {
     public void 모집글_비정기_정적이미지_등록_성공() throws Exception {
         //given
         final String volunteeringType = VolunteeringType.IRREG.getId();
-        final String type = ImageType.STATIC.getId();
-        final String staticImage = "3";
+        final Boolean isStaticImage = true;
 
         MultiValueMap info = createCommontRecruitmentForm();
         info.add("volunteeringType", volunteeringType); //비정기
-        info.add("picture.type", type); //정적 이미지
-        info.add("picture.staticImage", staticImage); //정적이미지
+        info.add("picture.isStaticImage", isStaticImage); //정적 이미지
 
         //when & then
         mockMvc.perform(
@@ -122,13 +118,13 @@ class RecruitmentWriteControllerTest {
         final String volunteeringType = VolunteeringType.REG.getId();
         final String period = Period.WEEK.getId();
         final List<String> days = List.of(Day.MON.getId());
-        final String type = ImageType.UPLOAD.getId();
+        final Boolean isStaticImage = false;
 
         MultiValueMap info = createCommontRecruitmentForm();
         info.add("volunteeringType", volunteeringType); //정기
         info.add("period", period); //정기-매주
         info.add("days[0]", days.get(0)); //정기-매주
-        info.add("picture.type", type); //업로드 이미지
+        info.add("picture.isStaticImage", isStaticImage); //업로드 이미지
 
         //when & then
         mockMvc.perform(
@@ -148,7 +144,7 @@ class RecruitmentWriteControllerTest {
         final String period = Period.MONTH.getId();
         final String week = Week.FIRST.getId();
         final List<String> days = List.of(Day.MON.getId(), Day.TUES.getId());
-        final String type = ImageType.UPLOAD.getId();
+        final Boolean isStaticImage = false;
 
         MultiValueMap info = createCommontRecruitmentForm();
         info.add("volunteeringType", volunteeringType);
@@ -156,7 +152,7 @@ class RecruitmentWriteControllerTest {
         info.add("week", week); //정기-매달
         info.add("days", days.get(0));
         info.add("days", days.get(1));
-        info.add("picture.type", String.valueOf(type));
+        info.add("picture.isStaticImage", String.valueOf(isStaticImage));
 
         //when
         ResultActions result = mockMvc.perform(
@@ -197,8 +193,7 @@ class RecruitmentWriteControllerTest {
                                         parameterWithName("period").optional().attributes(key("constraints").value("비정기일 경우 NULL 허용")).description("Code Period 참고바람."),
                                         parameterWithName("week").optional().attributes(key("constraints").value("비정기 혹은 Period가 매주일 경우 NULL 허용")).description("Code Week 참고바람."),
                                         parameterWithName("days").optional().attributes(key("constraints").value("비정기일 경우 NULL 허용")).description("Code Day 참고바람, 다중 값 허용(배열)"),
-                                        parameterWithName("picture.type").description("Code ImageType 참고바람."),
-                                        parameterWithName("picture.staticImage").optional().attributes(key("constraints").value("업로드 이미지일 경우 NULL 허용")).description("정적 이미지 코드"),
+                                        parameterWithName("picture.isStaticImage").description("정적/동적 이미지 구분"),
                                         parameterWithName("title").attributes(key("constraints").value("1이상 255이하")).description("봉사 모집글 제목"),
                                         parameterWithName("content").attributes(key("constraints").value("1이상 255이하")).description("봉사 모집글 본문"),
                                         parameterWithName("isPublished").description("임시 저장 유무")

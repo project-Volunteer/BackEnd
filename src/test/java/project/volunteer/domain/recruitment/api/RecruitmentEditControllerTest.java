@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
@@ -25,12 +24,12 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
 import project.volunteer.domain.repeatPeriod.domain.Period;
 import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.storage.dao.StorageRepository;
+import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.global.common.component.*;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Week;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -97,9 +96,7 @@ class RecruitmentEditControllerTest {
         //봉사 업로드 이미지 저장
         ImageParam staticImageDto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.UPLOAD)
                 .no(saveRecruitmentNo)
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         imageService.addImage(staticImageDto);

@@ -23,7 +23,6 @@ import org.springframework.util.MultiValueMap;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
@@ -39,8 +38,8 @@ import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.storage.dao.StorageRepository;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.dao.StorageRepository;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -170,94 +169,18 @@ class RecruitmentQueryControllerTest {
         //static & upload 이미지 저장
         ImageParam staticImageDto1 = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.UPLOAD)
                 .no(saveRecruitment1.getRecruitmentNo())
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         Long imageNo1 = imageService.addImage(staticImageDto1);
         saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo1).get());
         ImageParam staticImageDto2 = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.UPLOAD)
                 .no(saveRecruitment2.getRecruitmentNo())
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         Long imageNo2 = imageService.addImage(staticImageDto2);
         saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo2).get());
-        ImageParam staticImageDto3 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment3.getRecruitmentNo())
-                .staticImageCode("image3")
-                .uploadImage(null)
-                .build();
-        Long imageNo3 = imageService.addImage(staticImageDto3);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo3).get());
-        ImageParam staticImageDto4 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment4.getRecruitmentNo())
-                .staticImageCode("image4")
-                .uploadImage(null)
-                .build();
-        Long imageNo4 = imageService.addImage(staticImageDto4);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo4).get());
-        ImageParam staticImageDto5 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment5.getRecruitmentNo())
-                .staticImageCode("image5")
-                .uploadImage(null)
-                .build();
-        Long imageNo5 = imageService.addImage(staticImageDto5);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo5).get());
-        ImageParam staticImageDto6 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment6.getRecruitmentNo())
-                .staticImageCode("image6")
-                .uploadImage(null)
-                .build();
-        Long imageNo6 = imageService.addImage(staticImageDto6);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo6).get());
-        ImageParam staticImageDto7 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment7.getRecruitmentNo())
-                .staticImageCode("image7")
-                .uploadImage(null)
-                .build();
-        Long imageNo7 = imageService.addImage(staticImageDto7);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo7).get());
-        ImageParam staticImageDto8 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment8.getRecruitmentNo())
-                .staticImageCode("image8")
-                .uploadImage(null)
-                .build();
-        Long imageNo8 = imageService.addImage(staticImageDto8);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo8).get());
-        ImageParam staticImageDto9 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment9.getRecruitmentNo())
-                .staticImageCode("image9")
-                .uploadImage(null)
-                .build();
-        Long imageNo9 = imageService.addImage(staticImageDto9);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo9).get());
-        ImageParam staticImageDto10 = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(saveRecruitment10.getRecruitmentNo())
-                .staticImageCode("image10")
-                .uploadImage(null)
-                .build();
-        Long imageNo10 = imageService.addImage(staticImageDto10);
-        saveRecruitmentUploadImageList.add(imageRepository.findById(imageNo10).get());
 
         //반복 주기 저장 -> 봉사 모집글 1
         RepeatPeriod period1 = RepeatPeriod.builder()
@@ -281,9 +204,7 @@ class RecruitmentQueryControllerTest {
         userRepository.save(user1);
         ImageParam staticImageDto = ImageParam.builder()
                 .code(RealWorkCode.USER)
-                .imageType(ImageType.UPLOAD)
                 .no(user1.getUserNo())
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         Long imageNo11 = imageService.addImage(staticImageDto);
@@ -356,34 +277,24 @@ class RecruitmentQueryControllerTest {
                 .andExpect(jsonPath("$.recruitmentList[0].isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
                 .andExpect(jsonPath("$.recruitmentList[0].volunteerNum").value(saveRecruitmentList.get(0).getVolunteerNum()))
                 .andExpect(jsonPath("$.recruitmentList[0].currentVolunteerNum").value(2))
-                .andExpect(jsonPath("$.recruitmentList[0].picture.type").value(ImageType.UPLOAD.getId()))
-                .andExpect(jsonPath("$.recruitmentList[0].picture.staticImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[0].picture.isStaticImage").value(false))
                 .andExpect(jsonPath("$.recruitmentList[0].picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
                 .andExpect(jsonPath("$.recruitmentList[1].no").value(saveRecruitmentList.get(1).getRecruitmentNo()))
                 .andExpect(jsonPath("$.recruitmentList[1].currentVolunteerNum").value(0))
-                .andExpect(jsonPath("$.recruitmentList[1].picture.type").value(ImageType.UPLOAD.getId()))
-                .andExpect(jsonPath("$.recruitmentList[1].picture.staticImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[1].picture.isStaticImage").value(false))
                 .andExpect(jsonPath("$.recruitmentList[1].picture.uploadImage").value(saveRecruitmentUploadImageList.get(1).getStorage().getImagePath()))
                 .andExpect(jsonPath("$.recruitmentList[2].no").value(saveRecruitmentList.get(2).getRecruitmentNo()))
                 .andExpect(jsonPath("$.recruitmentList[2].currentVolunteerNum").value(0))
-                .andExpect(jsonPath("$.recruitmentList[2].picture.type").value(ImageType.STATIC.getId()))
-                .andExpect(jsonPath("$.recruitmentList[2].picture.staticImage").value(saveRecruitmentUploadImageList.get(2).getStaticImageName()))
-                .andExpect(jsonPath("$.recruitmentList[2].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[2].picture.isStaticImage").value(true))
                 .andExpect(jsonPath("$.recruitmentList[3].no").value(saveRecruitmentList.get(3).getRecruitmentNo()))
                 .andExpect(jsonPath("$.recruitmentList[3].currentVolunteerNum").value(0))
-                .andExpect(jsonPath("$.recruitmentList[3].picture.type").value(ImageType.STATIC.getId()))
-                .andExpect(jsonPath("$.recruitmentList[3].picture.staticImage").value(saveRecruitmentUploadImageList.get(3).getStaticImageName()))
-                .andExpect(jsonPath("$.recruitmentList[3].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[3].picture.isStaticImage").value(true))
                 .andExpect(jsonPath("$.recruitmentList[4].no").value(saveRecruitmentList.get(4).getRecruitmentNo()))
                 .andExpect(jsonPath("$.recruitmentList[4].currentVolunteerNum").value(0))
-                .andExpect(jsonPath("$.recruitmentList[4].picture.type").value(ImageType.STATIC.getId()))
-                .andExpect(jsonPath("$.recruitmentList[4].picture.staticImage").value(saveRecruitmentUploadImageList.get(4).getStaticImageName()))
-                .andExpect(jsonPath("$.recruitmentList[4].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[4].picture.isStaticImage").value(true))
                 .andExpect(jsonPath("$.recruitmentList[5].no").value(saveRecruitmentList.get(5).getRecruitmentNo()))
                 .andExpect(jsonPath("$.recruitmentList[5].currentVolunteerNum").value(0))
-                .andExpect(jsonPath("$.recruitmentList[5].picture.type").value(ImageType.STATIC.getId()))
-                .andExpect(jsonPath("$.recruitmentList[5].picture.staticImage").value(saveRecruitmentUploadImageList.get(5).getStaticImageName()))
-                .andExpect(jsonPath("$.recruitmentList[5].picture.uploadImage").isEmpty())
+                .andExpect(jsonPath("$.recruitmentList[5].picture.isStaticImage").value(true))
                 .andExpect(jsonPath("$.isLast").value(true))
                 .andExpect(jsonPath("$.lastId").value(saveRecruitmentList.get(5).getRecruitmentNo()))
                 .andDo(print())
@@ -408,9 +319,8 @@ class RecruitmentQueryControllerTest {
                                 ).andWithPrefix("recruitmentList.[].",
                                         fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
                                         fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
-                                        fieldWithPath("picture.type").type(JsonFieldType.STRING).description("Code ImageType 참고바람."),
-                                        fieldWithPath("picture.staticImage").type(JsonFieldType.STRING).optional().description("정적 이미지 코드, ImageType이 UPLOAD 일 경우 NULL"),
-                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, ImageType이 STATIC 일 경우 NULL"),
+                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("정적/동적 이미지 구분"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, isStaticImage True 일 경우 NULL"),
                                         fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
                                         fieldWithPath("sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
@@ -514,8 +424,7 @@ class RecruitmentQueryControllerTest {
                 .andExpect(jsonPath("$.repeatPeriod.week").value(saveRepeatPeriodList.get(0).getWeek().getId()))
                 .andExpect(jsonPath("$.repeatPeriod.days[0]").value(saveRepeatPeriodList.get(0).getDay().getId()))
                 .andExpect(jsonPath("$.repeatPeriod.days[1]").value(saveRepeatPeriodList.get(1).getDay().getId()))
-                .andExpect(jsonPath("$.picture.type").value(ImageType.UPLOAD.getId()))
-                .andExpect(jsonPath("$.picture.staticImage").isEmpty())
+                .andExpect(jsonPath("$.picture.isStaticImage").value(false))
                 .andExpect(jsonPath("$.picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
                 .andDo(print())
                 .andDo(
@@ -560,9 +469,8 @@ class RecruitmentQueryControllerTest {
                                         fieldWithPath("repeatPeriod.week").type(JsonFieldType.STRING).optional().description("Code Week 참고바람. 비정기 혹은 Period가 매주일 경우 NULL"),
                                         fieldWithPath("repeatPeriod.days").type(JsonFieldType.ARRAY).optional().description("Code Day 참고바람. 비정기일 경우 NULL"),
 
-                                        fieldWithPath("picture.type").type(JsonFieldType.STRING).description("Code ImageType 참고바람."),
-                                        fieldWithPath("picture.staticImage").type(JsonFieldType.STRING).optional().description("정적 이미지 코드, ImageType이 UPLOAD 일 경우 NULL"),
-                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, ImageType이 STATIC 일 경우 NULL")
+                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("정적/동적 이미지 구분"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, isStaticImage True 일 경우 NULL")
                                 )
                         )
                 );
