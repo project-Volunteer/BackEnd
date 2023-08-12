@@ -3,9 +3,10 @@ package project.volunteer.domain.like.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.volunteer.domain.logboard.domain.Logboard;
+import project.volunteer.domain.image.converter.RealWorkCodeConverter;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseEntity;
+import project.volunteer.global.common.component.RealWorkCode;
 
 import javax.persistence.*;
 
@@ -21,18 +22,24 @@ public class Like extends BaseEntity {
     private Long likeNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "logboardno")
-    private Logboard logboard;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno")
     private User user;
 
-    @Column(name = "create_by", nullable = false)
-    private Long createUserNo;
-    
-    @Column(name = "like_ok", nullable = false)
-    private Boolean likeOk;
+    @Convert(converter = RealWorkCodeConverter.class)
+    @Column(name = "realwork_code", length = 2, nullable = false)
+    private RealWorkCode realWorkCode;
 
-	
+    @Column(nullable = false)
+    private Long no;
+
+    public static Like createLike(RealWorkCode code, Long no){
+        Like createLike = new Like();
+        createLike.realWorkCode = code;
+        createLike.no = no;
+        return createLike;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

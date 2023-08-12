@@ -1,6 +1,7 @@
 package project.volunteer.domain.logboard.api.dto.response;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +20,9 @@ public class LogboardList {
 	private Long writerNo;
 	private String profile;
 	private String nickname;
-	private LocalDateTime createdDay;
+	private String createdDay;
 	private List<String> pictures;
-	private VolunteeringCategory volunteeringCategory;
+	private String volunteeringCategory;
 	private String content;
 	private Integer likeCnt;
 	private boolean isLikeMe;
@@ -29,18 +30,16 @@ public class LogboardList {
 	
 
 	public LogboardList(Long no, Long writerNo, String profile, String nickname, LocalDateTime createdDay,
-			VolunteeringCategory volunteeringCategory, String content, Integer likeCnt, boolean isLikeMe,
-			Integer commentCnt) {
+			VolunteeringCategory volunteeringCategory, String content, Integer likeCnt, boolean isLikeMe) {
 		this.no = no;
 		this.writerNo = writerNo;
 		this.profile = profile;
 		this.nickname = nickname;
-		this.createdDay = createdDay;
-		this.volunteeringCategory = volunteeringCategory;
+		this.createdDay = createdDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+		this.volunteeringCategory = volunteeringCategory.getDesc();
 		this.content = content;
 		this.likeCnt = likeCnt;
 		this.isLikeMe = isLikeMe;
-		this.commentCnt = commentCnt;
 	}
 	
 	public void setPicturesFromImageDomain(List<Image> imageList) {
@@ -52,5 +51,5 @@ public class LogboardList {
 		
 		this.pictures = imagePath;
 	}
-    
+
 }
