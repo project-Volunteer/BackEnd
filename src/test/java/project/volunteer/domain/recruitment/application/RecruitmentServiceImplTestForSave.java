@@ -77,7 +77,7 @@ class RecruitmentServiceImplTestForSave {
                 coordinate, timetable, isPublished);
 
         //when
-        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param).getRecruitmentNo();
         clear();
 
         //then
@@ -113,15 +113,15 @@ class RecruitmentServiceImplTestForSave {
         RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(period, week, days);
 
         //when
-        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
-        repeatPeriodService.addRepeatPeriod(no, repeatPeriodParam);
+        Recruitment recruitment = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        repeatPeriodService.addRepeatPeriod(recruitment, repeatPeriodParam);
         clear();
 
         //then
-        Recruitment find = recruitmentRepository.findById(no).get();
+        Recruitment find = recruitmentRepository.findById(recruitment.getRecruitmentNo()).get();
         assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
 
-        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(no);
+        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
         assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
         assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
         assertThat(list.get(0).getPeriod()).isEqualTo(Period.WEEK);
@@ -156,15 +156,15 @@ class RecruitmentServiceImplTestForSave {
 
 
         //when
-        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
-        repeatPeriodService.addRepeatPeriod(no, repeatPeriodParam);
+        Recruitment recruitment = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        repeatPeriodService.addRepeatPeriod(recruitment, repeatPeriodParam);
         clear();
 
         //then
-        Recruitment find = recruitmentRepository.findById(no).get();
+        Recruitment find = recruitmentRepository.findById(recruitment.getRecruitmentNo()).get();
         assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
 
-        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(no);
+        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
         assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
         assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
         assertThat(list.get(0).getPeriod()).isEqualTo(Period.MONTH);

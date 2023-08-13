@@ -27,7 +27,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Transactional
-    public Long addRecruitment(Long loginUserNo, RecruitmentParam saveDto){
+    public Recruitment addRecruitment(Long loginUserNo, RecruitmentParam saveDto){
 
         Recruitment recruitment = Recruitment.createRecruitment(saveDto.getTitle(), saveDto.getContent(), saveDto.getVolunteeringCategory(), saveDto.getVolunteeringType(),
                 saveDto.getVolunteerType(), saveDto.getVolunteerNum(), saveDto.getIsIssued(), saveDto.getOrganizationName(), saveDto.getAddress(),
@@ -37,7 +37,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED_USER,
                         String.format("Unauthorized UserNo = [%d]", loginUserNo))));
 
-        return recruitmentRepository.save(recruitment).getRecruitmentNo();
+        return recruitmentRepository.save(recruitment);
     }
 
     @Override

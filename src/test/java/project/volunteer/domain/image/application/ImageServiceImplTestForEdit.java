@@ -72,7 +72,7 @@ class ImageServiceImplTestForEdit {
         Boolean isPublished = true;
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-        saveRecruitmentNo = recruitmentService.addRecruitment(writer.getUserNo(), saveRecruitDto);
+        saveRecruitmentNo = recruitmentService.addRecruitment(writer.getUserNo(), saveRecruitDto).getRecruitmentNo();
     }
     private void setUploadImage(RealWorkCode realWorkCode, Long no) throws IOException {
         ImageParam imageParam = ImageParam.builder()
