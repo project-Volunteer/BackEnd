@@ -6,14 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.image.domain.Storage;
-import project.volunteer.domain.user.dao.UserRepository;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 
 @Slf4j
 @Service
@@ -44,7 +39,6 @@ public class ImageServiceImpl implements ImageService{
     @Override
     @Transactional
     public void deleteImage(RealWorkCode code, Long no) {
-
         imageRepository.findByCodeAndNo(code, no)
                 .ifPresent(img -> img.setDeleted());
         /**
@@ -55,7 +49,6 @@ public class ImageServiceImpl implements ImageService{
     @Override
     @Transactional
     public void deleteImageList(RealWorkCode code, Long no) {
-
         imageRepository.findImagesByCodeAndNo(code, no).stream()
                 .forEach(img -> img.setDeleted());
     }
