@@ -129,18 +129,18 @@ public class UserControllerDashboardTest {
 			모집글 4, 5, 6, 7 - 사용자2가 만듦
 			모집글 8, 9, 10, 11 - 사용자2가 임시저장
 			*/
-        Long rNo1 = recruitmentService.addRecruitment(user1.getUserNo(), makeRecruitmentParam(1, 3 , true )).getRecruitmentNo();
-        Long rNo2 = recruitmentService.addRecruitment(user1.getUserNo(), makeRecruitmentParam(2, 3 , true )).getRecruitmentNo();
-        Long rNo3 = recruitmentService.addRecruitment(user1.getUserNo(), makeRecruitmentParam(3, 3 , false )).getRecruitmentNo();
-        Long rNo4 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(4, 2 , true )).getRecruitmentNo();
-        Long rNo5 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(5, 2 , true )).getRecruitmentNo();
-        Long rNo6 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(6, 2 , true )).getRecruitmentNo();
-        Long rNo7 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(7, 1 , true )).getRecruitmentNo();
+        Long rNo1 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(1, 3 , true )).getRecruitmentNo();
+        Long rNo2 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(2, 3 , true )).getRecruitmentNo();
+        Long rNo3 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(3, 3 , false )).getRecruitmentNo();
+        Long rNo4 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(4, 2 , true )).getRecruitmentNo();
+        Long rNo5 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(5, 2 , true )).getRecruitmentNo();
+        Long rNo6 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(6, 2 , true )).getRecruitmentNo();
+        Long rNo7 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(7, 1 , true )).getRecruitmentNo();
 
-        Long rNo8 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(8, 3 , false )).getRecruitmentNo();
-        Long rNo9 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(9, 3 , false )).getRecruitmentNo();
-        Long rNo10 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(0, 3 , false )).getRecruitmentNo();
-        Long rNo11 = recruitmentService.addRecruitment(user2.getUserNo(), makeRecruitmentParam(1, 3 , false )).getRecruitmentNo();
+        Long rNo8 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(8, 3 , false )).getRecruitmentNo();
+        Long rNo9 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(9, 3 , false )).getRecruitmentNo();
+        Long rNo10 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(0, 3 , false )).getRecruitmentNo();
+        Long rNo11 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(1, 3 , false )).getRecruitmentNo();
 
         deleteRecruitmentNoList.add(rNo9);
         deleteRecruitmentNoList.add(rNo10);

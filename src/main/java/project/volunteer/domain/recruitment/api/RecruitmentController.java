@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.user.dao.UserRepository;
+import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.api.dto.response.*;
@@ -44,6 +46,7 @@ public class RecruitmentController {
     private final RepeatPeriodService repeatPeriodService;
     private final ScheduleService scheduleService;
     private final ImageService imageService;
+    private final UserRepository userRepository;
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
@@ -51,7 +54,9 @@ public class RecruitmentController {
         //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
 
         //모집글 정보 저장
-        Recruitment recruitment = recruitmentService.addRecruitment(SecurityUtil.getLoginUserNo(), new RecruitmentParam(form));
+        //TODO: 퍼사드 패턴 도입전 임시 방편
+        User user = userRepository.findByUserNo(SecurityUtil.getLoginUserNo()).get();
+        Recruitment recruitment = recruitmentService.addRecruitment(user, new RecruitmentParam(form));
 
         //정기일 경우
         if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())) {

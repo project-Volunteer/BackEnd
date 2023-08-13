@@ -77,7 +77,7 @@ class RecruitmentServiceImplTestForSave {
                 coordinate, timetable, isPublished);
 
         //when
-        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param).getRecruitmentNo();
+        Long no = recruitmentService.addRecruitment(writer, param).getRecruitmentNo();
         clear();
 
         //then
@@ -113,7 +113,7 @@ class RecruitmentServiceImplTestForSave {
         RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(period, week, days);
 
         //when
-        Recruitment recruitment = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        Recruitment recruitment = recruitmentService.addRecruitment(writer, param);
         repeatPeriodService.addRepeatPeriod(recruitment, repeatPeriodParam);
         clear();
 
@@ -156,7 +156,7 @@ class RecruitmentServiceImplTestForSave {
 
 
         //when
-        Recruitment recruitment = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        Recruitment recruitment = recruitmentService.addRecruitment(writer, param);
         repeatPeriodService.addRepeatPeriod(recruitment, repeatPeriodParam);
         clear();
 

@@ -123,8 +123,8 @@ public class UserControllerJoinRequestTest {
 		RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2,
 				details, latitude, longitude, isIssued2, volunteerType2, volunteerNum, volunteeringType, startDay,
 				endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-		Long no1 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto1).getRecruitmentNo();
-		Long no2 = recruitmentService.addRecruitment(saveUser.getUserNo(), saveRecruitDto2).getRecruitmentNo();
+		Long no1 = recruitmentService.addRecruitment(saveUser, saveRecruitDto1).getRecruitmentNo();
+		Long no2 = recruitmentService.addRecruitment(saveUser, saveRecruitDto2).getRecruitmentNo();
 
 		saveRecruitmentNoList.add(no1);
 		saveRecruitmentNoList.add(no2);
