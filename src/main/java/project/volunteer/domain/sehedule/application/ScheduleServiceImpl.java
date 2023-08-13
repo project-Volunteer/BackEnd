@@ -121,6 +121,15 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
+    public void deleteAllSchedule(Long recruitmentNo) {
+        scheduleRepository.findByRecruitment_RecruitmentNo(recruitmentNo)
+                .forEach(s -> {
+                    s.delete();
+                    s.removeRecruitment();
+                });
+    }
+
+    @Override
     public List<Schedule> findCalendarSchedules(Recruitment recruitment, LocalDate startDay, LocalDate endDay) {
         return scheduleRepository.findScheduleWithinRecruitmentPeriod(recruitment, startDay, endDay);
     }

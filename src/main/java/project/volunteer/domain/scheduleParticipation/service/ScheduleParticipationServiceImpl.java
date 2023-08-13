@@ -126,7 +126,14 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                 });
     }
 
-
+    @Override
+    public void deleteAllScheduleParticipation(Long recruitmentNo) {
+        scheduleParticipationRepository.findByRecruitmentNo(recruitmentNo)
+                .forEach(sp -> {
+                    sp.delete();
+                    sp.removeScheduleAndParticipant();
+                });
+    }
 
 
     private Schedule isActiveSchedule(Long scheduleNo){

@@ -21,6 +21,7 @@ public interface ScheduleService {
 
     //스케줄 삭제
     public void deleteSchedule(Long scheduleNo);
+    public void deleteAllSchedule(Long recruitmentNo);
 
     //캘린더 스케줄 리스트 조회
     public List<Schedule> findCalendarSchedules(Recruitment recruitment, LocalDate startDay, LocalDate endDay);

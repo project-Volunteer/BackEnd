@@ -18,6 +18,7 @@ import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.application.dto.RepeatPeriodDetails;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.user.application.UserService;
@@ -35,6 +36,7 @@ public class RecruitmentFacade {
     private final ScheduleService scheduleService;
     private final ImageService imageService;
     private final ParticipationService participationService;
+    private final ScheduleParticipationService scheduleParticipationService;
 
     @Transactional
     public Long registerVolunteerPost(Long userId, RecruitmentRequest form){
@@ -78,9 +80,11 @@ public class RecruitmentFacade {
 
         //공지사항 삭제
 
-        //일정 삭제
-
         //일정 참여자 삭제
+        scheduleParticipationService.deleteAllScheduleParticipation(recruitmentNo);
+
+        //일정 삭제
+        scheduleService.deleteAllSchedule(recruitmentNo);
 
         //봉사 참여자 삭제
         participationService.deleteParticipations(recruitmentNo);

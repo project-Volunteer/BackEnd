@@ -33,6 +33,13 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
 
     @Query("select sp " +
             "from ScheduleParticipation sp " +
+            "join sp.schedule s " +
+            "join s.recruitment r " +
+            "where r.recruitmentNo =:recruitmentNo")
+    List<ScheduleParticipation> findByRecruitmentNo(@Param("recruitmentNo")Long recruitmentNo);
+
+    @Query("select sp " +
+            "from ScheduleParticipation sp " +
             "join sp.participant p on p.participant.userNo=:userNo " +
             "where sp.schedule.scheduleNo=:scheduleNo " +
             "and sp.state=:state ")

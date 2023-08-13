@@ -12,5 +12,7 @@ public interface ScheduleParticipationService {
 
     public void approvalCompletion(Long scheduleNo, List<Long> spNo);
 
+
     public void deleteScheduleParticipation(Long scheduleNo);
+    public void deleteAllScheduleParticipation(Long recruitmentNo);
 }
