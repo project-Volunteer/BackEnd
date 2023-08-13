@@ -2,6 +2,7 @@ package project.volunteer.domain.image.application;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,13 +12,12 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -78,7 +78,6 @@ class ImageServiceImplTestForSave {
         RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, latitude, longitude,
                 isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
         saveRecruitmentNo = recruitmentService.addRecruitment(writer.getUserNo(), saveRecruitDto);
-        clear();
     }
     @BeforeEach
     private void initUser() {
@@ -94,86 +93,18 @@ class ImageServiceImplTestForSave {
                 .role(Role.USER)
                 .provider("kakao").providerId("1234")
                 .build());
-        clear();
     }
 
     @Test
     @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_정적_이미지_저장_실패_존재하지않는모집글() {
+    public void 모집글_이미지_저장_성공() throws IOException {
         //init
         setRecruitment();
 
         //given
         ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
-                .no(Long.MAX_VALUE) //-> 없는 모집글 PK
-                .staticImageCode("1")
-                .uploadImage(null)
-                .build();
-
-        //when,then
-        Assertions.assertThatThrownBy(() -> imageService.addImage(dto))
-                .isInstanceOf(BusinessException.class);
-    }
-
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 사용자_정적_이미지_저장_실패_존재하지않는사용자(){
-        //given
-        ImageParam dto = ImageParam.builder()
-                .code(RealWorkCode.USER)
-                .imageType(ImageType.STATIC)
-                .no(Long.MAX_VALUE) //-> 없는 모집글 PK
-                .staticImageCode("1")
-                .uploadImage(null)
-                .build();
-
-        //when & then
-        Assertions.assertThatThrownBy(() -> imageService.addImage(dto))
-                .isInstanceOf(BusinessException.class);
-    }
-
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_정적_이미지_저장_성공() throws IOException {
-        //init
-        setRecruitment();
-
-        //given
-        ImageParam dto = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.STATIC)
                 .no(saveRecruitmentNo)
-                .staticImageCode("1")
-                .uploadImage(null)
-                .build();
-
-        //when
-        Long saveId = imageService.addImage(dto);
-        clear();
-
-        //then
-        Image image = imageRepository.findById(saveId).get();
-        Assertions.assertThat(image.getImageNo()).isEqualTo(saveId);
-        Assertions.assertThat(image.getNo()).isEqualTo(saveRecruitmentNo);
-        Assertions.assertThat(image.getStaticImageName()).isEqualTo("1");
-        Assertions.assertThat(image.getRealWorkCode()).isEqualTo(RealWorkCode.RECRUITMENT);
-        Assertions.assertThat(image.getStorage()).isNull();
-    }
-
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void 모집글_업로드_이미지_저장_성공() throws IOException {
-        //init
-        setRecruitment();
-
-        //given
-        ImageParam dto = ImageParam.builder()
-                .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.UPLOAD)
-                .no(saveRecruitmentNo)
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
 
@@ -185,7 +116,6 @@ class ImageServiceImplTestForSave {
         Image image = imageRepository.findById(saveId).get();
         Assertions.assertThat(image.getImageNo()).isEqualTo(saveId);
         Assertions.assertThat(image.getNo()).isEqualTo(saveRecruitmentNo);
-        Assertions.assertThat(image.getStaticImageName()).isNull();
         Assertions.assertThat(image.getRealWorkCode()).isEqualTo(RealWorkCode.RECRUITMENT);
 
         Storage storage = image.getStorage();
@@ -203,9 +133,7 @@ class ImageServiceImplTestForSave {
         setRecruitment();
         ImageParam dto = ImageParam.builder()
                 .code(RealWorkCode.RECRUITMENT)
-                .imageType(ImageType.UPLOAD)
                 .no(saveRecruitmentNo)
-                .staticImageCode(null)
                 .uploadImage(getFailMockMultipartFile())
                 .build();
 
@@ -213,5 +141,4 @@ class ImageServiceImplTestForSave {
         Assertions.assertThatThrownBy(() -> imageService.addImage(dto))
                 .isInstanceOf(BusinessException.class);
     }
-
 }

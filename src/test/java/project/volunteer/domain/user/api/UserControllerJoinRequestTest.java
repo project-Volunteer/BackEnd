@@ -29,7 +29,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
@@ -38,7 +37,7 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -130,14 +129,7 @@ public class UserControllerJoinRequestTest {
 		saveRecruitmentNoList.add(no1);
 		saveRecruitmentNoList.add(no2);
 
-
-		// 이미지 저장
-		ImageParam staticImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no1).staticImageCode("imgname").uploadImage(null).build();
-		Long saveId1 = imageService.addImage(staticImageDto);
-
-		ImageParam uploadImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.UPLOAD)
-				.no(no2).staticImageCode(null).uploadImage(getMockMultipartFile()).build();
+		ImageParam uploadImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).no(no2).uploadImage(getMockMultipartFile()).build();
 		Long saveId2 = imageService.addImage(uploadImageDto);
 		deleteS3ImageNoList.add(saveId2); // S3에 저장된 이미지 추후 삭제 예정
 	

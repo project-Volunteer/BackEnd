@@ -10,8 +10,8 @@ import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.reply.dao.queryDto.ReplyQueryDtoRepository;
 import project.volunteer.domain.reply.dao.queryDto.dto.CommentMapperDto;
 import project.volunteer.domain.reply.domain.Reply;
-import project.volunteer.domain.storage.dao.StorageRepository;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.dao.StorageRepository;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -99,7 +99,6 @@ class ReplyRepositoryTest {
         Image image = Image.builder()
                 .realWorkCode(code)
                 .no(no)
-                .staticImageName(null)
                 .build();
         image.setStorage(storage);
         imageRepository.save(image);

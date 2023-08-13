@@ -41,7 +41,6 @@ public class ScheduleDetails {
         scheduleDetails.address = new Address(schedule.getAddress().getSido(), schedule.getAddress().getSigungu(), schedule.getAddress().getDetails());
         scheduleDetails.startDay = schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         scheduleDetails.startTime = schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-       // scheduleDetails.hourFormat = schedule.getScheduleTimeTable().getHourFormat().getViewName();
         scheduleDetails.hourFormat = schedule.getScheduleTimeTable().getHourFormat().getDesc();
         scheduleDetails.progressTime = schedule.getScheduleTimeTable().getProgressTime();
         scheduleDetails.volunteerNum = schedule.getVolunteerNum();

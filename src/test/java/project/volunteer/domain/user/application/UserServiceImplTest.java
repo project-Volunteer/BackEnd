@@ -26,7 +26,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
@@ -36,7 +35,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.api.dto.response.UserAlarmResponse;
 import project.volunteer.domain.user.api.dto.response.UserJoinRequestListResponse;
 import project.volunteer.domain.user.api.dto.response.UserRecruitingListResponse;
@@ -211,24 +210,9 @@ public class UserServiceImplTest {
 		create4.setWriter(userNo3);
 		recruitmentRepository.save(create4);
 		Long no4 = create4.getRecruitmentNo();
-
-
-		// static 이미지 저장
-		ImageParam staticImageDto1 = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no1).staticImageCode("imgname1").uploadImage(null).build();
-		imageService.addImage(staticImageDto1);
-
-		ImageParam staticImageDto2 = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no3).staticImageCode("imgname2").uploadImage(null).build();
-		imageService.addImage(staticImageDto2);
-
-		ImageParam staticImageDto3 = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no4).staticImageCode("imgname3").uploadImage(null).build();
-		imageService.addImage(staticImageDto3);
 		
 		// upload 이미지 저장
-		ImageParam uploadImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.UPLOAD)
-				.no(no2).staticImageCode(null).uploadImage(getMockMultipartFile()).build();
+		ImageParam uploadImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).no(no2).uploadImage(getMockMultipartFile()).build();
 		Long saveId2 = imageService.addImage(uploadImageDto);
 		deleteS3ImageNoList.add(saveId2); // S3에 저장된 이미지 추후 삭제 예정
 	

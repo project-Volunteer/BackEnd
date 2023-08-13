@@ -108,21 +108,46 @@ public class UserDtoServiceImpl implements UserDtoService{
 	@Override
 	public JoinRecruitmentListResponse findUserRecruitment(Long loginUserNo) {
 		List<UserRecruitmentDetails> userRecruitmentDetails = participantRepository.findRecuitmentByUsernoAndStatus(loginUserNo, ParticipantState.JOIN_APPROVAL);
-		return new JoinRecruitmentListResponse(userRecruitmentDetails.stream().map(dto->{
-			return new JoinRecruitmentList(
-						  dto.getNo()
-						, new PictureDetails(dto.getStaticImageName(), dto.getImagePath())
-						, dto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
-						, dto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
-						, dto.getTitle()
-						, dto.getSido()
-						, dto.getSigungu()
-						, dto.getDetails()
-						, dto.getVolunteeringCategory().getDesc()
-						, dto.getVolunteeringType().getViewName()
-						, dto.getIsIssued()
-						, dto.getVolunteerType().getDesc());
-		}).collect(Collectors.toList()));
+
+		return new JoinRecruitmentListResponse(userRecruitmentDetails.stream()
+				.map(dto -> {
+					JoinRecruitmentList joinRecruitmentList = new JoinRecruitmentList(
+							dto.getNo()
+							, dto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+							, dto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+							, dto.getTitle()
+							, dto.getSido()
+							, dto.getSigungu()
+							, dto.getDetails()
+							, dto.getVolunteeringCategory().getDesc()
+							, dto.getVolunteeringType().getViewName()
+							, dto.getIsIssued()
+							, dto.getVolunteerType().getDesc());
+					PictureDetails pictureDetails = null;
+					if(dto.getImagePath() == null){
+						pictureDetails = new PictureDetails(true, null);
+					}else{
+						pictureDetails = new PictureDetails(false, dto.getImagePath());
+					}
+					return joinRecruitmentList;
+				})
+				.collect(Collectors.toList()));
+//
+//		return new JoinRecruitmentListResponse(userRecruitmentDetails.stream().map(dto->{
+//			return new JoinRecruitmentList(
+//						  dto.getNo()
+//						, new PictureDetails(dto.getStaticImageName(), dto.getImagePath())
+//						, dto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+//						, dto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
+//						, dto.getTitle()
+//						, dto.getSido()
+//						, dto.getSigungu()
+//						, dto.getDetails()
+//						, dto.getVolunteeringCategory().getDesc()
+//						, dto.getVolunteeringType().getViewName()
+//						, dto.getIsIssued()
+//						, dto.getVolunteerType().getDesc());
+//		}).collect(Collectors.toList()));
 	}
 
 	@Override

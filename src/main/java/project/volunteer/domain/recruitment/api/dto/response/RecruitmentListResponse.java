@@ -3,6 +3,7 @@ package project.volunteer.domain.recruitment.api.dto.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentList;
 
 import java.util.List;
 

@@ -17,7 +17,6 @@ import project.volunteer.domain.user.domain.User;
 @NoArgsConstructor
 public class UserRecruitingQuery {
 	private Long no;
-	private String staticImage;
 	private String uploadImage;
 	private LocalDate startDay;
 	private LocalDate endDay;
@@ -33,12 +32,11 @@ public class UserRecruitingQuery {
 	private long currentVolunteerNum;
 
 	@QueryProjection
-	public UserRecruitingQuery(Long no, String staticImage, String uploadImage, LocalDate startDay, LocalDate endDay,
+	public UserRecruitingQuery(Long no,String uploadImage, LocalDate startDay, LocalDate endDay,
 								String title, String sido, String sigungu, VolunteeringCategory volunteeringCategory,
 								VolunteeringType volunteeringType, Boolean isIssued, VolunteerType volunteerType, 
 								int volunteerNum, User writer, long currentVolunteerNum) {
 		this.no = no;
-		this.staticImage = staticImage;
 		this.uploadImage = uploadImage;
 		this.startDay = startDay;
 		this.endDay = endDay;

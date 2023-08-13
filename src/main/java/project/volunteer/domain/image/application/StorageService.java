@@ -1,8 +1,8 @@
-package project.volunteer.domain.storage.application;
+package project.volunteer.domain.image.application;
 
 import org.springframework.web.multipart.MultipartFile;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 
 public interface StorageService {
 

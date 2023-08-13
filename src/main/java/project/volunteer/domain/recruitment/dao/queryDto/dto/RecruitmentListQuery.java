@@ -27,12 +27,11 @@ public class RecruitmentListQuery {
     private Boolean isIssued;
     private Integer volunteerNum;
     private Long currentVolunteerNum; //참여자 매핑 테이블에서 추출
-    private String staticImage; //image 테이블에서 추출
     private String uploadImage; //storage 테이블에서 추출
 
     @QueryProjection
     public RecruitmentListQuery(Long no, VolunteeringCategory category, String title, String sido, String sigungu, LocalDate startDay, LocalDate endDay, VolunteeringType volunteeringType,
-                                VolunteerType volunteerType, Boolean isIssued, int volunteerNum, String staticImage, String uploadImage){
+                                VolunteerType volunteerType, Boolean isIssued, int volunteerNum, String uploadImage){
         this.no  = no;
         this.category = category;
         this.title = title;
@@ -44,7 +43,6 @@ public class RecruitmentListQuery {
         this.volunteerType = volunteerType;
         this.isIssued = isIssued;
         this.volunteerNum = volunteerNum;
-        this.staticImage = staticImage;
         this.uploadImage = uploadImage;
     }
 }
