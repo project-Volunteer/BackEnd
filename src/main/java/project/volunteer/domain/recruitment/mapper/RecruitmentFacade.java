@@ -107,8 +107,10 @@ public class RecruitmentFacade {
     }
 
     public String findVolunteerPostParticipationState(Long recruitmentNo, Long userNo){
+        User findUser = userService.findUser(userNo);
+
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        return participationService.findParticipationState(recruitment, userNo);
+        return participationService.findParticipationState(recruitment, findUser);
     }
 }
