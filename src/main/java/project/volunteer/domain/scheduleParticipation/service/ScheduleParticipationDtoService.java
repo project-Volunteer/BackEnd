@@ -4,11 +4,18 @@ import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParti
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
+import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
 
 import java.util.List;
 
 public interface ScheduleParticipationDtoService {
+
+    //봉사 일정 참여 상태 조회
+    public String findScheduleParticipationState(Schedule schedule, User user);
+
+
 
     //참여 중 참가자 리스트 조회
     public List<ParticipatingParticipantList> findParticipatingParticipants(Long scheduleNo);

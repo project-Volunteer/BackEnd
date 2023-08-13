@@ -11,4 +11,6 @@ public interface ScheduleParticipationService {
     public void approvalCancellation(Long scheduleNo, Long spNo);
 
     public void approvalCompletion(Long scheduleNo, List<Long> spNo);
+
+    public void deleteScheduleParticipation(Long scheduleNo);
 }

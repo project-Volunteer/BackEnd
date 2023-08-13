@@ -91,6 +91,7 @@ public class Schedule extends BaseTimeEntity {
     public void setRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
     }
+    public void removeRecruitment(){this.recruitment = null;}
     public void changeScheduleTime(Timetable timetable){
         this.scheduleTimeTable = timetable;
     }

@@ -116,6 +116,19 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                     sp.updateState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
                 });
     }
+
+    @Override
+    public void deleteScheduleParticipation(Long scheduleNo) {
+        scheduleParticipationRepository.findBySchedule_ScheduleNo(scheduleNo)
+                .forEach(sp -> {
+                    sp.delete();
+                    sp.removeScheduleAndParticipant();
+                });
+    }
+
+
+
+
     private Schedule isActiveSchedule(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
         Schedule findSchedule = scheduleRepository.findValidSchedule(scheduleNo)
