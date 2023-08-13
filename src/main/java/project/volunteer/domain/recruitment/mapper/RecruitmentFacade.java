@@ -78,11 +78,12 @@ public class RecruitmentFacade {
 
         //공지사항 삭제
 
-        //봉사 참여자 삭제
-
         //일정 삭제
 
         //일정 참여자 삭제
+
+        //봉사 참여자 삭제
+        participationService.deleteParticipations(recruitmentNo);
 
         //봉사 모집글 삭제
         recruitmentService.deleteRecruitment(recruitmentNo);

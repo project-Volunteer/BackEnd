@@ -35,7 +35,11 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
     public void deleteRepeatPeriod(Long recruitmentNo) {
         List<RepeatPeriod> findPeriod = getRepeatPeriods(recruitmentNo);
         findPeriod.stream()
-                .forEach(p -> p.setDeleted());
+                .forEach(p -> {
+                    //삭제 플래그 처리 및 연관관계 끊기
+                    p.setDeleted();
+                    p.removeRecruitment();
+                });
     }
 
     @Override

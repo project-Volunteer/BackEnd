@@ -1,6 +1,5 @@
 package project.volunteer.domain.participation.dao;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,10 +15,7 @@ import java.util.Optional;
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 
-    //참여자 매핑 정보, 참여자 정보 쿼리 한번에 가져오기(left join)
-    @EntityGraph(attributePaths = {"participant"})
-    List<Participant> findEGParticipantByRecruitment_RecruitmentNoAndStateIn(Long recruitmentNo, List<ParticipantState> states);
-
+    List<Participant> findByRecruitment_RecruitmentNo(Long recruitmentNo);
     @Query("select new project.volunteer.domain.participation.dao.dto.ParticipantStateDetails" +
             "(p.state, u.userNo, u.nickName, coalesce(s.imagePath, u.picture)) " +
             "from Participant p " +

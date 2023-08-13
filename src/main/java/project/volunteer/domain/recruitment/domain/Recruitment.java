@@ -142,6 +142,7 @@ public class Recruitment extends BaseTimeEntity {
     }
 
     public void setDeleted(){this.isDeleted=IsDeleted.Y;}
+    public void removeUser(){this.writer = null;}
 
     public void setIsPublished(Boolean isPublished){this.isPublished=isPublished;}
 

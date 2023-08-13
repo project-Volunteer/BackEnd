@@ -35,7 +35,9 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 recruitmentRepository.findValidRecruitment(deleteNo).orElseThrow(
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
+        //삭제 플래그 처리 및 연관관계 끊기
         findRecruitment.setDeleted();
+        findRecruitment.removeUser();
     }
 
     @Override

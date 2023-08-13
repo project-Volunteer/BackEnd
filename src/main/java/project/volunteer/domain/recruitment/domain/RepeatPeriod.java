@@ -63,4 +63,5 @@ public class RepeatPeriod {
     public void setDeleted(){
         this.isDeleted=IsDeleted.Y;
     }
+    public void removeRecruitment(){this.recruitment = null;}
 }

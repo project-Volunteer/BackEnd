@@ -160,4 +160,12 @@ public class ParticipationServiceImpl implements ParticipationService{
         return StateResponse.AVAILABLE.getId();
     }
 
+    @Override
+    @Transactional
+    public void deleteParticipations(Long recruitmentNo) {
+        //연관관계 끊기
+        participantRepository.findByRecruitment_RecruitmentNo(recruitmentNo)
+                .forEach(p -> p.removeUserAndRecruitment());
+    }
+
 }
