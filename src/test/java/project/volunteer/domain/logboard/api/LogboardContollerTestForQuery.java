@@ -15,7 +15,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +25,9 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.like.dao.LikeRepository;
 import project.volunteer.domain.like.domain.Like;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
@@ -142,11 +139,6 @@ public class LogboardContollerTestForQuery {
 		recruitmentRepository.save(create);
 		Long no = create.getRecruitmentNo();
 
-		// static 이미지 저장
-		ImageParam staticImageDto1 = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no).staticImageCode("imgname1").uploadImage(null).build();
-		imageService.addImage(staticImageDto1);	
-
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
 		Participant participant1 = Participant.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
@@ -206,10 +198,10 @@ public class LogboardContollerTestForQuery {
     		
     		Long logboardNo = logboardRepository.save(logboard).getLogboardNo();
 
-			ImageParam uploadLogboardImg1 = new ImageParam(RealWorkCode.LOG, logboardNo, ImageType.UPLOAD, null, getMockMultipartFile(i+"_1"));
+			ImageParam uploadLogboardImg1 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile(i+"_1"));
 			Long saveLogboardImgId1 = imageService.addImage(uploadLogboardImg1);
 
-			ImageParam uploadLogboardImg2 = new ImageParam(RealWorkCode.LOG, logboardNo, ImageType.UPLOAD, null, getMockMultipartFile(i+"_2"));
+			ImageParam uploadLogboardImg2 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile(i+"_2"));
 			Long saveLogboardImgId2 = imageService.addImage(uploadLogboardImg2);
 
 			if(i%3==0){

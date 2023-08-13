@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
@@ -153,10 +152,6 @@ public class LogboardControllerTestForComment {
 		recruitmentRepository.save(create);
 		Long no = create.getRecruitmentNo();
 
-		// static 이미지 저장
-		ImageParam staticImageDto1 = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no).staticImageCode("imgname1").uploadImage(null).build();
-		imageService.addImage(staticImageDto1);	
 
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();

@@ -2,7 +2,6 @@ package project.volunteer.restdocs.document;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -33,7 +32,6 @@ public class EnumViewController {
         Map<String,String> period = getDocs(Period.values());
         Map<String,String> week = getDocs(Week.values());
         Map<String,String> day = getDocs(Day.values());
-        Map<String,String> imageType = getDocs(ImageType.values());
 
         return APIResponseDto.of(EnumDocs.builder()
                 .hourFormat(hourFormat)
@@ -44,7 +42,6 @@ public class EnumViewController {
                 .period(period)
                 .week(week)
                 .day(day)
-                .imageType(imageType)
                 .build());
     }
     private Map<String, String> getDocs(CodeCommonType[] commonTypes){

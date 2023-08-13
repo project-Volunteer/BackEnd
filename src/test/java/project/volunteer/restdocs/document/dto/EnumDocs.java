@@ -17,5 +17,4 @@ public class EnumDocs {
     Map<String,String> period;
     Map<String,String> week;
     Map<String,String> day;
-    Map<String,String> imageType;
 }

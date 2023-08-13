@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.volunteer.domain.storage.domain.Storage;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.domain.image.converter.RealWorkCodeConverter;
 import project.volunteer.global.common.component.RealWorkCode;
@@ -32,9 +31,6 @@ public class Image extends BaseTimeEntity {
     @Column(nullable = false)
     private Long no; //로그 번호, 모집글 번호, 유저 번호
 
-    @Column(name = "static_image_name", length = 10)
-    private String staticImageName; //static 이미지 코드
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storageno")
     private Storage storage; //upload
@@ -48,10 +44,10 @@ public class Image extends BaseTimeEntity {
      */
 
     @Builder
-    public Image(RealWorkCode realWorkCode, Long no, String staticImageName) {
+    public Image(RealWorkCode realWorkCode, Long no) {
         this.realWorkCode = realWorkCode;
         this.no = no;
-        this.staticImageName = staticImageName;
+
         this.isDeleted = IsDeleted.N;
     }
 

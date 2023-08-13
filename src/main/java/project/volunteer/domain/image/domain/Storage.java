@@ -1,4 +1,4 @@
-package project.volunteer.domain.storage.domain;
+package project.volunteer.domain.image.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;

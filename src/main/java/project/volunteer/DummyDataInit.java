@@ -19,7 +19,7 @@ import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationR
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.storage.dao.StorageRepository;
+import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -160,26 +160,6 @@ public class DummyDataInit {
         recruitmentRepository.save(dummyRecruitment7);
         recruitmentRepository.save(dummyRecruitment8);
         recruitmentRepository.save(dummyRecruitment9);
-
-        //모집 글 정적 이미지 더미데이터 세팅
-        Image dummyImage1 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment1.getRecruitmentNo()).staticImageName("static1").build();
-        Image dummyImage2 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment2.getRecruitmentNo()).staticImageName("static2").build();
-        Image dummyImage3 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment3.getRecruitmentNo()).staticImageName("static3").build();
-        Image dummyImage4 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment4.getRecruitmentNo()).staticImageName("static4").build();
-        Image dummyImage5 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment5.getRecruitmentNo()).staticImageName("static5").build();
-        Image dummyImage6 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment6.getRecruitmentNo()).staticImageName("static6").build();
-        Image dummyImage7 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment7.getRecruitmentNo()).staticImageName("static7").build();
-        Image dummyImage8 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment8.getRecruitmentNo()).staticImageName("static8").build();
-        Image dummyImage9 = Image.builder().realWorkCode(RealWorkCode.RECRUITMENT).no(dummyRecruitment9.getRecruitmentNo()).staticImageName("static9").build();
-        imageRepository.save(dummyImage1);
-        imageRepository.save(dummyImage2);
-        imageRepository.save(dummyImage3);
-        imageRepository.save(dummyImage4);
-        imageRepository.save(dummyImage5);
-        imageRepository.save(dummyImage6);
-        imageRepository.save(dummyImage7);
-        imageRepository.save(dummyImage8);
-        imageRepository.save(dummyImage9);
 
         //팀원 더미데이터 세팅
         Participant dummyParticipant1 = Participant.createParticipant(dummyRecruitment1, dummyUser2, ParticipantState.JOIN_REQUEST);

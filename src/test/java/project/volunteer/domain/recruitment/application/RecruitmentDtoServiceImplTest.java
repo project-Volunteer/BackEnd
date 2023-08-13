@@ -13,7 +13,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
@@ -29,7 +28,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.repeatPeriod.domain.Day;
 import project.volunteer.domain.repeatPeriod.domain.Week;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -122,9 +121,7 @@ class RecruitmentDtoServiceImplTest {
     private void 업로드_이미지_등록(RealWorkCode realWorkCode, Long no) throws IOException {
         ImageParam imageDto = ImageParam.builder()
                 .code(realWorkCode)
-                .imageType(ImageType.UPLOAD)
                 .no(no)
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         Long imageNo = imageService.addImage(imageDto);
@@ -143,9 +140,7 @@ class RecruitmentDtoServiceImplTest {
         //업로드 이미지 등록
         ImageParam imageDto = ImageParam.builder()
                 .code(RealWorkCode.USER)
-                .imageType(ImageType.UPLOAD)
                 .no(saveUser.getUserNo())
-                .staticImageCode(null)
                 .uploadImage(getMockMultipartFile())
                 .build();
         Long imageNo = imageService.addImage(imageDto);
@@ -171,7 +166,7 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void 모집글_상세조회_성공() throws IOException {
         //given & when
-        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+        RecruitmentDetails details = recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo());
         clear();
 
         //then
@@ -187,8 +182,7 @@ class RecruitmentDtoServiceImplTest {
                 () -> assertThat(details.getAuthor().getNickName()).isEqualTo(writer.getNickName()),
                 () -> assertThat(details.getRepeatPeriod().getPeriod()).isEqualTo(saveRegPeriod.getPeriod().getId()),
                 () -> assertThat(details.getRepeatPeriod().getWeek()).isEqualTo(saveRegPeriod.getWeek().getId()),
-                () -> assertThat(details.getRepeatPeriod().getDays().size()).isEqualTo(1),
-                () -> assertThat(details.getPicture().getType()).isEqualTo(ImageType.UPLOAD.getId())
+                () -> assertThat(details.getRepeatPeriod().getDays().size()).isEqualTo(1)
         );
     }
 
@@ -205,7 +199,7 @@ class RecruitmentDtoServiceImplTest {
         봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_REQUEST);
 
         //when
-        RecruitmentDetails details = recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo());
+        RecruitmentDetails details = recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo());
         clear();
 
         //then
@@ -326,7 +320,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //when & then
-        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
+        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class);
     }
 
@@ -338,7 +332,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //when & then
-        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitment(saveRecruitment.getRecruitmentNo()))
+        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class);
     }
 

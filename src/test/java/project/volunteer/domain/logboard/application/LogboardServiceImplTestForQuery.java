@@ -27,7 +27,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.logboard.application.dto.LogboardEditDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
@@ -42,7 +41,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.application.UserDtoService;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -146,11 +145,6 @@ public class LogboardServiceImplTestForQuery {
 		recruitmentRepository.save(create);
 		Long no = create.getRecruitmentNo();
 
-		// static 이미지 저장
-		ImageParam staticImageDto1 = ImageParam.builder().code(RealWorkCode.RECRUITMENT).imageType(ImageType.STATIC)
-				.no(no).staticImageCode("imgname1").uploadImage(null).build();
-		imageService.addImage(staticImageDto1);	
-
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
 		Participant participant1 = Participant.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
@@ -177,10 +171,10 @@ public class LogboardServiceImplTestForQuery {
     		
     		Long logboardNo = logboardRepository.save(logboard).getLogboardNo();
 
-			ImageParam uploadLogboardImg1 = new ImageParam(RealWorkCode.LOG, logboardNo, ImageType.UPLOAD, null, getMockMultipartFile(i+"_1"));
+			ImageParam uploadLogboardImg1 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile(i+"_1"));
 			Long saveLogboardImgId1 = imageService.addImage(uploadLogboardImg1);
 
-			ImageParam uploadLogboardImg2 = new ImageParam(RealWorkCode.LOG, logboardNo, ImageType.UPLOAD, null, getMockMultipartFile(i+"_2"));
+			ImageParam uploadLogboardImg2 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile(i+"_2"));
 			Long saveLogboardImgId2 = imageService.addImage(uploadLogboardImg2);
 
 			deleteS3ImageNoList.add(saveLogboardImgId1); // S3에 저장된 이미지 추후 삭제 예정

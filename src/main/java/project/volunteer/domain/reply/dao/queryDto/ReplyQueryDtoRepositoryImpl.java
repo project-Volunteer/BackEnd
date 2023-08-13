@@ -13,7 +13,7 @@ import project.volunteer.global.common.component.RealWorkCode;
 import java.util.List;
 
 import static project.volunteer.domain.image.domain.QImage.image;
-import static project.volunteer.domain.storage.domain.QStorage.storage;
+import static project.volunteer.domain.image.domain.QStorage.storage;
 import static project.volunteer.domain.user.domain.QUser.user;
 @Repository
 @RequiredArgsConstructor

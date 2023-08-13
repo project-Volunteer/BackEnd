@@ -70,7 +70,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     @Query("select new project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails" +
                 "(p.recruitment.recruitmentNo" +
-                ", i.staticImageName" +
                 ", s.imagePath" +
                 ", p.recruitment.VolunteeringTimeTable.startDay" +
                 ", p.recruitment.VolunteeringTimeTable.endDay" +

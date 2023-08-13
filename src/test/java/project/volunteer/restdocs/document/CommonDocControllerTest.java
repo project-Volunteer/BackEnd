@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.PayloadSubsectionExtractor;
 import org.springframework.test.web.servlet.MockMvc;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -70,10 +69,6 @@ public class CommonDocControllerTest {
                         customResponseFields("custom-response", beneathPath("data.day").withSubsectionId("day"),
                                 attributes(key("title").value("반복 요일")),
                                 enumConvertFieldDescriptor(Day.values())
-                        ),
-                        customResponseFields("custom-response", beneathPath("data.imageType").withSubsectionId("imageType"),
-                                attributes(key("title").value("이미지 타입")),
-                                enumConvertFieldDescriptor(ImageType.values())
                         )
                 ));
     }

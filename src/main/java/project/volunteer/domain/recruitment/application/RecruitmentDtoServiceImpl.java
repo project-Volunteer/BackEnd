@@ -3,10 +3,17 @@ package project.volunteer.domain.recruitment.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListResponse;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentList;
+import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
+import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
@@ -40,12 +47,13 @@ import java.util.stream.Collectors;
 public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
 
     private final RecruitmentRepository recruitmentRepository;
+    private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
     private final ImageRepository imageRepository;
     private final RepeatPeriodRepository repeatPeriodRepository;
     private final ParticipantRepository participantRepository;
 
     @Override
-    public RecruitmentDetails findRecruitment(Long no) {
+    public RecruitmentDetails findRecruitmentDto(Long no) {
 
         //모집글 정보 + 모집글 작성자 정보 -> 쿼리 1번
         Recruitment findRecruitment = recruitmentRepository.findWriterEG(no).orElseThrow(()
@@ -75,6 +83,26 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     }
 
     @Override
+    public RecruitmentListResponse findRecruitmentDtos(Pageable pageable, RecruitmentCond cond) {
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentDtos(pageable, cond);
+
+        List<RecruitmentList> list = result.getContent().stream().
+                map(query -> {
+                    RecruitmentList recruitmentList = RecruitmentList.createRecruitmentList(query);
+                    PictureDetails pictureDetails = null;
+                    if(query.getUploadImage() == null){
+                        pictureDetails = new PictureDetails(true, null);
+                    }else{
+                        pictureDetails = new PictureDetails(false, query.getUploadImage());
+                    }
+                    recruitmentList.setPicture(pictureDetails);
+                    return recruitmentList;
+                }).collect(Collectors.toList());
+
+        return new RecruitmentListResponse(list, result.isLast(), (list.isEmpty())?null:(list.get(list.size()-1).getNo()));
+    }
+
+    @Override
     public String findRecruitmentTeamStatus(Long recruitmentNo, Long loginUserNo) {
 
         Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
@@ -84,11 +112,10 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     }
 
     private void makeRecruitmentImageDto(RecruitmentDetails dto, Long recruitmentNo){
-        //모집글 이미지(image + storage) -> 쿼리 1번
-        //모집글 이미지는 반드시 존재!
         Optional<Image> recruitmentImage = imageRepository.findEGStorageByCodeAndNo(RealWorkCode.RECRUITMENT, recruitmentNo);
+        //업로드 이미지가 존재하는 경우
         if(recruitmentImage.isPresent())
-            dto.setPicture(new PictureDetails(recruitmentImage.get().getStaticImageName(), recruitmentImage.get().getStorage().getImagePath()));
+            dto.setPicture(new PictureDetails(false, recruitmentImage.get().getStorage().getImagePath()));
     }
 
     private void makeWriterDto(RecruitmentDetails dto, User writer) {

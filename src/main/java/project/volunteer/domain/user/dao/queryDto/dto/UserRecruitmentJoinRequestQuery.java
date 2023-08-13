@@ -16,7 +16,6 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 @NoArgsConstructor
 public class UserRecruitmentJoinRequestQuery {
 	private Long no;
-	private String staticImage;
 	private String uploadImage;
 	private LocalDate startDay;
 	private LocalDate endDay;
@@ -29,12 +28,11 @@ public class UserRecruitmentJoinRequestQuery {
 	private VolunteerType volunteerType;
 	
 	@QueryProjection
-	public UserRecruitmentJoinRequestQuery(Long no, String staticImage, String uploadImage, LocalDate startDay,
+	public UserRecruitmentJoinRequestQuery(Long no, String uploadImage, LocalDate startDay,
 										LocalDate endDay, String title, String sido, String sigungu, 
 										VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType, 
 										Boolean isIssued, VolunteerType volunteerType) {
 		this.no = no;
-		this.staticImage = staticImage;
 		this.uploadImage = uploadImage;
 		this.startDay = startDay;
 		this.endDay = endDay;

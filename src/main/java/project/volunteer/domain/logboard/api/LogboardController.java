@@ -28,7 +28,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.image.domain.ImageType;
 import project.volunteer.domain.logboard.api.dto.response.*;
 import project.volunteer.domain.logboard.application.dto.LogboardDetail;
 import project.volunteer.domain.reply.application.dto.CommentDetails;
@@ -36,7 +35,6 @@ import project.volunteer.domain.reply.dao.ReplyRepository;
 import project.volunteer.domain.reply.domain.Reply;
 import project.volunteer.domain.user.api.dto.response.UserInfo;
 import project.volunteer.domain.user.application.UserService;
-import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.api.dto.request.LogBoardRequestParam;
@@ -47,7 +45,7 @@ import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.reply.application.ReplyService;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
-import project.volunteer.domain.storage.domain.Storage;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
@@ -81,7 +79,7 @@ public class LogboardController {
 
 		for(MultipartFile file : dto.getUploadImage()) {
 			imageService.deleteImage(RealWorkCode.LOG, logboardNo);
-			ImageParam uploadLogboardImg = new ImageParam(RealWorkCode.LOG, logboardNo, ImageType.UPLOAD, null, file);
+			ImageParam uploadLogboardImg = new ImageParam(RealWorkCode.LOG, logboardNo, file);
 			imageService.addImage(uploadLogboardImg);
 		}
 		
@@ -122,7 +120,7 @@ public class LogboardController {
 		// log 이미지 업데이트
 		for(MultipartFile file : dto.getUploadImage()) {
 			imageService.deleteImage(RealWorkCode.LOG, no);
-			ImageParam uploadLogboardImg = new ImageParam(RealWorkCode.LOG, no, ImageType.UPLOAD, null, file);
+			ImageParam uploadLogboardImg = new ImageParam(RealWorkCode.LOG, no, file);
 			imageService.addImage(uploadLogboardImg);
 		}
 		
