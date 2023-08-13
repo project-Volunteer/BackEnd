@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.application.dto;
+package project.volunteer.domain.participation.application.dto;
 
 import lombok.*;
 

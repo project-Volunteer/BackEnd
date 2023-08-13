@@ -5,13 +5,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
+import project.volunteer.domain.participation.application.ParticipationService;
+import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentDetailsResponse;
+import project.volunteer.domain.recruitment.application.RecruitmentDtoService;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.RepeatPeriodService;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.user.application.UserService;
@@ -20,12 +26,15 @@ import project.volunteer.global.common.component.RealWorkCode;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RecruitmentFacade {
     private final UserService userService;
     private final RecruitmentService recruitmentService;
+    private final RecruitmentDtoService recruitmentDtoService;
     private final RepeatPeriodService repeatPeriodService;
     private final ScheduleService scheduleService;
     private final ImageService imageService;
+    private final ParticipationService participationService;
 
     @Transactional
     public Long registerVolunteerPost(Long userId, RecruitmentRequest form){
@@ -77,5 +86,29 @@ public class RecruitmentFacade {
 
         //봉사 모집글 삭제
         recruitmentService.deleteRecruitment(recruitmentNo);
+    }
+
+    public RecruitmentDetailsResponse findVolunteerPostDetails(Long recruitmentNo){
+        //봉사 모집글 & 작성자 DTO
+        RecruitmentDetails recruitmentAndWriterDto = recruitmentDtoService.findRecruitmentAndWriterDto(recruitmentNo);
+
+        //정기 일 경우 반복주기 DTO
+        RepeatPeriodDetails repeatPeriodDto = null;
+        if(recruitmentAndWriterDto.getVolunteeringType().equals(VolunteeringType.REG.getId())){
+            repeatPeriodDto = repeatPeriodService.findRepeatPeriodDto(recruitmentNo);
+            recruitmentAndWriterDto.setRepeatPeriod(repeatPeriodDto);
+        }
+
+        //참여자(승인,신청) 리스트 DTO
+        AllParticipantDetails allParticipantDto = participationService.findAllParticipantDto(recruitmentNo);
+
+        return new RecruitmentDetailsResponse(
+                recruitmentAndWriterDto, allParticipantDto.getApprovalVolunteer(), allParticipantDto.getRequiredVolunteer());
+    }
+
+    public String findVolunteerPostParticipationState(Long recruitmentNo, Long userNo){
+        Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
+
+        return participationService.findParticipationState(recruitment, userNo);
     }
 }

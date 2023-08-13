@@ -11,8 +11,6 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -38,6 +36,12 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
         findRecruitment.setDeleted();
+    }
+
+    @Override
+    public Recruitment findPublishedRecruitment(Long recruitmentNo) {
+        return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Search Recruitment NO = [%d]", recruitmentNo)));
     }
 
 }

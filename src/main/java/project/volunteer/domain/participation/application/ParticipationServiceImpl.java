@@ -3,17 +3,26 @@ package project.volunteer.domain.participation.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
+import project.volunteer.domain.participation.application.dto.ParticipantDetails;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
+import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
 import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.component.RealWorkCode;
+import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -119,6 +128,63 @@ public class ParticipationServiceImpl implements ParticipationService{
         recruitment.decreaseTeamMember();
     }
 
+    @Override
+    public AllParticipantDetails findAllParticipantDto(Long recruitmentNo) {
+        List<ParticipantDetails> approvedList = new ArrayList<>();
+        List<ParticipantDetails> requiredList = new ArrayList<>();
+
+        //최적화한 쿼리(쿼리 1번)
+        List<ParticipantStateDetails> participants = participantRepository.findParticipantsByOptimization(recruitmentNo,
+                List.of(ParticipantState.JOIN_REQUEST, ParticipantState.JOIN_APPROVAL));
+
+        participants.stream()
+                .forEach(p -> {
+                    if(p.getState().equals(ParticipantState.JOIN_REQUEST)){
+                        requiredList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                    }else{
+                        approvedList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                    }
+                });
+
+        return new AllParticipantDetails(approvedList, requiredList);
+    }
+
+    /**
+     * L1 : 봉사 모집 기간 마감
+     * L2 : 팀 신청, 팀 신청 승인
+     * L3 : 팀 신청 인원 마감
+     * L4 : 팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴)
+     */
+    @Override
+    public String findParticipationState(Recruitment recruitment, Long loginUserNo) {
+        Optional<Participant> findParticipant = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(
+                recruitment.getRecruitmentNo(), loginUserNo);
+
+        //봉사 모집 기간 만료
+        if(!recruitment.isAvailableDate()){
+            return StateResponse.DONE.getId();
+        }
+
+        //팀 신청
+        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
+            return StateResponse.PENDING.getId();
+        }
+
+        //팀 신청 승인
+        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
+            return StateResponse.APPROVED.getId();
+        }
+
+        //팀 신청 인원 마감
+        if(recruitment.isFullTeamMember()){
+            return StateResponse.FULL.getId();
+        }
+
+        //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
+        return StateResponse.AVAILABLE.getId();
+    }
+
+
     //신청 가능한 모집글인지 판별
     private Recruitment isActivatediRecruitment(Long recruitmentNo){
         //봉사 모집글 조회(삭제되지 않은지)
@@ -133,5 +199,4 @@ public class ParticipationServiceImpl implements ParticipationService{
         }
         return findRecruitment;
     }
-
 }
