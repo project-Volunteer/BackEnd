@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.volunteer.domain.participation.application.dto.ParticipantDetails;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
-import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
 
 import java.util.List;
 

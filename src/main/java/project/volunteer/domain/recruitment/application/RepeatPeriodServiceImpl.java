@@ -9,7 +9,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
 import project.volunteer.domain.recruitment.domain.RepeatPeriod;
 import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
-import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodDetails;
 
 import java.util.List;
 import java.util.stream.Collectors;

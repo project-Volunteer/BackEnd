@@ -6,11 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.dto.PictureDetails;
-import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
