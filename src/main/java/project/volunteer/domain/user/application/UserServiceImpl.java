@@ -53,4 +53,9 @@ public class UserServiceImpl implements UserService{
 		User user = userValidate.validateAndGetUser(loginUserNo);
 		return new UserInfo(user.getNickName(), user.getEmail(), user.getPicture());
 	}
+
+	@Override
+	public User findUser(Long userNo) {
+		return userValidate.validateAndGetUser(userNo);
+	}
 }

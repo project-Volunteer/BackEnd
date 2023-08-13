@@ -61,11 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Override
     @Transactional
-    public List<Long> addRegSchedule(Long recruitmentNo, ScheduleParamReg dto) {
-
-        //봉사 모집글 검증
-        Recruitment recruitment = isValidRecruitment(recruitmentNo);
-
+    public List<Long> addRegSchedule(Recruitment recruitment, ScheduleParamReg dto) {
         List<LocalDate> scheduleDate = (dto.getRepeatPeriodParam().getPeriod().equals(Period.MONTH))?
                 (makeDatesOfRegMonth(dto.getTimetable().getStartDay(), dto.getTimetable().getEndDay(),
                 dto.getRepeatPeriodParam().getWeek(), dto.getRepeatPeriodParam().getDays())):

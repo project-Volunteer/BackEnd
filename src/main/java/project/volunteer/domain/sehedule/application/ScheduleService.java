@@ -1,5 +1,6 @@
 package project.volunteer.domain.sehedule.application;
 
+import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -13,7 +14,7 @@ public interface ScheduleService {
     public Long addSchedule(Long recruitmentNo, ScheduleParam dto);
 
     //스케줄 자동 등록(정기)
-    public List<Long> addRegSchedule(Long recruitmentNo, ScheduleParamReg dto);
+    public List<Long> addRegSchedule(Recruitment recruitment, ScheduleParamReg dto);
 
     //스케줄 정보 수정
     public Long editSchedule(Long scheduleNo, ScheduleParam dto);

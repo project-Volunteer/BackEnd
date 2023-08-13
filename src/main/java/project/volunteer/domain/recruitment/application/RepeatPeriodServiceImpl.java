@@ -29,8 +29,8 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
 
     @Override
     @Transactional
-    public void deleteRepeatPeriod(Recruitment recruitment) {
-        List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
+    public void deleteRepeatPeriod(Long recruitmentNo) {
+        List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
         findPeriod.stream()
                 .forEach(p -> p.setDeleted());
     }

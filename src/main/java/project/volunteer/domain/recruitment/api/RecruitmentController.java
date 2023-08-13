@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
@@ -43,46 +44,15 @@ public class RecruitmentController {
     private final RecruitmentService recruitmentService;
     private final RecruitmentDtoService recruitmentDtoService;
     private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
-    private final RepeatPeriodService repeatPeriodService;
-    private final ScheduleService scheduleService;
     private final ImageService imageService;
-    private final UserRepository userRepository;
+    private final RecruitmentFacade recruitmentFacade;
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
-        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
-        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
+        Long recruitmentNo = recruitmentFacade.registerVolunteerPost(SecurityUtil.getLoginUserNo(), form);
 
-        //모집글 정보 저장
-        //TODO: 퍼사드 패턴 도입전 임시 방편
-        User user = userRepository.findByUserNo(SecurityUtil.getLoginUserNo()).get();
-        Recruitment recruitment = recruitmentService.addRecruitment(user, new RecruitmentParam(form));
-
-        //정기일 경우
-        if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())) {
-            RepeatPeriodParam periodParam = new RepeatPeriodParam(form.getPeriod(), form.getWeek(), form.getDays());
-            //반복 주기 저장
-            repeatPeriodService.addRepeatPeriod(recruitment, periodParam);
-
-            //스케줄 자동 할당
-            scheduleService.addRegSchedule(recruitment.getRecruitmentNo(),
-                    new ScheduleParamReg(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
-                            form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
-                            form.getContent(), form.getVolunteerNum(), periodParam));
-        }
-
-        //이미지 저장
-        if(!form.getPicture().getIsStaticImage()) {
-            imageService.addImage(ImageParam.builder()
-                    .code(RealWorkCode.RECRUITMENT)
-                    .no(recruitment.getRecruitmentNo())
-                    .uploadImage(form.getPicture().getUploadImage())
-                    .build());
-        }
-
-        //response
         Map<String, Object> result = new HashMap<>();
-        result.put("no", recruitment.getRecruitmentNo());
+        result.put("no", recruitmentNo);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(result);
     }
@@ -144,23 +114,7 @@ public class RecruitmentController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/recruitment/{recruitmentNo}")
     public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
-        //TODO: 아키텍처 리펙토링 필요(facade 구조 등 고려해보기)
-        //TODO: controller에서 다른 service 호출이 좋은 설계일까? 트랜잭션 원자성을 위반할 수도 있다.
-        //TODO: 계층적 삭제 기능 구현 필요
-
-        //모집글 관련 엔티티들 삭제
-        recruitmentService.deleteRecruitment(no);
-
-        //모집글 이미지 삭제
-        imageService.deleteImage(RealWorkCode.RECRUITMENT, no);
-
-        /**
-         * 봉사 참여자 리스트 삭제 필요
-         * 관련 스케줄 삭제 필요(독립 서비스 로직 구현하기)
-         * 스케줄 참여자 리스트 삭제 필요
-         * 공지사항 삭제 필요(독립 서비스 로직 구현하기)
-         * 공지사항 확인 리스트 삭제 필요
-         */
+        recruitmentFacade.deleteVolunteerPost(no);
         return new ResponseEntity(HttpStatus.OK);
     }
 }
