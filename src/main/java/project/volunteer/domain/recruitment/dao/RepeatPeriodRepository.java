@@ -1,7 +1,7 @@
-package project.volunteer.domain.repeatPeriod.dao;
+package project.volunteer.domain.recruitment.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
+import project.volunteer.domain.recruitment.domain.RepeatPeriod;
 
 import java.util.List;
 

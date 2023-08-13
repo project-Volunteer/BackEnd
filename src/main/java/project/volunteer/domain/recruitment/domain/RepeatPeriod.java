@@ -1,10 +1,9 @@
-package project.volunteer.domain.repeatPeriod.domain;
+package project.volunteer.domain.recruitment.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.global.common.component.IsDeleted;
 
 import javax.persistence.*;

@@ -1,7 +1,7 @@
 package project.volunteer.global.util;
 
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.repeatPeriod.domain.Day;
+import project.volunteer.domain.recruitment.domain.Day;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

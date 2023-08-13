@@ -1,4 +1,4 @@
-package project.volunteer.domain.repeatPeriod.application;
+package project.volunteer.domain.recruitment.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
+import project.volunteer.domain.recruitment.domain.RepeatPeriod;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-
-import java.util.List;
 
 @Slf4j
 @Service
