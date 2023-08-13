@@ -3,6 +3,7 @@ package project.volunteer.domain.participation.application;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,11 +20,13 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
+import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -51,7 +54,7 @@ class ParticipationServiceImplTest {
 
         //모집글 저장
         Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
-                VolunteerType.TEENAGER, 3, true, "organization",
+                VolunteerType.TEENAGER, 4, true, "organization",
                 Address.createAddress("11", "1111","details"), Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3), true);
         createRecruitment.setWriter(writer);
@@ -74,6 +77,16 @@ class ParticipationServiceImplTest {
     }
     private Recruitment 저장된_모집글_가져오기(){
         return recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
+    }
+    private Participant 사용자및참여자상태추가(String signName, ParticipantState state){
+        //신규 사용자 가입
+        User newUser= User.createUser(signName, "password", signName, "test@naver.com", Gender.M, LocalDate.now(), "picture",
+                true, true, true, Role.USER, "kakao", signName, null);
+        User saveUser = userRepository.save(newUser);
+
+        //봉사 팀원 등록
+        Participant participant = Participant.createParticipant(saveRecruitment, saveUser, state);
+        return participantRepository.save(participant);
     }
 
     @Test
@@ -181,16 +194,19 @@ class ParticipationServiceImplTest {
         User saveUser2 = 사용자_등록("구본식");
         User saveUser3 = 사용자_등록("구길동");
         User saveUser4 = 사용자_등록("박하선");
+        User saveUser5 = 사용자_등록("박구선");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         참여자_상태_등록(saveUser3, ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
+        참여자_상태_등록(saveUser4, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
         clear();
 
         //when & then
-        Assertions.assertThatThrownBy(() -> participationService.participate(saveUser4.getUserNo(), saveRecruitment.getRecruitmentNo()))
+        Assertions.assertThatThrownBy(() -> participationService.participate(saveUser5.getUserNo(), saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INSUFFICIENT_CAPACITY");
     }
@@ -299,12 +315,16 @@ class ParticipationServiceImplTest {
         User saveUser2 = 사용자_등록("구본식");
         User saveUser3 = 사용자_등록("구길동");
         User saveUser4 = 사용자_등록("구혜선");
+        User saveUser5 = 사용자_등록("박구서");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
-        참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser3, ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+
         참여자_상태_등록(saveUser4, ParticipantState.JOIN_REQUEST);
+        참여자_상태_등록(saveUser5, ParticipantState.JOIN_REQUEST);
         List<Long> requestNos = List.of(saveUser3.getUserNo(), saveUser4.getUserNo());
         clear();
 
@@ -347,6 +367,134 @@ class ParticipationServiceImplTest {
                 participationService.deportParticipant(saveRecruitment.getRecruitmentNo(), saveUser.getUserNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INVALID_STATE");
+    }
+
+    //TODO: 퍼사드 메서드 테스트 코드로 리팩토링하기
+//    @DisplayName("봉사 모집글 신청자/승인자 각 인원이 3명이 된다.")
+//    @Test
+//    @Transactional
+//    public void searchParticipantState() throws IOException {
+//        //given
+//        봉사모집글_팀원_상태추가("홍길동", ParticipantState.JOIN_APPROVAL);
+//        봉사모집글_팀원_상태추가("구하라", ParticipantState.JOIN_APPROVAL);
+//        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+//        봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_REQUEST);
+//        봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_REQUEST);
+//        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_REQUEST);
+//
+//        //when
+//        RecruitmentDetails details = .findRecruitmentAndWriterDto(saveRecruitment.getRecruitmentNo());
+//        clear();
+//
+//        //then
+//        assertThat(details.getRequiredVolunteer().size()).isEqualTo(3);
+//        assertThat(details.getApprovalVolunteer().size()).isEqualTo(3);
+//    }
+
+    @DisplayName("모집글 첫 참가 신청으로 로그인 사용자 상태가 신청 가능 상태가 된다.")
+    @Test
+    @Transactional
+    public void loginUserAvailableStateByFirst() throws IOException {
+        //given
+        User newUser = 사용자_등록("new");
+        clear();
+
+        //when
+        String status = participationService.findParticipationState(saveRecruitment, newUser.getUserNo());
+
+        //then
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.getId());
+    }
+
+    @DisplayName("모집글 팀 탈퇴로 인해 로그인 사용자 상태가 신청 가능 상태가 된다.")
+    @Test
+    @Transactional
+    public void loginUserAvailableStateByQuit() throws IOException {
+        //given
+        Participant p = 사용자및참여자상태추가("new", ParticipantState.QUIT);
+
+        //when
+        String status = participationService.findParticipationState(saveRecruitment, p.getParticipant().getUserNo());
+        clear();
+
+        //then
+        assertThat(status).isEqualTo(StateResponse.AVAILABLE.getId());
+    }
+
+    @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
+    @Test
+    @Transactional
+    public void loginUserPendingState() throws IOException {
+        //given
+        Participant p = 사용자및참여자상태추가("new", ParticipantState.JOIN_REQUEST);
+
+        //when
+        String status = participationService.findParticipationState(saveRecruitment, p.getParticipant().getUserNo());
+        clear();
+
+        //then
+        assertThat(status).isEqualTo(StateResponse.PENDING.getId());
+    }
+
+    @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
+    @Test
+    @Transactional
+    public void loginUserApprovedState() throws IOException {
+        //given
+        Participant p = 사용자및참여자상태추가("new", ParticipantState.JOIN_APPROVAL);
+
+        //when
+        String status = participationService.findParticipationState(saveRecruitment, p.getParticipant().getUserNo());
+        clear();
+
+        //then
+        assertThat(status).isEqualTo(StateResponse.APPROVED.getId());
+    }
+
+    @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
+    @Test
+    @Transactional
+    public void loginUserDoneStateByFinishEndDay() throws IOException {
+        //given
+        User newUser = 사용자_등록("new");
+        //봉사 모집글 시간 정보 변경
+        saveRecruitment.setVolunteeringTimeTable(
+                Timetable.createTimetable(LocalDate.now().minusDays(2), LocalDate.now().minusDays(1), HourFormat.AM,
+                        LocalTime.now(), 3)
+        );
+        clear();
+
+        //when
+        String status = participationService.findParticipationState(saveRecruitment, newUser.getUserNo());
+
+        //then
+        assertThat(status).isEqualTo(StateResponse.DONE.getId());
+    }
+
+    @DisplayName("팀원 모집인원 초과로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
+    @Test
+    @Transactional
+    public void loginUserDoneStateByVolunteerNum() throws IOException {
+        //given
+        Recruitment findRecruitment = 저장된_모집글_가져오기();
+        User newUser = 사용자_등록("new");
+        //현재 팀원 최대 인원 4명으로 설정됨
+        사용자및참여자상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        사용자및참여자상태추가("ORM", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        사용자및참여자상태추가("JPA", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        사용자및참여자상태추가("트랜잭션", ParticipantState.JOIN_APPROVAL);
+        findRecruitment.increaseTeamMember();
+        clear();
+
+        //when
+        Recruitment recruitment = 저장된_모집글_가져오기();
+        String status =participationService.findParticipationState(recruitment, newUser.getUserNo());
+
+        //then
+        assertThat(status).isEqualTo(StateResponse.FULL.getId());
     }
 
 }

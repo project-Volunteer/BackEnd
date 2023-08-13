@@ -395,20 +395,20 @@ class RecruitmentQueryControllerTest {
 
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.no").value(saveRecruitmentList.get(0).getRecruitmentNo()))
-                .andExpect(jsonPath("$.volunteeringCategory").value(saveRecruitmentList.get(0).getVolunteeringCategory().getId()))
-                .andExpect(jsonPath("$.organizationName").value(saveRecruitmentList.get(0).getOrganizationName()))
-                .andExpect(jsonPath("$.address.sido").value(saveRecruitmentList.get(0).getAddress().getSido()))
-                .andExpect(jsonPath("$.address.sigungu").value(saveRecruitmentList.get(0).getAddress().getSigungu()))
-                .andExpect(jsonPath("$.address.details").value(saveRecruitmentList.get(0).getAddress().getDetails()))
-                .andExpect(jsonPath("$.address.latitude").value(saveRecruitmentList.get(0).getCoordinate().getLatitude()))
-                .andExpect(jsonPath("$.address.longitude").value(saveRecruitmentList.get(0).getCoordinate().getLongitude()))
-                .andExpect(jsonPath("$.isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
-                .andExpect(jsonPath("$.volunteeringType").value(saveRecruitmentList.get(0).getVolunteeringType().getId()))
-                .andExpect(jsonPath("$.volunteerType").value(saveRecruitmentList.get(0).getVolunteerType().getId()))
-                .andExpect(jsonPath("$.volunteerNum").value(saveRecruitmentList.get(0).getVolunteerNum()))
-                .andExpect(jsonPath("$.title").value(saveRecruitmentList.get(0).getTitle()))
-                .andExpect(jsonPath("$.content").value(saveRecruitmentList.get(0).getContent()))
+                .andExpect(jsonPath("$.recruitment.no").value(saveRecruitmentList.get(0).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitment.volunteeringCategory").value(saveRecruitmentList.get(0).getVolunteeringCategory().getId()))
+                .andExpect(jsonPath("$.recruitment.organizationName").value(saveRecruitmentList.get(0).getOrganizationName()))
+                .andExpect(jsonPath("$.recruitment.address.sido").value(saveRecruitmentList.get(0).getAddress().getSido()))
+                .andExpect(jsonPath("$.recruitment.address.sigungu").value(saveRecruitmentList.get(0).getAddress().getSigungu()))
+                .andExpect(jsonPath("$.recruitment.address.details").value(saveRecruitmentList.get(0).getAddress().getDetails()))
+                .andExpect(jsonPath("$.recruitment.address.latitude").value(saveRecruitmentList.get(0).getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.recruitment.address.longitude").value(saveRecruitmentList.get(0).getCoordinate().getLongitude()))
+                .andExpect(jsonPath("$.recruitment.isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
+                .andExpect(jsonPath("$.recruitment.volunteeringType").value(saveRecruitmentList.get(0).getVolunteeringType().getId()))
+                .andExpect(jsonPath("$.recruitment.volunteerType").value(saveRecruitmentList.get(0).getVolunteerType().getId()))
+                .andExpect(jsonPath("$.recruitment.volunteerNum").value(saveRecruitmentList.get(0).getVolunteerNum()))
+                .andExpect(jsonPath("$.recruitment.title").value(saveRecruitmentList.get(0).getTitle()))
+                .andExpect(jsonPath("$.recruitment.content").value(saveRecruitmentList.get(0).getContent()))
                 .andExpect(jsonPath("$.approvalVolunteer[0].userNo").value(saveJoinApprovalnParticipantList.get(0).getParticipant().getUserNo()))
                 .andExpect(jsonPath("$.approvalVolunteer[0].nickName").value(saveJoinApprovalnParticipantList.get(0).getParticipant().getNickName()))
                 .andExpect(jsonPath("$.approvalVolunteer[0].imageUrl").value(saveJoinApprovalnParticipantUploadImageList.get(0).getStorage().getImagePath()))
@@ -418,14 +418,14 @@ class RecruitmentQueryControllerTest {
                 .andExpect(jsonPath("$.requiredVolunteer[0].userNo").value(saveJoinRequestParticipantList.get(0).getParticipant().getUserNo()))
                 .andExpect(jsonPath("$.requiredVolunteer[0].nickName").value(saveJoinRequestParticipantList.get(0).getParticipant().getNickName()))
                 .andExpect(jsonPath("$.requiredVolunteer[0].imageUrl").value(saveJoinRequestParticipantList.get(0).getParticipant().getPicture()))
-                .andExpect(jsonPath("$.author.nickName").value(writer.getNickName()))
-                .andExpect(jsonPath("$.author.imageUrl").value(writer.getPicture()))
-                .andExpect(jsonPath("$.repeatPeriod.period").value(saveRepeatPeriodList.get(0).getPeriod().getId()))
-                .andExpect(jsonPath("$.repeatPeriod.week").value(saveRepeatPeriodList.get(0).getWeek().getId()))
-                .andExpect(jsonPath("$.repeatPeriod.days[0]").value(saveRepeatPeriodList.get(0).getDay().getId()))
-                .andExpect(jsonPath("$.repeatPeriod.days[1]").value(saveRepeatPeriodList.get(1).getDay().getId()))
-                .andExpect(jsonPath("$.picture.isStaticImage").value(false))
-                .andExpect(jsonPath("$.picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
+                .andExpect(jsonPath("$.recruitment.author.nickName").value(writer.getNickName()))
+                .andExpect(jsonPath("$.recruitment.author.imageUrl").value(writer.getPicture()))
+                .andExpect(jsonPath("$.recruitment.repeatPeriod.period").value(saveRepeatPeriodList.get(0).getPeriod().getId()))
+                .andExpect(jsonPath("$.recruitment.repeatPeriod.week").value(saveRepeatPeriodList.get(0).getWeek().getId()))
+                .andExpect(jsonPath("$.recruitment.repeatPeriod.days[0]").value(saveRepeatPeriodList.get(0).getDay().getId()))
+                .andExpect(jsonPath("$.recruitment.repeatPeriod.days[1]").value(saveRepeatPeriodList.get(1).getDay().getId()))
+                .andExpect(jsonPath("$.recruitment.picture.isStaticImage").value(false))
+                .andExpect(jsonPath("$.recruitment.picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
                 .andDo(print())
                 .andDo(
                         restDocs.document(
@@ -433,26 +433,26 @@ class RecruitmentQueryControllerTest {
                                         headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
                                 ),
                                 responseFields(
-                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
-                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
-                                        fieldWithPath("organizationName").type(JsonFieldType.STRING).description("기관 이름"),
-                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN).description("봉사 시간 인증 가능 여부"),
-                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
-                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
-                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
-                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
-                                        fieldWithPath("endDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
-                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 모집글 고유키 PK"),
-                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
-                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("정기 봉사 일정 진행 시간"),
-                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
-                                        fieldWithPath("content").type(JsonFieldType.STRING).description("봉사 모집글 본문"),
+                                        fieldWithPath("recruitment.no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("recruitment.volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("recruitment.organizationName").type(JsonFieldType.STRING).description("기관 이름"),
+                                        fieldWithPath("recruitment.isIssued").type(JsonFieldType.BOOLEAN).description("봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("recruitment.volunteeringType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
+                                        fieldWithPath("recruitment.volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
+                                        fieldWithPath("recruitment.volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."),
+                                        fieldWithPath("recruitment.startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("recruitment.endDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("recruitment.startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("recruitment.hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
+                                        fieldWithPath("recruitment.progressTime").type(JsonFieldType.NUMBER).description("정기 봉사 일정 진행 시간"),
+                                        fieldWithPath("recruitment.title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
+                                        fieldWithPath("recruitment.content").type(JsonFieldType.STRING).description("봉사 모집글 본문"),
 
-                                        fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
-                                        fieldWithPath("address.sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
-                                        fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
-                                        fieldWithPath("address.latitude").type(JsonFieldType.NUMBER).description("위도"),
-                                        fieldWithPath("address.longitude").type(JsonFieldType.NUMBER).description("경도"),
+                                        fieldWithPath("recruitment.address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("recruitment.address.sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
+                                        fieldWithPath("recruitment.address.details").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("recruitment.address.latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                        fieldWithPath("recruitment.address.longitude").type(JsonFieldType.NUMBER).description("경도"),
 
                                         fieldWithPath("approvalVolunteer[].userNo").type(JsonFieldType.NUMBER).description("봉사 참가 승인된 참가자(유저) 고유키 PK"),
                                         fieldWithPath("approvalVolunteer[].nickName").type(JsonFieldType.STRING).description("봉사 참가 승인된 참가자 닉네임"),
@@ -462,15 +462,15 @@ class RecruitmentQueryControllerTest {
                                         fieldWithPath("requiredVolunteer[].nickName").type(JsonFieldType.STRING).description("봉사 참가 미승인된 참가자 닉네임"),
                                         fieldWithPath("requiredVolunteer[].imageUrl").type(JsonFieldType.STRING).description("봉사 참가 미승인된 참가자 이미지 URL"),
 
-                                        fieldWithPath("author.nickName").type(JsonFieldType.STRING).description("봉사 모집글 작성자 닉네임"),
-                                        fieldWithPath("author.imageUrl").type(JsonFieldType.STRING).description("봉사 모집글 이미지 URL"),
+                                        fieldWithPath("recruitment.author.nickName").type(JsonFieldType.STRING).description("봉사 모집글 작성자 닉네임"),
+                                        fieldWithPath("recruitment.author.imageUrl").type(JsonFieldType.STRING).description("봉사 모집글 이미지 URL"),
 
-                                        fieldWithPath("repeatPeriod.period").type(JsonFieldType.STRING).optional().description("Code Period 참고바람. 비정기일 경우 NULL"),
-                                        fieldWithPath("repeatPeriod.week").type(JsonFieldType.STRING).optional().description("Code Week 참고바람. 비정기 혹은 Period가 매주일 경우 NULL"),
-                                        fieldWithPath("repeatPeriod.days").type(JsonFieldType.ARRAY).optional().description("Code Day 참고바람. 비정기일 경우 NULL"),
+                                        fieldWithPath("recruitment.repeatPeriod.period").type(JsonFieldType.STRING).optional().description("Code Period 참고바람. 비정기일 경우 NULL"),
+                                        fieldWithPath("recruitment.repeatPeriod.week").type(JsonFieldType.STRING).optional().description("Code Week 참고바람. 비정기 혹은 Period가 매주일 경우 NULL"),
+                                        fieldWithPath("recruitment.repeatPeriod.days").type(JsonFieldType.ARRAY).optional().description("Code Day 참고바람. 비정기일 경우 NULL"),
 
-                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("정적/동적 이미지 구분"),
-                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, isStaticImage True 일 경우 NULL")
+                                        fieldWithPath("recruitment.picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("정적/동적 이미지 구분"),
+                                        fieldWithPath("recruitment.picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, isStaticImage True 일 경우 NULL")
                                 )
                         )
                 );

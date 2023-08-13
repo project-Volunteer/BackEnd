@@ -7,26 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
-import project.volunteer.domain.user.dao.UserRepository;
-import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.application.RecruitmentDtoService;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
-import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
-import project.volunteer.domain.recruitment.application.RepeatPeriodService;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
-import project.volunteer.domain.sehedule.application.ScheduleService;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -40,21 +27,15 @@ import static project.volunteer.global.Interceptor.OrganizationAuth.*;
 @RestController
 @RequiredArgsConstructor
 public class RecruitmentController {
-
-    private final RecruitmentService recruitmentService;
     private final RecruitmentDtoService recruitmentDtoService;
     private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
-    private final ImageService imageService;
     private final RecruitmentFacade recruitmentFacade;
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
         Long recruitmentNo = recruitmentFacade.registerVolunteerPost(SecurityUtil.getLoginUserNo(), form);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("no", recruitmentNo);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(result);
+                .body(getSingleResponseDto("no", recruitmentNo));
     }
 
     @GetMapping("/recruitment")
@@ -66,7 +47,7 @@ public class RecruitmentController {
                                                                    @RequestParam(required = false) String volunteer_type,
                                                                    @RequestParam(required = false) Boolean is_issued) {
 
-        return ResponseEntity.ok(recruitmentDtoService.findRecruitmentDtos(pageable,
+        return ResponseEntity.ok(recruitmentDtoService.findSliceOptimizerRecruitmentDtos(pageable,
                 new RecruitmentCond(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued)));
     }
 
@@ -87,28 +68,20 @@ public class RecruitmentController {
                         .isIssued(is_issued)
                         .build());
 
-        //response
-        Map<String, Object> result = new HashMap<>();
-        result.put("totalCnt", recruitmentsCount);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(getSingleResponseDto("totalCnt", recruitmentsCount));
     }
 
 //    @LogExecutionTime
     @GetMapping("/recruitment/{no}")
-    public ResponseEntity<RecruitmentDetails> recruitmentDetails(@PathVariable Long no){
-
-        RecruitmentDetails dto = recruitmentDtoService.findRecruitmentDto(no);
+    public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
+        RecruitmentDetailsResponse dto = recruitmentFacade.findVolunteerPostDetails(no);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/recruitment/{no}/status")
     public ResponseEntity<Map<String,Object>> teamStateDetails(@PathVariable Long no){
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(no, SecurityUtil.getLoginUserNo());
-
-        //response
-        Map<String,Object> result = new HashMap<>();
-        result.put("status", status);
-        return ResponseEntity.ok(result);
+        String status = recruitmentFacade.findVolunteerPostParticipationState(no, SecurityUtil.getLoginUserNo());
+        return ResponseEntity.ok(getSingleResponseDto("status", status));
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
@@ -116,5 +89,11 @@ public class RecruitmentController {
     public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
         recruitmentFacade.deleteVolunteerPost(no);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private Map<String, Object> getSingleResponseDto(String field, Object value){
+        Map<String,Object> result = new HashMap<>();
+        result.put(field, value);
+        return result;
     }
 }
