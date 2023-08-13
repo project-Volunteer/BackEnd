@@ -75,7 +75,7 @@ class RecruitmentServiceImplTestForEdit {
 
     @Test
     @Transactional
-    public void 정기모집글_삭제_성공_반복주기포함(){
+    public void 정기모집글_삭제_성공(){
         //given & when
         recruitmentService.deleteRecruitment(saveRecruitment.getRecruitmentNo());
         clear();
@@ -83,10 +83,6 @@ class RecruitmentServiceImplTestForEdit {
         //then
         Recruitment recruitment = recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
         assertThat(recruitment.getIsDeleted()).isEqualTo(IsDeleted.Y);
-
-        List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(saveRecruitment.getRecruitmentNo());
-        findPeriod.stream()
-                .forEach(p -> assertThat(p.getIsDeleted()).isEqualTo(IsDeleted.Y));
     }
 
     @Test

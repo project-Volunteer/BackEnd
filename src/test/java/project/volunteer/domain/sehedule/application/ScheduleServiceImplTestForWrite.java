@@ -181,7 +181,7 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment, dto);
         clear();
 
         //then
@@ -203,7 +203,7 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment, dto);
         clear();
 
         //then
