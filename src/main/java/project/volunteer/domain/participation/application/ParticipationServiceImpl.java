@@ -165,7 +165,10 @@ public class ParticipationServiceImpl implements ParticipationService{
     public void deleteParticipations(Long recruitmentNo) {
         //연관관계 끊기
         participantRepository.findByRecruitment_RecruitmentNo(recruitmentNo)
-                .forEach(p -> p.removeUserAndRecruitment());
+                .forEach(p -> {
+                    p.delete();
+                    p.removeUserAndRecruitment();
+                });
     }
 
 }

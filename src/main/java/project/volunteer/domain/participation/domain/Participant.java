@@ -56,4 +56,7 @@ public class Participant extends BaseTimeEntity {
         this.recruitment = null;
         this.participant = null;
     }
+    public void delete(){
+        this.state = ParticipantState.DELETED;
+    }
 }
