@@ -137,7 +137,7 @@ public class ParticipationServiceImpl implements ParticipationService{
         Optional<Participant> findParticipant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
 
         //봉사 모집 기간 만료
-        if(!recruitment.isAvailableDate()){
+        if(recruitment.isDoneDate()){
             return StateResponse.DONE.getId();
         }
 

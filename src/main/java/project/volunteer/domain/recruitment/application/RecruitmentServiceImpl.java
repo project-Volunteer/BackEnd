@@ -50,7 +50,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         Recruitment findRecruitment = validateAndGetPublishedRecruitment(recruitmentNo);
 
         //봉사 모집글 마감 일자 조회
-        if(!findRecruitment.isAvailableDate()){
+        if(findRecruitment.isDoneDate()){
             throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo));
         }
         return findRecruitment;
