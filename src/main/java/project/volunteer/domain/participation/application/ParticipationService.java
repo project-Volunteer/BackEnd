@@ -1,6 +1,7 @@
 package project.volunteer.domain.participation.application;
 
 import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
+import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 
@@ -25,6 +26,8 @@ public interface ParticipationService {
     public AllParticipantDetails findAllParticipantDto(Long recruitmentNo);
 
     public String findParticipationState(Recruitment recruitment, User user);
+
+    public Participant findParticipation(Long recruitmentNo, Long userNo);
 
     public void deleteParticipations(Long recruitmentNo);
 }

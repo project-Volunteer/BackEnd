@@ -9,13 +9,10 @@ import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParti
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.dto.StateResponse;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -26,8 +23,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipationDtoService{
-
-    private final ScheduleRepository scheduleRepository;
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
@@ -71,37 +66,22 @@ public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipatio
     }
 
     @Override
-    public List<ParticipatingParticipantList> findParticipatingParticipants(Long scheduleNo) {
-        //일정 조회(삭제되지만 않은)
-        scheduleRepository.findValidSchedule(scheduleNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
-                        String.format("ScheduleNo = [%d]", scheduleNo)));
-
-        return scheduleParticipationRepository.findParticipantsByOptimization(scheduleNo, List.of(ParticipantState.PARTICIPATING)).stream()
+    public List<ParticipatingParticipantList> findParticipatingParticipants(Schedule schedule) {
+        return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(), List.of(ParticipantState.PARTICIPATING)).stream()
                 .map(p -> new ParticipatingParticipantList(p.getNickname(), p.getEmail(), p.getProfile()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<CancelledParticipantList> findCancelledParticipants(Long scheduleNo) {
-        //일정 조회(삭제되지만 않은)
-        scheduleRepository.findValidSchedule(scheduleNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
-                        String.format("ScheduleNo = [%d]", scheduleNo)));
-
-        return scheduleParticipationRepository.findParticipantsByOptimization(scheduleNo, List.of(ParticipantState.PARTICIPATION_CANCEL)).stream()
+    public List<CancelledParticipantList> findCancelledParticipants(Schedule schedule) {
+        return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(), List.of(ParticipantState.PARTICIPATION_CANCEL)).stream()
                 .map(p -> new CancelledParticipantList(p.getUserNo(), p.getNickname(), p.getEmail(), p.getProfile()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<CompletedParticipantList> findCompletedParticipants(Long scheduleNo) {
-        //일정 조회(삭제되지만 않은)
-        scheduleRepository.findValidSchedule(scheduleNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
-                        String.format("ScheduleNo = [%d]", scheduleNo)));
-
-        return scheduleParticipationRepository.findParticipantsByOptimization(scheduleNo,
+    public List<CompletedParticipantList> findCompletedParticipants(Schedule schedule) {
+        return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(),
                 List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)).stream()
                 .map(sp -> {
                     StateResponse state = sp.isEqualParticipantState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)?(StateResponse.COMPLETE_APPROVED):(StateResponse.COMPLETE_UNAPPROVED);

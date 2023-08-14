@@ -161,6 +161,13 @@ public class ParticipationServiceImpl implements ParticipationService{
     }
 
     @Override
+    public Participant findParticipation(Long recruitmentNo, Long userNo) {
+        return participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, userNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
+                        String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitmentNo, userNo)));
+    }
+
+    @Override
     @Transactional
     public void deleteParticipations(Long recruitmentNo) {
         //연관관계 끊기

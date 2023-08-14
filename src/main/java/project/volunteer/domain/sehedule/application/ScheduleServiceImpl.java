@@ -146,6 +146,29 @@ public class ScheduleServiceImpl implements ScheduleService{
         return scheduleRepository.findNearestSchedule(recruitmentNo).orElseGet(() -> null);
     }
 
+    @Override
+    public Schedule findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {
+        Schedule findSchedule = validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(scheduleNo);
+
+        //일정 마감 일자 조회
+        validateSchedulePeriod(findSchedule);
+        return findSchedule;
+    }
+
+    @Override
+    public Schedule findActivatedSchedule(Long scheduleNo) {
+        Schedule schedule = validAndGetSchedule(scheduleNo);
+
+        //일정 마감 일자 조회
+        validateSchedulePeriod(schedule);
+        return schedule;
+    }
+
+    @Override
+    public Schedule findPublishedSchedule(Long scheduleNo) {
+        return validAndGetSchedule(scheduleNo);
+    }
+
 
     //TODO: 단일 쿼리로 리펙토링 필요
     //TODO: 배치 스케줄링 메서드
@@ -164,7 +187,6 @@ public class ScheduleServiceImpl implements ScheduleService{
             }
         }
     }
-
 
     //반복 주기가 week 인 일정 날짜 생성
    private List<LocalDate> makeDatsOfRegWeek(LocalDate startDay, LocalDate endDay, List<Day> days){
@@ -218,10 +240,21 @@ public class ScheduleServiceImpl implements ScheduleService{
         return scheduleDate;
    }
 
-   //일정 유효성 검사
+    //일정 유효성 검사
     private Schedule validAndGetSchedule(Long scheduleNo){
         return scheduleRepository.findValidSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
+    }
+    private Schedule validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo){
+        return scheduleRepository.findValidScheduleWithPESSIMISTIC_WRITE_Lock(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
+                        String.format("Schedule to participant = [%d]", scheduleNo)));
+    }
+    private void validateSchedulePeriod(Schedule schedule){
+        if(!schedule.isAvailableDate()){
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE,
+                    String.format("ScheduleNo = [%d], participation period = [%s]", schedule.getScheduleNo(), schedule.getScheduleTimeTable().getEndDay().toString()));
+        }
     }
 
 }

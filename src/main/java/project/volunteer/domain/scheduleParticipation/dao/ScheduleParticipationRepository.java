@@ -4,9 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.scheduleParticipation.dao.dto.CompletedScheduleDetail;
 import project.volunteer.domain.scheduleParticipation.dao.dto.ParticipantDetails;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
+import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.ParticipantState;
 
 import java.util.List;
@@ -19,6 +21,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "join sp.participant p on p.participant.userNo=:userNo " +
             "and sp.schedule.scheduleNo=:scheduleNo")
     Optional<ScheduleParticipation> findByUserNoAndScheduleNo(@Param("userNo")Long userNo, @Param("scheduleNo")Long scheduleNo);
+    Optional<ScheduleParticipation> findByScheduleAndParticipant(Schedule schedule, Participant participant);
 
     //일정 참여 중인 인원 수 반환 쿼리
     @Query("select count(sp) " +
@@ -45,6 +48,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "and sp.state=:state ")
     Optional<ScheduleParticipation> findByUserNoAndScheduleNoAndState(@Param("userNo")Long userNo, @Param("scheduleNo")Long scheduleNo,
                                                                       @Param("state") ParticipantState state);
+    Optional<ScheduleParticipation> findByScheduleAndParticipantAndState(Schedule schedule, Participant participant, ParticipantState state);
 
     Optional<ScheduleParticipation> findByScheduleParticipationNoAndState(Long scheduleParticipationNo, ParticipantState state);
     List<ScheduleParticipation> findByScheduleParticipationNoIn(List<Long> spNos);
@@ -61,7 +65,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "left join i.storage s " +
             "where sp.schedule.scheduleNo=:scheduleNo " +
             "and sp.state in :states ")
-    List<ParticipantDetails> findParticipantsByOptimization(@Param("scheduleNo") Long scheduleNo, @Param("states") List<ParticipantState> states);
+    List<ParticipantDetails> findOptimizationParticipantByScheduleAndState(@Param("scheduleNo") Long scheduleNo, @Param("states") List<ParticipantState> states);
 
     @Query("select new project.volunteer.domain.scheduleParticipation.dao.dto.CompletedScheduleDetail" +
             "(sp.schedule.scheduleNo " +
