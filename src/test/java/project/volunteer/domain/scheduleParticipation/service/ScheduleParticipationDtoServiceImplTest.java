@@ -102,7 +102,7 @@ class ScheduleParticipationDtoServiceImplTest {
         clear();
 
         //when
-        List<ParticipatingParticipantList> findParticipants = spDtoService.findParticipatingParticipants(saveSchedule.getScheduleNo());
+        List<ParticipatingParticipantList> findParticipants = spDtoService.findParticipatingParticipants(saveSchedule);
 
         //then
         assertThat(findParticipants.size()).isEqualTo(3);
@@ -129,7 +129,7 @@ class ScheduleParticipationDtoServiceImplTest {
         clear();
 
         //when
-        List<CancelledParticipantList> findCancellingParticipants = spDtoService.findCancelledParticipants(saveSchedule.getScheduleNo());
+        List<CancelledParticipantList> findCancellingParticipants = spDtoService.findCancelledParticipants(saveSchedule);
 
 
         //then
@@ -157,7 +157,7 @@ class ScheduleParticipationDtoServiceImplTest {
         clear();
 
         //when
-        List<CompletedParticipantList> findCompletedParticipants = spDtoService.findCompletedParticipants(saveSchedule.getScheduleNo());
+        List<CompletedParticipantList> findCompletedParticipants = spDtoService.findCompletedParticipants(saveSchedule);
 
         //then
         assertThat(findCompletedParticipants.size()).isEqualTo(3);

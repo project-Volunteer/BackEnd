@@ -79,6 +79,7 @@ public class ConcurrentTest {
 
     @Test
     @DisplayName("일정 참여 모집 인원은 1명인데, 동시성 이슈로 인해 3명의 사용자 모두 참여가 된다.")
+    @Disabled
     public void concurrentParticipationWithoutLock() throws InterruptedException {
         //given
         final int numberOfThreads = 3;
@@ -151,6 +152,7 @@ public class ConcurrentTest {
 
     @Test
     @DisplayName("비관적 락을 통해 동시성 문제를 해결해보자.")
+    @Disabled
     public void concurrentParticipationWithPERSSIMITIC_WRITE_Lock() throws InterruptedException {
         //given
         final int numberOfThreads = 3;

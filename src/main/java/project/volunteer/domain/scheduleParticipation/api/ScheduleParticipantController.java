@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.scheduleParticipation.api.dto.*;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
+import project.volunteer.domain.scheduleParticipation.mapper.ScheduleParticipantFacade;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
@@ -19,23 +18,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class ScheduleParticipantController {
-
-    private final ScheduleParticipationService scheduleParticipationService;
-    private final ScheduleParticipationDtoService scheduleParticipationDtoService;
+    private final ScheduleParticipantFacade scheduleParticipantFacade;
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/join")
     public ResponseEntity scheduleParticipation(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
-
-        scheduleParticipationService.participate(recruitmentNo, scheduleNo, SecurityUtil.getLoginUserNo());
+        scheduleParticipantFacade.participateVolunteerPostSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancel")
     public ResponseEntity scheduleCancelRequest(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
-
-        scheduleParticipationService.cancel(scheduleNo, SecurityUtil.getLoginUserNo());
+        scheduleParticipantFacade.cancelParticipationVolunteerPostSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
     }
 
@@ -43,8 +38,7 @@ public class ScheduleParticipantController {
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancelling")
     public ResponseEntity scheduleCancelApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
                                                  @RequestBody @Valid CancelApproval dto){
-
-        scheduleParticipationService.approvalCancellation(scheduleNo, dto.getNo());
+        scheduleParticipantFacade.approvalCancellationVolunteerPostSchedule(scheduleNo, dto.getNo());
         return ResponseEntity.ok().build();
     }
 
@@ -53,7 +47,7 @@ public class ScheduleParticipantController {
     public ResponseEntity scheduleCompleteApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
                                                    @RequestBody @Valid CompleteApproval dto){
 
-        scheduleParticipationService.approvalCompletion(scheduleNo, dto.getCompletedList());
+        scheduleParticipantFacade.approvalCompletionVolunteerPostSchedule(scheduleNo, dto.getCompletedList());
         return ResponseEntity.ok().build();
     }
 
@@ -61,7 +55,7 @@ public class ScheduleParticipantController {
     @GetMapping("/{recruitmentNo}/schedule/{scheduleNo}/participating")
     public ResponseEntity<ParticipatingParticipantListResponse> scheduleParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
 
-        List<ParticipatingParticipantList> participating = scheduleParticipationDtoService.findParticipatingParticipants(scheduleNo);
+        List<ParticipatingParticipantList> participating = scheduleParticipantFacade.findParticipatingParticipantsSchedule(scheduleNo);
         return ResponseEntity.ok(new ParticipatingParticipantListResponse(participating));
     }
 
@@ -69,7 +63,7 @@ public class ScheduleParticipantController {
     @GetMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancelling")
     public ResponseEntity<CancelledParticipantListResponse> scheduleCancelledParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
 
-        List<CancelledParticipantList> cancellingParticipants = scheduleParticipationDtoService.findCancelledParticipants(scheduleNo);
+        List<CancelledParticipantList> cancellingParticipants = scheduleParticipantFacade.findCancelledParticipantsSchedule(scheduleNo);
         return ResponseEntity.ok(new CancelledParticipantListResponse(cancellingParticipants));
     }
 
@@ -77,7 +71,7 @@ public class ScheduleParticipantController {
     @GetMapping("/{recruitmentNo}/schedule/{scheduleNo}/completion")
     public ResponseEntity<CompletedParticipantListResponse> scheduleCompletedParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
 
-        List<CompletedParticipantList> completedParticipants = scheduleParticipationDtoService.findCompletedParticipants(scheduleNo);
+        List<CompletedParticipantList> completedParticipants = scheduleParticipantFacade.findCompletedParticipantsSchedule(scheduleNo);
         return ResponseEntity.ok(new CompletedParticipantListResponse(completedParticipants));
     }
 }
