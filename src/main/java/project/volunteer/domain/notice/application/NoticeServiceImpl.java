@@ -32,35 +32,24 @@ public class NoticeServiceImpl implements NoticeService{
 
     @Override
     @Transactional
-    public Notice addNotice(Long recruitmentNo, NoticeAdd dto) {
-        //모집글 검증
-        Recruitment findRecruitment = validateAndGetRecruitment(recruitmentNo);
-
+    public Notice addNotice(Recruitment recruitment, NoticeAdd dto) {
         Notice createNotice = dto.toEntity();
-        createNotice.setRecruitment(findRecruitment);
+        createNotice.setRecruitment(recruitment);
 
         return noticeRepository.save(createNotice);
     }
 
     @Override
     @Transactional
-    public void editNotice(Long recruitmentNo, Long noticeNo, NoticeEdit dto) {
-        //모집글 검증
-        validateAndGetRecruitment(recruitmentNo);
-
-        Notice findNotice = noticeRepository.findValidNotice(noticeNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
+    public void editNotice(Long noticeNo, NoticeEdit dto) {
+        Notice findNotice = validateAndGetNotice(noticeNo);
         findNotice.updateNotice(dto.getContent());
     }
 
     @Override
     @Transactional
-    public void deleteNotice(Long recruitmentNo, Long noticeNo) {
-        //모집글 검증
-        validateAndGetRecruitment(recruitmentNo);
-
-        Notice findNotice = noticeRepository.findValidNotice(noticeNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
+    public void deleteNotice(Long noticeNo) {
+        Notice findNotice = validateAndGetNotice(noticeNo);
         findNotice.delete();
     }
 

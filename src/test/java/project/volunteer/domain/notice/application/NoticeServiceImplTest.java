@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@Transactional
 class NoticeServiceImplTest {
     @PersistenceContext EntityManager em;
     @Autowired UserRepository userRepository;
@@ -61,14 +62,13 @@ class NoticeServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("봉사 모집글 공지사항 등록에 성공하다.")
     public void addNotice(){
         //given
         NoticeAdd dto = new NoticeAdd("test");
 
         //when
-        Notice saveNotice = noticeService.addNotice(saveRecruitment.getRecruitmentNo(), dto);
+        Notice saveNotice = noticeService.addNotice(saveRecruitment, dto);
         clear();
 
         //then
@@ -78,23 +78,6 @@ class NoticeServiceImplTest {
     }
 
     @Test
-    @Transactional
-    @DisplayName("봉사 모집글 기간 종료로 인해 공지사항 등록에 실패하다.")
-    public void expiredPeriodRecruitment(){
-        //given
-        Timetable updateTimetable = Timetable.createTimetable(LocalDate.now().minusMonths(1), LocalDate.now().minusDays(1), HourFormat.AM, LocalTime.now(), 3);
-        saveRecruitment.setVolunteeringTimeTable(updateTimetable);
-        NoticeAdd dto = new NoticeAdd("test");
-        clear();
-
-        //when & then
-        assertThatThrownBy(() -> noticeService.addNotice(saveRecruitment.getRecruitmentNo(), dto))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_ACTIVITY_RECRUITMENT.name());
-    }
-
-    @Test
-    @Transactional
     @DisplayName("봉사 모집글 공지사항 수정에 성공하다.")
     public void editNotice(){
         //given
@@ -102,7 +85,7 @@ class NoticeServiceImplTest {
         NoticeEdit dto = new NoticeEdit("change");
 
         //when
-        noticeService.editNotice(saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), dto);
+        noticeService.editNotice(saveNotice.getNoticeNo(), dto);
         clear();
 
         //then
@@ -112,14 +95,13 @@ class NoticeServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("봉사 모집글 공지사항 삭제에 성공하다.")
     public void deleteNotice(){
         //given
         Notice saveNotice = 공지사항_등록("test");
 
         //when
-        noticeService.deleteNotice(saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo());
+        noticeService.deleteNotice(saveNotice.getNoticeNo());
         clear();
 
         //then
@@ -128,7 +110,6 @@ class NoticeServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("공지사항 읽음에 성공하다.")
     public void readNotice(){
         //given
@@ -150,7 +131,6 @@ class NoticeServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("공지사항 읽음을 중복으로 시도하다.")
     public void duplicatedReadNotice(){
         //given
@@ -167,7 +147,6 @@ class NoticeServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("공지사항 읽음 해제에 성공하다.")
     public void readCancelNotice(){
         //given
@@ -189,7 +168,6 @@ class NoticeServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("공지사항 읽음이 존재하지 않는 상황에 읽음 해제를 시도하다.")
     public void notExistConfirmation(){
         //given

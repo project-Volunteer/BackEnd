@@ -11,6 +11,7 @@ import project.volunteer.domain.notice.api.dto.response.NoticeListResponse;
 import project.volunteer.domain.notice.application.NoticeDtoService;
 import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
+import project.volunteer.domain.notice.mapper.NoticeFacade;
 import project.volunteer.domain.reply.application.ReplyService;
 import project.volunteer.domain.reply.application.dto.CommentDetails;
 import project.volunteer.global.Interceptor.OrganizationAuth;
@@ -29,30 +30,32 @@ public class NoticeController {
     private final NoticeService noticeService;
     private final NoticeDtoService noticeDtoService;
     private final ReplyService replyService;
+    private final NoticeFacade noticeFacade;
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @PostMapping("/{recruitmentNo}/notice")
     public ResponseEntity noticeAdd(@PathVariable Long recruitmentNo, @RequestBody @Valid NoticeAdd dto){
 
-        noticeService.addNotice(recruitmentNo, dto);
+        noticeFacade.registerVolunteerPostNotice(recruitmentNo, dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/notice/{noticeNo}")
     public ResponseEntity noticeEdit(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo, @RequestBody @Valid NoticeEdit dto){
-
-        noticeService.editNotice(recruitmentNo, noticeNo, dto);
+        noticeFacade.editVolunteerPostNotice(recruitmentNo, noticeNo, dto);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/{recruitmentNo}/notice/{noticeNo}")
     public ResponseEntity noticeDelete(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-
-        noticeService.deleteNotice(recruitmentNo, noticeNo);
+        noticeFacade.deleteVolunteerPostNotice(recruitmentNo, noticeNo);
         return ResponseEntity.ok().build();
     }
+
+
+
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/notice")
