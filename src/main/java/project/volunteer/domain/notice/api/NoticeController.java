@@ -80,16 +80,14 @@ public class NoticeController {
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PostMapping("/{recruitmentNo}/notice/{noticeNo}/read")
     public ResponseEntity noticeRead(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-
-        noticeService.readNotice(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        noticeFacade.readVolunteerPostNotice(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @DeleteMapping("/{recruitmentNo}/notice/{noticeNo}/cancel")
     public ResponseEntity noticeReadCancel(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-
-        noticeService.readCancelNotice(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        noticeFacade.readCancelVolunteerPostNotice(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo);
         return ResponseEntity.ok().build();
     }
 

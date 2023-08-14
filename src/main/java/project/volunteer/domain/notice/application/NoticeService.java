@@ -11,8 +11,8 @@ public interface NoticeService {
     public void editNotice(Long noticeNo, NoticeEdit dto);
     public void deleteNotice(Long noticeNo);
 
-    public void readNotice(Long recruitmentNo, Long noticeNo, Long userNo);
-    public void readCancelNotice(Long recruitmentNo, Long noticeNo, Long userNo);
+    public void increaseCheckNumWithOPTIMSTIC_LOCK(Long noticeNo);
+    public void decreaseCheckNumWithOPTIMSTIC_LOCK(Long noticeNo);
 
 
     public void addNoticeComment(Long recruitmentNo, Long noticeNo, Long loginUserNo, String content);

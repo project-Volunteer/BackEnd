@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
-import project.volunteer.domain.confirmation.domain.Confirmation;
 import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.dao.NoticeRepository;
@@ -22,17 +21,13 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -109,93 +104,9 @@ class NoticeServiceImplTest {
         assertThat(findNotice.getIsDeleted()).isEqualTo(IsDeleted.Y);
     }
 
-    @Test
-    @DisplayName("공지사항 읽음에 성공하다.")
-    public void readNotice(){
-        //given
-        User loginUser = 사용자_추가("read user");
-        Notice saveNotice = 공지사항_등록("read test");
-
-        //when
-        noticeService.readNotice(saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), loginUser.getUserNo());
-        clear();
-
-        //then
-        Notice findNotice = noticeRepository.findById(saveNotice.getNoticeNo()).get();
-        Confirmation findConfirmation = confirmationRepository.findConfirmation(loginUser.getUserNo(), RealWorkCode.NOTICE, saveNotice.getNoticeNo()).get();
-
-        assertThat(findNotice.getCheckedNum()).isEqualTo(1);
-        assertThat(findConfirmation.getRealWorkCode()).isEqualTo(RealWorkCode.NOTICE);
-        assertThat(findConfirmation.getNo()).isEqualTo(saveNotice.getNoticeNo());
-        assertThat(findConfirmation.getUser().getUserNo()).isEqualTo(loginUser.getUserNo());
-    }
-
-    @Test
-    @DisplayName("공지사항 읽음을 중복으로 시도하다.")
-    public void duplicatedReadNotice(){
-        //given
-        User loginUser = 사용자_추가("read user");
-        Notice saveNotice = 공지사항_등록("read test");
-        읽음_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), loginUser);
-        saveNotice.increaseCheckNum();
-        clear();
-
-        //when & then
-        assertThatThrownBy(() -> noticeService.readNotice(saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), loginUser.getUserNo()))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.INVALID_CONFIRMATION.name());
-    }
-
-    @Test
-    @DisplayName("공지사항 읽음 해제에 성공하다.")
-    public void readCancelNotice(){
-        //given
-        User loginUser = 사용자_추가("read user");
-        Notice saveNotice = 공지사항_등록("read test");
-        읽음_등록(RealWorkCode.NOTICE, saveNotice.getNoticeNo(), loginUser);
-        saveNotice.increaseCheckNum();
-
-        //when
-        noticeService.readCancelNotice(saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), loginUser.getUserNo());
-        clear();
-
-        //then
-        Notice findNotice = noticeRepository.findById(saveNotice.getNoticeNo()).get();
-        Optional<Confirmation> findConfirmation = confirmationRepository.findConfirmation(loginUser.getUserNo(), RealWorkCode.NOTICE, saveNotice.getNoticeNo());
-
-        assertThat(findNotice.getCheckedNum()).isEqualTo(0);
-        assertThat(findConfirmation).isEqualTo(Optional.empty());
-    }
-
-    @Test
-    @DisplayName("공지사항 읽음이 존재하지 않는 상황에 읽음 해제를 시도하다.")
-    public void notExistConfirmation(){
-        //given
-        final String userName = "user";
-        final String content = "test";
-        User loginUser = 사용자_추가(userName);
-        Notice saveNotice = 공지사항_등록(content);
-
-        //when & then
-        assertThatThrownBy(() -> noticeService.readCancelNotice(saveRecruitment.getRecruitmentNo(), saveNotice.getNoticeNo(), loginUser.getUserNo()))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.NOT_EXIST_CONFIRMATION.name());
-    }
-
-
-    private User 사용자_추가(String value){
-        User loginUser = User.createUser(value, value, value, value, Gender.M, LocalDate.now(), "picture",
-                true, true, true, Role.USER, "kakao", value, null);
-        return userRepository.save(loginUser);
-    }
     private Notice 공지사항_등록(String content){
         Notice createNotice = Notice.createNotice(content);
         return noticeRepository.save(createNotice);
-    }
-    private Confirmation 읽음_등록(RealWorkCode code, Long no, User user){
-        Confirmation createConfirmation = Confirmation.createConfirmation(code, no);
-        createConfirmation.setUser(user);
-        return confirmationRepository.save(createConfirmation);
     }
     private void clear() {
         em.flush();

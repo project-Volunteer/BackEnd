@@ -3,8 +3,6 @@ package project.volunteer.domain.notice.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
-import project.volunteer.domain.confirmation.domain.Confirmation;
 import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.dao.NoticeRepository;
@@ -12,8 +10,6 @@ import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.reply.application.ReplyService;
-import project.volunteer.domain.user.dao.UserRepository;
-import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
@@ -22,11 +18,8 @@ import project.volunteer.global.error.exception.ErrorCode;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService{
-
-    private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final NoticeRepository noticeRepository;
-    private final ConfirmationRepository confirmationRepository;
 
     private final ReplyService replyService;
 
@@ -55,40 +48,19 @@ public class NoticeServiceImpl implements NoticeService{
 
     @Override
     @Transactional
-    public void readNotice(Long recruitmentNo, Long noticeNo, Long userNo) {
-        //봉사 모집글 검증
-        validateAndGetRecruitment(recruitmentNo);
-
+    public void increaseCheckNumWithOPTIMSTIC_LOCK(Long noticeNo) {
         //봉사 공지사항 검증
 //        Notice findNotice = validateAndGetNotice(noticeNo);
         Notice findNotice = validateAndGetNoticeWithOPTIMSTIC_LOCK(noticeNo); //낙관적 락 사용
 
-        //봉사 공지사항 유무 검증
-        if(confirmationRepository.existsCheck(userNo, RealWorkCode.NOTICE, findNotice.getNoticeNo())){
-            throw new BusinessException(ErrorCode.INVALID_CONFIRMATION,
-                    String.format("code = [%s], NoticeNo = [%d], userNo = [%d]", RealWorkCode.NOTICE.name(), noticeNo, userNo));
-        }
-
-        Confirmation createConfirmation = Confirmation.createConfirmation(RealWorkCode.NOTICE, findNotice.getNoticeNo());
-        User loginUser = validateAndGetUser(userNo);
-        createConfirmation.setUser(loginUser);
-
-        confirmationRepository.save(createConfirmation);
         findNotice.increaseCheckNum();
     }
 
     @Override
     @Transactional
-    public void readCancelNotice(Long recruitmentNo, Long noticeNo, Long userNo) {
-        //봉사 모집글 검증
-        validateAndGetRecruitment(recruitmentNo);
-
+    public void decreaseCheckNumWithOPTIMSTIC_LOCK(Long noticeNo) {
         //봉사 공지사항 검증
-        Notice findNotice = validateAndGetNotice(noticeNo);
-
-        //공지사항 읽음 삭제
-        Confirmation findConfirmation = validateAndGetConfirmation(RealWorkCode.NOTICE, noticeNo, userNo);
-        confirmationRepository.delete(findConfirmation);
+        Notice findNotice = validateAndGetNoticeWithOPTIMSTIC_LOCK(noticeNo); //낙관적 락 사용
 
         findNotice.decreaseCheckNum();
     }
@@ -169,13 +141,5 @@ public class NoticeServiceImpl implements NoticeService{
         return noticeRepository.findValidNoticeWithOPTIMSTICLOCK(noticeNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
     }
-    private User validateAndGetUser(Long userNo){
-        return userRepository.findByUserNo(userNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_USER, String.format("UserNo = [%d]", userNo)));
-    }
-    private Confirmation validateAndGetConfirmation(RealWorkCode code, Long no, Long userNo){
-        return confirmationRepository.findConfirmation(userNo, code, no)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_CONFIRMATION,
-                        String.format("code = [%s], no = [%d], userNo = [%d]", code.name(), no, userNo)));
-    }
+
 }
