@@ -36,7 +36,7 @@ public class LogboardList {
 		this.profile = profile;
 		this.nickname = nickname;
 		this.createdDay = createdDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-		this.volunteeringCategory = volunteeringCategory.getDesc();
+		this.volunteeringCategory = volunteeringCategory.getId();
 		this.content = content;
 		this.likeCnt = likeCnt;
 		this.isLikeMe = isLikeMe;

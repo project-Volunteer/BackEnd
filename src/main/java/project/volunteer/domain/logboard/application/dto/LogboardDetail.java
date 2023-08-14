@@ -30,7 +30,7 @@ public class LogboardDetail {
         this.no = logboard.getLogboardNo();
         this.writerNo = logboard.getCreateUserNo();
         this.createdDay = logboard.getCreatedDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.volunteeringCategory = logboard.getSchedule().getRecruitment().getVolunteeringCategory().getDesc();
+        this.volunteeringCategory = logboard.getSchedule().getRecruitment().getVolunteeringCategory().getId();
         this.content = logboard.getContent();
     }
 
