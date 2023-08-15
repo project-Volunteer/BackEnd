@@ -191,12 +191,12 @@ class RecruitmentDtoServiceImplTest {
     @Transactional
     public void searchParticipantState() throws IOException {
         //given
-        봉사모집글_팀원_상태추가("홍길동", ParticipantState.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("구하라", ParticipantState.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("honggildong", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("kuhara", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("spring", ParticipantState.JOIN_APPROVAL);
         봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_REQUEST);
         봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_REQUEST);
-        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_REQUEST);
+        봉사모집글_팀원_상태추가("transaction", ParticipantState.JOIN_REQUEST);
 
         //when
         RecruitmentDetails details = recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo());
@@ -295,13 +295,13 @@ class RecruitmentDtoServiceImplTest {
         Recruitment findRecruitment = 저장된_모집글_가져오기();
         User newUser = 신규회원_가입("new");
         //현재 팀원 최대 인원 4명으로 설정됨
-        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("spring", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
-        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_APPROVAL);
+        봉사모집글_팀원_상태추가("transaction", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         clear();
 

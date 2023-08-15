@@ -86,15 +86,15 @@ class ScheduleParticipationDtoServiceImplTest {
     @DisplayName("일정 참여 중 리스트 조회 시 3명의 참여자가 조회된다.")
     public void schedule_participant_list(){
         //given
-        User newUser1 = 사용자_등록("구본식");
+        User newUser1 = 사용자_등록("rnqhstlr");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
 
-        User newUser2 = 사용자_등록("양소은");
+        User newUser2 = 사용자_등록("didthdms");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATING);
 
-        User newUser3 = 사용자_등록("양호록");
+        User newUser3 = 사용자_등록("didghfhr");
         Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
         일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATING);
         clear();
@@ -114,15 +114,15 @@ class ScheduleParticipationDtoServiceImplTest {
     @DisplayName("일정 취소 요청 리스트 조회 시 2명의 취소 요청자가 조회된다.")
     public void schedule_cancel_participant_list(){
         //given
-        User newUser1 = 사용자_등록("구본식");
+        User newUser1 = 사용자_등록("rnqhstlr");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
 
-        User newUser2 = 사용자_등록("양소은");
+        User newUser2 = 사용자_등록("didthdms");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_CANCEL);
 
-        User newUser3 = 사용자_등록("양호록");
+        User newUser3 = 사용자_등록("didghfhr");
         Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
         일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATION_CANCEL);
         clear();
@@ -143,15 +143,15 @@ class ScheduleParticipationDtoServiceImplTest {
     @DisplayName("일정 참여 완료 리스트 조회 시 2명의 참여 완료 미승인과 1명의 참여 완료 승인자가 조회된다.")
     public void schedule_completed_participant_list(){
         //given
-        User newUser1 = 사용자_등록("구본식");
+        User newUser1 = 사용자_등록("ku");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
-        User newUser2 = 사용자_등록("양소은");
+        User newUser2 = 사용자_등록("yangsoeun");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
-        User newUser3 = 사용자_등록("양호록");
+        User newUser3 = 사용자_등록("yanghorok");
         Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
         일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
         clear();
