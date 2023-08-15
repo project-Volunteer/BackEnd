@@ -94,15 +94,8 @@ public class RecruitmentFacade {
     }
 
     public RecruitmentDetailsResponse findVolunteerPostDetails(Long recruitmentNo){
-        //봉사 모집글 & 작성자 DTO
+        //봉사 모집글 관련 정보 DTO 세팅(봉사 모집글 정보 + 이미지, 작성자 정보 + 이미지, 정기 일 경우 반복주기)
         RecruitmentDetails recruitmentAndWriterDto = recruitmentDtoService.findRecruitmentAndWriterDto(recruitmentNo);
-
-        //정기 일 경우 반복주기 DTO
-        RepeatPeriodDetails repeatPeriodDto = null;
-        if(recruitmentAndWriterDto.getVolunteeringType().equals(VolunteeringType.REG.getId())){
-            repeatPeriodDto = repeatPeriodService.findRepeatPeriodDto(recruitmentNo);
-            recruitmentAndWriterDto.setRepeatPeriod(repeatPeriodDto);
-        }
 
         //참여자(승인,신청) 리스트 DTO
         AllParticipantDetails allParticipantDto = participationService.findAllParticipantDto(recruitmentNo);

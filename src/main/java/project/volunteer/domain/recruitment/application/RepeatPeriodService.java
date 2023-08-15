@@ -10,5 +10,4 @@ public interface RepeatPeriodService {
 
     public void deleteRepeatPeriod(Long recruitmentNo);
 
-    public RepeatPeriodDetails findRepeatPeriodDto(Long recruitmentNo);
 }

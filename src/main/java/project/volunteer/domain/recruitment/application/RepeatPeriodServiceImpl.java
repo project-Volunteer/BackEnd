@@ -42,18 +42,6 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
                 });
     }
 
-    @Override
-    public RepeatPeriodDetails findRepeatPeriodDto(Long recruitmentNo) {
-        List<RepeatPeriod> repeatPeriods = getRepeatPeriods(recruitmentNo);
-
-        String period = repeatPeriods.get(0).getPeriod().getId();
-        String week = (period.equals(Period.MONTH.getId()))?(repeatPeriods.get(0).getWeek().getId()):null;
-        List<String> days = repeatPeriods.stream().map(r -> r.getDay().getId()).collect(Collectors.toList());
-
-        return new RepeatPeriodDetails(period, week, days);
-    }
-
-
     private List<RepeatPeriod> getRepeatPeriods(Long recruitmentNo){
         return repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
     }

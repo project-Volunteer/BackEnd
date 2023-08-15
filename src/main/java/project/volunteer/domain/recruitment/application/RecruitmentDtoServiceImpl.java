@@ -11,9 +11,14 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListResponse;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentList;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodDetails;
+import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
 import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
+import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.domain.RepeatPeriod;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.application.dto.WriterDetails;
 import project.volunteer.domain.recruitment.dto.PictureDetails;
@@ -37,11 +42,11 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
     private final ImageRepository imageRepository;
+    private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Override
     public RecruitmentDetails findRecruitmentAndWriterDto(Long no) {
-        //TODO: 모집글, 작성자, 모집글 이미지, 작성자 이미지 한번에 가져오는 쿼리로 최적화하기
-        //TODO: ImageRepository 의존성 삭제 가능
+        //TODO: 쿼리 최적화 필요.
         //모집글 정보 + 모집글 작성자 정보 -> 쿼리 1번
         Recruitment findRecruitment = recruitmentRepository.findWriterEG(no).orElseThrow(()
                 -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Search Recruitment NO = [%d]", no)));
@@ -50,10 +55,15 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         RecruitmentDetails dto = new RecruitmentDetails(findRecruitment);
 
         //모집글 이미지 dto 세팅 -> 쿼리 1번
-        makeRecruitmentImageDto(dto, no);
+        dto.setPicture(makeRecruitmentPictureDto(no));
 
         //모집글 작성자 dto 세팅 -> 쿼리 1번
-        makeWriterDto(dto, findRecruitment.getWriter());
+        dto.setAuthor(makeWriterDto(findRecruitment.getWriter()));
+
+        //정기 모집글 일 경우 반복주기 dto 세팅 -> 쿼리 1번
+        if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){
+            dto.setRepeatPeriod(makeRepeatPeriodDto(findRecruitment.getRecruitmentNo()));
+        }
 
         return dto;
     }
@@ -78,24 +88,40 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
         return new RecruitmentListResponse(list, result.isLast(), (list.isEmpty())?null:(list.get(list.size()-1).getNo()));
     }
 
-    private void makeRecruitmentImageDto(RecruitmentDetails dto, Long recruitmentNo){
+    private PictureDetails makeRecruitmentPictureDto(Long recruitmentNo){
+        PictureDetails pictureDetails = null;
+
         Optional<Image> recruitmentImage = imageRepository.findEGStorageByCodeAndNo(RealWorkCode.RECRUITMENT, recruitmentNo);
         //업로드 이미지가 존재하는 경우
-        if(recruitmentImage.isPresent())
-            dto.setPicture(new PictureDetails(false, recruitmentImage.get().getStorage().getImagePath()));
+        if(recruitmentImage.isPresent()){
+            pictureDetails = new PictureDetails(false, recruitmentImage.get().getStorage().getImagePath());
+        }else{
+            pictureDetails = new PictureDetails(true, null);
+        }
+        return pictureDetails;
     }
 
-    private void makeWriterDto(RecruitmentDetails dto, User writer) {
+    private WriterDetails makeWriterDto(User writer) {
         //작성자 프로필 이미지(image + storage) -> 쿼리 1번
         //upload 이미지이므로 존재할 수도 있고, 없을수 있음.!
         Optional<Image> userUploadImage = imageRepository.findEGStorageByCodeAndNo(RealWorkCode.USER, writer.getUserNo());
 
-        WriterDetails author  = null;
+        WriterDetails writerDetails  = null;
         if(userUploadImage.isPresent()){ //유저 프로필이 업로드 이미지인 경우
-            author = new WriterDetails(writer.getNickName(), userUploadImage.get().getStorage().getImagePath());
+            writerDetails = new WriterDetails(writer.getNickName(), userUploadImage.get().getStorage().getImagePath());
         }else{                           //oauth 기본 프로필인 경우
-            author = new WriterDetails(writer.getNickName(), writer.getPicture());
+            writerDetails = new WriterDetails(writer.getNickName(), writer.getPicture());
         }
-        dto.setAuthor(author);
+        return writerDetails;
+    }
+
+    private RepeatPeriodDetails makeRepeatPeriodDto(Long recruitmentNo){
+        List<RepeatPeriod> repeatPeriods = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
+
+        String period = repeatPeriods.get(0).getPeriod().getId();
+        String week = (period.equals(Period.MONTH.getId()))?(repeatPeriods.get(0).getWeek().getId()):null;
+        List<String> days = repeatPeriods.stream().map(r -> r.getDay().getId()).collect(Collectors.toList());
+
+        return new RepeatPeriodDetails(period, week, days);
     }
 }
