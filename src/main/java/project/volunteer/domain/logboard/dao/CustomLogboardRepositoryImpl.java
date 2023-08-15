@@ -1,6 +1,5 @@
 package project.volunteer.domain.logboard.dao;
 
-
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -20,6 +19,7 @@ import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.logboard.dao.dto.QLogboardListQuery;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.LogboardSearchType;
+import project.volunteer.global.common.component.RealWorkCode;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,15 +37,13 @@ public class CustomLogboardRepositoryImpl implements CustomLogboardRepository {
 					logboard.logboardNo, logboard.writer.userNo, logboard.writer.picture,
 					logboard.writer.nickName, logboard.createdDate,
 					schedule.recruitment.volunteeringCategory, logboard.content, 
-					logboard.likeCount, like.likeOk.coalesce(false).as("isLikeMe"), 
-					// 댓글 갯수 조회 쿼리 미완성 추후 추가
-					logboard.viewCount
+					logboard.likeCount, like
 				)
 			)
 			.from(logboard)
 			.innerJoin(schedule).on(logboard.schedule.eq(schedule))
 			.innerJoin(user).on(logboard.writer.userNo.eq(user.userNo))
-			.leftJoin(like).on(logboard.logboardNo.eq(like.likeNo))
+			.leftJoin(like).on(logboard.logboardNo.eq(like.no),like.realWorkCode.eq(RealWorkCode.LOG))
 			.where(
 					ltlogboardNo(lastId),
 					isSearchTypeMyLog(searchType, writerNo),
@@ -61,19 +59,13 @@ public class CustomLogboardRepositoryImpl implements CustomLogboardRepository {
 
     // 내가 쓴 로그일 경우 조회
     private BooleanExpression isSearchTypeMyLog(String searchType, Long writerNo) {
-         if (LogboardSearchType.isAll(searchType)) {
-             return null;
-         }
-         return logboard.writer.userNo.eq(writerNo);
+         return LogboardSearchType.isAll(searchType)?null:logboard.writer.userNo.eq(writerNo);
      }
 	
 
     // no-offset 방식 처리하는 메서드
     private BooleanExpression ltlogboardNo(Long logboardNo) {
-         if (logboardNo == null) {
-             return null;
-         }
-         return logboard.logboardNo.lt(logboardNo);
+         return logboardNo == null?null:logboard.logboardNo.lt(logboardNo);
      }
 	
     // 무한 스크롤 방식 처리하는 메서드

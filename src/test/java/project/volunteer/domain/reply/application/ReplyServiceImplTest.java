@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import project.volunteer.domain.reply.application.dto.CommentDetails;
 import project.volunteer.domain.reply.dao.queryDto.ReplyQueryDtoRepository;
 import project.volunteer.domain.reply.dao.queryDto.dto.CommentMapperDto;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.RealWorkCode;
 
 import java.time.LocalDateTime;
@@ -30,10 +31,10 @@ class ReplyServiceImplTest {
     @DisplayName("댓글/대댓글 리스트 DTO 조회에 성공하다.")
     void findCommentAndCommentReplyDtos(){
         //given
-        final CommentMapperDto dto1 = new CommentMapperDto(1L, null, "profile1", "nickname1", "content1", LocalDateTime.now());
-        final CommentMapperDto dto2 = new CommentMapperDto(4L, null, "profile4", "nickname4", "content4", LocalDateTime.now());
-        final CommentMapperDto dto3 = new CommentMapperDto(2L, 1L, "profile2", "nickname2", "content2", LocalDateTime.now());
-        final CommentMapperDto dto4 = new CommentMapperDto(3L, 1L, "profile3", "nickname3", "content3", LocalDateTime.now());
+        final CommentMapperDto dto1 = new CommentMapperDto(1L, null, "profile1", "nickname1", "content1", LocalDateTime.now(), IsDeleted.N);
+        final CommentMapperDto dto2 = new CommentMapperDto(4L, null, "profile4", "nickname4", "content4", LocalDateTime.now(), IsDeleted.N);
+        final CommentMapperDto dto3 = new CommentMapperDto(2L, 1L, "profile2", "nickname2", "content2", LocalDateTime.now(), IsDeleted.N);
+        final CommentMapperDto dto4 = new CommentMapperDto(3L, 1L, "profile3", "nickname3", "content3", LocalDateTime.now(), IsDeleted.N);
         final List<CommentMapperDto> mapperDtos = List.of(dto1, dto2, dto3, dto4);
 
         given(replyQueryDtoRepository.getCommentMapperDtos(RealWorkCode.NOTICE, 1L))

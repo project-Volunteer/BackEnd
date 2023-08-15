@@ -1,15 +1,6 @@
 package project.volunteer.domain.reply.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -47,12 +38,17 @@ public class Reply extends BaseTimeEntity {
 
 	@Column(columnDefinition = "LONGTEXT", nullable = false)
 	private String content;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "is_deleted", length = 1, nullable = false)
+	private IsDeleted isDeleted;
     
     public static Reply createComment(RealWorkCode code, Long no, String content){
     	Reply createReply = new Reply();
     	createReply.realWorkCode = code;
     	createReply.no = no;
     	createReply.content = content;
+		createReply.isDeleted = IsDeleted.N;
         return createReply;
     }
 
@@ -62,6 +58,7 @@ public class Reply extends BaseTimeEntity {
     	createReply.realWorkCode = code;
     	createReply.no = no;
     	createReply.content = content;
+		createReply.isDeleted = IsDeleted.N;
         return createReply;
     }
 
@@ -69,6 +66,9 @@ public class Reply extends BaseTimeEntity {
     	this.content = content;
 	}
 
+	public void delete(){
+		this.isDeleted = IsDeleted.Y;
+	}
     
     public void setWriter(User user){
         this.writer = user;

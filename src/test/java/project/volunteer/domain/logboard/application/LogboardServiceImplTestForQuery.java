@@ -27,7 +27,7 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
-import project.volunteer.domain.logboard.application.dto.LogboardDetail;
+import project.volunteer.domain.logboard.application.dto.LogboardEditDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.logboard.domain.Logboard;
@@ -197,7 +197,7 @@ public class LogboardServiceImplTestForQuery {
 
 	@Test
 	void 로그보드_조회() throws Exception {
-		LogboardDetail logboardDetails = logboardService.findLogboard(logboardList.get(0).getLogboardNo());
+		LogboardEditDetail logboardDetails = logboardService.findLogboard(logboardList.get(0).getLogboardNo());
 		
 		Assertions.assertThat(logboardDetails.getContent().equals("content0000"));
 	}

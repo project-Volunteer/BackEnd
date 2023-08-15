@@ -82,7 +82,7 @@ public class ReplyServiceImpl implements ReplyService {
 		// 댓글 존재 여부 검증
 		Reply findReply = replyValidate.validateAndGetReply(replyNo);
 
-		replyRepository.delete(findReply);
+		findReply.delete();
 	}
 	@Override
 	public List<CommentDetails>  getCommentReplyList(RealWorkCode code, Long no) {

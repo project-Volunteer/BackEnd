@@ -2,8 +2,10 @@ package project.volunteer.domain.logboard.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -26,14 +28,18 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.logboard.api.dto.response.*;
+import project.volunteer.domain.logboard.application.dto.LogboardDetail;
+import project.volunteer.domain.reply.application.dto.CommentDetails;
+import project.volunteer.domain.reply.dao.ReplyRepository;
+import project.volunteer.domain.reply.domain.Reply;
+import project.volunteer.domain.user.api.dto.response.UserInfo;
+import project.volunteer.domain.user.application.UserService;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.api.dto.request.LogBoardRequestParam;
-import project.volunteer.domain.logboard.api.dto.response.AddableLogboardListResponse;
-import project.volunteer.domain.logboard.api.dto.response.LogboardDetailResponse;
-import project.volunteer.domain.logboard.api.dto.response.LogboardList;
-import project.volunteer.domain.logboard.api.dto.response.LogboardListResponse;
 import project.volunteer.domain.logboard.application.LogboardService;
-import project.volunteer.domain.logboard.application.dto.LogboardDetail;
+import project.volunteer.domain.logboard.application.dto.LogboardEditDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.reply.application.ReplyService;
@@ -56,6 +62,8 @@ public class LogboardController {
 	private final LogboardRepository logboardRepository;
 	private final ScheduleParticipationDtoService spDtoService ;
 	private final ReplyService replyService;
+	private final ReplyRepository replyRepository;
+	private final UserService userService;
 	
 	@GetMapping("/logboard/schedule")
 	public ResponseEntity<AddableLogboardListResponse> approvalSchedule() {
@@ -79,10 +87,10 @@ public class LogboardController {
 	}
 	
 	@GetMapping("/logboard/edit/{no}")
-	public ResponseEntity<LogboardDetailResponse> logboardDetails(@PathVariable Long no) {
+	public ResponseEntity<LogboardEditDetailResponse> logboardDetails(@PathVariable Long no) {
 		List<String> imagePath = new ArrayList<>();
 		
-		LogboardDetail logboardDetail = logboardService.findLogboard(no);
+		LogboardEditDetail logboardDetail = logboardService.findLogboard(no);
 
 		List<Image> logImages = imageRepository.findImagesByCodeAndNo(RealWorkCode.LOG, no);
 		for(Image logImage : logImages) {
@@ -90,7 +98,7 @@ public class LogboardController {
 		}
 		
 		logboardDetail.setPicture(imagePath);
-		LogboardDetailResponse logboardDetailResponse = new LogboardDetailResponse(logboardDetail);
+		LogboardEditDetailResponse logboardDetailResponse = new LogboardEditDetailResponse(logboardDetail);
 		
 		return ResponseEntity.ok(logboardDetailResponse);
 	}
@@ -126,7 +134,26 @@ public class LogboardController {
 		return ResponseEntity.ok().build();
 	}
 
-	
+
+	@GetMapping("/logboard/{no}")
+	public ResponseEntity<LogboardDetailResponse> logboardDetail(@PathVariable Long no) {
+		List<String> imagePath = new ArrayList<>();
+		LogboardDetail logboardDetail = logboardService.detailLog(no);
+
+		UserInfo userInfo = userService.findUserInfo(logboardDetail.getWriterNo());
+		logboardDetail.setWriterInfo(userInfo);
+
+		List<Image> logImages = imageRepository.findImagesByCodeAndNo(RealWorkCode.LOG, no);
+		for(Image logImage : logImages) {
+			imagePath.add(logImage.getStorage().getImagePath());
+		}
+		logboardDetail.setPicture(imagePath);
+
+		List<CommentDetails> commentReplyList = replyService.getCommentReplyList(RealWorkCode.LOG, no);
+
+		return ResponseEntity.ok(new LogboardDetailResponse(logboardDetail, commentReplyList));
+	}
+
 	@GetMapping("/logboard")
 	public ResponseEntity<LogboardListResponse> logboardList(@PageableDefault(size = 6) Pageable pageable,
 															 @RequestParam String search_type,
@@ -134,7 +161,6 @@ public class LogboardController {
 		// 봉사 로그 쿼리 결과
 		Slice<LogboardListQuery> logboardQueryResults = logboardRepository.findLogboardDtos(pageable, search_type, SecurityUtil.getLoginUserNo(), last_id);
 		List<LogboardListQuery> logboardQueryResultLists =  new ArrayList<>(logboardQueryResults.toList());
-		
 		List<LogboardList> logboardLists =  new ArrayList<>();
 		
 		// 봉사 로그 쿼리 결과로 response 리턴 객체 생성 로직
@@ -143,11 +169,17 @@ public class LogboardController {
 			LogboardList logboardList = 
 					new LogboardList(l.getNo(),l.getWriterNo(),l.getProfile(),l.getNickname(),
 									l.getCreatedDay(),l.getVolunteeringCategory(),l.getContent(),
-									l.getLikeCnt(),l.isLikeMe(),l.getCommentCnt());
+									l.getLikeCnt(),l.isLikeMe());
 			
 			// 이미지 쿼리 조회 및 response 리턴용 이미지 개별 인스턴스 생성 
 			List<Image> logboardImageList = imageRepository.findImagesByCodeAndNo(RealWorkCode.LOG, l.getWriterNo());
 			logboardList.setPicturesFromImageDomain(logboardImageList);
+
+			List<Reply> findReplyList = replyRepository.findReplyList(RealWorkCode.LOG, l.getNo())
+										.stream()
+										.filter(r->r.getIsDeleted().equals(IsDeleted.N))
+										.collect(Collectors.toList());
+			logboardList.setCommentCnt(findReplyList.size());
 			
 			logboardLists.add(logboardList);
 		}
@@ -161,7 +193,14 @@ public class LogboardController {
 		
 		return ResponseEntity.ok(logBoardListResponse);
 	}
-	
+
+	@PostMapping("/logboard/{no}/like")
+	public ResponseEntity logboardLike(@PathVariable Long no) {
+		logboardService.likeLogboard(SecurityUtil.getLoginUserNo(), no);
+
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
 	@PostMapping("/logboard/{logNo}/comment")
 	public ResponseEntity logboardCommentAdd(@RequestBody @Valid CommentContentParam dto,
 											 @PathVariable Long logNo) {
@@ -199,5 +238,5 @@ public class LogboardController {
 
 		return ResponseEntity.ok().build();
 	}
-	
+
 }
