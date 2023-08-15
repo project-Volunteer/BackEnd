@@ -26,6 +26,8 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.user.application.UserService;
+import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.api.dto.request.LogBoardRequestParam;
 import project.volunteer.domain.logboard.api.dto.response.AddableLogboardListResponse;
@@ -56,6 +58,7 @@ public class LogboardController {
 	private final LogboardRepository logboardRepository;
 	private final ScheduleParticipationDtoService spDtoService ;
 	private final ReplyService replyService;
+	private final UserService userService;
 	
 	@GetMapping("/logboard/schedule")
 	public ResponseEntity<AddableLogboardListResponse> approvalSchedule() {
@@ -165,7 +168,9 @@ public class LogboardController {
 	@PostMapping("/logboard/{logNo}/comment")
 	public ResponseEntity logboardCommentAdd(@RequestBody @Valid CommentContentParam dto,
 											 @PathVariable Long logNo) {
-		replyService.addComment(SecurityUtil.getLoginUserNo(), RealWorkCode.LOG, logNo, dto.getContent());
+		//TODO: 퍼사드 패턴 도입전 임시 방편.
+		User user = userService.findUser(SecurityUtil.getLoginUserNo());
+		replyService.addComment(user, RealWorkCode.LOG, logNo, dto.getContent());
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
@@ -175,7 +180,9 @@ public class LogboardController {
 	public ResponseEntity logboardCommenReplytAdd(@RequestBody @Valid CommentContentParam dto,
 												  @PathVariable Long logNo,
 												  @PathVariable Long parentNo) {
-		replyService.addCommentReply(SecurityUtil.getLoginUserNo(), RealWorkCode.LOG, logNo, parentNo, dto.getContent());
+		//TODO: 퍼사드 패턴 도입전 임시 방편.
+		User user = userService.findUser(SecurityUtil.getLoginUserNo());
+		replyService.addCommentReply(user, RealWorkCode.LOG, logNo, parentNo, dto.getContent());
 
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
@@ -186,7 +193,7 @@ public class LogboardController {
 	public ResponseEntity logboardReplytEdit(@RequestBody @Valid CommentContentParam dto,
 											 @PathVariable Long logNo,
 											 @PathVariable Long replyNo) {
-		replyService.editReply(SecurityUtil.getLoginUserNo(), replyNo, dto.getContent());
+		replyService.editReply(replyNo, dto.getContent());
 
 		return ResponseEntity.ok().build();
 	}
