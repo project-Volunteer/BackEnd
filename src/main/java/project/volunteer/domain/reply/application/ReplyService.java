@@ -15,5 +15,5 @@ public interface ReplyService {
 
 	public void deleteReply(Long replyNo);
 
-	public List<CommentDetails> getCommentReplyList(RealWorkCode code, Long no);
+	public List<CommentDetails> getCommentReplyListDto(RealWorkCode code, Long no);
 }

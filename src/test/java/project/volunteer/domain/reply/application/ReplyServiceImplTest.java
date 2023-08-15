@@ -47,7 +47,7 @@ class ReplyServiceImplTest {
                 .willReturn(mapperDtos);
 
         //when
-        List<CommentDetails> commentReplyList = replyService.getCommentReplyList(RealWorkCode.NOTICE, 1L);
+        List<CommentDetails> commentReplyList = replyService.getCommentReplyListDto(RealWorkCode.NOTICE, 1L);
 
         //then
         assertAll(

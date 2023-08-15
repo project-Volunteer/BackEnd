@@ -111,7 +111,7 @@ public class NoticeConcurrentTestService {
     }
 
     private Notice validateAndGetNotice(Long noticeNo){
-        return noticeRepository.findValidNotice(noticeNo)
+        return noticeRepository.findPublishedNotice(noticeNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
     }
     private Notice validateAndGetNotice_OPTIMSTIC_LOCK(Long noticeNo){

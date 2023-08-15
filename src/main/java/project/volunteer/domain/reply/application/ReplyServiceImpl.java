@@ -71,7 +71,7 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 
 	@Override
-	public List<CommentDetails>  getCommentReplyList(RealWorkCode code, Long no) {
+	public List<CommentDetails> getCommentReplyListDto(RealWorkCode code, Long no) {
 		List<CommentMapperDto> commentMapperDtos = replyQueryDtoRepository.getCommentMapperDtos(code, no);
 
 		//부모-자식 댓글 매핑

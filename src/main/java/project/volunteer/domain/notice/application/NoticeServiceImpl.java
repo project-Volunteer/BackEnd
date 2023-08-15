@@ -78,7 +78,7 @@ public class NoticeServiceImpl implements NoticeService{
     }
 
     private Notice validateAndGetNotice(Long noticeNo){
-        return noticeRepository.findValidNotice(noticeNo)
+        return noticeRepository.findPublishedNotice(noticeNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE, String.format("NoticeNo = [%d]", noticeNo)));
     }
     private Notice validateAndGetNoticeWithOPTIMSTIC_LOCK(Long noticeNo){
