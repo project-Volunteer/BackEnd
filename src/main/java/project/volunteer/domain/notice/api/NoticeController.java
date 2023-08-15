@@ -8,13 +8,9 @@ import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.response.NoticeDetailsResponse;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.api.dto.response.NoticeListResponse;
-import project.volunteer.domain.notice.application.NoticeDtoService;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
 import project.volunteer.domain.notice.mapper.NoticeFacade;
-import project.volunteer.domain.reply.application.ReplyService;
-import project.volunteer.domain.reply.application.dto.CommentDetails;
 import project.volunteer.global.Interceptor.OrganizationAuth;
-import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -25,8 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class NoticeController {
-    private final NoticeDtoService noticeDtoService;
-    private final ReplyService replyService;
     private final NoticeFacade noticeFacade;
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
@@ -51,32 +45,20 @@ public class NoticeController {
         return ResponseEntity.ok().build();
     }
 
-
-
-
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/notice")
     public ResponseEntity<NoticeListResponse> noticeList(@PathVariable Long recruitmentNo){
-
-        List<NoticeDetails> noticeDtos = noticeDtoService.findNoticeDtos(recruitmentNo, SecurityUtil.getLoginUserNo());
-        return ResponseEntity.ok(new NoticeListResponse(noticeDtos));
+        List<NoticeDetails> noticeListDto = noticeFacade.findVolunteerPostNoticeListDto(SecurityUtil.getLoginUserNo(), recruitmentNo);
+        return ResponseEntity.ok(new NoticeListResponse(noticeListDto));
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/notice/{noticeNo}")
     public ResponseEntity<NoticeDetailsResponse> noticeDetails(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-        //공지사항 상세 조회
-        NoticeDetails noticeDto = noticeDtoService.findNoticeDto(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        NoticeDetailsResponse response = noticeFacade.findVolunteerPostNoticeDetailsDto(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo);
 
-        //댓글 리스트 조회
-        List<CommentDetails> commentReplyList = replyService.getCommentReplyList(RealWorkCode.NOTICE, noticeNo);
-
-        return ResponseEntity.ok(new NoticeDetailsResponse(noticeDto, commentReplyList));
+        return ResponseEntity.ok(response);
     }
-
-
-
-
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PostMapping("/{recruitmentNo}/notice/{noticeNo}/read")

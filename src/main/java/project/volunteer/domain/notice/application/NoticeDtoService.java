@@ -7,5 +7,5 @@ public interface NoticeDtoService {
 
     public List<NoticeDetails> findNoticeDtos(Long recruitmentNo, Long userNo);
 
-    public NoticeDetails findNoticeDto(Long recruitmentNo, Long noticeNo, Long userNo);
+    public NoticeDetails findNoticeDto(Long noticeNo, Long userNo);
 }

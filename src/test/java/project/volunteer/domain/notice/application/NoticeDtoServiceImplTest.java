@@ -1,6 +1,5 @@
 package project.volunteer.domain.notice.application;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -91,7 +90,7 @@ class NoticeDtoServiceImplTest {
         clear();
 
         //when
-        NoticeDetails noticeDto = noticeDtoService.findNoticeDto(saveRecruitment.getRecruitmentNo(), notice.getNoticeNo(), loginUser.getUserNo());
+        NoticeDetails noticeDto = noticeDtoService.findNoticeDto(notice.getNoticeNo(), loginUser.getUserNo());
 
         //then
         assertThat(noticeDto.getContent()).isEqualTo(content);
@@ -112,7 +111,7 @@ class NoticeDtoServiceImplTest {
         clear();
 
         //when
-        NoticeDetails noticeDto = noticeDtoService.findNoticeDto(saveRecruitment.getRecruitmentNo(), notice.getNoticeNo(), loginUser.getUserNo());
+        NoticeDetails noticeDto = noticeDtoService.findNoticeDto(notice.getNoticeNo(), loginUser.getUserNo());
 
         //then
         assertThat(noticeDto.getIsChecked()).isTrue();

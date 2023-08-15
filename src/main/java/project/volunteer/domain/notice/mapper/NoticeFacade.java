@@ -1,19 +1,26 @@
 package project.volunteer.domain.notice.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.application.ConfirmationService;
 import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
+import project.volunteer.domain.notice.api.dto.response.NoticeDetailsResponse;
+import project.volunteer.domain.notice.application.NoticeDtoService;
 import project.volunteer.domain.notice.application.NoticeService;
+import project.volunteer.domain.notice.application.dto.NoticeDetails;
 import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.reply.application.ReplyService;
+import project.volunteer.domain.reply.application.dto.CommentDetails;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +29,7 @@ public class NoticeFacade {
     private final UserService userService;
     private final RecruitmentService recruitmentService;
     private final NoticeService noticeService;
+    private final NoticeDtoService noticeDtoService;
     private final ConfirmationService confirmationService;
     private final ReplyService replyService;
 
@@ -115,4 +123,21 @@ public class NoticeFacade {
         noticeService.decreaseCommentNum(noticeNo);
     }
 
+    public NoticeDetailsResponse findVolunteerPostNoticeDetailsDto(Long userNo, Long recruitmentNo, Long noticeNo){
+        recruitmentService.findPublishedRecruitment(recruitmentNo);
+
+        //공지사항 상세 조회
+        NoticeDetails noticeDto = noticeDtoService.findNoticeDto(noticeNo, userNo);
+
+        //댓글 리스트 조회
+        List<CommentDetails> commentReplyList = replyService.getCommentReplyListDto(RealWorkCode.NOTICE, noticeNo);
+
+        return new NoticeDetailsResponse(noticeDto, commentReplyList);
+    }
+
+    public List<NoticeDetails> findVolunteerPostNoticeListDto(Long userNo, Long recruitmentNo){
+        Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
+
+        return noticeDtoService.findNoticeDtos(recruitment.getRecruitmentNo(), userNo);
+    }
 }
