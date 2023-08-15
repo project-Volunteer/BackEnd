@@ -100,8 +100,7 @@ public class NoticeConcurrentTestService {
 
         //모집글 공지사항 작성 가능 일자 검증
         if(findRecruitment.isDoneDate()){
-            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_ACTIVITY_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], Recruitment EndDay = [%s]", recruitmentNo, findRecruitment.getVolunteeringTimeTable().getEndDay().toString()));
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo));
         }
         return findRecruitment;
     }
