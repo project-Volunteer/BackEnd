@@ -15,8 +15,7 @@ public interface NoticeService {
     public void decreaseCheckNumWithOPTIMSTIC_LOCK(Long noticeNo);
 
 
-    public void addNoticeComment(Long recruitmentNo, Long noticeNo, Long loginUserNo, String content);
-    public void addNoticeCommentReply(Long recruitmentNo, Long noticeNo, Long loginUserNo, Long parentNo, String content);
-    public void editNoticeReply(Long recruitmentNo, Long noticeNo, Long loginUserNo, Long replyNo, String content);
-    public void deleteNoticeReply(Long recruitmentNo, Long noticeNo, Long replyNo);
+    public void increaseCommnetNum(Long noticeNo);
+
+    public void decreaseCommentNum(Long noticeNo);
 }

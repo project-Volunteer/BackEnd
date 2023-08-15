@@ -9,7 +9,6 @@ import project.volunteer.domain.notice.api.dto.response.NoticeDetailsResponse;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.api.dto.response.NoticeListResponse;
 import project.volunteer.domain.notice.application.NoticeDtoService;
-import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
 import project.volunteer.domain.notice.mapper.NoticeFacade;
 import project.volunteer.domain.reply.application.ReplyService;
@@ -26,8 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class NoticeController {
-
-    private final NoticeService noticeService;
     private final NoticeDtoService noticeDtoService;
     private final ReplyService replyService;
     private final NoticeFacade noticeFacade;
@@ -77,6 +74,10 @@ public class NoticeController {
         return ResponseEntity.ok(new NoticeDetailsResponse(noticeDto, commentReplyList));
     }
 
+
+
+
+
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PostMapping("/{recruitmentNo}/notice/{noticeNo}/read")
     public ResponseEntity noticeRead(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
@@ -95,8 +96,7 @@ public class NoticeController {
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PostMapping("/{recruitmentNo}/notice/{noticeNo}/comment")
     public ResponseEntity noticeCommentAdd(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo, @Valid @RequestBody CommentContentParam dto){
-
-        noticeService.addNoticeComment(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo(), dto.getContent());
+        noticeFacade.addVolunteerPostNoticeComment(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo, dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
@@ -105,8 +105,7 @@ public class NoticeController {
                                                 @PathVariable Long noticeNo,
                                                 @PathVariable Long parentNo,
                                                 @Valid @RequestBody CommentContentParam dto){
-
-        noticeService.addNoticeCommentReply(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo(), parentNo, dto.getContent());
+        noticeFacade.addVolunteerPostNoticeCommentReply(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo, parentNo, dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @OrganizationAuth(auth = OrganizationAuth.Auth.REPLY_WRITER)
@@ -115,16 +114,14 @@ public class NoticeController {
                                           @PathVariable Long noticeNo,
                                           @PathVariable Long replyNo,
                                           @Valid @RequestBody CommentContentParam dto){
-
-        noticeService.editNoticeReply(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo(), replyNo, dto.getContent());
+        noticeFacade.editVolunteerPostNoticeCommentOrReply(SecurityUtil.getLoginUserNo(), recruitmentNo, replyNo, dto.getContent());
         return ResponseEntity.ok().build();
     }
     @OrganizationAuth(auth = OrganizationAuth.Auth.REPLY_WRITER)
     @DeleteMapping("/{recruitmentNo}/notice/{noticeNo}/comment/{replyNo}")
     public ResponseEntity noticeReplyDelete(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo, @PathVariable Long replyNo){
 
-        noticeService.deleteNoticeReply(recruitmentNo, noticeNo, replyNo);
+        noticeFacade.deleteVolunteerPostNoticeCommentOrReply(recruitmentNo, noticeNo, replyNo);
         return ResponseEntity.ok().build();
     }
-
 }
