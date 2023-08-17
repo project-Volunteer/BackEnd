@@ -40,7 +40,6 @@ public class ConfirmationServiceImpl implements ConfirmationService{
         confirmationRepository.delete(confirmation);
     }
 
-    //TODO: 테스트 코드 필요!!!!!!!!
     @Override
     public void deleteAllConfirmation(RealWorkCode code, List<Long> nos) {
         confirmationRepository.deleteAllByRealWorkCodeAndNoIn(code, nos);
