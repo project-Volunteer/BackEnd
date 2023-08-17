@@ -108,7 +108,7 @@ class RecruitmentEditControllerTest {
                 .forEach(s -> fileService.deleteFile(s.getFakeImageName()));
     }
 
-    @DisplayName("정기 모집글 삭제 테스트(반복주기,이미지 포함)")
+    @DisplayName("정기 모집글 삭제 테스트")
     @Test
     @WithUserDetails(value = "rctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Rollback(value = false)

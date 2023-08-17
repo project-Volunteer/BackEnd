@@ -10,6 +10,8 @@ import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -37,4 +39,11 @@ public class ConfirmationServiceImpl implements ConfirmationService{
 
         confirmationRepository.delete(confirmation);
     }
+
+    //TODO: 테스트 코드 필요!!!!!!!!
+    @Override
+    public void deleteAllConfirmation(RealWorkCode code, List<Long> nos) {
+        confirmationRepository.deleteAllByRealWorkCodeAndNoIn(code, nos);
+    }
+
 }

@@ -25,4 +25,8 @@ public interface ConfirmationRepository extends JpaRepository<Confirmation, Long
             "and c.realWorkCode=:code " +
             "and c.no=:no ")
     List<Confirmation> findConfirmations(@Param("userNo")Long userNo, @Param("code")RealWorkCode code, @Param("no")Long no);
+
+    void deleteAllByRealWorkCodeAndNoIn(RealWorkCode realWorkCode, List<Long> nos);
+
+    List<Confirmation> findByRealWorkCodeAndNoIn(RealWorkCode realWorkCode, List<Long> nos);
 }

@@ -58,6 +58,7 @@ public class Notice extends BaseTimeEntity {
     }
 
     public void delete(){this.isDeleted = IsDeleted.Y;}
+    public void removeRecruitment(){this.recruitment = null;}
     public void setRecruitment(Recruitment recruitment){
         this.recruitment = recruitment;
     }

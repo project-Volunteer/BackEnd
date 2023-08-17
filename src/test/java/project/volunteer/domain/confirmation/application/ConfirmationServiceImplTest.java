@@ -1,5 +1,6 @@
 package project.volunteer.domain.confirmation.application;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
-import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -28,6 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,6 +126,33 @@ class ConfirmationServiceImplTest {
         assertThatThrownBy(() -> confirmationService.deleteConfirmation(loginUser.getUserNo(), RealWorkCode.NOTICE, saveNotice.getNoticeNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.NOT_EXIST_CONFIRMATION.name());
+    }
+
+    @Test
+    @DisplayName("공지사항 리스트에 해당하는 모든 읽음 정보를 삭제하다.")
+    public void deleteAllConfirmation(){
+        //given
+        Notice saveNotice1 = 공지사항_등록("test1");
+        Notice saveNotice2 = 공지사항_등록("test2");
+        User user1 = 사용자_추가("user1");
+        User user2 = 사용자_추가("user2");
+        User user3 = 사용자_추가("user2");
+
+        읽음_등록(RealWorkCode.NOTICE, saveNotice1.getNoticeNo(), user1);
+        읽음_등록(RealWorkCode.NOTICE, saveNotice1.getNoticeNo(), user2);
+        읽음_등록(RealWorkCode.NOTICE, saveNotice1.getNoticeNo(), user3);
+        읽음_등록(RealWorkCode.NOTICE, saveNotice2.getNoticeNo(), user1);
+        읽음_등록(RealWorkCode.NOTICE, saveNotice2.getNoticeNo(), user2);
+        읽음_등록(RealWorkCode.NOTICE, saveNotice2.getNoticeNo(), user3);
+        List<Long> nos = List.of(saveNotice1.getNoticeNo(), saveNotice2.getNoticeNo());
+
+        //when
+        confirmationService.deleteAllConfirmation(RealWorkCode.NOTICE, nos);
+        clear();
+
+        //then
+        List<Confirmation> result = confirmationRepository.findByRealWorkCodeAndNoIn(RealWorkCode.NOTICE, nos);
+        Assertions.assertThat(result.size()).isEqualTo(0);
     }
 
     private User 사용자_추가(String value){

@@ -3,8 +3,10 @@ package project.volunteer.domain.recruitment.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.domain.confirmation.application.ConfirmationService;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
+import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.participation.application.ParticipationService;
 import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
@@ -17,13 +19,14 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodDetails;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +40,8 @@ public class RecruitmentFacade {
     private final ImageService imageService;
     private final ParticipationService participationService;
     private final ScheduleParticipationService scheduleParticipationService;
+    private final NoticeService noticeService;
+    private final ConfirmationService confirmationService;
 
     @Transactional
     public Long registerVolunteerPost(Long userId, RecruitmentRequest form){
@@ -76,9 +81,11 @@ public class RecruitmentFacade {
         //이미지 삭제
         imageService.deleteImage(RealWorkCode.RECRUITMENT, recruitmentNo);
 
-        //공지사항 확인 리스트 삭제
-
         //공지사항 삭제
+        List<Long> noticeNoList = noticeService.deleteAllNotice(recruitmentNo);
+
+        //공지사항 확인 리스트 삭제
+        confirmationService.deleteAllConfirmation(RealWorkCode.NOTICE, noticeNoList);
 
         //일정 참여자 삭제
         scheduleParticipationService.deleteAllScheduleParticipation(recruitmentNo);

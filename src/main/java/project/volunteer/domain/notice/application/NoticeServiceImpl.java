@@ -11,6 +11,9 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -38,6 +41,21 @@ public class NoticeServiceImpl implements NoticeService{
     public void deleteNotice(Long noticeNo) {
         Notice findNotice = validateAndGetNotice(noticeNo);
         findNotice.delete();
+        findNotice.removeRecruitment();
+    }
+
+    @Override
+    @Transactional
+    public List<Long> deleteAllNotice(Long recruitmentNo) {
+        List<Notice> noticeList = noticeRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
+
+        List<Long> noticeNoList = new ArrayList<>();
+        for(Notice n : noticeList){
+            n.delete();
+            n.removeRecruitment();
+            noticeNoList.add(n.getNoticeNo());
+        }
+        return noticeNoList;
     }
 
     @Override
