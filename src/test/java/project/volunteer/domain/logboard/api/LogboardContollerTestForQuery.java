@@ -1,6 +1,7 @@
 package project.volunteer.domain.logboard.api;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,10 +25,11 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
+import project.volunteer.domain.like.dao.LikeRepository;
+import project.volunteer.domain.like.domain.Like;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -38,6 +40,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.reply.application.ReplyService;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
@@ -69,10 +72,12 @@ public class LogboardContollerTestForQuery {
 	@Autowired ImageService imageService;
 	@Autowired FileService fileService;
 	@Autowired UserService userService;
+	@Autowired ReplyService replyService;
 	@Autowired ScheduleRepository scheduleRepository;
 	@Autowired UserDtoService userDtoService;
 	@Autowired LogboardRepository logboardRepository;
 	@Autowired ScheduleParticipationRepository scheduleParticipationRepository;
+	@Autowired LikeRepository likeRepository;
 	@PersistenceContext EntityManager em;
 
 	List<Logboard> logboardList= new ArrayList<>();
@@ -199,8 +204,32 @@ public class LogboardContollerTestForQuery {
 			ImageParam uploadLogboardImg2 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile(i+"_2"));
 			Long saveLogboardImgId2 = imageService.addImage(uploadLogboardImg2);
 
+			if(i%3==0){
+				Like createLike = Like.createLike(RealWorkCode.LOG,logboardNo);
+				createLike.setUser(saveUser);
+				likeRepository.save(createLike);
+				logboard.increaseLikeNum();
+			}
+
 			deleteS3ImageNoList.add(saveLogboardImgId1); // S3에 저장된 이미지 추후 삭제 예정
 			deleteS3ImageNoList.add(saveLogboardImgId2); // S3에 저장된 이미지 추후 삭제 예정
+
+			for(int j = 0 ; j < 10; j++){
+				Long commentNo = replyService.addComment(saveUser, RealWorkCode.LOG, logboardNo, "comment"+j+j+j);
+				if(j==0){
+					replyService.deleteReply(commentNo);
+				}
+
+				for (int k =0 ; k<3; k++){
+					Long replyNo = replyService.addCommentReply(saveUser, RealWorkCode.LOG, logboardNo, commentNo,"parentcomment:"+commentNo + " reply"+k+k+k);
+					if(k==2){
+						replyService.deleteReply(replyNo);
+					}
+				}
+				if(logboardNo%2==0){
+					replyService.addComment(saveUser, RealWorkCode.LOG, logboardNo, "comment"+j+j+j);
+				}
+			}
         }
 		
 		clear();
@@ -233,7 +262,7 @@ public class LogboardContollerTestForQuery {
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
-    //TODO : 댓글수 관련 기능 미완성
+
     @Test
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void 로그보드_리스트_조회() throws Exception {
@@ -254,5 +283,34 @@ public class LogboardContollerTestForQuery {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
-    
+
+	@Test
+	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	void 로그보드_봉사로그및댓글_조회() throws Exception {
+		//when & then
+		mockMvc.perform(
+						get("/logboard/"+logboardList.get(0).getLogboardNo()))
+				.andExpect(status().isOk())
+				.andDo(print());
+	}
+
+	@Test
+	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	void 로그보드_봉사로그좋아요() throws Exception {
+		//when & then
+		mockMvc.perform(
+						post("/logboard/"+logboardList.get(0).getLogboardNo()+"/like"))
+				.andExpect(status().isCreated())
+				.andDo(print());
+	}
+
+	@Test
+	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	void 로그보드_봉사로그좋아요_없는봉사로그번호로_실패() throws Exception {
+		//when & then
+		mockMvc.perform(
+						post("/logboard/1000000/like"))
+				.andExpect(status().isBadRequest())
+				.andDo(print());
+	}
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import project.volunteer.global.common.component.IsDeleted;
 
 import java.time.LocalDateTime;
 
@@ -20,12 +21,12 @@ public class CommentMapperDto {
     private LocalDateTime commentTime;
 
     @QueryProjection
-    public CommentMapperDto(Long no, Long parentNo, String profile, String nickname, String content, LocalDateTime commentTime) {
+    public CommentMapperDto(Long no, Long parentNo, String profile, String nickname, String content, LocalDateTime commentTime, IsDeleted isDeleted) {
         this.no = no;
         this.parentNo = parentNo;
         this.profile = profile;
         this.nickname = nickname;
-        this.content = content;
+        this.content = IsDeleted.Y==isDeleted?"deleted contents":content;
         this.commentTime = commentTime;
     }
 

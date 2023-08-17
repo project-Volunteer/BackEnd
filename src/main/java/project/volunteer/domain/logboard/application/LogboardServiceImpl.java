@@ -4,21 +4,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import project.volunteer.domain.like.dao.LikeRepository;
+import project.volunteer.domain.like.domain.Like;
 import project.volunteer.domain.logboard.application.dto.LogboardDetail;
+import project.volunteer.domain.logboard.application.dto.LogboardEditDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
-import project.volunteer.domain.reply.dao.ReplyRepository;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.validate.LogboardValidate;
 import project.volunteer.global.common.validate.UserValidate;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
+
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,6 +32,7 @@ public class LogboardServiceImpl implements LogboardService{
 	private final LogboardRepository logboardRepository;
 	private final ScheduleRepository scheduleRepository;
 	private final ScheduleParticipationRepository scheduleParticipationRepository;
+	private final LikeRepository likeRepository;
 
 	private final UserValidate userValidate;
 	private final LogboardValidate logboardValidate;
@@ -55,10 +60,10 @@ public class LogboardServiceImpl implements LogboardService{
 	}
 
 	@Override
-	public LogboardDetail findLogboard(Long logboardNo) {
+	public LogboardEditDetail findLogboard(Long logboardNo) {
 		Logboard logboard = logboardValidate.validateAndGetLogboard(logboardNo);
 
-		return new LogboardDetail(logboard);
+		return new LogboardEditDetail(logboard);
 	}
 
 	@Transactional
@@ -96,6 +101,40 @@ public class LogboardServiceImpl implements LogboardService{
 		logboardValidate.validateEqualParamUserNoAndFindUserNo(userNo, findLogboard);
 		
 		findLogboard.delete();
+	}
+
+	@Override
+	@Transactional
+	public LogboardDetail detailLog(Long no) {
+		// 로그 존재 유무 확인
+		logboardValidate.validateAndGetLogboard(no);
+
+		Logboard findLogboard = logboardValidate.validateAndGetLogboard(no);
+		findLogboard.increaseViewNum();
+
+		return new LogboardDetail(findLogboard);
+	}
+
+	@Override
+	@Transactional
+	public void likeLogboard(Long userNo, Long no) {
+		//로그 존재 유무 확인(낙관적락 사용)
+		Logboard findLogboard = logboardValidate.validateAndGetLogboardWithOPTIMSTIC_LOCK(no);
+
+		//로그 좋아요 유무에 따른 분기
+		Optional<Like> findLike = likeRepository.findLike(userNo, RealWorkCode.LOG, findLogboard.getLogboardNo());
+		if(findLike.isPresent()){
+			likeRepository.delete(findLike.get());
+			findLogboard.decreaseLikeNum();
+		} else{
+			Like createLike = Like.createLike(RealWorkCode.NOTICE, findLogboard.getLogboardNo());
+			User loginUser = userValidate.validateAndGetUser(userNo);
+			createLike.setUser(loginUser);
+
+			likeRepository.save(createLike);
+			findLogboard.increaseLikeNum();
+		}
+
 	}
 
 
