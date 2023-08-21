@@ -215,19 +215,19 @@ public class LogboardContollerTestForQuery {
 			deleteS3ImageNoList.add(saveLogboardImgId2); // S3에 저장된 이미지 추후 삭제 예정
 
 			for(int j = 0 ; j < 10; j++){
-				Long commentNo = replyService.addComment(saveUser.getUserNo(), RealWorkCode.LOG, logboardNo, "comment"+j+j+j);
+				Long commentNo = replyService.addComment(saveUser, RealWorkCode.LOG, logboardNo, "comment"+j+j+j);
 				if(j==0){
 					replyService.deleteReply(commentNo);
 				}
 
 				for (int k =0 ; k<3; k++){
-					Long replyNo = replyService.addCommentReply(saveUser.getUserNo(), RealWorkCode.LOG, logboardNo, commentNo,"parentcomment:"+commentNo + " reply"+k+k+k);
+					Long replyNo = replyService.addCommentReply(saveUser, RealWorkCode.LOG, logboardNo, commentNo,"parentcomment:"+commentNo + " reply"+k+k+k);
 					if(k==2){
 						replyService.deleteReply(replyNo);
 					}
 				}
 				if(logboardNo%2==0){
-					replyService.addComment(saveUser.getUserNo(), RealWorkCode.LOG, logboardNo, "comment"+j+j+j);
+					replyService.addComment(saveUser, RealWorkCode.LOG, logboardNo, "comment"+j+j+j);
 				}
 			}
         }

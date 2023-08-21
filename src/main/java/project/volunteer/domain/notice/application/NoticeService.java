@@ -3,19 +3,22 @@ package project.volunteer.domain.notice.application;
 import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.domain.Notice;
+import project.volunteer.domain.recruitment.domain.Recruitment;
+
+import java.util.List;
 
 public interface NoticeService {
 
-    public Notice addNotice(Long recruitmentNo, NoticeAdd dto);
-    public void editNotice(Long recruitmentNo, Long noticeNo, NoticeEdit dto);
-    public void deleteNotice(Long recruitmentNo, Long noticeNo);
+    public Notice addNotice(Recruitment recruitment, NoticeAdd dto);
+    public void editNotice(Long noticeNo, NoticeEdit dto);
+    public void deleteNotice(Long noticeNo);
+    public List<Long> deleteAllNotice(Long recruitmentNo);
 
-    public void readNotice(Long recruitmentNo, Long noticeNo, Long userNo);
-    public void readCancelNotice(Long recruitmentNo, Long noticeNo, Long userNo);
+    public void increaseCheckNumWithOPTIMSTIC_LOCK(Long noticeNo);
+    public void decreaseCheckNumWithOPTIMSTIC_LOCK(Long noticeNo);
 
 
-    public void addNoticeComment(Long recruitmentNo, Long noticeNo, Long loginUserNo, String content);
-    public void addNoticeCommentReply(Long recruitmentNo, Long noticeNo, Long loginUserNo, Long parentNo, String content);
-    public void editNoticeReply(Long recruitmentNo, Long noticeNo, Long loginUserNo, Long replyNo, String content);
-    public void deleteNoticeReply(Long recruitmentNo, Long noticeNo, Long replyNo);
+    public void increaseCommnetNum(Long noticeNo);
+
+    public void decreaseCommentNum(Long noticeNo);
 }

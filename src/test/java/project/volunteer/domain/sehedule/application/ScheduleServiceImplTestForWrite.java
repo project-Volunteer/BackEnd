@@ -13,10 +13,10 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
-import project.volunteer.domain.repeatPeriod.domain.Day;
-import project.volunteer.domain.repeatPeriod.domain.Period;
-import project.volunteer.domain.repeatPeriod.domain.Week;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.domain.Day;
+import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.domain.Week;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -90,11 +90,11 @@ class ScheduleServiceImplTestForWrite {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when
-        Long saveScheduleNo = scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), param);
+        Schedule schedule = scheduleService.addSchedule(saveRecruitment, param);
         clear();
 
         //then
-        Schedule findSchedule = scheduleRepository.findById(saveScheduleNo).get();
+        Schedule findSchedule = scheduleRepository.findById(schedule.getScheduleNo()).get();
         assertAll(
                 () -> assertThat(findSchedule.getScheduleTimeTable().getProgressTime()).isEqualTo(timetable.getProgressTime()),
                 () -> assertThat(findSchedule.getScheduleTimeTable().getStartDay()).isEqualTo(timetable.getStartDay()),
@@ -111,23 +111,24 @@ class ScheduleServiceImplTestForWrite {
         );
     }
 
-    @Test
-    @Transactional
-    @DisplayName("유효하지않은 봉사 모집글에 일정을 추가하여 에러가 발생한다.")
-    public void notExistRecruitment(){
-        //given
-        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details");
-        final String organizationName = "test";
-        final String content = "test";
-        final int volunteerNum = 3;
-        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
-
-        //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(Long.MAX_VALUE, param))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("NOT_EXIST_RECRUITMENT");
-    }
+    //TODO: 봉사 모집글 service 테스트 코드에 옮겨져야할 테스트
+//    @Test
+//    @Transactional
+//    @DisplayName("유효하지않은 봉사 모집글에 일정을 추가하여 에러가 발생한다.")
+//    public void notExistRecruitment(){
+//        //given
+//        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
+//        final Address address = Address.createAddress("1", "111", "details");
+//        final String organizationName = "test";
+//        final String content = "test";
+//        final int volunteerNum = 3;
+//        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
+//
+//        //when && then
+//        assertThatThrownBy(() -> scheduleService.addSchedule(Long.MAX_VALUE, param))
+//                .isInstanceOf(BusinessException.class)
+//                .hasMessageContaining("NOT_EXIST_RECRUITMENT");
+//    }
 
     @Disabled
     @Test
@@ -143,7 +144,7 @@ class ScheduleServiceImplTestForWrite {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), param))
+        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment, param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("FORBIDDEN_RECRUITMENT");
     }
@@ -161,7 +162,7 @@ class ScheduleServiceImplTestForWrite {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment.getRecruitmentNo(), param))
+        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment, param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("EXCEED_CAPACITY_PARTICIPANT");
     }
@@ -181,7 +182,7 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment, dto);
         clear();
 
         //then
@@ -203,7 +204,7 @@ class ScheduleServiceImplTestForWrite {
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
-        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment.getRecruitmentNo(), dto);
+        List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment, dto);
         clear();
 
         //then

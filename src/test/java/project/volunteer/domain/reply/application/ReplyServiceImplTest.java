@@ -1,6 +1,5 @@
 package project.volunteer.domain.reply.application;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,23 +7,31 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import project.volunteer.domain.reply.application.dto.CommentDetails;
+import project.volunteer.domain.reply.dao.ReplyRepository;
 import project.volunteer.domain.reply.dao.queryDto.ReplyQueryDtoRepository;
 import project.volunteer.domain.reply.dao.queryDto.dto.CommentMapperDto;
+import project.volunteer.domain.reply.domain.Reply;
+import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.RealWorkCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
+/**
+ * 단위 테스트
+ */
 @ExtendWith(MockitoExtension.class)
 class ReplyServiceImplTest {
     @Mock ReplyQueryDtoRepository replyQueryDtoRepository;
+    @Mock ReplyRepository replyRepository;
     @InjectMocks ReplyServiceImpl replyService;
 
     @Test
@@ -41,7 +48,7 @@ class ReplyServiceImplTest {
                 .willReturn(mapperDtos);
 
         //when
-        List<CommentDetails> commentReplyList = replyService.getCommentReplyList(RealWorkCode.NOTICE, 1L);
+        List<CommentDetails> commentReplyList = replyService.getCommentReplyListDto(RealWorkCode.NOTICE, 1L);
 
         //then
         assertAll(
@@ -62,5 +69,71 @@ class ReplyServiceImplTest {
 
         //verify
         verify(replyQueryDtoRepository,times(1)).getCommentMapperDtos(RealWorkCode.NOTICE, 1L);
+    }
+
+    @Test
+    @DisplayName("댓글 등록에 성공하다.")
+    void addNoticeComment(){
+        //given
+        final String content = "test";
+        User user = mock(User.class);
+
+        //when
+        replyService.addComment(user, RealWorkCode.NOTICE, 1L, content);
+
+        //then
+        verify(replyRepository,times(1)).save(any(Reply.class));
+    }
+
+    @Test
+    @DisplayName("공지사항 대댓글 등록에 성공하다.")
+    void addNoticeCommentReply(){
+        //given
+        final String content = "test";
+        User user = mock(User.class);
+        Reply parentReply = mock(Reply.class);
+
+        given(replyRepository.findVaildParentReply(1L)).willReturn(Optional.of(parentReply));
+
+        //when
+        replyService.addCommentReply(user, RealWorkCode.NOTICE, 1L, 1L, content);
+
+        //then
+        verify(replyRepository,times(1)).findVaildParentReply(1L);
+        verify(parentReply,times(1)).getParent();
+        verify(replyRepository,times(1)).save(any(Reply.class));
+    }
+
+    @Test
+    @DisplayName("공지사항 댓글 수정에 성공하다.")
+    void editNoticeReply(){
+        //given
+        final String content = "test";
+        Reply reply = mock(Reply.class);
+
+        given(replyRepository.findById(1L)).willReturn(Optional.of(reply));
+
+        //when
+        replyService.editReply(1L, content);
+
+        //then
+        verify(replyRepository, times(1)).findById(1L);
+        verify(reply, times(1)).editReply(content);
+    }
+
+    @Test
+    @DisplayName("공지사항 댓글 삭제 성공하다.")
+    void deleteNoticeReply(){
+        //given
+        Reply reply = mock(Reply.class);
+
+        given(replyRepository.findById(1L)).willReturn(Optional.of(reply));
+
+        //when
+        replyService.deleteReply(1L);
+
+        //then
+        verify(replyRepository, times(1)).findById(1L);
+        verify(reply, times(1)).delete();
     }
 }

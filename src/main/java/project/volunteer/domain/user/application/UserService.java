@@ -1,6 +1,7 @@
 package project.volunteer.domain.user.application;
 
 import project.volunteer.domain.user.api.dto.response.*;
+import project.volunteer.domain.user.domain.User;
 
 public interface UserService {
 	public void userRefreshTokenUpdate(Long userNo,String refreshToken);
@@ -12,4 +13,5 @@ public interface UserService {
 	public UserAlarmResponse findUserAlarm(Long userNo);
 
 	public UserInfo findUserInfo(Long loginUserNo);
+	public User findUser(Long userNo);
 }

@@ -12,12 +12,11 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.Day;
-import project.volunteer.domain.repeatPeriod.domain.Period;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.repeatPeriod.domain.Week;
+import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
+import project.volunteer.domain.recruitment.domain.Day;
+import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.domain.RepeatPeriod;
+import project.volunteer.domain.recruitment.domain.Week;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -76,7 +75,7 @@ class RecruitmentServiceImplTestForEdit {
 
     @Test
     @Transactional
-    public void 정기모집글_삭제_성공_반복주기포함(){
+    public void 정기모집글_삭제_성공(){
         //given & when
         recruitmentService.deleteRecruitment(saveRecruitment.getRecruitmentNo());
         clear();
@@ -84,10 +83,6 @@ class RecruitmentServiceImplTestForEdit {
         //then
         Recruitment recruitment = recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
         assertThat(recruitment.getIsDeleted()).isEqualTo(IsDeleted.Y);
-
-        List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(saveRecruitment.getRecruitmentNo());
-        findPeriod.stream()
-                .forEach(p -> assertThat(p.getIsDeleted()).isEqualTo(IsDeleted.Y));
     }
 
     @Test

@@ -7,56 +7,58 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
-import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.user.dao.UserRepository;
+import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-
-import java.util.List;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RecruitmentServiceImpl implements RecruitmentService{
-
-    private final UserRepository userRepository;
     private final RecruitmentRepository recruitmentRepository;
-    private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Transactional
-    public Long addRecruitment(Long loginUserNo, RecruitmentParam saveDto){
-
+    public Recruitment addRecruitment(User writer, RecruitmentParam saveDto){
         Recruitment recruitment = Recruitment.createRecruitment(saveDto.getTitle(), saveDto.getContent(), saveDto.getVolunteeringCategory(), saveDto.getVolunteeringType(),
                 saveDto.getVolunteerType(), saveDto.getVolunteerNum(), saveDto.getIsIssued(), saveDto.getOrganizationName(), saveDto.getAddress(),
                 saveDto.getCoordinate(), saveDto.getTimetable(), saveDto.getIsPublished());
 
-        recruitment.setWriter(userRepository.findById(loginUserNo)
-                .orElseThrow(()-> new BusinessException(ErrorCode.UNAUTHORIZED_USER,
-                        String.format("Unauthorized UserNo = [%d]", loginUserNo))));
-
-        return recruitmentRepository.save(recruitment).getRecruitmentNo();
+        recruitment.setWriter(writer);
+        return recruitmentRepository.save(recruitment);
     }
 
     @Override
     @Transactional
     public void deleteRecruitment(Long deleteNo) {
-
         Recruitment findRecruitment =
                 recruitmentRepository.findValidRecruitment(deleteNo).orElseThrow(
                         () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Delete Recruitment ID = [%d]", deleteNo)));
 
-        //정기일 경우 반복주기 삭제
-        if(findRecruitment.getVolunteeringType().equals(VolunteeringType.REG)){
-            List<RepeatPeriod> findPeriod = repeatPeriodRepository.findByRecruitment_RecruitmentNo(findRecruitment.getRecruitmentNo());
-            findPeriod.stream()
-                    .forEach(p -> p.setDeleted());
-        }
-
-        //모집글 삭제
+        //삭제 플래그 처리 및 연관관계 끊기
         findRecruitment.setDeleted();
+        findRecruitment.removeUser();
+    }
+
+    @Override
+    public Recruitment findPublishedRecruitment(Long recruitmentNo) {
+        return validateAndGetPublishedRecruitment(recruitmentNo);
+    }
+
+    @Override
+    public Recruitment findActivatedRecruitment(Long recruitmentNo) {
+        Recruitment findRecruitment = validateAndGetPublishedRecruitment(recruitmentNo);
+
+        //봉사 모집글 마감 일자 조회
+        if(findRecruitment.isDoneDate()){
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo));
+        }
+        return findRecruitment;
+    }
+
+    private Recruitment validateAndGetPublishedRecruitment(Long recruitmentNo){
+        return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo)));
     }
 
 }

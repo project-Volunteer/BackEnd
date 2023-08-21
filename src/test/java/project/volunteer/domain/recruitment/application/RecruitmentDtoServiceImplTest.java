@@ -15,25 +15,23 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
-import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.Period;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
+import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
+import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.domain.RepeatPeriod;
 import project.volunteer.global.common.component.*;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.domain.Day;
-import project.volunteer.domain.repeatPeriod.domain.Week;
+import project.volunteer.domain.recruitment.domain.Day;
+import project.volunteer.domain.recruitment.domain.Week;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
-import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.infra.s3.FileService;
 
@@ -131,42 +129,13 @@ class RecruitmentDtoServiceImplTest {
         return new MockMultipartFile(
                 "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
-    private Participant 봉사모집글_팀원_상태추가(String signName, ParticipantState state) throws IOException {
-        //신규 사용자 가입
-        User newUser= User.createUser(signName, "password", signName, "test@naver.com", Gender.M, LocalDate.now(), "picture",
-                true, true, true, Role.USER, "kakao", signName, null);
-        User saveUser = userRepository.save(newUser);
-
-        //업로드 이미지 등록
-        ImageParam imageDto = ImageParam.builder()
-                .code(RealWorkCode.USER)
-                .no(saveUser.getUserNo())
-                .uploadImage(getMockMultipartFile())
-                .build();
-        Long imageNo = imageService.addImage(imageDto);
-        deleteImageNo.add(imageNo);
-
-        //봉사 팀원 등록
-        Participant participant = Participant.createParticipant(saveRecruitment, saveUser, state);
-        return participantRepository.save(participant);
-    }
-    private User 신규회원_가입(String signName){
-        User newUser= User.createUser(signName, "password", signName, "test@naver.com", Gender.M, LocalDate.now(), "picture",
-                true, true, true, Role.USER, "kakao", signName, null);
-        return userRepository.save(newUser);
-    }
-    private Recruitment 저장된_모집글_가져오기(){
-        return recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get();
-    }
-
-
 
     @DisplayName("봉사 모집글 상세조회에 성공하다.")
     @Test
     @Transactional
     public void 모집글_상세조회_성공() throws IOException {
         //given & when
-        RecruitmentDetails details = recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo());
+        RecruitmentDetails details = recruitmentDtoService.findRecruitmentAndWriterDto(saveRecruitment.getRecruitmentNo());
         clear();
 
         //then
@@ -179,137 +148,8 @@ class RecruitmentDtoServiceImplTest {
                 () -> assertThat(details.getVolunteeringType()).isEqualTo(saveRecruitment.getVolunteeringType().getId()),
                 () -> assertThat(details.getTitle()).isEqualTo(saveRecruitment.getTitle()),
                 () -> assertThat(details.getContent()).isEqualTo(saveRecruitment.getContent()),
-                () -> assertThat(details.getAuthor().getNickName()).isEqualTo(writer.getNickName()),
-                () -> assertThat(details.getRepeatPeriod().getPeriod()).isEqualTo(saveRegPeriod.getPeriod().getId()),
-                () -> assertThat(details.getRepeatPeriod().getWeek()).isEqualTo(saveRegPeriod.getWeek().getId()),
-                () -> assertThat(details.getRepeatPeriod().getDays().size()).isEqualTo(1)
+                () -> assertThat(details.getAuthor().getNickName()).isEqualTo(writer.getNickName())
         );
-    }
-
-    @DisplayName("봉사 모집글 신청자/승인자 각 인원이 3명이 된다.")
-    @Test
-    @Transactional
-    public void searchParticipantState() throws IOException {
-        //given
-        봉사모집글_팀원_상태추가("홍길동", ParticipantState.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("구하라", ParticipantState.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
-        봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_REQUEST);
-        봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_REQUEST);
-        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_REQUEST);
-
-        //when
-        RecruitmentDetails details = recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo());
-        clear();
-
-        //then
-        assertThat(details.getRequiredVolunteer().size()).isEqualTo(3);
-        assertThat(details.getApprovalVolunteer().size()).isEqualTo(3);
-    }
-
-    @DisplayName("모집글 첫 참가 신청으로 로그인 사용자 상태가 신청 가능 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserAvailableStateByFirst() throws IOException {
-        //given
-        User newUser = 신규회원_가입("new");
-        clear();
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
-
-        //then
-        assertThat(status).isEqualTo(StateResponse.AVAILABLE.getId());
-    }
-
-    @DisplayName("모집글 팀 탈퇴로 인해 로그인 사용자 상태가 신청 가능 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserAvailableStateByQuit() throws IOException {
-        //given
-        Participant p = 봉사모집글_팀원_상태추가("new", ParticipantState.QUIT);
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
-        clear();
-
-        //then
-        assertThat(status).isEqualTo(StateResponse.AVAILABLE.getId());
-    }
-
-    @DisplayName("모집글 팀 신청으로 인해 로그인 사용자 상태가 승인 대기 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserPendingState() throws IOException {
-        //given
-        Participant p = 봉사모집글_팀원_상태추가("new", ParticipantState.JOIN_REQUEST);
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
-        clear();
-
-        //then
-        assertThat(status).isEqualTo(StateResponse.PENDING.getId());
-    }
-
-    @DisplayName("모집글 팀 승인으로 인해 로그인 사용자 상태가 승인 완료 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserApprovedState() throws IOException {
-        //given
-        Participant p = 봉사모집글_팀원_상태추가("new", ParticipantState.JOIN_APPROVAL);
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), p.getParticipant().getUserNo());
-        clear();
-
-        //then
-        assertThat(status).isEqualTo(StateResponse.APPROVED.getId());
-    }
-
-    @DisplayName("모집 기간 만료로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserDoneStateByFinishEndDay() throws IOException {
-        //given
-        User newUser = 신규회원_가입("new");
-        //봉사 모집글 시간 정보 변경
-        saveRecruitment.setVolunteeringTimeTable(
-                Timetable.createTimetable(LocalDate.now().minusDays(2), LocalDate.now().minusDays(1), HourFormat.AM,
-                        LocalTime.now(), 3)
-        );
-        clear();
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
-
-        //then
-        assertThat(status).isEqualTo(StateResponse.DONE.getId());
-    }
-
-    @DisplayName("팀원 모집인원 초과로 인해 로그인 사용자 상태가 모집 마감 상태가 된다.")
-    @Test
-    @Transactional
-    public void loginUserDoneStateByVolunteerNum() throws IOException {
-        //given
-        Recruitment findRecruitment = 저장된_모집글_가져오기();
-        User newUser = 신규회원_가입("new");
-        //현재 팀원 최대 인원 4명으로 설정됨
-        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
-        봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
-        봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
-        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
-        clear();
-
-        //when
-        String status = recruitmentDtoService.findRecruitmentTeamStatus(saveRecruitment.getRecruitmentNo(), newUser.getUserNo());
-
-        //then
-        assertThat(status).isEqualTo(StateResponse.FULL.getId());
     }
 
     @Test
@@ -320,7 +160,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //when & then
-        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo()))
+        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitmentAndWriterDto(saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class);
     }
 
@@ -332,7 +172,7 @@ class RecruitmentDtoServiceImplTest {
         clear();
 
         //when & then
-        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitmentDto(saveRecruitment.getRecruitmentNo()))
+        Assertions.assertThatThrownBy(() -> recruitmentDtoService.findRecruitmentAndWriterDto(saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class);
     }
 

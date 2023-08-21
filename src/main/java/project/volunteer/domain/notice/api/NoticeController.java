@@ -8,13 +8,9 @@ import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.response.NoticeDetailsResponse;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.api.dto.response.NoticeListResponse;
-import project.volunteer.domain.notice.application.NoticeDtoService;
-import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
-import project.volunteer.domain.reply.application.ReplyService;
-import project.volunteer.domain.reply.application.dto.CommentDetails;
+import project.volunteer.domain.notice.mapper.NoticeFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
-import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -25,68 +21,56 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class NoticeController {
-
-    private final NoticeService noticeService;
-    private final NoticeDtoService noticeDtoService;
-    private final ReplyService replyService;
+    private final NoticeFacade noticeFacade;
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @PostMapping("/{recruitmentNo}/notice")
     public ResponseEntity noticeAdd(@PathVariable Long recruitmentNo, @RequestBody @Valid NoticeAdd dto){
 
-        noticeService.addNotice(recruitmentNo, dto);
+        noticeFacade.registerVolunteerPostNotice(recruitmentNo, dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/notice/{noticeNo}")
     public ResponseEntity noticeEdit(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo, @RequestBody @Valid NoticeEdit dto){
-
-        noticeService.editNotice(recruitmentNo, noticeNo, dto);
+        noticeFacade.editVolunteerPostNotice(recruitmentNo, noticeNo, dto);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/{recruitmentNo}/notice/{noticeNo}")
     public ResponseEntity noticeDelete(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-
-        noticeService.deleteNotice(recruitmentNo, noticeNo);
+        noticeFacade.deleteVolunteerPostNotice(recruitmentNo, noticeNo);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/notice")
     public ResponseEntity<NoticeListResponse> noticeList(@PathVariable Long recruitmentNo){
-
-        List<NoticeDetails> noticeDtos = noticeDtoService.findNoticeDtos(recruitmentNo, SecurityUtil.getLoginUserNo());
-        return ResponseEntity.ok(new NoticeListResponse(noticeDtos));
+        List<NoticeDetails> noticeListDto = noticeFacade.findVolunteerPostNoticeListDto(SecurityUtil.getLoginUserNo(), recruitmentNo);
+        return ResponseEntity.ok(new NoticeListResponse(noticeListDto));
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/notice/{noticeNo}")
     public ResponseEntity<NoticeDetailsResponse> noticeDetails(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-        //공지사항 상세 조회
-        NoticeDetails noticeDto = noticeDtoService.findNoticeDto(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        NoticeDetailsResponse response = noticeFacade.findVolunteerPostNoticeDetailsDto(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo);
 
-        //댓글 리스트 조회
-        List<CommentDetails> commentReplyList = replyService.getCommentReplyList(RealWorkCode.NOTICE, noticeNo);
-
-        return ResponseEntity.ok(new NoticeDetailsResponse(noticeDto, commentReplyList));
+        return ResponseEntity.ok(response);
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PostMapping("/{recruitmentNo}/notice/{noticeNo}/read")
     public ResponseEntity noticeRead(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-
-        noticeService.readNotice(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        noticeFacade.readVolunteerPostNotice(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @DeleteMapping("/{recruitmentNo}/notice/{noticeNo}/cancel")
     public ResponseEntity noticeReadCancel(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo){
-
-        noticeService.readCancelNotice(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo());
+        noticeFacade.readCancelVolunteerPostNotice(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo);
         return ResponseEntity.ok().build();
     }
 
@@ -94,8 +78,7 @@ public class NoticeController {
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PostMapping("/{recruitmentNo}/notice/{noticeNo}/comment")
     public ResponseEntity noticeCommentAdd(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo, @Valid @RequestBody CommentContentParam dto){
-
-        noticeService.addNoticeComment(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo(), dto.getContent());
+        noticeFacade.addVolunteerPostNoticeComment(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo, dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
@@ -104,8 +87,7 @@ public class NoticeController {
                                                 @PathVariable Long noticeNo,
                                                 @PathVariable Long parentNo,
                                                 @Valid @RequestBody CommentContentParam dto){
-
-        noticeService.addNoticeCommentReply(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo(), parentNo, dto.getContent());
+        noticeFacade.addVolunteerPostNoticeCommentReply(SecurityUtil.getLoginUserNo(), recruitmentNo, noticeNo, parentNo, dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @OrganizationAuth(auth = OrganizationAuth.Auth.REPLY_WRITER)
@@ -114,16 +96,14 @@ public class NoticeController {
                                           @PathVariable Long noticeNo,
                                           @PathVariable Long replyNo,
                                           @Valid @RequestBody CommentContentParam dto){
-
-        noticeService.editNoticeReply(recruitmentNo, noticeNo, SecurityUtil.getLoginUserNo(), replyNo, dto.getContent());
+        noticeFacade.editVolunteerPostNoticeCommentOrReply(SecurityUtil.getLoginUserNo(), recruitmentNo, replyNo, dto.getContent());
         return ResponseEntity.ok().build();
     }
     @OrganizationAuth(auth = OrganizationAuth.Auth.REPLY_WRITER)
     @DeleteMapping("/{recruitmentNo}/notice/{noticeNo}/comment/{replyNo}")
     public ResponseEntity noticeReplyDelete(@PathVariable Long recruitmentNo, @PathVariable Long noticeNo, @PathVariable Long replyNo){
 
-        noticeService.deleteNoticeReply(recruitmentNo, noticeNo, replyNo);
+        noticeFacade.deleteVolunteerPostNoticeCommentOrReply(recruitmentNo, noticeNo, replyNo);
         return ResponseEntity.ok().build();
     }
-
 }

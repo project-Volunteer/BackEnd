@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@Transactional
 class ScheduleParticipationServiceImplTest {
 
     @PersistenceContext EntityManager em;
@@ -75,15 +76,14 @@ class ScheduleParticipationServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 첫 참가에 성공하다.")
     public void schedule_participating(){
         //given
         User newUser = 사용자_등록("구본식");
-        봉사모집글_팀원_등록(saveRecruitment, newUser);
+        Participant participant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
 
         //when
-        spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo());
+        spService.participate(saveSchedule, participant);
         clear();
 
         //then
@@ -92,27 +92,26 @@ class ScheduleParticipationServiceImplTest {
         assertThat(saveSchedule.getCurrentVolunteerNum()).isEqualTo(1);
     }
 
+    //TODO: 일정 서비스 테스트로 이동해야할 테스트
+//    @Test
+//    @DisplayName("일정 기간 종료로 인해 참가 신청에 실패하다.")
+//    public void schedule_period_end(){
+//        //given
+//        User newUser = 사용자_등록("구본식");
+//        봉사모집글_팀원_등록(saveRecruitment, newUser);
+//
+//        Timetable changeTime = Timetable.createTimetable(
+//                LocalDate.now().minusDays(1), LocalDate.now().minusDays(1), HourFormat.AM,LocalTime.now(),3);
+//        saveSchedule.changeScheduleTime(changeTime);
+//        clear();
+//
+//        //when & then
+//        assertThatThrownBy(() -> spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo()))
+//                .isInstanceOf(BusinessException.class)
+//                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
+//    }
+
     @Test
-    @Transactional
-    @DisplayName("일정 기간 종료로 인해 참가 신청에 실패하다.")
-    public void schedule_period_end(){
-        //given
-        User newUser = 사용자_등록("구본식");
-        봉사모집글_팀원_등록(saveRecruitment, newUser);
-
-        Timetable changeTime = Timetable.createTimetable(
-                LocalDate.now().minusDays(1), LocalDate.now().minusDays(1), HourFormat.AM,LocalTime.now(),3);
-        saveSchedule.changeScheduleTime(changeTime);
-        clear();
-
-        //when & then
-        assertThatThrownBy(() -> spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo()))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
-    }
-
-    @Test
-    @Transactional
     @DisplayName("일정 모집 인원 초가로 인해 참가 신청에 실패하다.")
     public void schedule_volunteerNum_insufficient(){
         //given
@@ -132,17 +131,16 @@ class ScheduleParticipationServiceImplTest {
         saveSchedule.increaseParticipant();
 
         User newUser4 = 사용자_등록("박하영");
-        봉사모집글_팀원_등록(saveRecruitment, newUser4);
+        Participant participant = 봉사모집글_팀원_등록(saveRecruitment, newUser4);
         clear();
 
         //when & then
-        assertThatThrownBy(() -> spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser4.getUserNo()))
+        assertThatThrownBy(() -> spService.participate(saveSchedule, participant))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INSUFFICIENT_CAPACITY");
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 참가 신청을 중복하다.")
     public void schedule_participating_duplication(){
         //given
@@ -153,13 +151,12 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when & then
-        assertThatThrownBy(() -> spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo()))
+        assertThatThrownBy(() -> spService.participate(saveSchedule, newParticipant))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("DUPLICATE_PARTICIPATION");
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 재신청에 성공하다.")
     public void schedule_reParticipating(){
         //given
@@ -169,7 +166,7 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when
-        spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo());
+        spService.participate(saveSchedule, newParticipant);
 
         //then
         ScheduleParticipation findSP = scheduleParticipationRepository.findByUserNoAndScheduleNo(newUser.getUserNo(), saveSchedule.getScheduleNo()).get();
@@ -177,7 +174,6 @@ class ScheduleParticipationServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 참여 취소 요청에 성공하다.")
     public void schedule_cancelParticipation(){
         //given
@@ -188,7 +184,7 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when
-        spService.cancel(saveSchedule.getScheduleNo(), newUser.getUserNo());
+        spService.cancel(saveSchedule, newParticipant);
 
         //then
         ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNo(newUser.getUserNo(), saveSchedule.getScheduleNo()).get();
@@ -206,13 +202,12 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when & then
-        assertThatThrownBy(() ->  spService.cancel(saveSchedule.getScheduleNo(), newUser.getUserNo()))
+        assertThatThrownBy(() ->  spService.cancel(saveSchedule, newParticipant))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INVALID_STATE");
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 참여 취소 요청 승인에 성공하다.")
     public void schedule_cancelApprove(){
         //given
@@ -222,7 +217,7 @@ class ScheduleParticipationServiceImplTest {
         ScheduleParticipation newSp = 일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
 
         //when
-        spService.approvalCancellation(saveSchedule.getScheduleNo(), newSp.getScheduleParticipationNo());
+        spService.approvalCancellation(saveSchedule, newSp.getScheduleParticipationNo());
         clear();
 
         //then
@@ -248,7 +243,7 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when
-        spService.approvalCompletion(saveSchedule.getScheduleNo(), spNos);
+        spService.approvalCompletion(spNos);
 
         //then
         ScheduleParticipation findSp1 = scheduleParticipationRepository.findById(newSp1.getScheduleParticipationNo()).get();
@@ -274,7 +269,7 @@ class ScheduleParticipationServiceImplTest {
         clear();
 
         //when & then
-        assertThatThrownBy(() -> spService.approvalCompletion(saveSchedule.getScheduleNo(), spNos))
+        assertThatThrownBy(() -> spService.approvalCompletion(spNos))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.INVALID_STATE.name());
     }

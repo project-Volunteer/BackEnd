@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleListResponse;
-import project.volunteer.domain.sehedule.application.ScheduleDtoService;
-import project.volunteer.domain.sehedule.application.ScheduleService;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.domain.sehedule.mapper.ScheduleFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
 import project.volunteer.global.util.SecurityUtil;
@@ -27,15 +26,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class ScheduleController {
-
-    private final ScheduleDtoService scheduleDtoService;
-    private final ScheduleService scheduleService;
+    private final ScheduleFacade scheduleFacade;
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping(value = "/{recruitmentNo}/schedule", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ScheduleDetails> scheduleDetails(@PathVariable Long recruitmentNo){
+        ScheduleDetails details = scheduleFacade.findClosestVolunteerPostSchedule(recruitmentNo, SecurityUtil.getLoginUserNo());
 
-        ScheduleDetails details = scheduleDtoService.findClosestSchedule(recruitmentNo, SecurityUtil.getLoginUserNo());
         return ResponseEntity.ok(details);
     }
 
@@ -44,7 +41,7 @@ public class ScheduleController {
     public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleRequest saveDto,
                                       @PathVariable("recruitmentNo")Long no){
 
-        Long saveScheduleNo = scheduleService.addSchedule(no,
+        scheduleFacade.registerVolunteerPostSchedule(no,
                 ScheduleParam.builder()
                         .startDay(saveDto.getStartDay())
                         .endDay(saveDto.getStartDay())
@@ -68,8 +65,8 @@ public class ScheduleController {
                                        @PathVariable("scheduleNo")Long scheduleNo,
                                        @PathVariable("recruitmentNo")Long recruitmentNo){
 
-        scheduleService.editSchedule(scheduleNo,
-                ScheduleParam.builder()
+        scheduleFacade.editVolunteerPostSchedule(recruitmentNo, scheduleNo
+                ,ScheduleParam.builder()
                         .startDay(editDto.getStartDay())
                         .endDay(editDto.getStartDay())
                         .hourFormat(editDto.getHourFormat())
@@ -91,7 +88,7 @@ public class ScheduleController {
     public ResponseEntity scheduleDelete(@PathVariable("scheduleNo") Long scheduleNo,
                                          @PathVariable("recruitmentNo") Long recruitmentNo){
 
-        scheduleService.deleteSchedule(scheduleNo);
+        scheduleFacade.deleteVolunteerPostSchedule(recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
     }
 
@@ -104,7 +101,7 @@ public class ScheduleController {
         LocalDate startDay = LocalDate.of(year, mon, 1);
         LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
 
-        List<Schedule> calendarSchedules = scheduleService.findCalendarSchedules(recruitmentNo, startDay, endDay);
+        List<Schedule> calendarSchedules = scheduleFacade.findVolunteerPostCalendarSchedules(recruitmentNo, startDay, endDay);
 
         //response
         List<CalendarScheduleList> list = calendarSchedules.stream()
@@ -118,7 +115,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleDetails> calendarScheduleDetails(@PathVariable("recruitmentNo")Long recruitmentNo,
                                                   @PathVariable("scheduleNo")Long scheduleNo){
 
-        ScheduleDetails details = scheduleDtoService.findCalendarSchedule(recruitmentNo, scheduleNo, SecurityUtil.getLoginUserNo());
+        ScheduleDetails details = scheduleFacade.findVolunteerPostCalendarSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
         return ResponseEntity.ok(details);
     }
 }

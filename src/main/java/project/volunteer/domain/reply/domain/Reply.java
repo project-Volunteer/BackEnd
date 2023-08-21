@@ -3,6 +3,7 @@ package project.volunteer.domain.reply.domain;
 import javax.persistence.*;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.volunteer.domain.image.converter.RealWorkCodeConverter;
@@ -61,6 +62,15 @@ public class Reply extends BaseTimeEntity {
 		createReply.isDeleted = IsDeleted.N;
         return createReply;
     }
+
+	@Builder
+	public Reply(Reply parent, User user, RealWorkCode code, Long no, String content){
+		this.parent = parent;
+		this.writer = user;
+		this.realWorkCode = code;
+		this.no = no;
+		this.content = content;
+	}
 
 	public void editReply(String content) {
     	this.content = content;

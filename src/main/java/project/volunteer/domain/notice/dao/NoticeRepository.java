@@ -16,7 +16,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
             "from Notice n " +
             "where n.noticeNo=:no " +
             "and n.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    Optional<Notice> findValidNotice(@Param("no")Long noticeNo);
+    Optional<Notice> findPublishedNotice(@Param("no")Long noticeNo);
 
     @Query("select n " +
             "from Notice n " +

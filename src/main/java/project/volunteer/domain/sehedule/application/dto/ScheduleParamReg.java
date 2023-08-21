@@ -1,7 +1,7 @@
 package project.volunteer.domain.sehedule.application.dto;
 
 import lombok.*;
-import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;

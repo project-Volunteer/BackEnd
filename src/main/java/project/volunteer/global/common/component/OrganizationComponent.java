@@ -17,6 +17,8 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
+//TODO: 리팩토링 필요.
+//TODO: 서비스 레이어를 재사용하는 게 좋지 않을까?
 public class OrganizationComponent {
 
     private final String RECRUITMENT_NO = "recruitmentNo";

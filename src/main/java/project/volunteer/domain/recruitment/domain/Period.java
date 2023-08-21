@@ -1,4 +1,4 @@
-package project.volunteer.domain.repeatPeriod.domain;
+package project.volunteer.domain.recruitment.domain;
 
 import project.volunteer.global.common.converter.CodeCommonType;
 import project.volunteer.global.error.exception.BusinessException;
