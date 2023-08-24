@@ -51,4 +51,12 @@ public class Participant extends BaseTimeEntity {
     public Boolean isEqualState(ParticipantState state) {return this.state.equals(state);}
 
     public void updateState(ParticipantState state) {this.state = state;}
+
+    public void removeUserAndRecruitment(){
+        this.recruitment = null;
+        this.participant = null;
+    }
+    public void delete(){
+        this.state = ParticipantState.DELETED;
+    }
 }

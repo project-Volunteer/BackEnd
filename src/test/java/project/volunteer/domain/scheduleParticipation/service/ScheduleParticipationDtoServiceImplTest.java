@@ -1,5 +1,6 @@
 package project.volunteer.domain.scheduleParticipation.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
+import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -36,6 +38,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
+@Transactional
 class ScheduleParticipationDtoServiceImplTest {
 
     @PersistenceContext
@@ -82,7 +85,6 @@ class ScheduleParticipationDtoServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 참여 중 리스트 조회 시 3명의 참여자가 조회된다.")
     public void schedule_participant_list(){
         //given
@@ -100,7 +102,7 @@ class ScheduleParticipationDtoServiceImplTest {
         clear();
 
         //when
-        List<ParticipatingParticipantList> findParticipants = spDtoService.findParticipatingParticipants(saveSchedule.getScheduleNo());
+        List<ParticipatingParticipantList> findParticipants = spDtoService.findParticipatingParticipants(saveSchedule);
 
         //then
         assertThat(findParticipants.size()).isEqualTo(3);
@@ -110,7 +112,6 @@ class ScheduleParticipationDtoServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 취소 요청 리스트 조회 시 2명의 취소 요청자가 조회된다.")
     public void schedule_cancel_participant_list(){
         //given
@@ -128,7 +129,7 @@ class ScheduleParticipationDtoServiceImplTest {
         clear();
 
         //when
-        List<CancelledParticipantList> findCancellingParticipants = spDtoService.findCancelledParticipants(saveSchedule.getScheduleNo());
+        List<CancelledParticipantList> findCancellingParticipants = spDtoService.findCancelledParticipants(saveSchedule);
 
 
         //then
@@ -139,7 +140,6 @@ class ScheduleParticipationDtoServiceImplTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("일정 참여 완료 리스트 조회 시 2명의 참여 완료 미승인과 1명의 참여 완료 승인자가 조회된다.")
     public void schedule_completed_participant_list(){
         //given
@@ -157,7 +157,7 @@ class ScheduleParticipationDtoServiceImplTest {
         clear();
 
         //when
-        List<CompletedParticipantList> findCompletedParticipants = spDtoService.findCompletedParticipants(saveSchedule.getScheduleNo());
+        List<CompletedParticipantList> findCompletedParticipants = spDtoService.findCompletedParticipants(saveSchedule);
 
         //then
         assertThat(findCompletedParticipants.size()).isEqualTo(3);
@@ -166,6 +166,107 @@ class ScheduleParticipationDtoServiceImplTest {
             assertThat(p.getStatus()).isIn(StateResponse.COMPLETE_APPROVED.name(), StateResponse.COMPLETE_UNAPPROVED.name());
         }
     }
+
+    //TODO: 봉사 참여자 관리 리팩토링 시 수정할 예정
+//    @Test
+//    @DisplayName("첫 일정 참가이므로 available 상태가 된다.")
+//    public void availableStateByFirstParticipation(){
+//        //given
+//        Schedule schedule1 = 스케줄_등록(LocalDate.now().plusDays(1), 3);
+//        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//
+//        //when
+//        ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
+//                teamMembers.get(2).getParticipant().getUserNo());
+//
+//        //then
+//        Assertions.assertThat(closestSchedule.getState()).isEqualTo(StateResponse.AVAILABLE.name());
+//    }
+//
+//    @Test
+//    @Transactional
+//    @DisplayName("최근 신청 상태가 일정 취소 승인이므로 available 상태가 된다.")
+//    public void availableStateByCancelApprove(){
+//        //given
+//        Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
+//        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
+//
+//        //when
+//        ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
+//                teamMembers.get(2).getParticipant().getUserNo());
+//
+//        //then
+//        Assertions.assertThat(closestSchedule.getState()).isEqualTo(StateResponse.AVAILABLE.name());
+//    }
+//
+//    @Test
+//    @Transactional
+//    @DisplayName("최근 신청 상태가 일정 취소 신청이므로 cancelling 상태가 된다.")
+//    public void cancellingState(){
+//        //given
+//        Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
+//        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATION_CANCEL);
+//        schedule1.increaseParticipant();
+//
+//        //when
+//        ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
+//                teamMembers.get(2).getParticipant().getUserNo());
+//
+//        //then
+//        Assertions.assertThat(closestSchedule.getState()).isEqualTo(StateResponse.CANCELLING.name());
+//    }
+//
+//    @Test
+//    @DisplayName("최근 신청 상태가 참여 승인 이므로 participating 상태가 된다.")
+//    @Transactional
+//    public void participatingState(){
+//        //given
+//        Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
+//        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//
+//        //when
+//        ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
+//                teamMembers.get(2).getParticipant().getUserNo());
+//
+//        //then
+//        Assertions.assertThat(closestSchedule.getState()).isEqualTo(StateResponse.PARTICIPATING.name());
+//    }
+//    @Test
+//    @Transactional
+//    @DisplayName("일정 최대 참가자 수를 초과하여 FULL 상태가 된다.")
+//    public void doneState(){
+//        //given
+//        Schedule schedule1 = 스케줄_등록(LocalDate.now().plusMonths(3), 3);
+//        스케줄_참여자_등록(schedule1, teamMembers.get(0), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(1), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//        스케줄_참여자_등록(schedule1, teamMembers.get(2), ParticipantState.PARTICIPATING);
+//        schedule1.increaseParticipant();
+//
+//        //when
+//        ScheduleDetails closestSchedule = scheduleDtoService.findClosestSchedule(saveRecruitment.getRecruitmentNo(),
+//                teamMembers.get(3).getParticipant().getUserNo());
+//
+//        //then
+//        Assertions.assertThat(closestSchedule.getState()).isEqualTo(StateResponse.FULL.name());
+//    }
 
     private User 사용자_등록(String username){
         User createUser = User.createUser(username, username, username, username, Gender.M, LocalDate.now(), "picture",

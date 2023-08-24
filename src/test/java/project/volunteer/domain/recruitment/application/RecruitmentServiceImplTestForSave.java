@@ -11,13 +11,12 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.application.RepeatPeriodService;
-import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.Day;
-import project.volunteer.domain.repeatPeriod.domain.Period;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
-import project.volunteer.domain.repeatPeriod.domain.Week;
-import project.volunteer.domain.repeatPeriod.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
+import project.volunteer.domain.recruitment.domain.Day;
+import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.domain.RepeatPeriod;
+import project.volunteer.domain.recruitment.domain.Week;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -78,7 +77,7 @@ class RecruitmentServiceImplTestForSave {
                 coordinate, timetable, isPublished);
 
         //when
-        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
+        Long no = recruitmentService.addRecruitment(writer, param).getRecruitmentNo();
         clear();
 
         //then
@@ -114,15 +113,15 @@ class RecruitmentServiceImplTestForSave {
         RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(period, week, days);
 
         //when
-        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
-        repeatPeriodService.addRepeatPeriod(no, repeatPeriodParam);
+        Recruitment recruitment = recruitmentService.addRecruitment(writer, param);
+        repeatPeriodService.addRepeatPeriod(recruitment, repeatPeriodParam);
         clear();
 
         //then
-        Recruitment find = recruitmentRepository.findById(no).get();
+        Recruitment find = recruitmentRepository.findById(recruitment.getRecruitmentNo()).get();
         assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
 
-        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(no);
+        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
         assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
         assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
         assertThat(list.get(0).getPeriod()).isEqualTo(Period.WEEK);
@@ -157,15 +156,15 @@ class RecruitmentServiceImplTestForSave {
 
 
         //when
-        Long no = recruitmentService.addRecruitment(writer.getUserNo(), param);
-        repeatPeriodService.addRepeatPeriod(no, repeatPeriodParam);
+        Recruitment recruitment = recruitmentService.addRecruitment(writer, param);
+        repeatPeriodService.addRepeatPeriod(recruitment, repeatPeriodParam);
         clear();
 
         //then
-        Recruitment find = recruitmentRepository.findById(no).get();
+        Recruitment find = recruitmentRepository.findById(recruitment.getRecruitmentNo()).get();
         assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
 
-        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(no);
+        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
         assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
         assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
         assertThat(list.get(0).getPeriod()).isEqualTo(Period.MONTH);

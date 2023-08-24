@@ -6,11 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.dto.PictureDetails;
-import project.volunteer.domain.recruitment.dto.RepeatPeriodDetails;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,23 +18,21 @@ public class RecruitmentDetails {
     private Long no;
     private String volunteeringCategory;
     private String organizationName;
-    private AddressDetails address;
     private Boolean isIssued;
     private String volunteeringType;
     private String volunteerType;
     private Integer volunteerNum;
-    private List<ParticipantDetails> approvalVolunteer = new ArrayList<>(); //승인된 참여자 리스트
-    private List<ParticipantDetails> requiredVolunteer = new ArrayList<>(); //참여 요청한 참여자 리스트
-    private WriterDetails author;
     private String startDay;
     private String endDay;
     private String hourFormat;
     private String startTime;
     private Integer progressTime;
-    private RepeatPeriodDetails repeatPeriod;
-    private PictureDetails picture;
     private String title;
     private String content;
+    private AddressDetails address;
+    private PictureDetails picture;
+    private RepeatPeriodDetails repeatPeriod;
+    private WriterDetails author;
 
     public RecruitmentDetails(Recruitment recruitment){
         this.no = recruitment.getRecruitmentNo();

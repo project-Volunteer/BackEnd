@@ -21,14 +21,14 @@ import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
-import project.volunteer.domain.repeatPeriod.dao.RepeatPeriodRepository;
-import project.volunteer.domain.repeatPeriod.domain.Period;
-import project.volunteer.domain.repeatPeriod.domain.RepeatPeriod;
+import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
+import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.domain.RepeatPeriod;
 import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.global.common.component.*;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.repeatPeriod.domain.Day;
-import project.volunteer.domain.repeatPeriod.domain.Week;
+import project.volunteer.domain.recruitment.domain.Day;
+import project.volunteer.domain.recruitment.domain.Week;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -108,7 +108,7 @@ class RecruitmentEditControllerTest {
                 .forEach(s -> fileService.deleteFile(s.getFakeImageName()));
     }
 
-    @DisplayName("정기 모집글 삭제 테스트(반복주기,이미지 포함)")
+    @DisplayName("정기 모집글 삭제 테스트")
     @Test
     @WithUserDetails(value = "rctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Rollback(value = false)

@@ -11,8 +11,8 @@ import project.volunteer.domain.reply.dao.queryDto.dto.CommentMapperDto;
 import project.volunteer.domain.reply.domain.Reply;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.global.common.validate.ReplyValidate;
-import project.volunteer.global.common.validate.UserValidate;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,53 +25,38 @@ import java.util.Map;
 public class ReplyServiceImpl implements ReplyService {
 	private final ReplyRepository replyRepository;
 	private final ReplyQueryDtoRepository replyQueryDtoRepository;
-	private final ReplyValidate replyValidate;
-	private final UserValidate userValidate;
 
 	@Override
     @Transactional
-	public Long addComment(Long loginUserNo, RealWorkCode code, Long no, String content) {
-		// 사용자 존재 유무 검증
-		User user = userValidate.validateAndGetUser(loginUserNo);
-
-		// 댓글의 모글(도메인) 검증
-		replyValidate.validateRealWorkDomain(code, no);
-
+	public Long addComment(User user, RealWorkCode code, Long no, String content) {
 		Reply reply = Reply.createComment(code, no, content);
 		reply.setWriter(user);
 		
 		replyRepository.save(reply);
-		
 		return reply.getReplyNo();
 	}
-	
 
 	@Override
 	@Transactional
-	public Long addCommentReply(Long loginUserNo, RealWorkCode code, Long no, Long parentNo, String content) {
-		// 사용자 존재 유무 검증
-		User user = userValidate.validateAndGetUser(loginUserNo);
-
-		// 대댓글의 모글(도메인) 검증
-		replyValidate.validateRealWorkDomain(code, no);
-		
+	public Long addCommentReply(User user, RealWorkCode code, Long no, Long parentNo, String content) {
 		// 부모 댓글 유무 확인
-		Reply findComment = replyValidate.validateAndGetParentReply(parentNo);
+		Reply findComment = validateAndGetParentReply(parentNo);
 		
 		// 부모 댓글이 1depth 댓글인지 확인
-		replyValidate.vaildateParentReplyHasNotParent(findComment);
+		validateParentReplyHasNotParent(findComment);
 
-		Reply reply = Reply.createCommentReply(findComment, RealWorkCode.LOG, no, content);
+		Reply reply = Reply.createCommentReply(findComment, code, no, content);
 		reply.setWriter(user);
-		
-		return replyRepository.save(reply).getReplyNo();
+
+		replyRepository.save(reply);
+		return reply.getReplyNo();
 	}
 
 	@Override
 	@Transactional
-	public void editReply(Long loginUserNo, Long replyNo, String content) {
+	public void editReply(Long replyNo, String content) {
 		// 댓글 존재 여부 검증
-		Reply findReply = replyValidate.validateAndGetReply(replyNo);
+		Reply findReply = validateAndGetReply(replyNo);
 
 		findReply.editReply(content);
 	}
@@ -80,12 +65,13 @@ public class ReplyServiceImpl implements ReplyService {
 	@Transactional
 	public void deleteReply(Long replyNo) {
 		// 댓글 존재 여부 검증
-		Reply findReply = replyValidate.validateAndGetReply(replyNo);
+		Reply findReply = validateAndGetReply(replyNo);
 
 		findReply.delete();
 	}
+
 	@Override
-	public List<CommentDetails>  getCommentReplyList(RealWorkCode code, Long no) {
+	public List<CommentDetails> getCommentReplyListDto(RealWorkCode code, Long no) {
 		List<CommentMapperDto> commentMapperDtos = replyQueryDtoRepository.getCommentMapperDtos(code, no);
 
 		//부모-자식 댓글 매핑
@@ -107,5 +93,22 @@ public class ReplyServiceImpl implements ReplyService {
 			}
 		}
 		return commentDetailList;
+	}
+
+	private Reply validateAndGetReply (Long replyNo) {
+		return replyRepository.findById(replyNo)
+				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_REPLY,
+						String.format("not found reply = [%d]", replyNo)));
+	}
+	private Reply validateAndGetParentReply (Long parentNo) {
+		return replyRepository.findVaildParentReply(parentNo)
+				.orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_PARENT_REPLY,
+						String.format("not found parent reply replyno= [%d]", parentNo)));
+	}
+	private void validateParentReplyHasNotParent(Reply findComment) {
+		if(findComment.getParent() != null) {
+			throw new BusinessException(ErrorCode.ALREADY_HAS_PARENT_REPLY,
+					String.format("already parent reply replyno=[%d]", findComment.getParent().getReplyNo()));
+		}
 	}
 }

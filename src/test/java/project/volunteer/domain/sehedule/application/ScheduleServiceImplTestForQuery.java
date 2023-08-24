@@ -105,7 +105,7 @@ class ScheduleServiceImplTestForQuery {
 
         //when
         List<Schedule> schedules = scheduleService.findCalendarSchedules(
-                saveRecruitment.getRecruitmentNo(),
+                saveRecruitment,
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31));
 
         //then
@@ -118,7 +118,7 @@ class ScheduleServiceImplTestForQuery {
     @Transactional
     public void forbidden(){
         assertThatThrownBy(() -> scheduleService.findCalendarSchedules(
-                saveRecruitment.getRecruitmentNo(),
+                saveRecruitment,
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31)))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("FORBIDDEN_RECRUITMENT_TEAM");

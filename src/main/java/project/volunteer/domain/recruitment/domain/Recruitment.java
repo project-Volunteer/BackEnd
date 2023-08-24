@@ -142,6 +142,7 @@ public class Recruitment extends BaseTimeEntity {
     }
 
     public void setDeleted(){this.isDeleted=IsDeleted.Y;}
+    public void removeUser(){this.writer = null;}
 
     public void setIsPublished(Boolean isPublished){this.isPublished=isPublished;}
 
@@ -163,10 +164,6 @@ public class Recruitment extends BaseTimeEntity {
 
     public Integer getAvailableTeamMemberCount(){
         return this.volunteerNum - this.currentVolunteerNum;
-    }
-
-    public Boolean isAvailableDate(){
-        return this.VolunteeringTimeTable.getEndDay().isAfter(LocalDate.now());
     }
 
     public Boolean isDoneDate(){return this.VolunteeringTimeTable.getEndDay().isBefore(LocalDate.now());}

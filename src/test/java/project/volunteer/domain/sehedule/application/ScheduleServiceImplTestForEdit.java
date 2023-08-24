@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 @SpringBootTest
+@Transactional
 class ScheduleServiceImplTestForEdit {
 
     @PersistenceContext EntityManager em;
@@ -90,13 +91,11 @@ class ScheduleServiceImplTestForEdit {
             ScheduleParticipation scheduleParticipation =
                     ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, ParticipantState.PARTICIPATING);
             scheduleParticipationRepository.save(scheduleParticipation);
+            saveSchedule.increaseParticipant();
         }
-
-        clear();
     }
 
     @Test
-    @Transactional
     @DisplayName("봉사 일정 수정에 성공한다.")
     public void editSchedule(){
         //given
@@ -108,11 +107,11 @@ class ScheduleServiceImplTestForEdit {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when
-        Long editScheduleNo = scheduleService.editSchedule(saveSchedule.getScheduleNo(), param);
+        Schedule schedule = scheduleService.editSchedule(saveSchedule.getScheduleNo(), saveRecruitment, param);
         clear();
 
         //then
-        Schedule findSchedule = scheduleRepository.findById(editScheduleNo).get();
+        Schedule findSchedule = scheduleRepository.findById(schedule.getScheduleNo()).get();
         assertAll(
                 () -> assertThat(findSchedule.getScheduleTimeTable().getProgressTime()).isEqualTo(timetable.getProgressTime()),
                 () -> assertThat(findSchedule.getScheduleTimeTable().getStartDay()).isEqualTo(timetable.getStartDay()),
@@ -130,7 +129,6 @@ class ScheduleServiceImplTestForEdit {
     }
 
     @Test
-    @Transactional
     @DisplayName("유효하지않은 일정을 수정하고자 하여 에러가 발생한다.")
     public void notExistSchedule() {
         //given
@@ -142,13 +140,12 @@ class ScheduleServiceImplTestForEdit {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.editSchedule(Long.MAX_VALUE,  param))
+        assertThatThrownBy(() -> scheduleService.editSchedule(Long.MAX_VALUE,saveRecruitment,  param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("NOT_EXIST_SCHEDULE");
     }
 
     @Test
-    @Transactional
     @DisplayName("현재 일정에 참가중인 인원수보다 작은 인원수로 수정하여 오류가 발생한다.")
     public void insufficientScheduleVolunteerNum(){
         //given
@@ -160,13 +157,12 @@ class ScheduleServiceImplTestForEdit {
         ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
-        assertThatThrownBy(() -> scheduleService.editSchedule(saveSchedule.getScheduleNo(),  param))
+        assertThatThrownBy(() -> scheduleService.editSchedule(saveSchedule.getScheduleNo(),saveRecruitment, param))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("INSUFFICIENT_CAPACITY_PARTICIPANT");
     }
 
     @Test
-    @Transactional
     @DisplayName("봉사 일정 삭제에 성공하다.")
     public void deleteSchedule(){
         //given & when
@@ -176,11 +172,6 @@ class ScheduleServiceImplTestForEdit {
         //then
         Schedule findSchedule = scheduleRepository.findById(saveSchedule.getScheduleNo()).get();
         assertThat(findSchedule.getIsDeleted()).isEqualTo(IsDeleted.Y);
-
-        List<ScheduleParticipation> participants = scheduleParticipationRepository.findBySchedule_ScheduleNo(saveSchedule.getScheduleNo());
-        assertThat(participants.size()).isEqualTo(5);
-        participants.stream()
-                .forEach(p -> assertThat(p.getState()).isEqualTo(ParticipantState.DELETED));
     }
 
 

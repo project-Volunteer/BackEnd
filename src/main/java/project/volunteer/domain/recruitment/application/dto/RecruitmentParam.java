@@ -40,24 +40,24 @@ public class RecruitmentParam {
     private Timetable timetable;
     private Boolean isPublished;
 
-    public RecruitmentParam(RecruitmentRequest form) {
-
-        this.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, form.getVolunteeringCategory());
-        this.organizationName = form.getOrganizationName();
-        this.address = Address.builder()
+    public static RecruitmentParam ToRecruitmentParam(RecruitmentRequest form) {
+        RecruitmentParam param = new RecruitmentParam();
+        param.volunteeringCategory = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteeringCategory.class, form.getVolunteeringCategory());
+        param.organizationName = form.getOrganizationName();
+        param.address = Address.builder()
                 .sido(form.getAddress().getSido())
                 .sigungu(form.getAddress().getSigungu())
                 .details(form.getAddress().getDetails())
                 .build();
-        this.coordinate = Coordinate.builder()
+        param.coordinate = Coordinate.builder()
                 .latitude(form.getAddress().getLatitude())
                 .longitude(form.getAddress().getLongitude())
                 .build();
-        this.isIssued = form.getIsIssued();
-        this.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, form.getVolunteerType());
-        this.volunteerNum = form.getVolunteerNum();
-        this.volunteeringType = VolunteeringType.of(form.getVolunteeringType());
-        this.timetable = Timetable.builder()
+        param.isIssued = form.getIsIssued();
+        param.volunteerType = LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, form.getVolunteerType());
+        param.volunteerNum = form.getVolunteerNum();
+        param.volunteeringType = VolunteeringType.of(form.getVolunteeringType());
+        param.timetable = Timetable.builder()
                 .startDay(LocalDate.parse(form.getStartDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")))
                 .endDay(LocalDate.parse(form.getEndDay(), DateTimeFormatter.ofPattern("MM-dd-yyyy")))
                 .hourFormat(HourFormat.ofName(form.getHourFormat()))
@@ -65,9 +65,10 @@ public class RecruitmentParam {
                 .progressTime(form.getProgressTime())
                 .build();
 
-        this.title = form.getTitle();
-        this.content = form.getContent();
-        this.isPublished = form.getIsPublished();
+        param.title = form.getTitle();
+        param.content = form.getContent();
+        param.isPublished = form.getIsPublished();
+        return param;
     }
 
     public RecruitmentParam(String volunteeringCategory, String organizationName, String sido, String sigungu, String details, Float latitude, Float longitude,

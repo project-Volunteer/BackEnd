@@ -182,7 +182,7 @@ public class LogboardServiceImplTestForComment {
 		CommentContentParam param = new CommentContentParam("test comment");
 		
 		// when
-		Long commentNo = replyService.addComment(saveUser.getUserNo(), RealWorkCode.LOG, logboardNo1, param.getContent());
+		Long commentNo = replyService.addComment(saveUser, RealWorkCode.LOG, logboardNo1, param.getContent());
 		
 		// then
 		Reply createReply = replyRepository.findReply(RealWorkCode.LOG, logboardNo1, commentNo).get();
@@ -191,24 +191,28 @@ public class LogboardServiceImplTestForComment {
 		Assertions.assertThat(!createReply.getCreatedDate().toString().isEmpty());
 	}
 
+	//댓글 Service 테스트 내용
+	@Disabled
 	@Test
 	public void 댓글작성_없는_사용자_요청으로_실패() throws Exception {
 		// given 
 		CommentContentParam param = new CommentContentParam("test comment");
 		
         //when & then
-        assertThatThrownBy(() -> replyService.addComment(10000L, RealWorkCode.LOG, logboardNo1, param.getContent()))
+        assertThatThrownBy(() -> replyService.addComment(null, RealWorkCode.LOG, logboardNo1, param.getContent()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.NOT_EXIST_USER.name());
 	}
-	
+
+	//로그 보드 Service 테스트 내용
+	@Disabled
 	@Test
 	public void 댓글작성_없는_로그번호_요청으로_실패() throws Exception {
 		// given 
 		CommentContentParam param = new CommentContentParam("test comment");
 		
         //when & then
-        assertThatThrownBy(() -> replyService.addComment(saveUser.getUserNo(), RealWorkCode.LOG, 100000L, param.getContent()))
+        assertThatThrownBy(() -> replyService.addComment(saveUser, RealWorkCode.LOG, 100000L, param.getContent()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.NOT_EXIST_LOGBOARD.name());
 	}
@@ -223,7 +227,7 @@ public class LogboardServiceImplTestForComment {
 		CommentContentParam param = new CommentContentParam("test comment");
 		
 		// when
-		Long commentReplyNo = replyService.addCommentReply(saveUser.getUserNo(), RealWorkCode.LOG, logboardNo1, createComment.getReplyNo(), param.getContent());
+		Long commentReplyNo = replyService.addCommentReply(saveUser, RealWorkCode.LOG, logboardNo1, createComment.getReplyNo(), param.getContent());
 		
 		// then
 		Reply createCommentReply = replyRepository.findReply(RealWorkCode.LOG, logboardNo1, commentReplyNo).get();
@@ -238,7 +242,7 @@ public class LogboardServiceImplTestForComment {
 		CommentContentParam param = new CommentContentParam("test comment");
 		
 		// when & then
-        assertThatThrownBy(() -> replyService.addCommentReply(saveUser.getUserNo(), RealWorkCode.LOG, logboardNo1, 10000L, param.getContent()))
+        assertThatThrownBy(() -> replyService.addCommentReply(saveUser, RealWorkCode.LOG, logboardNo1, 10000L, param.getContent()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.NOT_EXIST_PARENT_REPLY.name());
 	}
@@ -257,7 +261,7 @@ public class LogboardServiceImplTestForComment {
 		//when & then
 		CommentContentParam param = new CommentContentParam( "Test Comment Reply Reply");
 
-        assertThatThrownBy(() -> replyService.addCommentReply(saveUser.getUserNo(), RealWorkCode.LOG, logboardNo1, createCommentReply.getReplyNo(), param.getContent()))
+        assertThatThrownBy(() -> replyService.addCommentReply(saveUser, RealWorkCode.LOG, logboardNo1, createCommentReply.getReplyNo(), param.getContent()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.ALREADY_HAS_PARENT_REPLY.name());
 	}
@@ -271,7 +275,7 @@ public class LogboardServiceImplTestForComment {
 		
 		//when
 		CommentContentParam param = new CommentContentParam("Test Comment Edit");
-		replyService.editReply(saveUser.getUserNo(), createComment.getReplyNo(), param.getContent());
+		replyService.editReply(createComment.getReplyNo(), param.getContent());
 		
 		// then
 		Reply modifyComment = replyRepository.findReply(RealWorkCode.LOG, logboardNo1, createComment.getReplyNo()).get();
@@ -291,7 +295,7 @@ public class LogboardServiceImplTestForComment {
 		//when & then
 		CommentContentParam  param = new CommentContentParam("Test Comment Edit");
 
-        assertThatThrownBy(() -> replyService.editReply(saveUser.getUserNo(), reply.getReplyNo(), param.getContent()))
+        assertThatThrownBy(() -> replyService.editReply(reply.getReplyNo(), param.getContent()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorCode.FORBIDDEN_REPLY.name());
 	}
@@ -307,7 +311,7 @@ public class LogboardServiceImplTestForComment {
 		//when & then
 		CommentContentParam  param = new CommentContentParam("Test Comment Edit");
 
-		assertThatThrownBy(() -> replyService.editReply(saveUser.getUserNo(), 10000L, param.getContent()))
+		assertThatThrownBy(() -> replyService.editReply(10000L, param.getContent()))
 		        .isInstanceOf(BusinessException.class)
 		        .hasMessageContaining(ErrorCode.NOT_EXIST_REPLY.name());
 	}
