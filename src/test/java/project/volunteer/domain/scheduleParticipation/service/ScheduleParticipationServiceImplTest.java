@@ -79,13 +79,8 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("일정 첫 참가에 성공하다.")
     public void schedule_participating(){
         //given
-<<<<<<< HEAD
-        User newUser = 사용자_등록("");
-        봉사모집글_팀원_등록(saveRecruitment, newUser);
-=======
         User newUser = 사용자_등록("구본식");
         Participant participant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
->>>>>>> cdf31a01c5c0577d151ed8307bbb1655fc974b44
 
         //when
         spService.participate(saveSchedule, participant);
@@ -97,26 +92,6 @@ class ScheduleParticipationServiceImplTest {
         assertThat(saveSchedule.getCurrentVolunteerNum()).isEqualTo(1);
     }
 
-<<<<<<< HEAD
-    @Test
-    @Transactional
-    @DisplayName("일정 기간 종료로 인해 참가 신청에 실패하다.")
-    public void schedule_period_end(){
-        //given
-        User newUser = 사용자_등록("rnqhstlr");
-        봉사모집글_팀원_등록(saveRecruitment, newUser);
-
-        Timetable changeTime = Timetable.createTimetable(
-                LocalDate.now().minusDays(1), LocalDate.now().minusDays(1), HourFormat.AM,LocalTime.now(),3);
-        saveSchedule.changeScheduleTime(changeTime);
-        clear();
-
-        //when & then
-        assertThatThrownBy(() -> spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo()))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
-    }
-=======
     //TODO: 일정 서비스 테스트로 이동해야할 테스트
 //    @Test
 //    @DisplayName("일정 기간 종료로 인해 참가 신청에 실패하다.")
@@ -135,34 +110,28 @@ class ScheduleParticipationServiceImplTest {
 //                .isInstanceOf(BusinessException.class)
 //                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
 //    }
->>>>>>> cdf31a01c5c0577d151ed8307bbb1655fc974b44
 
     @Test
     @DisplayName("일정 모집 인원 초가로 인해 참가 신청에 실패하다.")
     public void schedule_volunteerNum_insufficient(){
         //given
-        User newUser1 = 사용자_등록("rnqhstlr");
+        User newUser1 = 사용자_등록("구본식");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
         saveSchedule.increaseParticipant();
 
-        User newUser2 = 사용자_등록("ghdrlfehd");
+        User newUser2 = 사용자_등록("홍길동");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATING);
         saveSchedule.increaseParticipant();
 
-        User newUser3 = 사용자_등록("rngkfk");
+        User newUser3 = 사용자_등록("구하라");
         Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
         일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATING);
         saveSchedule.increaseParticipant();
 
-<<<<<<< HEAD
-        User newUser4 = 사용자_등록("qkrgkdud");
-        봉사모집글_팀원_등록(saveRecruitment, newUser4);
-=======
         User newUser4 = 사용자_등록("박하영");
         Participant participant = 봉사모집글_팀원_등록(saveRecruitment, newUser4);
->>>>>>> cdf31a01c5c0577d151ed8307bbb1655fc974b44
         clear();
 
         //when & then
@@ -175,7 +144,7 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("일정 참가 신청을 중복하다.")
     public void schedule_participating_duplication(){
         //given
-        User newUser = 사용자_등록("rnqhstlr");
+        User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
         일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
         saveSchedule.increaseParticipant();
@@ -191,7 +160,7 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("일정 재신청에 성공하다.")
     public void schedule_reParticipating(){
         //given
-        User newUser = 사용자_등록("rnqhstlr");
+        User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
         일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
         clear();
@@ -208,7 +177,7 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("일정 참여 취소 요청에 성공하다.")
     public void schedule_cancelParticipation(){
         //given
-        User newUser = 사용자_등록("rnqhstlr");
+        User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
         일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
         saveSchedule.increaseParticipant();
@@ -227,7 +196,7 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("유효한 상태가 아니므로 일정 참여 취소 요청에 실패하다.")
     public void schedule_cancelParticipation_invalid_state(){
         //given
-        User newUser = 사용자_등록("rnqhstlr");
+        User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
         일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL); //적절하지 않은 상태
         clear();
@@ -242,7 +211,7 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("일정 참여 취소 요청 승인에 성공하다.")
     public void schedule_cancelApprove(){
         //given
-        User newUser = 사용자_등록("rnqhstlr");
+        User newUser = 사용자_등록("구본식");
         Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
         saveSchedule.increaseParticipant();
         ScheduleParticipation newSp = 일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
@@ -262,11 +231,11 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("일정 참여 완료 승인에 성공하다.")
     public void schedule_completeApprove(){
         //given
-        User newUser1 = 사용자_등록("rnqhstlr");
+        User newUser1 = 사용자_등록("구본식");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         ScheduleParticipation newSp1 = 일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
-        User newUser2 = 사용자_등록("didthdms");
+        User newUser2 = 사용자_등록("양소은");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         ScheduleParticipation newSp2 = 일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
@@ -288,11 +257,11 @@ class ScheduleParticipationServiceImplTest {
     @DisplayName("유효한 상태가 아니므로 일정 참여 완료 승인에 실패하다.")
     public void schedule_completeApprove_invalid_state(){
         //given
-        User newUser1 = 사용자_등록("rnqhstlr");
+        User newUser1 = 사용자_등록("구본식");
         Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         ScheduleParticipation newSp1 = 일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
-        User newUser2 = 사용자_등록("didthdms");
+        User newUser2 = 사용자_등록("양소은");
         Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         ScheduleParticipation newSp2 = 일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL); //유효하지 않은 상태
 
