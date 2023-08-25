@@ -11,6 +11,8 @@ public interface RecruitmentQueryDtoRepository {
     //전체 모집글,이미지,저장소 join 리스트 조회
     Slice<RecruitmentListQuery> findRecruitmentJoinImageBySearchType(Pageable pageable, RecruitmentCond searchType);
 
+    Slice<RecruitmentListQuery> findRecruitmentJoinImageByTitle(Pageable pageable, String title);
+
     //필터링에 따른 모집글 개수 카운트
     Long findRecruitmentCountBySearchType(RecruitmentCond searchType);
 

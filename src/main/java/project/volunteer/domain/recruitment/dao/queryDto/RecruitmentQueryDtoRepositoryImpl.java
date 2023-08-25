@@ -70,6 +70,35 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
     }
 
     @Override
+    public Slice<RecruitmentListQuery> findRecruitmentJoinImageByTitle(Pageable pageable, String title) {
+        List<RecruitmentListQuery> content = jpaQueryFactory
+                .select(
+                        new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.volunteeringCategory,recruitment.title,
+                                recruitment.address.sido, recruitment.address.sigungu,
+                                recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
+                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, storage.imagePath))
+                .from(recruitment)
+                .leftJoin(image)
+                .on(
+                        recruitment.recruitmentNo.eq(image.no),
+                        image.realWorkCode.eq(RealWorkCode.RECRUITMENT)
+                )
+                .leftJoin(image.storage, storage)
+                .where(
+                        //TODO: ElasticSearch or FullText search 고려 해보기
+                        likeTitle(title),
+                        recruitment.isPublished.eq(Boolean.TRUE), //임시저장된 모집글은 제외
+                        recruitment.isDeleted.eq(IsDeleted.N)     //삭제 게시물 제외
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1) //limit 보다 한개더 가져온다.
+                .orderBy(setSort(pageable))
+                .fetch(); //counting 쿼리 X
+
+        return checkEndPage(pageable, content);
+    }
+
+    @Override
     public Long findRecruitmentCountBySearchType(RecruitmentCond searchType) {
         return jpaQueryFactory
                 .select(recruitment.count())
@@ -146,5 +175,8 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
     private BooleanExpression eqIsIssued(Boolean isIssued){
         return (!ObjectUtils.isEmpty(isIssued))?(recruitment.isIssued.eq(isIssued)):null;
     }
-
+    private BooleanExpression likeTitle(String title){
+        return (StringUtils.hasText(title))?(recruitment.title.contains(title)):null;
+        //return (StringUtils.hasText(title))?(recruitment.title.like("%" + title + "%")):null;
+    }
 }
