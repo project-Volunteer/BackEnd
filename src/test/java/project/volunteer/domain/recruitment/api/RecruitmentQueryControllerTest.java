@@ -4,12 +4,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -17,9 +21,13 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
@@ -62,7 +70,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
@@ -72,6 +79,7 @@ import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.g
 @AutoConfigureMockMvc
 @Transactional
 @AutoConfigureRestDocs //Rest docs 에 필요한 정보 자동 주입
+@ExtendWith(RestDocumentationExtension.class) //커스텀을 위한 RestDocumentationContextProvider 주입 받기 위해
 @Import(RestDocsConfiguration.class) //커스텀한 Rest docs 관련 bean 사용
 class RecruitmentQueryControllerTest {
     @Autowired UserRepository userRepository;
@@ -96,7 +104,16 @@ class RecruitmentQueryControllerTest {
     private List<Participant> saveJoinRequestParticipantList = new ArrayList<>();
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp(final WebApplicationContext context,
+               final RestDocumentationContextProvider provider) throws IOException {
+        //커스텀 Rest docs
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(MockMvcRestDocumentation.documentationConfiguration(provider))
+                .alwaysDo(MockMvcResultHandlers.print()) //andDo(print()) 코드 포함
+                .alwaysDo(restDocs)
+                .addFilter(new CharacterEncodingFilter("UTF-8", true)) //한글 깨짐 방지
+                .build();
+
         //작성자 저장
         writer = User.createUser("rctfq1234", "rctfq1234", "rctfq1234", "rctfq1234", Gender.M, LocalDate.now(), "picture",
                 true, true, true, Role.USER, "kakao", "rctfq1234", null);
@@ -106,61 +123,61 @@ class RecruitmentQueryControllerTest {
         Address recruitmentAddress = Address.createAddress("11", "1111", "details");
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
-        Recruitment saveRecruitment1 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
+        Recruitment saveRecruitment1 = Recruitment.createRecruitment("연탄 봉사", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(1), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment1.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment1));
 
-        Recruitment saveRecruitment2 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
+        Recruitment saveRecruitment2 = Recruitment.createRecruitment("청소년 봉사", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(2), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment2.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment2));
 
-        Recruitment saveRecruitment3 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
+        Recruitment saveRecruitment3 = Recruitment.createRecruitment("정기적인 봉사", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment3.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment3));
 
-        Recruitment saveRecruitment4 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
+        Recruitment saveRecruitment4 = Recruitment.createRecruitment("재미있는 봉사", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(4), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment4.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment4));
 
-        Recruitment saveRecruitment5 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
+        Recruitment saveRecruitment5 = Recruitment.createRecruitment("마포구 봉사활동", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(5), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment5.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment5));
 
-        Recruitment saveRecruitment6 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.REG,
+        Recruitment saveRecruitment6 = Recruitment.createRecruitment("봉사 모집합니다.", "test", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(6), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment6.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment6));
 
-        Recruitment saveRecruitment7 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.RESIDENTIAL_ENV, VolunteeringType.IRREG,
+        Recruitment saveRecruitment7 = Recruitment.createRecruitment("아무나 오세요.", "test", VolunteeringCategory.RESIDENTIAL_ENV, VolunteeringType.IRREG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(7), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment7.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment7));
 
-        Recruitment saveRecruitment8 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.HOMELESS_DOG, VolunteeringType.IRREG,
+        Recruitment saveRecruitment8 = Recruitment.createRecruitment("청소년을 도와줍시다.", "test", VolunteeringCategory.HOMELESS_DOG, VolunteeringType.IRREG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(8), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment8.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment8));
 
-        Recruitment saveRecruitment9 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.FRAM_VILLAGE, VolunteeringType.IRREG,
+        Recruitment saveRecruitment9 = Recruitment.createRecruitment("아무나 모집", "test", VolunteeringCategory.FRAM_VILLAGE, VolunteeringType.IRREG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(9), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment9.setWriter(writer);
         saveRecruitmentList.add(recruitmentRepository.save(saveRecruitment9));
 
-        Recruitment saveRecruitment10 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.HEALTH_MEDICAL, VolunteeringType.IRREG,
+        Recruitment saveRecruitment10 = Recruitment.createRecruitment("모집합니다.", "test", VolunteeringCategory.HEALTH_MEDICAL, VolunteeringType.IRREG,
                 VolunteerType.TEENAGER, 10, true, "test", recruitmentAddress, coordinate,
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(10), HourFormat.AM, LocalTime.now(), 10), true);
         saveRecruitment10.setWriter(writer);
@@ -297,7 +314,6 @@ class RecruitmentQueryControllerTest {
                 .andExpect(jsonPath("$.recruitmentList[5].picture.isStaticImage").value(true))
                 .andExpect(jsonPath("$.isLast").value(true))
                 .andExpect(jsonPath("$.lastId").value(saveRecruitmentList.get(5).getRecruitmentNo()))
-                .andDo(print())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
@@ -311,6 +327,83 @@ class RecruitmentQueryControllerTest {
                                         parameterWithName("volunteering_type").optional().description("Code VolunteeringType 참고바람."),
                                         parameterWithName("volunteer_type").optional().description("Code VolunteerType 참고바람."),
                                         parameterWithName("is_issued").optional().description("봉사 시간 인증 가능 여부")
+                                ),
+                                responseFields(
+                                        fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 봉사 모집글 유무"),
+                                        fieldWithPath("lastId").type(JsonFieldType.NUMBER).description("응답 봉사 모집글 리스트 중 마지막 모집글 고유키 PK"),
+                                        fieldWithPath("recruitmentList").type(JsonFieldType.ARRAY).description("봉사 모집글 리스트")
+                                ).andWithPrefix("recruitmentList.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("정적/동적 이미지 구분"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("업로드 이미지 URL, isStaticImage True 일 경우 NULL"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
+                                        fieldWithPath("sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집 시작 날짜"),
+                                        fieldWithPath("endDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집 종료 날짜"),
+                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("Code VolunteeringType 참고바람"),
+                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN).description("봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 모집 인원"),
+                                        fieldWithPath("currentVolunteerNum").type(JsonFieldType.NUMBER).description("현재 봉사 모집글 참여(승인된) 인원"),
+                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("Code VolunteerType 참고바람."))
+                        )
+                );
+    }
+
+    @Test
+    public void findKeywordListRecruitment() throws Exception {
+        //given
+        MultiValueMap<String,String> info = new LinkedMultiValueMap();
+        info.add("page", "0");
+        info.add("keyword", "봉사");
+
+        //when
+        ResultActions result = mockMvc.perform(get("/recruitment/search")
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .params(info)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.recruitmentList[0].no").value(saveRecruitmentList.get(0).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteeringCategory").value(saveRecruitmentList.get(0).getVolunteeringCategory().getId()))
+                .andExpect(jsonPath("$.recruitmentList[0].title").value(saveRecruitmentList.get(0).getTitle()))
+                .andExpect(jsonPath("$.recruitmentList[0].sido").value(saveRecruitmentList.get(0).getAddress().getSido()))
+                .andExpect(jsonPath("$.recruitmentList[0].sigungu").value(saveRecruitmentList.get(0).getAddress().getSigungu()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteeringType").value(saveRecruitmentList.get(0).getVolunteeringType().getId()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteerType").value(saveRecruitmentList.get(0).getVolunteerType().getId()))
+                .andExpect(jsonPath("$.recruitmentList[0].isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
+                .andExpect(jsonPath("$.recruitmentList[0].volunteerNum").value(saveRecruitmentList.get(0).getVolunteerNum()))
+                .andExpect(jsonPath("$.recruitmentList[0].currentVolunteerNum").value(2))
+                .andExpect(jsonPath("$.recruitmentList[0].picture.isStaticImage").value(false))
+                .andExpect(jsonPath("$.recruitmentList[0].picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
+                .andExpect(jsonPath("$.recruitmentList[1].no").value(saveRecruitmentList.get(1).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[1].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[1].picture.isStaticImage").value(false))
+                .andExpect(jsonPath("$.recruitmentList[1].picture.uploadImage").value(saveRecruitmentUploadImageList.get(1).getStorage().getImagePath()))
+                .andExpect(jsonPath("$.recruitmentList[2].no").value(saveRecruitmentList.get(2).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[2].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[2].picture.isStaticImage").value(true))
+                .andExpect(jsonPath("$.recruitmentList[3].no").value(saveRecruitmentList.get(3).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[3].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[3].picture.isStaticImage").value(true))
+                .andExpect(jsonPath("$.recruitmentList[4].no").value(saveRecruitmentList.get(4).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[4].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[4].picture.isStaticImage").value(true))
+                .andExpect(jsonPath("$.recruitmentList[5].no").value(saveRecruitmentList.get(5).getRecruitmentNo()))
+                .andExpect(jsonPath("$.recruitmentList[5].currentVolunteerNum").value(0))
+                .andExpect(jsonPath("$.recruitmentList[5].picture.isStaticImage").value(true))
+                .andExpect(jsonPath("$.isLast").value(true))
+                .andExpect(jsonPath("$.lastId").value(saveRecruitmentList.get(5).getRecruitmentNo()))
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
+                                ),
+                                requestParameters(
+                                        parameterWithName("page").optional().description("페이지 번호"),
+                                        parameterWithName("keyword").description("검색 키워드")
                                 ),
                                 responseFields(
                                         fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 봉사 모집글 유무"),
@@ -356,7 +449,6 @@ class RecruitmentQueryControllerTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("totalCnt").value(6))
-                .andDo(print())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
@@ -426,7 +518,6 @@ class RecruitmentQueryControllerTest {
                 .andExpect(jsonPath("$.recruitment.repeatPeriod.days[1]").value(saveRepeatPeriodList.get(1).getDay().getId()))
                 .andExpect(jsonPath("$.recruitment.picture.isStaticImage").value(false))
                 .andExpect(jsonPath("$.recruitment.picture.uploadImage").value(saveRecruitmentUploadImageList.get(0).getStorage().getImagePath()))
-                .andDo(print())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
@@ -487,7 +578,6 @@ class RecruitmentQueryControllerTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("status").value(StateResponse.APPROVED.getId()))
-                .andDo(print())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
