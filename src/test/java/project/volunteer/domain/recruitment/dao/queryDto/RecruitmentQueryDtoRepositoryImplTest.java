@@ -44,7 +44,6 @@ class RecruitmentQueryDtoRepositoryImplTest {
     @BeforeEach
     public void init() {
         //공통
-        String title = "title";
         String content = "content";
         int volunteerNum = 10;
         String organizationName = "organization";
@@ -66,6 +65,10 @@ class RecruitmentQueryDtoRepositoryImplTest {
         Boolean isIssued1 = true;
         Boolean isIssued2 = false;
 
+        String title1 = "정기 회원 모집";
+        String title2 = "연탄 봉사";
+        String title3 = "재미있는 봉사";
+
         Coordinate coordinate = new Coordinate(3.2F, 3.2F);
         String details = "details";
         Address address1 = new Address("11", "1111", details);
@@ -74,19 +77,19 @@ class RecruitmentQueryDtoRepositoryImplTest {
 
         for(int i=0;i<5;i++){
             Recruitment create1 = Recruitment.builder()
-                    .title(title) .content(content) .volunteeringCategory(category1) .volunteeringType(volunteeringType1) .volunteerType(volunteerType1)
+                    .title(title1) .content(content) .volunteeringCategory(category1) .volunteeringType(volunteeringType1) .volunteerType(volunteerType1)
                     .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create1);
 
             Recruitment create2 = Recruitment.builder()
-                    .title(title) .content(content) .volunteeringCategory(category2) .volunteeringType(volunteeringType2) .volunteerType(volunteerType2)
+                    .title(title2) .content(content) .volunteeringCategory(category2) .volunteeringType(volunteeringType2) .volunteerType(volunteerType2)
                     .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create2);
 
             Recruitment create3 = Recruitment.builder()
-                    .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
+                    .title(title3) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
                     .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create3);
@@ -94,14 +97,14 @@ class RecruitmentQueryDtoRepositoryImplTest {
 
         //임시 저장글(1개)
         Recruitment create4 = Recruitment.builder()
-                .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
+                .title(title1) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
                 .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                 .timetable(timetable) .isPublished(Boolean.FALSE).build();
         recruitmentRepository.save(create4);
 
         //삭제 게시물(1개)
         Recruitment create5 = Recruitment.builder()
-                .title(title) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
+                .title(title1) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
                 .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                 .timetable(timetable) .isPublished(isPublished).build();
         create5.setDeleted();
@@ -300,4 +303,18 @@ class RecruitmentQueryDtoRepositoryImplTest {
         Assertions.assertThat(count).isEqualTo(15);
     }
 
+    @Test
+    public void findRecruitmentByKeyWord(){
+        //given
+        String keyWork = "모집";
+
+        //when
+        PageRequest page = PageRequest.of(0, 6);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageByTitle(page, keyWork);
+
+        //then
+        Assertions.assertThat(result.getContent().size()).isEqualTo(5);
+        Assertions.assertThat(result.hasNext()).isFalse();
+        Assertions.assertThat(result.getNumber()).isEqualTo(0);
+    }
 }
