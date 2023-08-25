@@ -33,7 +33,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
 
     private final JPAQueryFactory jpaQueryFactory;
 
-정    //TODO: 추후 no offset 으로 성능 최적화 고려해보기
+   //TODO: 추후 no offset 으로 성능 최적화 고려해보기
     @Override
     public Slice<RecruitmentListQuery> findRecruitmentJoinImageBySearchType(Pageable pageable, RecruitmentCond searchType) {
         //모집글 이미지 같이 조회(최적화)
