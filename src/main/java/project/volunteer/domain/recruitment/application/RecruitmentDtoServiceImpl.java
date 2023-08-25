@@ -70,11 +70,16 @@ public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
 
     @Override
     public RecruitmentListResponse findSliceOptimizerRecruitmentDtos(Pageable pageable, RecruitmentCond cond) {
-        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentDtos(pageable, cond);
+        Slice<RecruitmentListQuery> result = recruitmentQueryDtoRepository.findRecruitmentJoinImageBySearchType(pageable, cond);
 
         List<RecruitmentList> list = result.getContent().stream().
                 map(query -> {
-                    RecruitmentList recruitmentList = RecruitmentList.createRecruitmentList(query);
+                    //TODO: 현재 root 쿼리 1번 결과만큼(모집글 개수) 쿼리 N번(참여자 수 count 쿼리) 발생
+                    //TODO: 추후 최적화가 필요한 부분
+                    Long currentParticipantNum = recruitmentQueryDtoRepository.countParticipants(query.getNo());
+
+                    RecruitmentList recruitmentList = RecruitmentList.createRecruitmentList(query, currentParticipantNum);
+
                     PictureDetails pictureDetails = null;
                     if(query.getUploadImage() == null){
                         pictureDetails = new PictureDetails(true, null);

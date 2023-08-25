@@ -33,27 +33,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    @Override
-    public Slice<RecruitmentListQuery> findRecruitmentDtos(Pageable pageable, RecruitmentCond searchType) {
-        //TODO: 비지니스 로직으로 빼는것도 생각해보기, DTO 세팅이 들어있음.
-        //전체 모집글,이미지,저장소 join 조회(Slice 처리)
-        Slice<RecruitmentListQuery> result = findRecruitmentJoinImageBySearchType(pageable, searchType);
-
-        result.getContent().stream()
-                .forEach(dto -> {
-                    //각 모집글에 참여자 리스트 count(참여자 엔티티는 N 이므로 별도 조회)
-                    Long currentParticipantNum = countParticipants(dto.getNo());
-                    dto.setCurrentVolunteerNum(currentParticipantNum);
-                } );
-
-        /**
-         * 현재 root 쿼리 1번 결과만큼(모집글 개수) 쿼리 N번(참여자 수 count 쿼리 + 장기일경우 반복주기 쿼리) 발생
-         * 추후 최적화가 필요한 부분
-         */
-        return result;
-    }
-
-    //TODO: 추후 no offset 으로 성능 최적화 고려해보기
+정    //TODO: 추후 no offset 으로 성능 최적화 고려해보기
     @Override
     public Slice<RecruitmentListQuery> findRecruitmentJoinImageBySearchType(Pageable pageable, RecruitmentCond searchType) {
         //모집글 이미지 같이 조회(최적화)
@@ -108,7 +88,8 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .fetchOne();
     }
 
-    private Long countParticipants(Long recruitmentNo){
+    @Override
+    public Long countParticipants(Long recruitmentNo){
         return jpaQueryFactory
                 .select(participant1.count())
                 .from(participant1)
