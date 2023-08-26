@@ -92,7 +92,7 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀신청_최초_성공(){
         //given
-        User saveUser = 사용자_등록("홍길동");
+        User saveUser = 사용자_등록("honggildong");
 
         //when
         participationService.participate(saveUser, saveRecruitment);
@@ -107,7 +107,7 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀신청_재신청_성공(){
         //given
-        User saveUser = 사용자_등록("홍길동");
+        User saveUser = 사용자_등록("honggildong");
         Participant participant = 참여자_상태_등록(saveUser, ParticipantState.JOIN_CANCEL);
         clear();
 
@@ -122,7 +122,7 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀신청_실패_중복신청(){
         //given
-        User saveUser = 사용자_등록("홍길동");
+        User saveUser = 사용자_등록("honggildong");
         Participant participant = 참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
         clear();
 
@@ -137,7 +137,7 @@ class ParticipationServiceImplTest {
 //    @Transactional
 //    public void 팀신청_실패_없는모집글(){
 //        //given
-//        User saveUser = 사용자_등록("홍길동");
+//        User saveUser = 사용자_등록("honggildong");
 //
 //        //when & then
 //        Assertions.assertThatThrownBy(() -> participationService.participate(saveUser, Long.MAX_VALUE))
@@ -148,7 +148,7 @@ class ParticipationServiceImplTest {
 //    @Transactional
 //    public void 팀신청_실패_삭제된모집글(){
 //        //given
-//        User saveUser = 사용자_등록("홍길동");
+//        User saveUser = 사용자_등록("honggildong");
 //        Recruitment findRecruitment = 저장된_모집글_가져오기();
 //        findRecruitment.setDeleted();
 //        clear();
@@ -162,7 +162,7 @@ class ParticipationServiceImplTest {
 //    @Transactional
 //    public void 팀신청_실패_종료된모집글(){
 //        //given
-//        User saveUser = 사용자_등록("홍길동");
+//        User saveUser = 사용자_등록("honggildong");
 //        Timetable newTime = Timetable.builder()
 //                .hourFormat(HourFormat.AM)
 //                .progressTime(3)
@@ -184,11 +184,11 @@ class ParticipationServiceImplTest {
     public void 팀신청_실패_참여가능인원초과(){
         //given
         Recruitment findRecruitment = 저장된_모집글_가져오기();
-        User saveUser1 = 사용자_등록("홍길동");
-        User saveUser2 = 사용자_등록("구본식");
-        User saveUser3 = 사용자_등록("구길동");
-        User saveUser4 = 사용자_등록("박하선");
-        User saveUser5 = 사용자_등록("박구선");
+        User saveUser1 = 사용자_등록("honggildong");
+        User saveUser2 = 사용자_등록("kubonsik");
+        User saveUser3 = 사용자_등록("kugildong");
+        User saveUser4 = 사용자_등록("parkhasun");
+        User saveUser5 = 사용자_등록("parkkusun");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
@@ -207,7 +207,7 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀신청취소_성공(){
         //given
-        User saveUser = 사용자_등록("홍길동");
+        User saveUser = 사용자_등록("honggildong");
         참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
 
         //when
@@ -222,7 +222,7 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀신청취소_실패_잘못된상태(){
         //given
-        User saveUser = 사용자_등록("홍길동");
+        User saveUser = 사용자_등록("honggildong");
         참여자_상태_등록(saveUser, ParticipantState.JOIN_APPROVAL);
         clear();
 
@@ -236,9 +236,9 @@ class ParticipationServiceImplTest {
     public void 팀신청승인_성공(){
         //given
         Recruitment recruitment = 저장된_모집글_가져오기();
-        User saveUser1 = 사용자_등록("홍길동");
-        User saveUser2 = 사용자_등록("구본식");
-        User saveUser3 = 사용자_등록("구길동");
+        User saveUser1 = 사용자_등록("honggildong");
+        User saveUser2 = 사용자_등록("kubonsik");
+        User saveUser3 = 사용자_등록("kugildong");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_REQUEST);
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_REQUEST);
         참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
@@ -261,9 +261,9 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀신청승인_실패_권한없음(){
         //given
-        User saveUser1 = 사용자_등록("홍길동");
-        User saveUser2 = 사용자_등록("구본식");
-        User saveUser3 = 사용자_등록("구길동");
+        User saveUser1 = 사용자_등록("honggildong");
+        User saveUser2 = 사용자_등록("kubonsik");
+        User saveUser3 = 사용자_등록("kugildong");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_REQUEST);
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_REQUEST);
         참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
@@ -280,7 +280,7 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀신청승인_실패_잘못된상태(){
         //given
-        User saveUser1 = 사용자_등록("홍길동");
+        User saveUser1 = 사용자_등록("honggildong");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
         List<Long> requestNos = List.of(saveUser1.getUserNo());
         clear();
@@ -298,11 +298,11 @@ class ParticipationServiceImplTest {
         Recruitment findRecruitment = 저장된_모집글_가져오기();
 
         //남은 승인 가능한 인원 1명
-        User saveUser1 = 사용자_등록("홍길동");
-        User saveUser2 = 사용자_등록("구본식");
-        User saveUser3 = 사용자_등록("구길동");
-        User saveUser4 = 사용자_등록("구혜선");
-        User saveUser5 = 사용자_등록("박구서");
+        User saveUser1 = 사용자_등록("honggildong");
+        User saveUser2 = 사용자_등록("kubonsik");
+        User saveUser3 = 사용자_등록("kugildong");
+        User saveUser4 = 사용자_등록("kuhaesun");
+        User saveUser5 = 사용자_등록("parkkuseo");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
@@ -324,7 +324,7 @@ class ParticipationServiceImplTest {
     public void 팀원강제탈퇴_성공(){
         //given
         Recruitment recruitment = 저장된_모집글_가져오기();
-        User saveUser = 사용자_등록("홍길동");
+        User saveUser = 사용자_등록("honggildong");
         참여자_상태_등록(saveUser, ParticipantState.JOIN_APPROVAL);
         recruitment.increaseTeamMember();
 
@@ -342,7 +342,7 @@ class ParticipationServiceImplTest {
     @Test
     public void 팀원강제탈퇴_실패_잘못된상태(){
         //given
-        User saveUser = 사용자_등록("홍길동");
+        User saveUser = 사용자_등록("honggildong");
         참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
 
         //when & then
@@ -358,12 +358,12 @@ class ParticipationServiceImplTest {
 //    @Transactional
 //    public void searchParticipantState() throws IOException {
 //        //given
-//        봉사모집글_팀원_상태추가("홍길동", ParticipantState.JOIN_APPROVAL);
-//        봉사모집글_팀원_상태추가("구하라", ParticipantState.JOIN_APPROVAL);
-//        봉사모집글_팀원_상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+//        봉사모집글_팀원_상태추가("honggildong", ParticipantState.JOIN_APPROVAL);
+//        봉사모집글_팀원_상태추가("kuhara", ParticipantState.JOIN_APPROVAL);
+//        봉사모집글_팀원_상태추가("spring", ParticipantState.JOIN_APPROVAL);
 //        봉사모집글_팀원_상태추가("ORM", ParticipantState.JOIN_REQUEST);
 //        봉사모집글_팀원_상태추가("JPA", ParticipantState.JOIN_REQUEST);
-//        봉사모집글_팀원_상태추가("트랜잭션", ParticipantState.JOIN_REQUEST);
+//        봉사모집글_팀원_상태추가("transaction", ParticipantState.JOIN_REQUEST);
 //
 //        //when
 //        RecruitmentDetails details = .findRecruitmentAndWriterDto(saveRecruitment.getRecruitmentNo());
@@ -456,13 +456,13 @@ class ParticipationServiceImplTest {
         Recruitment findRecruitment = 저장된_모집글_가져오기();
         User newUser = 사용자_등록("new");
         //현재 팀원 최대 인원 4명으로 설정됨
-        사용자및참여자상태추가("스프링", ParticipantState.JOIN_APPROVAL);
+        사용자및참여자상태추가("spring", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         사용자및참여자상태추가("ORM", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         사용자및참여자상태추가("JPA", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
-        사용자및참여자상태추가("트랜잭션", ParticipantState.JOIN_APPROVAL);
+        사용자및참여자상태추가("transaction", ParticipantState.JOIN_APPROVAL);
         findRecruitment.increaseTeamMember();
         clear();
 
