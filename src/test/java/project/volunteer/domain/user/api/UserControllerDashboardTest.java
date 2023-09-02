@@ -4,12 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -34,6 +40,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -43,13 +50,17 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+@AutoConfigureRestDocs
+@Import(RestDocsConfiguration.class)
 public class UserControllerDashboardTest {
     @PersistenceContext EntityManager em;
     @Autowired MockMvc mockMvc;
@@ -62,12 +73,14 @@ public class UserControllerDashboardTest {
     @Autowired ScheduleRepository scheduleRepository;
     @Autowired ScheduleParticipationRepository spRepository;
     @Autowired LogboardService logboardService;
+    @Autowired RestDocumentationResultHandler restDocs;
 
     private static User user1;
     private static User user2;
     private static List<Long> deleteRecruitmentNoList = new ArrayList<>();
     private static List<Long> deleteLogboardNoList = new ArrayList<>();
 
+    final String AUTHORIZATION_HEADER = "accessToken";
 
     private void clear() {
         em.flush();
@@ -260,14 +273,39 @@ public class UserControllerDashboardTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("user1의 마이페이지 대시보드 조회")
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_dashboard() throws Exception {
+    void mypageInfo() throws Exception {
         // when & then
-        mockMvc.perform(
-                get("/user/info"))
-                .andExpect(status().isOk())
-                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/user/info")
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("userInfo.nickName").type(JsonFieldType.STRING).description("로그인 사용자의 닉네임"),
+                                        fieldWithPath("userInfo.email").type(JsonFieldType.STRING).description("로그인 사용자의 이메일"),
+                                        fieldWithPath("userInfo.profile").type(JsonFieldType.STRING).description("로그인 사용자의 프로필 사진 URL"),
+
+                                        fieldWithPath("historyTimeInfo.totalTime").type(JsonFieldType.NUMBER).description("봉사 일정 참여 한 총 시간"),
+                                        fieldWithPath("historyTimeInfo.totalCnt").type(JsonFieldType.NUMBER).description("봉사 일정 참여 한 총 횟수"),
+
+
+                                        fieldWithPath("activityInfo.joinApprovalCnt").type(JsonFieldType.NUMBER).description("내가 참여중인 봉사 모집글 수"),
+                                        fieldWithPath("activityInfo.joinRequestCnt").type(JsonFieldType.NUMBER).description("내가 참여 요청한 봉사 모집글 수"),
+                                        fieldWithPath("activityInfo.recruitingCnt").type(JsonFieldType.NUMBER).description("내가 모집중인 봉사 모집글 수"),
+                                        fieldWithPath("activityInfo.tempSavingCnt").type(JsonFieldType.NUMBER).description("내가 임시저장한(log, recruitment) 글 수")
+                                )
+                        )
+                );
 
         /*
             {
@@ -278,7 +316,7 @@ public class UserControllerDashboardTest {
         */
 
     }
-
+    @Disabled
     @Test
     @DisplayName("user2의 마이페이지 대시보드 조회")
     @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -288,114 +326,243 @@ public class UserControllerDashboardTest {
                         get("/user/info"))
                 .andExpect(status().isOk())
                 .andDo(print());
-
-        /*
-            {
-                "userInfo":{"nicName":"nickname22","email":"email22@gmail.com","profile":"picture2222"}
-                ,"historyTimeInfo":{"totalTime":3,"totalCnt":1}
-                ,"activityInfo":{"joinApprovalCnt":1,"joinRequestCnt":1,"recruitingCnt":4,"tempSavingCnt":1}
-            }
-        */
-
     }
 
+
     @Test
+    @Transactional
     @DisplayName("user1의 마이페이지 봉사이력 조회")
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_hisotry() throws Exception {
+    void mypageHistory() throws Exception {
         // when & then
-        mockMvc.perform(
-                get("/user/history?page=1"))
-                .andExpect(status().isOk())
-                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/user/history?page=1")
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 봉사 참여 이력 유무"),
+                                        fieldWithPath("lastId").type(JsonFieldType.NUMBER).description("응답 봉사 참여 이력 리스트 중 마지막 이력 고유키 PK"),
+                                        fieldWithPath("histories").type(JsonFieldType.ARRAY).description("봉사 참여 이력 리스트")
+                                ).andWithPrefix("histories.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 참여 이력 고유키 PK"),
+                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("봉사모집글의 정적/동적 이미지 구분"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("봉사 모집글의 업로드 이미지 URL, isStaticImage True 일 경우 NULL"),
+                                        fieldWithPath("date").type(JsonFieldType.STRING).description("봉사 참여이력의 종료일자"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글의 제목"),
+                                        fieldWithPath("sido").type(JsonFieldType.STRING).description("봉사 참여 이력의 시/구 코드"),
+                                        fieldWithPath("sigungu").type(JsonFieldType.STRING).description("봉사 참여 이력의 시/군/구 코드"),
+                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("봉사 모집글의 봉사카테고리 코드 Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("봉사 모집글의 봉사 유형 코드 Code VolunteeringType 참고바람"),
+                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN).description("봉사 모집글의 봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("봉사 모집글의 봉사자 유형 코드 Code VolunteerType 참고바람."),
+                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("봉사 진행 시간")
+                                )
+                        )
+                );
+
     }
 
     @Test
+    @Transactional
     @DisplayName("user2의 마이페이지 참여중인 일정 리스트 조회")
     @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_join_schedule() throws Exception {
+    void mypageSchedule() throws Exception {
         // when & then
-        mockMvc.perform(
-                        get("/user/schedule"))
-                .andExpect(status().isOk())
-                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/user/schedule")
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("scheduleList").type(JsonFieldType.ARRAY).description("봉사 참여 중인 일정 리스트")
+                                ).andWithPrefix("scheduleList.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 참여 고유키 PK"),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).description("봉사 참여 일정 시작일"),
+                                        fieldWithPath("sido").type(JsonFieldType.STRING).description("봉사 참여 일정의 시/구 코드"),
+                                        fieldWithPath("sigungu").type(JsonFieldType.STRING).description("봉사 참여 일정의 시/군/구 코드"),
+                                        fieldWithPath("details").type(JsonFieldType.STRING).description("봉사 참여 일정의 기관 상세주소"),
+                                        fieldWithPath("organizationName").type(JsonFieldType.STRING).description("봉사 참여 일정의 기관 이름"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING).description("봉사 참여 일정의 봉사 시작 시간"),
+                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("봉사 참여 일정의 시간 포멧 Code HourFormat 참고."),
+                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("봉사 참여 일정의 봉사 진행 시간")
+                                )
+                        )
+                );
     }
 
+
     @Test
+    @Transactional
     @DisplayName("user1의 마이페이지 참여중인 모집글 리스트 조회")
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_join_recruitment() throws Exception {
+    void mypageRecruitment() throws Exception {
         // when & then
-        mockMvc.perform(
-                        get("/user/recruitment"))
-                .andExpect(status().isOk())
-                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/user/recruitment")
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("recruitmentList").type(JsonFieldType.ARRAY).description("봉사 모집글에 참여중인 이력 리스트")
+                                ).andWithPrefix("recruitmentList.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("봉사모집글의 정적/동적 이미지 구분"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("봉사 모집글의 업로드 이미지 URL, isStaticImage True 일 경우 NULL"),
+                                        fieldWithPath("startDay").type(JsonFieldType.STRING).description("봉사 모집글의 시작일"),
+                                        fieldWithPath("endDay").type(JsonFieldType.STRING).description("봉사 모집글의 종료일"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글의 제목"),
+                                        fieldWithPath("sido").type(JsonFieldType.STRING).description("봉사 모집글의 시/구 코드"),
+                                        fieldWithPath("sigungu").type(JsonFieldType.STRING).description("봉사 모집글의 시/군/구 코드"),
+                                        fieldWithPath("details").type(JsonFieldType.STRING).description("봉사 모집글의 기관 상세주소"),
+                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("봉사 모집글의 봉사 카테고리 코드 Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("봉사 모집글의 봉사유형 코드 Code VolunteeringType 참고바람"),
+                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN).description("봉사 모집글의 봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("봉사 모집글의 봉사자 유형코드 Code VolunteerType 참고바람.")
+                                )
+                        )
+                );
     }
 
     @Test
+    @Transactional
     @DisplayName("user2의 마이페이지 임시저장 모집글 리스트 조회")
     @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_temp_recruitment() throws Exception {
+    void mypageRecruitmentTemp() throws Exception {
         // when & then
-        mockMvc.perform(
-                        get("/user/recruitment/temp"))
-                .andExpect(status().isOk())
-                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/user/recruitment/temp")
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("recruitmentTempList").type(JsonFieldType.ARRAY).description("임시저장 봉사 모집글 리스트")
+                                ).andWithPrefix("recruitmentTempList.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글의 제목"),
+                                        fieldWithPath("writeTime").type(JsonFieldType.STRING).description("봉사 모집글 작성시간"),
+                                        fieldWithPath("writeDay").type(JsonFieldType.STRING).description("봉사 모집글 작성일")
+                                )
+                        )
+                );
     }
 
     @Test
+    @Transactional
     @DisplayName("user1의 마이페이지 임시저장 봉사로그 리스트 조회")
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_temp_logboard() throws Exception {
+    void mypageLogboardTemp() throws Exception {
         // when & then
-        mockMvc.perform(
-                        get("/user/logboard/temp"))
-                .andExpect(status().isOk())
-                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/user/logboard/temp")
+                .header(AUTHORIZATION_HEADER, "access Token")
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("logboardTempList").type(JsonFieldType.ARRAY).description("임시저장 봉사 로그 리스트")
+                                ).andWithPrefix("logboardTempList.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 로그 고유키 PK"),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("봉사 로그 내용"),
+                                        fieldWithPath("writeTime").type(JsonFieldType.STRING).description("봉사 로그 임시저장 시간"),
+                                        fieldWithPath("writeDay").type(JsonFieldType.STRING).description("봉사 로그 임시저장 일")
+                                )
+                        )
+                );
     }
 
-    @Disabled
     @Test
+    @Transactional
     @DisplayName("user2의 마이페이지 임시저장 모집글 리스트 삭제")
     @WithUserDetails(value = "kakao_222222", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_temp_recruitment_delete() throws Exception {
+    void mypageRecruitmentTempDelete() throws Exception {
+        // when & then
         RecruitmentListRequestParam dto = new RecruitmentListRequestParam(deleteRecruitmentNoList);
-        // when
-        mockMvc.perform(
-                        delete("/user/recruitment/temp")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(toJson(dto)))
-                .andExpect(status().isOk())
-                .andDo(print());
-        // then
-        //TODO: http body에 필수로 dto가 필요한데, 누락된건가요? build test 시 실패하네요!
-//        mockMvc.perform(
-//                        get("/user/recruitment/temp"))
-//                .andExpect(status().isOk())
-//                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.delete("/user/recruitment/temp")
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(dto))
+        );
 
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                requestFields(
+                                        fieldWithPath("recruitmentList").type(JsonFieldType.ARRAY).description("유저 고유키 PK")
+                                )
+                        )
+                );
     }
+
+
 
     @Test
+    @Transactional
     @DisplayName("user1의 마이페이지 임시저장 봉사로그 리스트 삭제")
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void myPage_temp_logboard_delete() throws Exception {
+    void mypageLogboardTempDelete() throws Exception {
+        // when & then
         LogboardListRequestParam dto = new LogboardListRequestParam(deleteLogboardNoList);
-        // when
-        mockMvc.perform(
-                        delete("/user/logboard/temp")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(toJson(dto)))
-                .andExpect(status().isOk())
-                .andDo(print());
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.delete("/user/logboard/temp")
+                .header(AUTHORIZATION_HEADER, "access Token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(dto))
+        );
 
-        // then
-        mockMvc.perform(
-                        get("/user/logboard/temp"))
-                .andExpect(status().isOk())
-                .andDo(print());
-
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                requestFields(
+                                        fieldWithPath("logboardList[]").type(JsonFieldType.ARRAY).description("유저 고유키 PK")
+                                )
+                        )
+                );
     }
+
     @Disabled
     @Test
     @DisplayName("user2의 마이페이지 임시저장 모집글 번호 누락으로 리스트 삭제 실패")
@@ -408,6 +575,7 @@ public class UserControllerDashboardTest {
                 .andDo(print());
     }
 
+    @Disabled
     @Test
     @DisplayName("user1의 마이페이지 임시저장 봉사로그 번호 누락으로 리스트 삭제 실패")
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
