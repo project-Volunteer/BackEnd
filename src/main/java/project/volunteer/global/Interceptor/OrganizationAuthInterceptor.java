@@ -10,6 +10,8 @@ import project.volunteer.global.util.SecurityUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+
 import static project.volunteer.global.Interceptor.OrganizationAuth.*;
 
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class OrganizationAuthInterceptor implements HandlerInterceptor {
     private final OrganizationComponent organizationComponent;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 
         if(!(handler instanceof HandlerMethod)){
             return true;
@@ -41,12 +43,6 @@ public class OrganizationAuthInterceptor implements HandlerInterceptor {
         //봉사 모집글 팀원 검증
         if(organizationAuth.auth().equals(Auth.ORGANIZATION_TEAM)){
             organizationComponent.validRecruitmentTeam(request, loginUserNo);
-        }
-
-        //TODO: ORGANIZATION_LIST_ADMIN 이 맞죠?
-        // 봉사 모집글리스트 방장
-        if(organizationAuth.auth().equals(Auth.ORGANIZATION_LIST_ADMIN)){
-            organizationComponent.validRecruitmentListOwner(request, loginUserNo);
         }
 
         // 댓글 작성자 검증

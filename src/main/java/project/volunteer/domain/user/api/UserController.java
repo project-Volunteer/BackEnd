@@ -30,7 +30,6 @@ import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam
 import project.volunteer.domain.user.api.dto.response.*;
 import project.volunteer.domain.user.dao.queryDto.UserQueryDtoRepository;
 import project.volunteer.domain.user.dao.queryDto.dto.UserHistoryQuery;
-import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.user.api.dto.request.UserAlarmRequestParam;
 import project.volunteer.domain.user.api.dto.request.UserInfoRequestParam;
@@ -126,10 +125,12 @@ public class UserController {
 		return ResponseEntity.ok(userDtoService.findLoboardTempDtos(SecurityUtil.getLoginUserNo()));
 	}
 
-	@OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_LIST_ADMIN)
+
 	@DeleteMapping ("/user/recruitment/temp")
 	public ResponseEntity myRecruitmentTempDelete(@RequestBody @Valid RecruitmentListRequestParam dto) {
+		Long userNo = SecurityUtil.getLoginUserNo();
 		for(Long recruitmentNo : dto.getRecruitmentList()){
+			recruitmentService.validRecruitmentOwner(recruitmentNo, userNo);
 			recruitmentService.deleteRecruitment(recruitmentNo);
 		}
 		return ResponseEntity.ok().build();
@@ -138,10 +139,12 @@ public class UserController {
 	@DeleteMapping("/user/logboard/temp")
 	public ResponseEntity myLogboardTempDelete(@RequestBody @Valid LogboardListRequestParam dto) {
 		for(Long recruitmentNo : dto.getLogboardList()){
+
 			logboardService.deleteLog(SecurityUtil.getLoginUserNo(), recruitmentNo);
 		}
 		return ResponseEntity.ok().build();
 	}
+
 	@GetMapping("/user/schedule")
 	public ResponseEntity<JoinScheduleListResponse> mySchedule() {
 		return ResponseEntity.ok(userDtoService.findUserSchedule(SecurityUtil.getLoginUserNo()));

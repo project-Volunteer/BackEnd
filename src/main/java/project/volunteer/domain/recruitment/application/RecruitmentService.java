@@ -15,4 +15,6 @@ public interface RecruitmentService {
 
     //활동 중인 봉사 모집글 찾는 메서드
     public Recruitment findActivatedRecruitment(Long recruitmentNo);
+
+    public void validRecruitmentOwner(Long recruitmentNo, Long loginUserNo);
 }

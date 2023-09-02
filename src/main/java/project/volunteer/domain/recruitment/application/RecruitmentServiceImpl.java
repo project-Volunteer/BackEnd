@@ -11,6 +11,11 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -56,9 +61,22 @@ public class RecruitmentServiceImpl implements RecruitmentService{
         return findRecruitment;
     }
 
+    @Override
+    public void validRecruitmentOwner(Long recruitmentNo, Long loginUserNo){
+        Recruitment findRecruitment = recruitmentRepository.findById(recruitmentNo).orElseThrow(
+                () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo)));
+
+        if(!findRecruitment.isRecruitmentOwner(loginUserNo)){
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(), loginUserNo));
+        }
+    }
+
     private Recruitment validateAndGetPublishedRecruitment(Long recruitmentNo){
         return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo)));
     }
+
+
 
 }
