@@ -98,7 +98,6 @@ public class UserDtoServiceImpl implements UserDtoService{
 					, dto.getSchedule().getAddress().getDetails()
 					, dto.getSchedule().getOrganizationName()
 					, dto.getSchedule().getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))
-					//, dto.getSchedule().getScheduleTimeTable().getHourFormat().getViewName()
 					, dto.getSchedule().getScheduleTimeTable().getHourFormat().getDesc()
 					, dto.getSchedule().getScheduleTimeTable().getProgressTime()
 					);
@@ -111,8 +110,9 @@ public class UserDtoServiceImpl implements UserDtoService{
 
 		return new JoinRecruitmentListResponse(userRecruitmentDetails.stream()
 				.map(dto -> {
-					JoinRecruitmentList joinRecruitmentList = new JoinRecruitmentList(
+					JoinRecruitmentList joinRecruitmentList = JoinRecruitmentList.makeJoinRecruitmentList(
 							dto.getNo()
+							, dto.getImagePath()
 							, dto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
 							, dto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
 							, dto.getTitle()
@@ -123,31 +123,9 @@ public class UserDtoServiceImpl implements UserDtoService{
 							, dto.getVolunteeringType().getViewName()
 							, dto.getIsIssued()
 							, dto.getVolunteerType().getDesc());
-					PictureDetails pictureDetails = null;
-					if(dto.getImagePath() == null){
-						pictureDetails = new PictureDetails(true, null);
-					}else{
-						pictureDetails = new PictureDetails(false, dto.getImagePath());
-					}
 					return joinRecruitmentList;
 				})
 				.collect(Collectors.toList()));
-//
-//		return new JoinRecruitmentListResponse(userRecruitmentDetails.stream().map(dto->{
-//			return new JoinRecruitmentList(
-//						  dto.getNo()
-//						, new PictureDetails(dto.getStaticImageName(), dto.getImagePath())
-//						, dto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
-//						, dto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
-//						, dto.getTitle()
-//						, dto.getSido()
-//						, dto.getSigungu()
-//						, dto.getDetails()
-//						, dto.getVolunteeringCategory().getDesc()
-//						, dto.getVolunteeringType().getViewName()
-//						, dto.getIsIssued()
-//						, dto.getVolunteerType().getDesc());
-//		}).collect(Collectors.toList()));
 	}
 
 	@Override
