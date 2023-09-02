@@ -40,7 +40,7 @@ public class LogboardDetail {
 
     public void setWriterInfo(UserInfo userInfo){
         this.profile = userInfo.getProfile();
-        this.nickName = userInfo.getNicName();
+        this.nickName = userInfo.getNickName();
     }
 
 }
