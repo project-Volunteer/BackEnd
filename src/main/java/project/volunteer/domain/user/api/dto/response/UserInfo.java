@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UserInfo {
-    String nicName;
+    String nickName;
     String email;
     String profile;
 
-    public UserInfo(String nicName, String email, String profile) {
-        this.nicName = nicName;
+    public UserInfo(String nickName, String email, String profile) {
+        this.nickName = nickName;
         this.email = email;
         this.profile = profile;
     }

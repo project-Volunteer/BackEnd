@@ -1,6 +1,7 @@
 package project.volunteer.domain.user.dao.queryDto.dto;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.querydsl.core.annotations.QueryProjection;
 
@@ -10,16 +11,16 @@ import lombok.Setter;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.user.domain.User;
+import project.volunteer.domain.recruitment.dto.PictureDetails;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class UserRecruitingQuery {
 	private Long no;
-	private String uploadImage;
-	private LocalDate startDay;
-	private LocalDate endDay;
+	private PictureDetails picture;
+	private String startDay;
+	private String endDay;
 	private String title;
 	private String sido;
 	private String sigungu;
@@ -28,18 +29,21 @@ public class UserRecruitingQuery {
 	private Boolean isIssued;
 	private VolunteerType volunteerType;
 	private int volunteerNum;
-	private User writer;
 	private long currentVolunteerNum;
 
 	@QueryProjection
 	public UserRecruitingQuery(Long no,String uploadImage, LocalDate startDay, LocalDate endDay,
 								String title, String sido, String sigungu, VolunteeringCategory volunteeringCategory,
 								VolunteeringType volunteeringType, Boolean isIssued, VolunteerType volunteerType, 
-								int volunteerNum, User writer, long currentVolunteerNum) {
+								int volunteerNum, long currentVolunteerNum) {
 		this.no = no;
-		this.uploadImage = uploadImage;
-		this.startDay = startDay;
-		this.endDay = endDay;
+		if(uploadImage == null){
+			picture = new PictureDetails(true, null);
+		}else{
+			picture = new PictureDetails(false, uploadImage);
+		}
+		this.startDay = startDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+		this.endDay = endDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
 		this.title = title;
 		this.sido = sido;
 		this.sigungu = sigungu;
@@ -48,7 +52,6 @@ public class UserRecruitingQuery {
 		this.isIssued = isIssued;
 		this.volunteerType = volunteerType;
 		this.volunteerNum = volunteerNum;
-		this.writer = writer;
 		this.currentVolunteerNum = currentVolunteerNum;
 	}
 }

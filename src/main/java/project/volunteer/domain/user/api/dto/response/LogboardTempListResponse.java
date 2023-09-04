@@ -10,9 +10,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class LogboardTempListResponse {
-    private List<LogboardTempList> logboardTempLists;
+    private List<LogboardTempList> logboardTempList;
 
     public LogboardTempListResponse(List<LogboardTempList> data) {
-        this.logboardTempLists = data;
+        this.logboardTempList = data;
     }
 }

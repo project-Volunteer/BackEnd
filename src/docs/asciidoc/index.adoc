@@ -21,5 +21,6 @@ include::notice.adoc[]
 
 include::notice-comment.adoc[]
 
-include::enums.adoc[]
+include::mypage.adoc[]
 
+include::enums.adoc[]

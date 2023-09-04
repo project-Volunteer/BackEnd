@@ -59,7 +59,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 							recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay,
 							recruitment.title, recruitment.address.sido, recruitment.address.sigungu,
 							recruitment.volunteeringCategory, recruitment.volunteeringType, recruitment.isIssued,
-							recruitment.volunteerType, recruitment.volunteerNum, recruitment.writer,
+							recruitment.volunteerType, recruitment.volunteerNum,
 							ExpressionUtils.as(
 								JPAExpressions
 									.select(participant1.count())

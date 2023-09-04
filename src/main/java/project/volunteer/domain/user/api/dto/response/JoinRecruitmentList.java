@@ -22,19 +22,29 @@ public class JoinRecruitmentList {
     private Boolean isIssued;
     private String volunteerType;
 
-    public JoinRecruitmentList(Long no, String startDay, String endDay, String title,
+    public static JoinRecruitmentList makeJoinRecruitmentList(Long no, String picture, String startDay, String endDay, String title,
                                String sido, String sigungu, String details, String volunteeringCategory,
                                String volunteeringType, Boolean isIssued, String volunteerType) {
-        this.no = no;
-        this.startDay = startDay;
-        this.endDay = endDay;
-        this.title = title;
-        this.sido = sido;
-        this.sigungu = sigungu;
-        this.details = details;
-        this.volunteeringCategory = volunteeringCategory;
-        this.volunteeringType = volunteeringType;
-        this.isIssued = isIssued;
-        this.volunteerType = volunteerType;
+        JoinRecruitmentList joinRecruitmentList = new JoinRecruitmentList();
+
+        joinRecruitmentList.no = no;
+        if(picture == null){
+            joinRecruitmentList.picture = new PictureDetails(true, null);
+        }else{
+            joinRecruitmentList.picture = new PictureDetails(false, picture);
+        }
+        joinRecruitmentList.startDay = startDay;
+        joinRecruitmentList.endDay = endDay;
+        joinRecruitmentList.title = title;
+        joinRecruitmentList.sido = sido;
+        joinRecruitmentList.sigungu = sigungu;
+        joinRecruitmentList.details = details;
+        joinRecruitmentList.volunteeringCategory = volunteeringCategory;
+        joinRecruitmentList.volunteeringType = volunteeringType;
+        joinRecruitmentList.isIssued = isIssued;
+        joinRecruitmentList.volunteerType = volunteerType;
+
+        return joinRecruitmentList;
     }
+
 }

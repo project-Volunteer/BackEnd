@@ -18,6 +18,7 @@ public class HistoriesList {
     private String sigungu;
     private String volunteeringCategory;
     private String volunteeringType;
+    private Boolean isIssued;
     private String volunteerType;
     private Integer progressTime;
 
@@ -33,10 +34,11 @@ public class HistoriesList {
         historiesList.date = userHistorydto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         historiesList.sido = userHistorydto.getSido();
         historiesList.sigungu = userHistorydto.getSigungu();
-        historiesList.volunteeringType = userHistorydto.getVolunteeringType().getViewName();
-        historiesList.progressTime = userHistorydto.getProgressTime();
-        historiesList.volunteerType = userHistorydto.getVolunteerType().getDesc();
         historiesList.volunteeringCategory = userHistorydto.getVolunteeringCategory().getDesc();
+        historiesList.volunteeringType = userHistorydto.getVolunteeringType().getViewName();
+        historiesList.isIssued = userHistorydto.getIsIssued();
+        historiesList.volunteerType = userHistorydto.getVolunteerType().getDesc();
+        historiesList.progressTime = userHistorydto.getProgressTime();
         return  historiesList;
     }
 }

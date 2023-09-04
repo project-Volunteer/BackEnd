@@ -126,9 +126,20 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.GET, "/user/schedule").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/user/recruitment").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/user/alarm").hasAuthority("USER")
-					.antMatchers(HttpMethod.GET, "/user/alarm").hasAuthority("USER")
 					.antMatchers(HttpMethod.PUT, "/user/alarm").hasAuthority("USER")
 					.antMatchers(HttpMethod.POST, "/user").hasAuthority("USER")
+
+					//봉사 로그
+					.antMatchers(HttpMethod.POST, "/logboard").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/logboard/edit/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/logboard/edit/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/logboard").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/logboard/*/like").hasAuthority("USER")
+					.antMatchers(HttpMethod.POST, "/logboard/*/comment").hasAuthority("USER")
+					.antMatchers(HttpMethod.PUT, "/logboard/*/comment/*/reply").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/logboard/*/comment/*").hasAuthority("USER")
+					.antMatchers(HttpMethod.GET, "/logboard/schedule").hasAuthority("USER")
+
 
 			.anyRequest().permitAll()
 			.and()

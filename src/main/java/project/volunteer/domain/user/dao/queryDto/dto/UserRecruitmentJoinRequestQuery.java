@@ -1,6 +1,7 @@
 package project.volunteer.domain.user.dao.queryDto.dto;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.querydsl.core.annotations.QueryProjection;
 
@@ -10,15 +11,17 @@ import lombok.Setter;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.dto.PictureDetails;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserRecruitmentJoinRequestQuery {
+public class
+UserRecruitmentJoinRequestQuery {
 	private Long no;
-	private String uploadImage;
-	private LocalDate startDay;
-	private LocalDate endDay;
+	private PictureDetails picture;
+	private String startDay;
+	private String endDay;
 	private String title;
 	private String sido;
 	private String sigungu;
@@ -33,9 +36,13 @@ public class UserRecruitmentJoinRequestQuery {
 										VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType, 
 										Boolean isIssued, VolunteerType volunteerType) {
 		this.no = no;
-		this.uploadImage = uploadImage;
-		this.startDay = startDay;
-		this.endDay = endDay;
+		if(uploadImage == null){
+			picture = new PictureDetails(true, null);
+		}else{
+			picture = new PictureDetails(false, uploadImage);
+		}
+		this.startDay = startDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+		this.endDay = endDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
 		this.title = title;
 		this.sido = sido;
 		this.sigungu = sigungu;

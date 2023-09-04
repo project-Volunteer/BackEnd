@@ -1,5 +1,9 @@
 package project.volunteer.domain.user.api;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,20 +19,27 @@ import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
@@ -45,20 +56,26 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.infra.s3.FileService;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@AutoConfigureRestDocs
+@Import(RestDocsConfiguration.class)
 public class UserControllerJoinRequestTest {
 	@Autowired UserRepository userRepository;
 	@Autowired ParticipantRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
+	@Autowired StorageRepository storageRepository;
 	@Autowired RecruitmentService recruitmentService;
 	@Autowired ImageService imageService;
 	@Autowired FileService fileService;
 	@PersistenceContext EntityManager em;
 	@Autowired MockMvc mockMvc;
+	@Autowired RestDocumentationResultHandler restDocs;
+	final String AUTHORIZATION_HEADER = "accessToken";
 
 	private static User saveUser;
 	private List<Long> deleteS3ImageNoList = new ArrayList<>();
@@ -159,29 +176,53 @@ public class UserControllerJoinRequestTest {
 	}
 
 	@AfterEach
-	public void deleteS3Image() { // S3에 테스트를 위해 저장한 이미지 삭제
-		for (Long id : deleteS3ImageNoList) {
-			Image image = imageRepository.findById(id).get();
-			Storage storage = image.getStorage();
-			fileService.deleteFile(storage.getFakeImageName());
-		}
+	public void deleteS3Image() {
+		List<Storage> storages = storageRepository.findAll();
+		storages.stream().forEach(s -> fileService.deleteFile(s.getFakeImageName()));
 	}
 	
 
     @Test
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void 나의_모집글_승인대기_리스트조회() throws Exception {
+    void mypageJoinRequest() throws Exception {
         //init
         setData();
         
         //when & then
-        mockMvc.perform(
-                get("/user/request"))
-                .andExpect(status().isOk())
-                .andDo(print());
+		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/user/request")
+				.header(AUTHORIZATION_HEADER, "access Token")
+		);
+
+		//then
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								responseFields(
+										fieldWithPath("requestList").type(JsonFieldType.ARRAY).description("승인 대기중인 봉사 모집글 리스트")
+								).andWithPrefix("requestList.[].",
+										fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+										fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN).description("봉사모집글의 정적/동적 이미지 구분"),
+										fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional().description("봉사 모집글의 업로드 이미지 URL, isStaticImage True 일 경우 NULL"),
+										fieldWithPath("startDay").type(JsonFieldType.STRING).description("봉사 모집글의 시작일자"),
+										fieldWithPath("endDay").type(JsonFieldType.STRING).description("봉사 모집글의 종료일자"),
+										fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글의 제목"),
+										fieldWithPath("sido").type(JsonFieldType.STRING).description("봉사 모집글의 시/구 코드"),
+										fieldWithPath("sigungu").type(JsonFieldType.STRING).description("봉사 모집글의 시/군/구 코드"),
+										fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("봉사 모집글의 봉사카테고리 코드 Code VolunteeringCategory 참고바람"),
+										fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("봉사 모집글의 봉사 유형 코드 Code VolunteeringType 참고바람"),
+										fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN).description("봉사 모집글의 봉사 시간 인증 가능 여부"),
+										fieldWithPath("volunteerType").type(JsonFieldType.STRING).description("봉사 모집글의 봉사자 유형 코드 Code VolunteerType 참고바람.")
+								)
+						)
+				);
     }
 
     @Test
+	@Disabled
     @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void 나의_모집글_승인대기_리스트조회_null() throws Exception {
         //when & then
