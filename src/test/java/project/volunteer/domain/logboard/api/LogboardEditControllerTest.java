@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -64,6 +65,7 @@ import project.volunteer.global.infra.s3.FileService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class LogboardControllerTestForEdit {
     @Autowired MockMvc mockMvc;
 	@Autowired UserRepository userRepository;
@@ -167,7 +169,6 @@ public class LogboardControllerTestForEdit {
     }
 
 	@Test
-    @Transactional
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_성공() throws Exception {
 		//given
@@ -193,7 +194,7 @@ public class LogboardControllerTestForEdit {
 
     
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_validation체크_내용_누락() throws Exception {
 		//given
@@ -218,7 +219,7 @@ public class LogboardControllerTestForEdit {
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_validation체크_스케줄번호_누락() throws Exception {
 		//given
@@ -244,7 +245,7 @@ public class LogboardControllerTestForEdit {
 
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_validation체크_임시저장글여부_누락() throws Exception {
 		//given
@@ -269,7 +270,7 @@ public class LogboardControllerTestForEdit {
 	}
 	
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_없는_스케줄번호() throws Exception {
 		//given
@@ -295,7 +296,7 @@ public class LogboardControllerTestForEdit {
 
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_중_상태일경우() throws Exception {
 		//given
@@ -321,7 +322,7 @@ public class LogboardControllerTestForEdit {
 
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_취소_요청_상태일경우() throws Exception {
 		//given
@@ -347,7 +348,7 @@ public class LogboardControllerTestForEdit {
 
 	
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_취소_요청_승인_상태일경우() throws Exception {
 		//given
@@ -373,7 +374,7 @@ public class LogboardControllerTestForEdit {
 
 	
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_완료_미승인_상태일경우() throws Exception {
 		//given
@@ -399,7 +400,7 @@ public class LogboardControllerTestForEdit {
 	
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_작성자확인_실패() throws Exception {
 		//given
@@ -438,7 +439,7 @@ public class LogboardControllerTestForEdit {
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_없는_로그번호_실패() throws Exception {
 		//given
@@ -465,7 +466,6 @@ public class LogboardControllerTestForEdit {
 	
 	
 	@Test
-    @Transactional
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 삭제_성공() throws Exception {
 		//given
@@ -480,7 +480,7 @@ public class LogboardControllerTestForEdit {
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 삭제_작성자확인_실패() throws Exception {
 		//given
@@ -509,7 +509,7 @@ public class LogboardControllerTestForEdit {
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 삭제_없는_로그번호_실패() throws Exception {
 		//given

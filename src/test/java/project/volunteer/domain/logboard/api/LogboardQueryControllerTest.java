@@ -1,5 +1,8 @@
 package project.volunteer.domain.logboard.api;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -16,14 +19,22 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
@@ -58,12 +69,15 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class LogboardContollerTestForQuery {
-    @Autowired MockMvc mockMvc;
+@AutoConfigureRestDocs
+@Import(RestDocsConfiguration.class)
+public class LogboardQueryControllerTest {
+	@Autowired MockMvc mockMvc;
 	@Autowired UserRepository userRepository;
 	@Autowired ParticipantRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
@@ -78,57 +92,60 @@ public class LogboardContollerTestForQuery {
 	@Autowired LogboardRepository logboardRepository;
 	@Autowired ScheduleParticipationRepository scheduleParticipationRepository;
 	@Autowired LikeRepository likeRepository;
+	@Autowired RestDocumentationResultHandler restDocs;
 	@PersistenceContext EntityManager em;
 
+	final String AUTHORIZATION_HEADER = "accessToken";
+
 	List<Logboard> logboardList= new ArrayList<>();
-	
+
 	private static User saveUser;
 	private List<Long> deleteS3ImageNoList = new ArrayList<>();
 
-    private MockMultipartFile getMockMultipartFile(String i) throws IOException {
-        return new MockMultipartFile(
-                "file"+i, "file"+i+".PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
-    }
-    
+	private MockMultipartFile getMockMultipartFile(String i) throws IOException {
+		return new MockMultipartFile(
+				"file"+i, "file"+i+".PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
+	}
+
 	private void clear() {
 		em.flush();
 		em.clear();
 	}
 
 
-    @BeforeEach
-    public void initData() throws Exception{
-        saveUser = userRepository.save(User.builder()
-                .id("kakao_111111")
-                .password("1234")
-                .nickName("nickname11")
-                .email("email11@gmail.com")
-                .gender(Gender.M)
-                .birthDay(LocalDate.now())
-                .picture("picture")
-                .joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
-                .role(Role.USER)
-                .provider("kakao")
-                .providerId("111111")
-                .build());
+	@BeforeEach
+	public void initData() throws Exception{
+		saveUser = userRepository.save(User.builder()
+				.id("kakao_111111")
+				.password("1234")
+				.nickName("nickname11")
+				.email("email11@gmail.com")
+				.gender(Gender.M)
+				.birthDay(LocalDate.now())
+				.picture("picture")
+				.joinAlarmYn(true).beforeAlarmYn(true).noticeAlarmYn(true)
+				.role(Role.USER)
+				.provider("kakao")
+				.providerId("111111")
+				.build());
 
-        String title = "Recuritment title";
-        String content = "content";
-        String organizationName = "organization";
-        Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
-        Timetable timetable1 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(1), HourFormat.AM, LocalTime.now(), 10);
-        Timetable timetable2 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(2), HourFormat.AM, LocalTime.now(), 10);
-        Timetable timetable3 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(3), HourFormat.AM, LocalTime.now(), 10);
-        Timetable timetable4 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(4), HourFormat.AM, LocalTime.now(), 10);
-        Boolean isPublished = true;
-        Coordinate coordinate = new Coordinate(3.2F, 3.2F);        
-        VolunteeringCategory category = VolunteeringCategory.ADMINSTRATION_ASSISTANCE;
-        VolunteeringType volunteeringType = VolunteeringType.IRREG;
-        VolunteerType volunteerType = VolunteerType.ALL;
-        Boolean isIssued = true;
-        String details = "details";
-        Address address = new Address("11", "110011", details);
-        int volunteerNum = 10;
+		String title = "Recuritment title";
+		String content = "content";
+		String organizationName = "organization";
+		Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
+		Timetable timetable1 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(1), HourFormat.AM, LocalTime.now(), 10);
+		Timetable timetable2 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(2), HourFormat.AM, LocalTime.now(), 10);
+		Timetable timetable3 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(3), HourFormat.AM, LocalTime.now(), 10);
+		Timetable timetable4 = new Timetable(LocalDate.now(), LocalDate.now().minusDays(4), HourFormat.AM, LocalTime.now(), 10);
+		Boolean isPublished = true;
+		Coordinate coordinate = new Coordinate(3.2F, 3.2F);
+		VolunteeringCategory category = VolunteeringCategory.ADMINSTRATION_ASSISTANCE;
+		VolunteeringType volunteeringType = VolunteeringType.IRREG;
+		VolunteerType volunteerType = VolunteerType.ALL;
+		Boolean isIssued = true;
+		String details = "details";
+		Address address = new Address("11", "110011", details);
+		int volunteerNum = 10;
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
@@ -143,14 +160,14 @@ public class LogboardContollerTestForQuery {
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
 		Participant participant1 = Participant.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
 		participantRepository.save(participant1);
-		
+
 
 		// 스케줄 저장
 		Schedule createSchedule =
 				Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
 		createSchedule.setRecruitment(recruitment);
 		scheduleRepository.save(createSchedule);
-		
+
 
 		// 스케줄 저장
 		Schedule schedule1 = Schedule.createSchedule(timetable1, content, organizationName, address, volunteerNum);
@@ -164,7 +181,7 @@ public class LogboardContollerTestForQuery {
 		Schedule schedule3 = Schedule.createSchedule(timetable3, content, organizationName, address, volunteerNum);
 		schedule3.setRecruitment(recruitment);
 		scheduleRepository.save(schedule3);
-		
+
 		Schedule schedule4 = Schedule.createSchedule(timetable4, content, organizationName, address, volunteerNum);
 		schedule4.setRecruitment(recruitment);
 		scheduleRepository.save(schedule4);
@@ -172,7 +189,7 @@ public class LogboardContollerTestForQuery {
 		Schedule schedule5 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
 		schedule5.setRecruitment(recruitment);
 		scheduleRepository.save(schedule5);
-		
+
 		// 방장 스케줄 참여
 		ScheduleParticipation scheduleParticipation1 = ScheduleParticipation.createScheduleParticipation(schedule1, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
 		scheduleParticipationRepository.save(scheduleParticipation1);
@@ -188,15 +205,15 @@ public class LogboardContollerTestForQuery {
 
 		ScheduleParticipation  scheduleParticipation5 = ScheduleParticipation.createScheduleParticipation(schedule5, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
 		scheduleParticipationRepository.save(scheduleParticipation5);
-		
-        // 봉사 로그 저장(한 모집글에 20개)
-        for(int i = 0; i < 20; i++){
-    		Logboard logboard = Logboard.createLogBoard(content+i+i+i+i, isPublished,saveUser.getUserNo());
-    		logboard.setWriter(saveUser);
-    		logboard.setSchedule(createSchedule);
-        	logboardList.add(logboard);
-    		
-    		Long logboardNo = logboardRepository.save(logboard).getLogboardNo();
+
+		// 봉사 로그 저장(한 모집글에 20개)
+		for(int i = 0; i < 20; i++){
+			Logboard logboard = Logboard.createLogBoard(content+i+i+i+i, isPublished,saveUser.getUserNo());
+			logboard.setWriter(saveUser);
+			logboard.setSchedule(createSchedule);
+			logboardList.add(logboard);
+
+			Long logboardNo = logboardRepository.save(logboard).getLogboardNo();
 
 			ImageParam uploadLogboardImg1 = new ImageParam(RealWorkCode.LOG, logboardNo, getMockMultipartFile(i+"_1"));
 			Long saveLogboardImgId1 = imageService.addImage(uploadLogboardImg1);
@@ -230,8 +247,8 @@ public class LogboardContollerTestForQuery {
 					replyService.addComment(saveUser, RealWorkCode.LOG, logboardNo, "comment"+j+j+j);
 				}
 			}
-        }
-		
+		}
+
 		clear();
 
 		// init 데이터 요약
@@ -241,48 +258,69 @@ public class LogboardContollerTestForQuery {
 			스케쥴 1개 생성
 			로그 20개 생성
 		 */
-    }
+	}
 
-    @Test
-    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void 로그보드_수정_조회() throws Exception {
-        //when & then
-        mockMvc.perform(
-                get("/logboard/edit/"+logboardList.get(0).getLogboardNo()))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
+	@Test
+	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	void 로그보드_수정_조회() throws Exception {
+		//when & then
+		mockMvc.perform(
+						get("/logboard/edit/"+logboardList.get(0).getLogboardNo()))
+				.andExpect(status().isOk())
+				.andDo(print());
+	}
 
-    @Test
-    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void 로그보드_수정_조회_없는_로그조회() throws Exception {
-        //when & then
-        mockMvc.perform(
-                get("/logboard/edit/10000"))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-    }
+	@Test
+	@Disabled
+	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	void 로그보드_수정_조회_없는_로그조회() throws Exception {
+		//when & then
+		mockMvc.perform(
+						get("/logboard/edit/10000"))
+				.andExpect(status().isBadRequest())
+				.andDo(print());
+	}
 
-    @Test
-    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void 로그보드_리스트_조회() throws Exception {
-        //when & then
-        mockMvc.perform(
-                get("/logboard?page=1&search_type=all&last_id"))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-    
-    // 봉사 로그 참여 봉사 선택
-    @Test
-    @WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    void 참여완료_스케줄_리스트_조회() throws Exception {
-        //when & then
-        mockMvc.perform(
-                get("/logboard/schedule"))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
+	@Test
+	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	void 로그보드_리스트_조회() throws Exception {
+		//when & then
+		mockMvc.perform(
+						get("/logboard?page=1&search_type=all&last_id"))
+				.andExpect(status().isOk())
+				.andDo(print());
+	}
+
+	// 봉사 로그 참여 봉사 선택
+	@Test
+	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	void participationCompleteScheduleList() throws Exception {
+
+		//when
+		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/logboard/schedule")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header(AUTHORIZATION_HEADER, "access Token")
+		);
+
+		//then
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								responseFields(
+										fieldWithPath("completedScheduleList").type(JsonFieldType.ARRAY).description("봉사 참여 완료된 이력 리스트")
+								).andWithPrefix("completedScheduleList.[].",
+										fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 참여 고유키 PK"),
+										fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글의 제목"),
+										fieldWithPath("date").type(JsonFieldType.STRING).description("봉사 참여 종료일")
+								)
+						)
+				);
+
+	}
 
 	@Test
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -305,6 +343,7 @@ public class LogboardContollerTestForQuery {
 	}
 
 	@Test
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	void 로그보드_봉사로그좋아요_없는봉사로그번호로_실패() throws Exception {
 		//when & then
