@@ -3,10 +3,15 @@ package project.volunteer.domain.logboard.api;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -262,12 +267,30 @@ public class LogboardQueryControllerTest {
 
 	@Test
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-	void 로그보드_수정_조회() throws Exception {
+	void logboardModifyAndTemp() throws Exception {
 		//when & then
-		mockMvc.perform(
-						get("/logboard/edit/"+logboardList.get(0).getLogboardNo()))
-				.andExpect(status().isOk())
-				.andDo(print());
+		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/logboard/edit/{no}",
+						logboardList.get(0).getLogboardNo())
+				.header(AUTHORIZATION_HEADER, "access Token")
+		);
+
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								pathParameters(
+										parameterWithName("no").description("봉사 로그 고유키 PK")
+								),
+								responseFields(
+										fieldWithPath("picture[]").type(JsonFieldType.ARRAY).description("봉사 로그 사진"),
+										fieldWithPath("content").type(JsonFieldType.STRING).description("봉사 로그 내용"),
+										fieldWithPath("scheduleNo").type(JsonFieldType.NUMBER).description("봉사 참여 고유번호")
+								)
+						)
+				);
 	}
 
 	@Test
@@ -283,12 +306,41 @@ public class LogboardQueryControllerTest {
 
 	@Test
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-	void 로그보드_리스트_조회() throws Exception {
-		//when & then
-		mockMvc.perform(
-						get("/logboard?page=1&search_type=all&last_id"))
-				.andExpect(status().isOk())
-				.andDo(print());
+	void logboardList() throws Exception {
+
+		// when & then
+		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/logboard?page=1&search_type=all&last_id")
+				.header(AUTHORIZATION_HEADER, "access Token")
+		);
+
+		//then
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								responseFields(
+										fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 봉사 로그 여부"),
+										fieldWithPath("lastId").type(JsonFieldType.NUMBER).description("마지막 봉사 로그 고유 PK"),
+										fieldWithPath("logboardList").type(JsonFieldType.ARRAY).description("봉사 로그 리스트")
+								).andWithPrefix("logboardList.[].",
+										fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 로그 고유키 PK"),
+										fieldWithPath("writerNo").type(JsonFieldType.NUMBER).description("봉사 로그 작성자 고유 PK"),
+										fieldWithPath("profile").type(JsonFieldType.STRING).description("봉사 로그 작성자 프로필 사진"),
+										fieldWithPath("nickname").type(JsonFieldType.STRING).description("봉사 로그 작성자 닉네임"),
+										fieldWithPath("createdDay").type(JsonFieldType.STRING).description("봉사 로그 작성일"),
+										fieldWithPath("pictures").type(JsonFieldType.ARRAY).description("봉사 로그 사진"),
+										fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING).description("봉사 모집글의 봉사 카테고리 코드 Code VolunteeringCategory 참고바람"),
+										fieldWithPath("content").type(JsonFieldType.STRING).description("봉사 로그 내용"),
+										fieldWithPath("likeCnt").type(JsonFieldType.NUMBER).description("봉사 로그 좋아요 수"),
+										// TODO : 아니 이게 왜 isLikeMe로 안나오는거냐고
+										fieldWithPath("likeMe").type(JsonFieldType.BOOLEAN).description("봉사 로그 좋아요 클릭 여부"),
+										fieldWithPath("commentCnt").type(JsonFieldType.NUMBER).description("봉사 로그 댓글 수")
+								)
+						)
+				);
 	}
 
 	// 봉사 로그 참여 봉사 선택
@@ -296,13 +348,12 @@ public class LogboardQueryControllerTest {
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	void participationCompleteScheduleList() throws Exception {
 
-		//when
+		//when & then
 		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/logboard/schedule")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(AUTHORIZATION_HEADER, "access Token")
 		);
 
-		//then
 		result.andExpect(status().isOk())
 				.andDo(print())
 				.andDo(
@@ -324,22 +375,78 @@ public class LogboardQueryControllerTest {
 
 	@Test
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-	void 로그보드_봉사로그및댓글_조회() throws Exception {
+	void logboardDetailAndComment() throws Exception {
 		//when & then
-		mockMvc.perform(
-						get("/logboard/"+logboardList.get(0).getLogboardNo()))
-				.andExpect(status().isOk())
-				.andDo(print());
+		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/logboard/{no}", logboardList.get(0).getLogboardNo())
+				.accept(MediaType.APPLICATION_JSON)
+				.header(AUTHORIZATION_HEADER, "access Token")
+		);
+
+		//then
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								pathParameters(
+										parameterWithName("no").description("봉사 로그 고유키 PK")
+								),
+								responseFields(
+										fieldWithPath("log.no").type(JsonFieldType.NUMBER).description("봉사 로그 고유키 PK"),
+										fieldWithPath("log.writerNo").type(JsonFieldType.NUMBER).description("봉사 로그 작성자 고유키 PK"),
+										fieldWithPath("log.profile").type(JsonFieldType.STRING).description("봉사로그 작성자 프로필 URL"),
+										fieldWithPath("log.nickName").type(JsonFieldType.STRING).description("봉사로그 작성자 닉네임"),
+										fieldWithPath("log.createdDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사로그 작성일"),
+										fieldWithPath("log.pictures").type(JsonFieldType.ARRAY).description("봉사로그 사진 URL"),
+										fieldWithPath("log.volunteeringCategory").type(JsonFieldType.STRING).description("봉사 모집글의 봉사 카테고리 코드 Code VolunteeringCategory 참고바람"),
+										fieldWithPath("log.content").type(JsonFieldType.STRING).description("봉사 로그 본문"),
+
+										fieldWithPath("commentsList[].no").type(JsonFieldType.NUMBER).description("댓글 고유키 PK"),
+										fieldWithPath("commentsList[].profile").type(JsonFieldType.STRING).description("댓글 작성자 프로필 URL"),
+										fieldWithPath("commentsList[].nickName").type(JsonFieldType.STRING).description("댓글 작성자 닉네임"),
+										fieldWithPath("commentsList[].content").type(JsonFieldType.STRING).description("댓글 본문"),
+										fieldWithPath("commentsList[].commentDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("댓글 작성 일자"),
+										fieldWithPath("commentsList[].commentTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("댓글 작성 시간"),
+										fieldWithPath("commentsList[].commentsCnt").type(JsonFieldType.NUMBER).description("대댓글 개수"),
+										fieldWithPath("commentsList[].replies[].no").type(JsonFieldType.NUMBER).description("대댓글 고유키 PK"),
+										fieldWithPath("commentsList[].replies[].profile").type(JsonFieldType.STRING).description("대댓글 작성자 프로필 URL"),
+										fieldWithPath("commentsList[].replies[].nickName").type(JsonFieldType.STRING).description("대댓글 작성자 닉네임"),
+										fieldWithPath("commentsList[].replies[].replyDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("대댓글 작성 일자"),
+										fieldWithPath("commentsList[].replies[].replyTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("대댓글 작성 시간"),
+										fieldWithPath("commentsList[].replies[].content").type(JsonFieldType.STRING).description("대댓글 본문")
+								)
+						)
+				);
 	}
 
 	@Test
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-	void 로그보드_봉사로그좋아요() throws Exception {
-		//when & then
-		mockMvc.perform(
-						post("/logboard/"+logboardList.get(0).getLogboardNo()+"/like"))
-				.andExpect(status().isCreated())
-				.andDo(print());
+	void logboardLike() throws Exception {
+
+		//when
+		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.post("/logboard/{no}/like", logboardList.get(0).getLogboardNo())
+				.contentType(MediaType.APPLICATION_JSON)
+				.header(AUTHORIZATION_HEADER, "access Token")
+		);
+
+
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								pathParameters(
+										parameterWithName("no").description("봉사 로그 고유키 PK")
+								),
+								responseFields(
+										fieldWithPath("isLikeMe").type(JsonFieldType.BOOLEAN).description("좋아요 여부")
+								)
+						)
+				);
 	}
 
 	@Test

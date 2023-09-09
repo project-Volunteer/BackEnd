@@ -2,6 +2,7 @@ package project.volunteer.domain.logboard.api;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
@@ -105,12 +107,12 @@ public class LogboardWriteControllerTest {
 
 	private MockMultipartFile getFakeMockMultipartFile() throws IOException {
 		return new MockMultipartFile(
-				"picture.uploadImage", "".getBytes());
+				"picture", "".getBytes());
 	}
 
 	private MockMultipartFile getRealMockMultipartFile() throws IOException {
 		return new MockMultipartFile(
-				"profile", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
+				"picture", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
 	}
 
 	private void clear() {
@@ -274,9 +276,7 @@ public class LogboardWriteControllerTest {
 										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
 								),
 								requestParts(
-										partWithName("picture").description("작성할 봉사 로그 이미지"),
-										partWithName("picture").description("작성할 봉사 로그 이미지"),
-										partWithName("picture").description("작성할 봉사 로그 이미지")
+										partWithName("picture").optional().description("작성할 봉사 로그 이미지")
 								),
 								requestParameters(
 										parameterWithName("content").description("봉사 로그 내용"),

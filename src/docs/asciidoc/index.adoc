@@ -23,4 +23,6 @@ include::notice-comment.adoc[]
 
 include::mypage.adoc[]
 
+include::logboard.adoc[]
+
 include::enums.adoc[]

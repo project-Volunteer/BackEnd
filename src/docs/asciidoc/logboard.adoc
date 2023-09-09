@@ -1,0 +1,344 @@
+[[Logboard-API]]
+== Logboard API
+
+
+=== 봉사 로그 봉사 선택
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-query-controller-test/participation-complete-schedule-list/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-query-controller-test/participation-complete-schedule-list/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-query-controller-test/participation-complete-schedule-list/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/logboard-query-controller-test/participation-complete-schedule-list/response-fields.adoc[]
+
+
+
+
+=== 봉사 로그 작성
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 사용자 정보를 찾을 수 없습니다. +
+- 해당 모집글 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 일정 참가 완료 승인 상태가 아닙니다. 모집장에게 승인을 요청하세요. +
+- 이미 작성된 로그가 있습니다.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-write-controller-test/logboard-write/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-write-controller-test/logboard-write/request-headers.adoc[]
+
+*Request parts*
+include::{snippets}/logboard-write-controller-test/logboard-write/request-parts.adoc[]
+
+*Request Parameters*
+include::{snippets}/logboard-write-controller-test/logboard-write/request-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-write-controller-test/logboard-write/http-response.adoc[]
+
+
+
+=== 봉사 로그 수정 및 임시저장 상세 조회
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| 해당 로그정보를 찾을 수 없습니다.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-query-controller-test/logboard-modify-and-temp/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-query-controller-test/logboard-modify-and-temp/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-query-controller-test/logboard-modify-and-temp/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-query-controller-test/logboard-modify-and-temp/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/logboard-query-controller-test/logboard-modify-and-temp/response-fields.adoc[]
+
+
+
+
+=== 봉사 로그 수정
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 사용자 정보를 찾을 수 없습니다. +
+- 해당 일정 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 일정 참가 완료 승인 상태가 아닙니다. 모집장에게 승인을 요청하세요.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| 해당 봉사로그에 대한 권한이 없습니다.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-edit-controller-test/logboard-edit/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-edit-controller-test/logboard-edit/request-headers.adoc[]
+
+*Request parts*
+include::{snippets}/logboard-edit-controller-test/logboard-edit/request-parts.adoc[]
+
+*Request Parameters*
+include::{snippets}/logboard-edit-controller-test/logboard-edit/request-parameters.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-edit-controller-test/logboard-edit/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-edit-controller-test/logboard-edit/http-response.adoc[]
+
+
+
+=== 봉사 로그 삭제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| 해당 로그 정보를 찾을 수 없습니다.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| 해당 봉사로그에 대한 권한이 없습니다.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-edit-controller-test/logboard-delete/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-edit-controller-test/logboard-delete/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-edit-controller-test/logboard-delete/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-edit-controller-test/logboard-delete/http-response.adoc[]
+
+
+=== 봉사 로그 리스트 조회
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400|
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-query-controller-test/logboard-list/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-query-controller-test/logboard-list/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-query-controller-test/logboard-list/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/logboard-query-controller-test/logboard-list/response-fields.adoc[]
+
+
+
+
+=== 봉사 로그 좋아요
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 로그정보를 찾을 수 없습니다. +
+- 해당 사용자 정보를 찾을 수 없습니다.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-query-controller-test/logboard-like/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-query-controller-test/logboard-like/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-query-controller-test/logboard-like/path-parameters.adoc[]
+
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-query-controller-test/logboard-like/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/logboard-query-controller-test/logboard-like/response-fields.adoc[]
+
+
+
+
+=== 봉사 로그 상세 조회 (댓글 포함)
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 로그정보를 찾을 수 없습니다. +
+- 해당 사용자 정보를 찾을 수 없습니다.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-query-controller-test/logboard-detail-and-comment/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-query-controller-test/logboard-detail-and-comment/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-query-controller-test/logboard-detail-and-comment/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-query-controller-test/logboard-detail-and-comment/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/logboard-query-controller-test/logboard-detail-and-comment/response-fields.adoc[]
+
+
+
+
+
+
+=== 봉사 로그 댓글 등록
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 사용자 정보를 찾을 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-write/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-write/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-write/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-write/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-write/http-response.adoc[]
+
+
+=== 봉사 로드 대댓글 등록
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400|- 해당 사용자 정보를 찾을 수 없습니다. +
+- 댓글을 찾을 수 없습니다. +
+- 대댓글에 댓글을 추가 할 수 없습니다. +
+- 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-comment-controller-test/logboard-reply-comment-write/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-comment-controller-test/logboard-reply-comment-write/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-comment-controller-test/logboard-reply-comment-write/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/logboard-comment-controller-test/logboard-reply-comment-write/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-comment-controller-test/logboard-reply-comment-write/http-response.adoc[]
+
+
+
+
+
+=== 봉사 로그 댓글/대댓글 수정
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| 댓글을 찾을 수 없습니다.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| 해당 댓글에 대한 권한이 없습니다.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-edit/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-edit/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-edit/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-edit/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-edit/http-response.adoc[]
+
+
+
+
+=== 봉사 로그 댓글/대댓글 삭제
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 사용자정보 정보를 찾을 수 없습니다. +
+- 댓글을 찾을 수 없습니다.
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|403| 해당 댓글에 대한 권한이 없습니다.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-delete/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-delete/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-delete/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/logboard-comment-controller-test/logboard-comment-delete/http-response.adoc[]
