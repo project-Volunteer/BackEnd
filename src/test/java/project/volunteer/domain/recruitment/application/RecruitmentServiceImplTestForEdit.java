@@ -59,7 +59,7 @@ class RecruitmentServiceImplTestForEdit {
         //정기 모집글 등록
         Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.REG,
                 VolunteerType.TEENAGER, 3, true, "organization",
-                Address.createAddress("11", "1111","details"), Coordinate.createCoordinate(3.2F, 3.2F),
+                Address.createAddress("11", "1111","details", "fullName"), Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 3), true);
         createRecruitment.setWriter(writer);
         saveRecruitment = recruitmentRepository.save(createRecruitment);

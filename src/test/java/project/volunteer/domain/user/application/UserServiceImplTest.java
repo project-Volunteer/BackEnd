@@ -165,10 +165,10 @@ public class UserServiceImplTest {
 
         
         String details = "details";
-        Address address1 = new Address("11", "110011", details);
-        Address address2 = new Address("22", "220022", details);
-        Address address3 = new Address("33", "330033", details);
-        Address address4 = new Address("44", "440044", details);
+        Address address1 = new Address("11", "110011", details, "fullName");
+        Address address2 = new Address("22", "220022", details, "fullName");
+        Address address3 = new Address("33", "330033", details, "fullName");
+        Address address4 = new Address("44", "440044", details, "fullName");
 
         int volunteerNum1 = 10;
 		int volunteerNum2 = 20;

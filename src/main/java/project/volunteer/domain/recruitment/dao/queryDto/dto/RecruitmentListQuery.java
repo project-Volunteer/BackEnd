@@ -20,6 +20,7 @@ public class RecruitmentListQuery {
     private String title;
     private String sido;
     private String sigungu;
+    private String fullName;
     private LocalDate startDay;
     private LocalDate endDay;
     private VolunteeringType volunteeringType;
@@ -30,13 +31,15 @@ public class RecruitmentListQuery {
     private String uploadImage; //storage 테이블에서 추출
 
     @QueryProjection
-    public RecruitmentListQuery(Long no, VolunteeringCategory category, String title, String sido, String sigungu, LocalDate startDay, LocalDate endDay, VolunteeringType volunteeringType,
+    public RecruitmentListQuery(Long no, VolunteeringCategory category, String title, String sido, String sigungu, String fullName,
+                                LocalDate startDay, LocalDate endDay, VolunteeringType volunteeringType,
                                 VolunteerType volunteerType, Boolean isIssued, int volunteerNum, String uploadImage){
         this.no  = no;
         this.category = category;
         this.title = title;
         this.sido = sido;
         this.sigungu = sigungu;
+        this.fullName = fullName;
         this.startDay = startDay;
         this.endDay = endDay;
         this.volunteeringType = volunteeringType;

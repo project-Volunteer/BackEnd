@@ -63,7 +63,7 @@ class ScheduleServiceImplTestForEdit {
         userRepository.save(writer);
 
         //Embedded 값 세팅
-        Address address = Address.createAddress("1", "111", "test");
+        Address address = Address.createAddress("1", "111", "test", "fullName");
         Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
@@ -100,7 +100,7 @@ class ScheduleServiceImplTestForEdit {
     public void editSchedule(){
         //given
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 6;
@@ -133,7 +133,7 @@ class ScheduleServiceImplTestForEdit {
     public void notExistSchedule() {
         //given
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 3;
@@ -150,7 +150,7 @@ class ScheduleServiceImplTestForEdit {
     public void insufficientScheduleVolunteerNum(){
         //given
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 4; // 현재 일정에 참가중인 인원수는 5명!

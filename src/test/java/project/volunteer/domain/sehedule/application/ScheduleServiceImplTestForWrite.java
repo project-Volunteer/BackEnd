@@ -65,7 +65,7 @@ class ScheduleServiceImplTestForWrite {
         userRepository.save(writer);
 
         //Embedded 값 세팅
-        Address address = Address.createAddress("1", "111", "test");
+        Address address = Address.createAddress("1", "111", "test", "fullName");
         Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
@@ -83,7 +83,7 @@ class ScheduleServiceImplTestForWrite {
     public void createSchedule() {
         //given
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 3;
@@ -137,7 +137,7 @@ class ScheduleServiceImplTestForWrite {
     public void notRecruitmentOwner(){
         //given
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 3;
@@ -155,7 +155,7 @@ class ScheduleServiceImplTestForWrite {
     public void exceedScheduleVolunteerNum(){
         //given
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 100; //초과!!
@@ -177,7 +177,7 @@ class ScheduleServiceImplTestForWrite {
         final String organizationName ="test";
         final String content = "test";
         final int volunteerNum = 10;
-        final Address address = Address.createAddress("1", "1111", "details");
+        final Address address = Address.createAddress("1", "1111", "details", "fullName");
         final RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(Period.MONTH, Week.FIRST, List.of(Day.MON, Day.TUES));
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
@@ -199,7 +199,7 @@ class ScheduleServiceImplTestForWrite {
         final String organizationName ="test";
         final String content = "test";
         final int volunteerNum = 10;
-        final Address address = Address.createAddress("1", "1111", "details");
+        final Address address = Address.createAddress("1", "1111", "details", "fullName");
         final RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(Period.WEEK, null, List.of(Day.SAT, Day.SUN));
         final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 

@@ -68,9 +68,9 @@ class RecruitmentQueryDtoRepositoryImplTest {
 
         Coordinate coordinate = new Coordinate(3.2F, 3.2F);
         String details = "details";
-        Address address1 = new Address("11", "1111", details);
-        Address address2 = new Address("22", "2222", details);
-        Address address3 = new Address("333", "3333", details);
+        Address address1 = new Address("11", "1111", details, "fullName");
+        Address address2 = new Address("22", "2222", details, "fullName");
+        Address address3 = new Address("333", "3333", details, "fullName");
 
         for(int i=0;i<5;i++){
             Recruitment create1 = Recruitment.builder()

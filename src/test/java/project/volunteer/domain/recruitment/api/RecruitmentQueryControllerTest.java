@@ -103,7 +103,7 @@ class RecruitmentQueryControllerTest {
         userRepository.save(writer);
 
         //봉사 모집글 10개 저장
-        Address recruitmentAddress = Address.createAddress("11", "1111", "details");
+        Address recruitmentAddress = Address.createAddress("11", "1111", "details", "fullName");
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
         Recruitment saveRecruitment1 = Recruitment.createRecruitment("test", "test", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
@@ -272,6 +272,7 @@ class RecruitmentQueryControllerTest {
                 .andExpect(jsonPath("$.recruitmentList[0].title").value(saveRecruitmentList.get(0).getTitle()))
                 .andExpect(jsonPath("$.recruitmentList[0].sido").value(saveRecruitmentList.get(0).getAddress().getSido()))
                 .andExpect(jsonPath("$.recruitmentList[0].sigungu").value(saveRecruitmentList.get(0).getAddress().getSigungu()))
+                .andExpect(jsonPath("$.recruitmentList[0].fullName").value(saveRecruitmentList.get(0).getAddress().getFullName()))
                 .andExpect(jsonPath("$.recruitmentList[0].volunteeringType").value(saveRecruitmentList.get(0).getVolunteeringType().getId()))
                 .andExpect(jsonPath("$.recruitmentList[0].volunteerType").value(saveRecruitmentList.get(0).getVolunteerType().getId()))
                 .andExpect(jsonPath("$.recruitmentList[0].isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
@@ -308,6 +309,7 @@ class RecruitmentQueryControllerTest {
                                         parameterWithName("volunteering_category").optional().description("Code VolunteeringCategory 참고바람(다중 선택 가능)"),
                                         parameterWithName("sido").optional().description("시/도 코드"),
                                         parameterWithName("sigungu").optional().description("시/군/구 코드"),
+                                        parameterWithName("fullName").optional().description("전체 주소 이름"),
                                         parameterWithName("volunteering_type").optional().description("Code VolunteeringType 참고바람."),
                                         parameterWithName("volunteer_type").optional().description("Code VolunteerType 참고바람."),
                                         parameterWithName("is_issued").optional().description("봉사 시간 인증 가능 여부")
@@ -324,6 +326,7 @@ class RecruitmentQueryControllerTest {
                                         fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
                                         fieldWithPath("sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
+                                        fieldWithPath("fullName").type(JsonFieldType.STRING).description("전체 주소 이름"),
                                         fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집 시작 날짜"),
                                         fieldWithPath("endDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 모집 종료 날짜"),
                                         fieldWithPath("volunteeringType").type(JsonFieldType.STRING).description("Code VolunteeringType 참고바람"),
@@ -401,6 +404,7 @@ class RecruitmentQueryControllerTest {
                 .andExpect(jsonPath("$.recruitment.address.sido").value(saveRecruitmentList.get(0).getAddress().getSido()))
                 .andExpect(jsonPath("$.recruitment.address.sigungu").value(saveRecruitmentList.get(0).getAddress().getSigungu()))
                 .andExpect(jsonPath("$.recruitment.address.details").value(saveRecruitmentList.get(0).getAddress().getDetails()))
+                .andExpect(jsonPath("$.recruitment.address.fullName").value(saveRecruitmentList.get(0).getAddress().getFullName()))
                 .andExpect(jsonPath("$.recruitment.address.latitude").value(saveRecruitmentList.get(0).getCoordinate().getLatitude()))
                 .andExpect(jsonPath("$.recruitment.address.longitude").value(saveRecruitmentList.get(0).getCoordinate().getLongitude()))
                 .andExpect(jsonPath("$.recruitment.isIssued").value(saveRecruitmentList.get(0).getIsIssued()))
@@ -451,6 +455,7 @@ class RecruitmentQueryControllerTest {
                                         fieldWithPath("recruitment.address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("recruitment.address.sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
                                         fieldWithPath("recruitment.address.details").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("recruitment.address.fullName").type(JsonFieldType.STRING).description("전체 주소 이름"),
                                         fieldWithPath("recruitment.address.latitude").type(JsonFieldType.NUMBER).description("위도"),
                                         fieldWithPath("recruitment.address.longitude").type(JsonFieldType.NUMBER).description("경도"),
 

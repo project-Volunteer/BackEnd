@@ -18,6 +18,7 @@ public class RecruitmentList {
     private String title;
     private String sido;
     private String sigungu;
+    private String fullName;
     private String startDay;
     private String endDay;
     private String volunteeringType;
@@ -34,6 +35,7 @@ public class RecruitmentList {
         dto.title = recruitmentDto.getTitle();
         dto.sido = recruitmentDto.getSido();
         dto.sigungu = recruitmentDto.getSigungu();
+        dto.fullName = recruitmentDto.getFullName();
         dto.startDay = recruitmentDto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         dto.endDay = recruitmentDto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         dto.volunteeringType = recruitmentDto.getVolunteeringType().getId();

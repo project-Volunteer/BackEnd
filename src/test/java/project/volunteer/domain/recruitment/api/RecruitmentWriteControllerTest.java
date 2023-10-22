@@ -179,6 +179,7 @@ class RecruitmentWriteControllerTest {
                                         parameterWithName("address.sido").description("시/구 코드"),
                                         parameterWithName("address.sigungu").description("시/군/구 코드"),
                                         parameterWithName("address.details").description("상세주소"),
+                                        parameterWithName("address.fullName").description("전체 주소 이름"),
                                         parameterWithName("address.latitude").description("위도"),
                                         parameterWithName("address.longitude").description("경도"),
                                         parameterWithName("isIssued").description("봉사 시간 인증 가능 여부"),
@@ -528,6 +529,7 @@ class RecruitmentWriteControllerTest {
         final String sido = "11";
         final String sigungu = "11011";
         final String details = "details";
+        final String fullName = "full address name";
         final float latitude = 3.2F;
         final float longitude = 3.2F;
         final Boolean isIssued = true;
@@ -559,6 +561,7 @@ class RecruitmentWriteControllerTest {
         info.add("address.sido", sido);
         info.add("address.sigungu", sigungu);
         info.add("address.details", details);
+        info.add("address.fullName", fullName);
         info.add("address.latitude", String.valueOf(latitude));
         info.add("address.longitude", String.valueOf(longitude));
         return info;

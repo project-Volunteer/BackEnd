@@ -16,6 +16,7 @@ public class AddressDetails {
     private String sido;
     private String sigungu;
     private String details;
+    private String fullName;
     private Float latitude;
     private Float longitude;
 
@@ -23,6 +24,7 @@ public class AddressDetails {
         this.sido = address.getSido();
         this.sigungu = address.getSigungu();
         this.details = address.getDetails();
+        this.fullName = address.getFullName();
         this.latitude = coordinate.getLatitude();
         this.longitude = coordinate.getLongitude();
     }

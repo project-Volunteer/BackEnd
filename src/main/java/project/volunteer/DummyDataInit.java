@@ -97,55 +97,55 @@ public class DummyDataInit {
         //단기 모집글 더미 데이터 세팅
         Recruitment dummyRecruitment1= Recruitment.createRecruitment("recruitment1", "recruitment1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
                 VolunteeringType.IRREG, VolunteerType.TEENAGER, 15, true, "organization1",
-                Address.createAddress("11", "11010", "details1"),
+                Address.createAddress("11", "11010", "details1", "fullName1"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(9), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment1.setWriter(dummyUser1);
         Recruitment dummyRecruitment2= Recruitment.createRecruitment("recruitment2", "recruitment2", VolunteeringCategory.CULTURAL_EVENT,
                 VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, true, "organization2",
-                Address.createAddress("11", "11020", "details2"),
+                Address.createAddress("11", "11020", "details2", "fullName2"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(2), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment2.setWriter(dummyUser2);
         Recruitment dummyRecruitment3= Recruitment.createRecruitment("recruitment3", "recruitment3", VolunteeringCategory.RESIDENTIAL_ENV,
                 VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, true, "organization3",
-                Address.createAddress("11", "11030", "details3"),
+                Address.createAddress("11", "11030", "details3", "fullName3"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment3.setWriter(dummyUser3);
         Recruitment dummyRecruitment4 = Recruitment.createRecruitment("recruitment4", "recruitment4", VolunteeringCategory.HOMELESS_DOG,
                 VolunteeringType.IRREG, VolunteerType.ADULT, 10, true, "organization4",
-                Address.createAddress("11", "11040", "detail4"),
+                Address.createAddress("11", "11040", "detail4", "fullName4"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(4), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment4.setWriter(dummyUser4);
         Recruitment dummyRecruitment5= Recruitment.createRecruitment("recruitment5", "recruitment5", VolunteeringCategory.FRAM_VILLAGE,
                 VolunteeringType.IRREG, VolunteerType.ADULT, 10, true, "organization5",
-                Address.createAddress("11", "11050", "details5"),
+                Address.createAddress("11", "11050", "details5", "fullName5"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(5), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment5.setWriter(dummyUser5);
         Recruitment dummyRecruitment6= Recruitment.createRecruitment("recruitment6", "recruitment6", VolunteeringCategory.HEALTH_MEDICAL,
                 VolunteeringType.IRREG, VolunteerType.ADULT, 10, true, "organization6",
-                Address.createAddress("11", "11060", "details6"),
+                Address.createAddress("11", "11060", "details6", "fullName6"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(6), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment6.setWriter(dummyUser6);
         Recruitment dummyRecruitment7= Recruitment.createRecruitment("recruitment7", "recruitment7", VolunteeringCategory.EDUCATION,
                 VolunteeringType.IRREG, VolunteerType.ALL, 10, true, "organization7",
-                Address.createAddress("11", "11070", "details7"),
+                Address.createAddress("11", "11070", "details7", "fullName7"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(7), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment7.setWriter(dummyUser7);
         Recruitment dummyRecruitment8= Recruitment.createRecruitment("recruitment8", "recruitment8", VolunteeringCategory.DISASTER,
                 VolunteeringType.IRREG, VolunteerType.ALL, 10, true, "organization8",
-                Address.createAddress("11", "11080", "details8"),
+                Address.createAddress("11", "11080", "details8", "fullName8"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(8), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment8.setWriter(dummyUser8);
         Recruitment dummyRecruitment9= Recruitment.createRecruitment("recruitment9", "recruitment9", VolunteeringCategory.FOREIGN_COUNTRY,
                 VolunteeringType.IRREG, VolunteerType.ALL, 10, true, "organization9",
-                Address.createAddress("11", "11090", "details9"),
+                Address.createAddress("11", "11090", "details9", "fullName9"),
                 Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(8), HourFormat.AM, LocalTime.now(), 10), true);
         dummyRecruitment9.setWriter(dummyUser9);
@@ -183,11 +183,11 @@ public class DummyDataInit {
         //스케줄 더미데이터 세팅
         Schedule dummySchedule1 = Schedule.createSchedule(Timetable.createTimetable(
                         LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(2), HourFormat.AM, LocalTime.now(), 5),
-                "content1", "organization1", Address.createAddress("11", "11010", "details1"), 10);
+                "content1", "organization1", Address.createAddress("11", "11010", "details1", "fullName1"), 10);
         dummySchedule1.setRecruitment(dummyRecruitment1);
         Schedule dummySchedule2 = Schedule.createSchedule(Timetable.createTimetable(
                         LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 5),
-                "content2", "organization1", Address.createAddress("11", "11010", "details1"), 10);
+                "content2", "organization1", Address.createAddress("11", "11010", "details1", "fullName2"), 10);
         dummySchedule2.setRecruitment(dummyRecruitment1);
         scheduleRepository.save(dummySchedule1);
         scheduleRepository.save(dummySchedule2);

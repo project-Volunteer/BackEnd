@@ -25,7 +25,7 @@ public class ScheduleParamReg {
 
     @Builder
     public ScheduleParamReg(String startDay, String endDay, String hourFormat, String startTime, int progressTime,
-                            String organizationName, String sido, String sigungu, String details, String content,int volunteerNum,
+                            String organizationName, String sido, String sigungu, String details, String fullName, String content,int volunteerNum,
                             RepeatPeriodParam periodParam){
         this.timetable = Timetable.builder()
                 .startDay(LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
@@ -38,6 +38,7 @@ public class ScheduleParamReg {
                 .sido(sido)
                 .sigungu(sigungu)
                 .details(details)
+            .fullName(fullName)
                 .build();
         this.repeatPeriodParam = periodParam;
         this.organizationName = organizationName;
