@@ -21,18 +21,23 @@ public class Address {
     @Column(length = 50, nullable = false)
     private String details;
 
+    @Column(nullable = false)
+    private String fullName;
+
     @Builder
-    public Address(String sido, String sigungu, String details){
+    public Address(String sido, String sigungu, String details, String fullName){
         this.sido = sido;
         this.sigungu = sigungu;
         this.details = details;
+        this.fullName = fullName;
     }
 
-    public static Address createAddress(String sido, String sigungu, String details){
-        Address address = new Address();
-        address.sido = sido;
-        address.sigungu  = sigungu;
-        address.details = details;
-        return address;
+    public static Address createAddress(String sido, String sigungu, String details, String fullName){
+        return Address.builder()
+            .sido(sido)
+            .sigungu(sigungu)
+            .details(details)
+            .fullName(fullName)
+            .build();
     }
 }

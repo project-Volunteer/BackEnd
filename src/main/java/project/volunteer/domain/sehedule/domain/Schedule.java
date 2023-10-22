@@ -22,12 +22,16 @@ public class Schedule extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "scheduleno")
     private Long scheduleNo;
+
     @Embedded
     private Timetable scheduleTimeTable;
+
     @Column(name = "organization_name", length = 50, nullable = false)
     private String organizationName;
+
     @Embedded
     private Address address;
+
     @Column(length = 50)
     private String content;
 

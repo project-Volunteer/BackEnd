@@ -58,7 +58,7 @@ public class RecruitmentFacade {
             scheduleService.addRegSchedule(recruitment,
                     new ScheduleParamReg(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
                             form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
-                            form.getContent(), form.getVolunteerNum(), periodParam));
+                            form.getAddress().getFullName(), form.getContent(), form.getVolunteerNum(), periodParam));
         }
 
         //업로드 이미지 저장

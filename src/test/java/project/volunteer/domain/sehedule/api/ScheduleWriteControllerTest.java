@@ -72,7 +72,7 @@ class ScheduleWriteControllerTest {
         userRepository.save(writer);
 
         //Embedded 값 세팅
-        Address recruitmentAddress = Address.createAddress("1", "111", "test");
+        Address recruitmentAddress = Address.createAddress("1", "111", "test", "fullName");
         Timetable recruitmentTimetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
@@ -94,6 +94,7 @@ class ScheduleWriteControllerTest {
         final String sido = "1";
         final String sigungu = "1111";
         final String details = "details";
+        final String fullName = "fullName";
         final String startDay = "05-26-2023";
         final String hourFormat = "AM";
         final String startTime = "10:00";
@@ -101,7 +102,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when
@@ -126,6 +127,7 @@ class ScheduleWriteControllerTest {
                                         fieldWithPath("address.sido").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 5이하")).description("시/도 코드"),
                                         fieldWithPath("address.sigungu").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 10이하")).description("시/군/구/ 코드"),
                                         fieldWithPath("address.details").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 50이하")).description("상세주소"),
+                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 255이하")).description("전체 주소 이름"),
                                         fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 시작날짜"),
                                         fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
                                         fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 일정 시작시간"),
@@ -149,6 +151,7 @@ class ScheduleWriteControllerTest {
         final String sido = "1";
         final String sigungu = "1111";
         final String details = "details";
+        final String fullName = "fullName";
         final String startDay = "05-26-2023";
         final String hourFormat = "AM";
         final String startTime = "10:00";
@@ -156,7 +159,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -178,6 +181,7 @@ class ScheduleWriteControllerTest {
         final String sido = "1";
         final String sigungu = "1111";
         final String details = "details";
+        final String fullName = "fullName";
         final String startDay = "05-26-2023";
         final String hourFormat = "AM";
         final String startTime = "10:00";
@@ -185,7 +189,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 100; //max 조건 위반
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -207,6 +211,7 @@ class ScheduleWriteControllerTest {
         final String sido = "1";
         final String sigungu = "1111";
         final String details = "details";
+        final String fullName = "fullName";
         final String startDay = "05-26-2023";
         final String hourFormat = "AM";
         final String startTime = "10:00";
@@ -214,7 +219,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 20; //봉사 팀원 최대인원보다 작아야 된다.
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details), startDay, hourFormat, startTime, progressTime,
+        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then

@@ -173,10 +173,10 @@ public class UserControllerRecruitingTest {
 		Boolean isPublished = true;
 
 		RecruitmentParam saveRecruitDto1 = new RecruitmentParam(category1, organizationName, sido1, sigungu1,
-				details, latitude, longitude, isIssued1, volunteerType1, volunteerNum1, volunteeringType, startDay,
+				details, "fullName", latitude, longitude, isIssued1, volunteerType1, volunteerNum1, volunteeringType, startDay,
 				endDay, hourFormat, startTime, progressTime, title, content, isPublished);
 		RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2,
-				details, latitude, longitude, isIssued2, volunteerType2, volunteerNum2, volunteeringType, startDay,
+				details, "fullName", latitude, longitude, isIssued2, volunteerType2, volunteerNum2, volunteeringType, startDay,
 				endDay, hourFormat, startTime, progressTime, title, content, isPublished);
 		Long no1 = recruitmentService.addRecruitment(saveUser, saveRecruitDto1).getRecruitmentNo();
 		Long no2 = recruitmentService.addRecruitment(saveUser, saveRecruitDto2).getRecruitmentNo();

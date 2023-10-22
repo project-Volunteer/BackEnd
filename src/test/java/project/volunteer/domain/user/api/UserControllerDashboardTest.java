@@ -597,7 +597,7 @@ public class UserControllerDashboardTest {
                 , 10
                 , true
                 , "recruitment organizationName "+num
-                , Address.createAddress("Rido"+num,"Rigungu"+num,"detail"+num)
+                , Address.createAddress("Rido"+num,"Rigungu"+num,"detail"+num, "fullName"+num)
                 , Coordinate.createCoordinate(Float.valueOf(num+num+num+num), Float.valueOf(num+num+num))
                 , Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(1), HourFormat.AM, LocalTime.now(), progressTime)
                 , published);
@@ -607,7 +607,7 @@ public class UserControllerDashboardTest {
         return new ScheduleParam(
                   Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), progressTime)
                 , "schedule organizationName"+num
-                , Address.createAddress("Sido"+num, "Sigungu"+num, "details"+num)
+                , Address.createAddress("Sido"+num, "Sigungu"+num, "details"+num, "fullName"+num)
                 , "schedule content"+num
                 , 10);
     }

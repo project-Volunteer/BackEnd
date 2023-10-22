@@ -28,6 +28,10 @@ public class AddressRequest {
     private String details;
 
     @NotNull
+    @Length(min = 1, max = 255)
+    private String fullName;
+
+    @NotNull
     private Float latitude;
 
     @NotNull

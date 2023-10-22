@@ -23,7 +23,7 @@ public class ScheduleParam {
 
     @Builder
     public ScheduleParam(String startDay, String endDay, String hourFormat, String startTime, int progressTime,
-                         String organizationName, String sido, String sigungu, String details, String content, int volunteerNum){
+                         String organizationName, String sido, String sigungu, String details, String fullName, String content, int volunteerNum){
 
         this.timetable = Timetable.builder()
                 .startDay(LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
@@ -37,6 +37,7 @@ public class ScheduleParam {
                 .sido(sido)
                 .sigungu(sigungu)
                 .details(details)
+                .fullName(fullName)
                 .build();
         this.organizationName = organizationName;
         this.content = content;

@@ -70,7 +70,7 @@ public class ScheduleServiceImpl implements ScheduleService{
                             dto.getTimetable().getStartTime(), dto.getTimetable().getProgressTime());
 
                     Address address =
-                            Address.createAddress(dto.getAddress().getSido(), dto.getAddress().getSigungu(), dto.getAddress().getDetails());
+                            Address.createAddress(dto.getAddress().getSido(), dto.getAddress().getSigungu(), dto.getAddress().getDetails(), dto.getAddress().getFullName());
 
                     Schedule schedule =
                             Schedule.createSchedule(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());

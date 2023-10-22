@@ -56,7 +56,7 @@ class ConfirmationServiceImplTest {
         //모집글 저장
         Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
                 VolunteerType.TEENAGER, 3, true, "organization",
-                Address.createAddress("11", "1111","details"), Coordinate.createCoordinate(3.2F, 3.2F),
+                Address.createAddress("11", "1111","details", "fullName"), Coordinate.createCoordinate(3.2F, 3.2F),
                 Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3), true);
         createRecruitment.setWriter(writerUser);
         saveRecruitment = recruitmentRepository.save(createRecruitment);

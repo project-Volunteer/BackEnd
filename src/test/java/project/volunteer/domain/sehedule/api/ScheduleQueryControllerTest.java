@@ -80,7 +80,7 @@ class ScheduleQueryControllerTest {
         userRepository.save(writer);
 
         //Embedded 값 세팅
-        Address recruitmentAddress = Address.createAddress("1", "111", "test");
+        Address recruitmentAddress = Address.createAddress("1", "111", "test", "fullName");
         Timetable recruitmentTimetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
@@ -104,7 +104,7 @@ class ScheduleQueryControllerTest {
 
     private Schedule 스케줄_등록(LocalDate startDay, int volunteerNum){
         Timetable timetable = Timetable.createTimetable(startDay, startDay, HourFormat.AM, LocalTime.now(), 10);
-        Address address = Address.createAddress("1", "111", "test");
+        Address address = Address.createAddress("1", "111", "test", "fullName");
 
         Schedule schedule = Schedule.createSchedule(timetable, "test" ,"test", address, volunteerNum);
         schedule.setRecruitment(saveRecruitment);
@@ -146,6 +146,7 @@ class ScheduleQueryControllerTest {
                                         fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("address.sigungu").type(JsonFieldType.STRING).description("시/군/구/ 코드"),
                                         fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING).description("전체 주소 이름"),
                                         fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 시작날짜"),
                                         fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 일정 시작시간"),
                                         fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
@@ -374,6 +375,7 @@ class ScheduleQueryControllerTest {
                                         fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("address.sigungu").type(JsonFieldType.STRING).description("시/군/구/ 코드"),
                                         fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING).description("전체 주소 이름"),
                                         fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 시작날짜"),
                                         fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 일정 시작시간"),
                                         fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),

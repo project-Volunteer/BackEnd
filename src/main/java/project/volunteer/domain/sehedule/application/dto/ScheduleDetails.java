@@ -32,13 +32,15 @@ public class ScheduleDetails {
         String sido;
         String sigungu;
         String details;
+        String fullName;
     }
 
     public static ScheduleDetails createScheduleDetails(Schedule schedule, String state) {
 
         ScheduleDetails scheduleDetails = new ScheduleDetails();
         scheduleDetails.no = schedule.getScheduleNo();
-        scheduleDetails.address = new Address(schedule.getAddress().getSido(), schedule.getAddress().getSigungu(), schedule.getAddress().getDetails());
+        scheduleDetails.address = new Address(
+            schedule.getAddress().getSido(), schedule.getAddress().getSigungu(), schedule.getAddress().getDetails(), schedule.getAddress().getFullName());
         scheduleDetails.startDay = schedule.getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         scheduleDetails.startTime = schedule.getScheduleTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
         scheduleDetails.hourFormat = schedule.getScheduleTimeTable().getHourFormat().getDesc();

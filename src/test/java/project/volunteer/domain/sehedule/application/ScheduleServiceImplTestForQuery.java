@@ -51,7 +51,7 @@ class ScheduleServiceImplTestForQuery {
         userRepository.save(writer);
 
         //Embedded 값 세팅
-        Address address = Address.createAddress("1", "111", "test");
+        Address address = Address.createAddress("1", "111", "test", "fullName");
         Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 
@@ -76,7 +76,7 @@ class ScheduleServiceImplTestForQuery {
     }
     private Schedule 스케줄_등록(LocalDate day, int volunteerNum){
         Timetable timetable = Timetable.createTimetable(day, day, HourFormat.AM, LocalTime.now(), 10);
-        Address address = Address.createAddress("1", "111", "test");
+        Address address = Address.createAddress("1", "111", "test", "fullName");
 
         Schedule schedule = Schedule.createSchedule(timetable, "test" ,"test", address, volunteerNum);
         schedule.setRecruitment(saveRecruitment);

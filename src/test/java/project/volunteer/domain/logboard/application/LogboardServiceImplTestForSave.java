@@ -134,7 +134,7 @@ public class LogboardServiceImplTestForSave {
         VolunteerType volunteerType = VolunteerType.ALL;
         Boolean isIssued = true;
         String details = "details";
-        Address address = new Address("11", "110011", details);
+        Address address = new Address("11", "110011", details, "fullName");
         int volunteerNum = 10;
 
 		Recruitment createRecruitment = Recruitment.builder()

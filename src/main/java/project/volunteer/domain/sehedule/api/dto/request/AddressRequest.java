@@ -25,4 +25,8 @@ public class AddressRequest {
     @NotNull
     @Length(min = 1, max = 50)
     private String details;
+
+    @NotNull
+    @Length(min = 1, max = 255)
+    private String fullName;
 }

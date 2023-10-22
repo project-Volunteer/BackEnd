@@ -78,7 +78,7 @@ class RecruitmentEditControllerTest {
         userRepository.save(writer);
 
         //Embedded 값 세팅
-        Address recruitmentAddress = Address.createAddress("1", "111", "test");
+        Address recruitmentAddress = Address.createAddress("1", "111", "test", "fullName");
         Timetable recruitmentTimetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 10);
         Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
 

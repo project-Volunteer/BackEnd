@@ -68,7 +68,7 @@ class RecruitmentServiceImplTestForSave {
         final int volunteerNum = 4;
         final Boolean isIssued = true;
         final  String organizationName = "name";
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3);
         final  Boolean isPublished = true;
@@ -100,7 +100,7 @@ class RecruitmentServiceImplTestForSave {
         final int volunteerNum = 4;
         final Boolean isIssued = true;
         final  String organizationName = "name";
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3);
         final  Boolean isPublished = true;
@@ -142,7 +142,7 @@ class RecruitmentServiceImplTestForSave {
         final int volunteerNum = 4;
         final Boolean isIssued = true;
         final  String organizationName = "name";
-        final Address address = Address.createAddress("1", "111", "details");
+        final Address address = Address.createAddress("1", "111", "details", "fullName");
         final Coordinate coordinate = Coordinate.createCoordinate(3.2F, 3.2F);
         final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3);
         final  Boolean isPublished = true;

@@ -52,6 +52,7 @@ public class ScheduleController {
                         .sido(saveDto.getAddress().getSido())
                         .sigungu(saveDto.getAddress().getSigungu())
                         .details(saveDto.getAddress().getDetails())
+                        .fullName(saveDto.getAddress().getFullName())
                         .content(saveDto.getContent())
                         .volunteerNum(saveDto.getVolunteerNum())
                         .build());
@@ -76,6 +77,7 @@ public class ScheduleController {
                         .sido(editDto.getAddress().getSido())
                         .sigungu(editDto.getAddress().getSigungu())
                         .details(editDto.getAddress().getDetails())
+                        .fullName(editDto.getAddress().getFullName())
                         .content(editDto.getContent())
                         .volunteerNum(editDto.getVolunteerNum())
                         .build());
