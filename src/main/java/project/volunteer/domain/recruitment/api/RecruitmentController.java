@@ -12,7 +12,6 @@ import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
 import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.application.RecruitmentDtoService;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.util.SecurityUtil;
@@ -47,8 +46,15 @@ public class RecruitmentController {
                                                                    @RequestParam(required = false) String volunteer_type,
                                                                    @RequestParam(required = false) Boolean is_issued) {
 
-        return ResponseEntity.ok(recruitmentDtoService.findSliceOptimizerRecruitmentDtos(pageable,
+        return ResponseEntity.ok(recruitmentDtoService.findSliceRecruitmentDtosByRecruitmentCond(pageable,
                 new RecruitmentCond(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued)));
+    }
+
+    @GetMapping("/recruitment/search")
+    public ResponseEntity<RecruitmentListResponse> recruitmentListByKeyWord(@PageableDefault(size = 6) Pageable pageable,
+                                                                            @RequestParam String keyword){
+
+        return ResponseEntity.ok(recruitmentDtoService.findSliceRecruitmentDtosByKeyWord(pageable, keyword));
     }
 
     @GetMapping("/recruitment/count")

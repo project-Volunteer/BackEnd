@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -30,6 +30,15 @@ public class RecruitmentControllerAdvice {
         String message = ms.getMessage(ErrorCode.INVALID_ATTRIBUTE.getPropertiesCode(), null, null);
         log.info("Error Code = {}, Details = {}", ErrorCode.INVALID_ATTRIBUTE, e.getMessage(), e);
 
+        return new BaseErrorResponse(message);
+    }
+
+    //@RequestParam 필수 파라미터 누락 예외 처리
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public BaseErrorResponse MissingServletRequestParameterException(MissingServletRequestParameterException e){
+        String message = ms.getMessage(ErrorCode.MISSING_REQUEST_PARAMETER.getPropertiesCode(), null, null);
+        log.info("Error Code = {} , Details = {}", ErrorCode.MISSING_REQUEST_PARAMETER, e.getMessage(), e);
         return new BaseErrorResponse(message);
     }
 

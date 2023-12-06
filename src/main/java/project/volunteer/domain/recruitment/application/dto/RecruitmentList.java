@@ -28,7 +28,7 @@ public class RecruitmentList {
     private String volunteerType;
 
     //TODO: 정적 팩터리 메서드 리팩토링
-    public static RecruitmentList createRecruitmentList(RecruitmentListQuery recruitmentDto) {
+    public static RecruitmentList createRecruitmentList(RecruitmentListQuery recruitmentDto, Long currentVolunteerNum) {
         RecruitmentList dto = new RecruitmentList();
         dto.no = recruitmentDto.getNo();
         dto.volunteeringCategory = recruitmentDto.getCategory().getId();
@@ -42,7 +42,7 @@ public class RecruitmentList {
         dto.volunteerNum = recruitmentDto.getVolunteerNum();
         dto.isIssued = recruitmentDto.getIsIssued();
         //TODO: 쿼리에서 Integer로 조회가 안되서?
-        dto.currentVolunteerNum = recruitmentDto.getCurrentVolunteerNum().intValue(); //Long 이지만 int 를 실제로 넘을수 없다.(모집 인원수가 int로 정해져있어서)
+        dto.currentVolunteerNum = currentVolunteerNum.intValue(); //Long 이지만 int 를 실제로 넘을수 없다.(모집 인원수가 int로 정해져있어서)
         dto.volunteerType = recruitmentDto.getVolunteerType().getId();
         return dto;
     }

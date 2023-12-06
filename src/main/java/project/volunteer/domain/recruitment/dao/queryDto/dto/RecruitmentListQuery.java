@@ -27,7 +27,7 @@ public class RecruitmentListQuery {
     private VolunteerType volunteerType;
     private Boolean isIssued;
     private Integer volunteerNum;
-    private Long currentVolunteerNum; //참여자 매핑 테이블에서 추출
+//    private Long currentVolunteerNum; //참여자 매핑 테이블에서 추출
     private String uploadImage; //storage 테이블에서 추출
 
     @QueryProjection
