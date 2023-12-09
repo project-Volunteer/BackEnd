@@ -74,7 +74,7 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
         List<RecruitmentListQuery> content = jpaQueryFactory
                 .select(
                         new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.volunteeringCategory,recruitment.title,
-                                recruitment.address.sido, recruitment.address.sigungu,
+                                recruitment.address.sido, recruitment.address.sigungu, recruitment.address.fullName,
                                 recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
                                 recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, storage.imagePath))
                 .from(recruitment)
