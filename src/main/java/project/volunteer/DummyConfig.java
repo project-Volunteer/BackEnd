@@ -27,7 +27,7 @@ public class DummyConfig {
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Bean
-    @Profile("prod")
+//    @Profile("prod")
     public DummyDataInit dummyDataInit(){
         return new DummyDataInit(userRepository, recruitmentRepository, repeatPeriodRepository, imageRepository, storageRepository,participantRepository,
                 scheduleRepository, scheduleParticipationRepository);
