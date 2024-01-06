@@ -21,9 +21,12 @@ include::{snippets}/user-controller-dashboard-test/mypage-info/request-headers.a
 *HTTP Response*
 include::{snippets}/user-controller-dashboard-test/mypage-info/http-response.adoc[]
 
+*Response Body*
+include::{snippets}/user-controller-dashboard-test/mypage-info/response-fields.adoc[]
 
 
-=== 마이페이지 프로필 수정
+
+=== 프로필 수정
 
 ==== 발생 가능 예외
 |===
@@ -46,11 +49,13 @@ include::{snippets}/user-controller-info-update-test/profile-modify/request-part
 *Request Parameters*
 include::{snippets}/user-controller-info-update-test/profile-modify/request-parameters.adoc[]
 
+==== 응답
+*HTTP Response*
+include::{snippets}/user-controller-info-update-test/profile-modify/http-response.adoc[]
 
 
 
-
-=== 마이페이지 봉사이력 리스트 조회
+=== 나의 봉사이력 리스트 조회
 
 ==== 발생 가능 예외
 |===
@@ -69,12 +74,14 @@ include::{snippets}/user-controller-dashboard-test/mypage-history/request-header
 *HTTP Response*
 include::{snippets}/user-controller-dashboard-test/mypage-history/http-response.adoc[]
 
+*Response Body*
+include::{snippets}/user-controller-dashboard-test/mypage-history/response-fields.adoc[]
 
 
 
 
 
-=== 마이페이지 모집글 승인대기 리스트 조회
+=== 나의 모집글 승인대기 리스트 조회
 
 ==== 발생 가능 예외
 |===
@@ -93,12 +100,14 @@ include::{snippets}/user-controller-join-request-test/mypage-join-request/reques
 *HTTP Response*
 include::{snippets}/user-controller-join-request-test/mypage-join-request/http-response.adoc[]
 
+*Response Body*
+include::{snippets}/user-controller-join-request-test/mypage-join-request/response-fields.adoc[]
 
 
 
 
 
-=== 마이페이지 모집중인 모집글 리스트 조회
+=== 나의 모집중인 모집글 리스트 조회
 
 ==== 발생 가능 예외
 |===
@@ -117,55 +126,13 @@ include::{snippets}/user-controller-recruiting-test/mypage-recruiting/request-he
 *HTTP Response*
 include::{snippets}/user-controller-recruiting-test/mypage-recruiting/http-response.adoc[]
 
+*Response Body*
+include::{snippets}/user-controller-recruiting-test/mypage-recruiting/response-fields.adoc[]
 
 
 
 
-=== 마이페이지 참여중인 일정 조회
-
-==== 발생 가능 예외
-|===
-|HTTP 상태코드|메시지
-|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
-|===
-
-==== 요청
-*HTTP Request*
-include::{snippets}/user-controller-dashboard-test/mypage-schedule/http-request.adoc[]
-
-*Request Header*
-include::{snippets}/user-controller-dashboard-test/mypage-schedule/request-headers.adoc[]
-
-==== 응답
-*HTTP Response*
-include::{snippets}/user-controller-dashboard-test/mypage-schedule/http-response.adoc[]
-
-
-
-
-=== 마이페이지 참여중인 봉사 모집글 조회
-
-==== 발생 가능 예외
-|===
-|HTTP 상태코드|메시지
-|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
-|===
-
-==== 요청
-*HTTP Request*
-include::{snippets}/user-controller-dashboard-test/mypage-recruitment/http-request.adoc[]
-
-*Request Header*
-include::{snippets}/user-controller-dashboard-test/mypage-recruitment/request-headers.adoc[]
-
-==== 응답
-*HTTP Response*
-include::{snippets}/user-controller-dashboard-test/mypage-recruitment/http-response.adoc[]
-
-
-
-
-=== 마이페이지 임시저장 봉사 모집글 조회
+=== 나의 임시저장 봉사 모집글 조회
 
 ==== 발생 가능 예외
 |===
@@ -184,10 +151,13 @@ include::{snippets}/user-controller-dashboard-test/mypage-recruitment-temp/reque
 *HTTP Response*
 include::{snippets}/user-controller-dashboard-test/mypage-recruitment-temp/http-response.adoc[]
 
+*Response Body*
+include::{snippets}/user-controller-dashboard-test/mypage-recruitment-temp/response-fields.adoc[]
 
 
 
-=== 마이페이지 임시저장 봉사 로그 조회
+
+=== 나의 임시저장 봉사 로그 조회
 
 ==== 발생 가능 예외
 |===
@@ -206,10 +176,13 @@ include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp/request-
 *HTTP Response*
 include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp/http-response.adoc[]
 
+*Response Body*
+include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp/response-fields.adoc[]
 
 
 
-=== 마이페이지 임시저장 봉사 모집글 삭제
+
+=== 나의 임시저장 봉사 모집글 삭제
 
 ==== 발생 가능 예외
 |===
@@ -226,9 +199,16 @@ include::{snippets}/user-controller-dashboard-test/mypage-recruitment-temp-delet
 *Request Header*
 include::{snippets}/user-controller-dashboard-test/mypage-recruitment-temp-delete/request-headers.adoc[]
 
+*Request Body*
+include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp-delete/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp-delete/http-response.adoc[]
 
 
-=== 마이페이지 임시저장 봉사 로그 삭제
+
+=== 나의 임시저장 봉사 로그 삭제
 
 ==== 발생 가능 예외
 |===
@@ -244,6 +224,61 @@ include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp-delete/h
 
 *Request Header*
 include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp-delete/request-headers.adoc[]
+
+*Request Body*
+include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp-delete/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/user-controller-dashboard-test/mypage-logboard-temp-delete/http-response.adoc[]
+
+
+
+=== 나의 참여중인 일정 조회
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/user-controller-dashboard-test/mypage-schedule/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/user-controller-dashboard-test/mypage-schedule/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/user-controller-dashboard-test/mypage-schedule/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/user-controller-dashboard-test/mypage-schedule/response-fields.adoc[]
+
+
+
+=== 나의 참여중인 봉사 모집글 조회
+
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|401| 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/user-controller-dashboard-test/mypage-recruitment/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/user-controller-dashboard-test/mypage-recruitment/request-headers.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/user-controller-dashboard-test/mypage-recruitment/http-response.adoc[]
+
+*Response Body*
+include::{snippets}/user-controller-dashboard-test/mypage-recruitment/response-fields.adoc[]
 
 
 
@@ -268,6 +303,8 @@ include::{snippets}/user-controller-alarm-test/mypage-alarm/request-headers.adoc
 *HTTP Response*
 include::{snippets}/user-controller-alarm-test/mypage-alarm/http-response.adoc[]
 
+*Response Body*
+include::{snippets}/user-controller-alarm-test/mypage-alarm/response-fields.adoc[]
 
 
 === 마이페이지 이메일 수신 여부 수정
@@ -285,3 +322,10 @@ include::{snippets}/user-controller-alarm-test/mypage-alarm-modify/http-request.
 
 *Request Header*
 include::{snippets}/user-controller-alarm-test/mypage-alarm-modify/request-headers.adoc[]
+
+*Request Body*
+include::{snippets}/user-controller-alarm-test/mypage-alarm-modify/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/user-controller-alarm-test/mypage-alarm-modify/http-response.adoc[]

@@ -27,7 +27,6 @@ public class CustomLogboardRepositoryImpl implements CustomLogboardRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     
-    // TODO : 댓글 카운트 관련 쿼리 미완성
 	@Override
 	public Slice<LogboardListQuery> findLogboardDtos(Pageable pageable, String searchType, Long writerNo, Long lastId) {
 		List<LogboardListQuery> results =

@@ -1,11 +1,12 @@
 package project.volunteer.domain.logboard.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -196,10 +197,11 @@ public class LogboardController {
 	}
 
 	@PostMapping("/logboard/{no}/like")
-	public ResponseEntity logboardLike(@PathVariable Long no) {
-		logboardService.likeLogboard(SecurityUtil.getLoginUserNo(), no);
+	public ResponseEntity<Map<String, Boolean>> logboardLike(@PathVariable Long no) {
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("isLikeMe", logboardService.likeLogboard(SecurityUtil.getLoginUserNo(), no));
 
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/logboard/{logNo}/comment")

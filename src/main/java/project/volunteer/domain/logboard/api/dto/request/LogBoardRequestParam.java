@@ -21,7 +21,6 @@ public class LogBoardRequestParam {
     private List<MultipartFile> uploadImage = new ArrayList<>();
     
     @NotNull
-    @Length(min = 1, max = 255)
     private String content;
 
     @NotNull

@@ -120,7 +120,7 @@ public class UserControllerInfoUpdateTest {
 										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
 								),
 								requestParts(
-										partWithName("profile").description("변경할 프로필 이미지")
+										partWithName("profile").optional().description("변경할 프로필 이미지")
 								),
 								requestParameters(
 										parameterWithName("nickName").description("변경할 닉네임"),

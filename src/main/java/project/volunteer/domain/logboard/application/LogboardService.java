@@ -14,5 +14,5 @@ public interface LogboardService {
 
     LogboardDetail detailLog(Long no);
 
-    void likeLogboard(Long loginUserNo, Long no);
+    Boolean likeLogboard(Long loginUserNo, Long no);
 }

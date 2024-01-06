@@ -300,7 +300,7 @@ public class LogboardContollerTestForQuery {
 		//when & then
 		mockMvc.perform(
 						post("/logboard/"+logboardList.get(0).getLogboardNo()+"/like"))
-				.andExpect(status().isCreated())
+				.andExpect(status().isOk())
 				.andDo(print());
 	}
 

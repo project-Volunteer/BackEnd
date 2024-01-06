@@ -117,7 +117,8 @@ public class LogboardServiceImpl implements LogboardService{
 
 	@Override
 	@Transactional
-	public void likeLogboard(Long userNo, Long no) {
+	public Boolean likeLogboard(Long userNo, Long no) {
+		Boolean isLikeMe = true;
 		//로그 존재 유무 확인(낙관적락 사용)
 		Logboard findLogboard = logboardValidate.validateAndGetLogboardWithOPTIMSTIC_LOCK(no);
 
@@ -126,6 +127,7 @@ public class LogboardServiceImpl implements LogboardService{
 		if(findLike.isPresent()){
 			likeRepository.delete(findLike.get());
 			findLogboard.decreaseLikeNum();
+			isLikeMe = false;
 		} else{
 			Like createLike = Like.createLike(RealWorkCode.NOTICE, findLogboard.getLogboardNo());
 			User loginUser = userValidate.validateAndGetUser(userNo);
@@ -133,8 +135,9 @@ public class LogboardServiceImpl implements LogboardService{
 
 			likeRepository.save(createLike);
 			findLogboard.increaseLikeNum();
+			isLikeMe = true;
 		}
-
+	return isLikeMe;
 	}
 
 

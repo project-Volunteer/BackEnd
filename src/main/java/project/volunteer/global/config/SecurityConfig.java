@@ -134,7 +134,7 @@ public class SecurityConfig {
 					.antMatchers(HttpMethod.POST, "/logboard").hasAuthority("USER")
 					.antMatchers(HttpMethod.GET, "/logboard/edit/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.POST, "/logboard/edit/*").hasAuthority("USER")
-					.antMatchers(HttpMethod.DELETE, "/logboard").hasAuthority("USER")
+					.antMatchers(HttpMethod.DELETE, "/logboard/*").hasAuthority("USER")
 					.antMatchers(HttpMethod.POST, "/logboard/*/like").hasAuthority("USER")
 					.antMatchers(HttpMethod.POST, "/logboard/*/comment").hasAuthority("USER")
 					.antMatchers(HttpMethod.PUT, "/logboard/*/comment/*/reply").hasAuthority("USER")

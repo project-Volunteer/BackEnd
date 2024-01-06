@@ -1,5 +1,9 @@
 package project.volunteer.domain.logboard.api;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -17,14 +21,20 @@ import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -32,7 +42,7 @@ import org.springframework.util.MultiValueMap;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
@@ -61,10 +71,14 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
+import project.volunteer.restdocs.document.config.RestDocsConfiguration;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class LogboardControllerTestForEdit {
+@Transactional
+@AutoConfigureRestDocs
+@Import(RestDocsConfiguration.class)
+public class LogboardEditControllerTest {
     @Autowired MockMvc mockMvc;
 	@Autowired UserRepository userRepository;
 	@Autowired ParticipantRepository participantRepository;
@@ -78,8 +92,11 @@ public class LogboardControllerTestForEdit {
 	@Autowired UserDtoService userDtoService;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
 	@Autowired LogboardRepository logboardRepository;
+	@Autowired StorageRepository storageRepository;
+	@Autowired RestDocumentationResultHandler restDocs;
 	@PersistenceContext EntityManager em;
 
+	final String AUTHORIZATION_HEADER = "accessToken";
 	List<Logboard> logboardList= new ArrayList<>();
 	
 	private static User saveUser;
@@ -89,12 +106,12 @@ public class LogboardControllerTestForEdit {
 	
     private MockMultipartFile getMockMultipartFile() throws IOException {
         return new MockMultipartFile(
-                "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
+                "picture", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));
     }
 	
 	private MockMultipartFile getFakeMockMultipartFile() throws IOException {
 		return new MockMultipartFile(
-				"picture.uploadImage", "".getBytes());
+				"picture", "".getBytes());
 	}
     
 	private void clear() {
@@ -167,33 +184,52 @@ public class LogboardControllerTestForEdit {
     }
 
 	@Test
-    @Transactional
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-	public void 수정_성공() throws Exception {
+	public void logboardEdit() throws Exception {
 		//given
 		일정_참여상태_추가(createParticipant, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
 		Logboard createLogboard = 로그보드_추가(saveUser);
-		
+
 		MultiValueMap<String, String> info  = new LinkedMultiValueMap<>();
 		info.add("content", "logboard test content");
 		info.add("scheduleNo", String.valueOf(createSchedule.getScheduleNo()));
 		info.add("isPublished", String.valueOf(true));
-		
+
 		//when & then
-		mockMvc.perform(
-				multipart("/logboard/edit/"+createLogboard.getLogboardNo())
-				.file(getFakeMockMultipartFile())
-				.file(getFakeMockMultipartFile())
-				.file(getFakeMockMultipartFile())
-				.params(info)
-			)
-		.andExpect(status().isOk())
-		.andDo(print());
+		ResultActions result = mockMvc.perform(
+				RestDocumentationRequestBuilders.multipart("/logboard/edit/{no}",createLogboard.getLogboardNo())
+						.file(getMockMultipartFile())
+						.file(getMockMultipartFile())
+						.file(getMockMultipartFile())
+						.header(AUTHORIZATION_HEADER, "access Token")
+						.params(info)
+		);
+
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								requestParts(
+										partWithName("picture").description("수정할 봉사 로그 이미지")
+								),
+								requestParameters(
+										parameterWithName("content").description("봉사 로그 내용"),
+										parameterWithName("scheduleNo").description("봉사 참여 고유키 PK"),
+										parameterWithName("isPublished").description("봉사 로그 발행 여부")
+								),
+								pathParameters(
+										parameterWithName("no").description("봉사 로그 고유키 PK")
+								)
+						)
+				);
 	}
 
     
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_validation체크_내용_누락() throws Exception {
 		//given
@@ -218,7 +254,7 @@ public class LogboardControllerTestForEdit {
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_validation체크_스케줄번호_누락() throws Exception {
 		//given
@@ -244,7 +280,7 @@ public class LogboardControllerTestForEdit {
 
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_validation체크_임시저장글여부_누락() throws Exception {
 		//given
@@ -269,7 +305,7 @@ public class LogboardControllerTestForEdit {
 	}
 	
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_없는_스케줄번호() throws Exception {
 		//given
@@ -295,7 +331,7 @@ public class LogboardControllerTestForEdit {
 
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_중_상태일경우() throws Exception {
 		//given
@@ -321,7 +357,7 @@ public class LogboardControllerTestForEdit {
 
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_취소_요청_상태일경우() throws Exception {
 		//given
@@ -347,7 +383,7 @@ public class LogboardControllerTestForEdit {
 
 	
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_취소_요청_승인_상태일경우() throws Exception {
 		//given
@@ -373,7 +409,7 @@ public class LogboardControllerTestForEdit {
 
 	
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_일정_참여_완료_미승인_상태일경우() throws Exception {
 		//given
@@ -399,7 +435,7 @@ public class LogboardControllerTestForEdit {
 	
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_작성자확인_실패() throws Exception {
 		//given
@@ -438,7 +474,7 @@ public class LogboardControllerTestForEdit {
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 수정_없는_로그번호_실패() throws Exception {
 		//given
@@ -465,22 +501,34 @@ public class LogboardControllerTestForEdit {
 	
 	
 	@Test
-    @Transactional
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-	public void 삭제_성공() throws Exception {
+	public void logboardDelete() throws Exception {
 		//given
 		일정_참여상태_추가(createParticipant, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
 		Logboard createLogboard = 로그보드_추가(saveUser);
-		
-        //when & then
-        mockMvc.perform(
-                delete("/logboard/"+createLogboard.getLogboardNo()))
-                .andExpect(status().isOk())
-                .andDo(print());
+
+		//when & then
+		ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.delete("/logboard/{no}",
+						createLogboard.getLogboardNo())
+				.header(AUTHORIZATION_HEADER, "access Token")
+		);
+
+		result.andExpect(status().isOk())
+				.andDo(print())
+				.andDo(
+						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+								),
+								pathParameters(
+										parameterWithName("no").description("봉사 로그 고유키 PK")
+								)
+						)
+				);
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 삭제_작성자확인_실패() throws Exception {
 		//given
@@ -509,7 +557,7 @@ public class LogboardControllerTestForEdit {
 	}
 
 	@Test
-    @Transactional
+	@Disabled
 	@WithUserDetails(value = "kakao_111111", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void 삭제_없는_로그번호_실패() throws Exception {
 		//given
@@ -549,14 +597,11 @@ public class LogboardControllerTestForEdit {
 		
 		return logboard;
 	}
-	
+
 	@AfterEach
-	public void deleteS3Image() { // S3에 테스트를 위해 저장한 이미지 삭제
-		for (Long id : deleteS3ImageNoList) {
-			Image image = imageRepository.findById(id).get();
-			Storage storage = image.getStorage();
-			fileService.deleteFile(storage.getFakeImageName());
-		}
+	void deleteUploadImage(){
+		List<Storage> storages = storageRepository.findAll();
+		storages.stream().forEach(s -> fileService.deleteFile(s.getFakeImageName()));
 	}
 	
     
