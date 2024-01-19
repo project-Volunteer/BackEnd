@@ -45,7 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ScheduleServiceImplTestForWrite {
 
     @PersistenceContext EntityManager em;
-    @Autowired ScheduleService scheduleService;
+    @Autowired
+    ScheduleCommandUseCase scheduleService;
     @Autowired ScheduleRepository scheduleRepository;
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentService recruitmentService;

@@ -29,7 +29,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,7 +43,8 @@ class ScheduleServiceImplTestForEdit {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired ScheduleService scheduleService;
+    @Autowired
+    ScheduleCommandUseCase scheduleService;
     @Autowired ParticipantRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
 

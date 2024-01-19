@@ -7,7 +7,8 @@ import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
-import project.volunteer.domain.sehedule.application.ScheduleService;
+import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
+import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -23,7 +24,9 @@ import java.util.List;
 public class ScheduleFacade {
     private final UserService userService;
     private final RecruitmentService recruitmentService;
-    private final ScheduleService scheduleService;
+    private final ScheduleCommandUseCase scheduleCommandService;
+    private final ScheduleQueryUseCase scheduleQueryService;
+
     private final ScheduleParticipationService scheduleParticipationService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
 
@@ -31,21 +34,21 @@ public class ScheduleFacade {
     public Long registerVolunteerPostSchedule(Long recruitmentNo, ScheduleParam param){
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        return scheduleService.addSchedule(recruitment, param).getScheduleNo();
+        return scheduleCommandService.addSchedule(recruitment, param).getScheduleNo();
     }
 
     @Transactional
     public Long editVolunteerPostSchedule(Long recruitmentNo, Long scheduleNo, ScheduleParam param){
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        return scheduleService.editSchedule(scheduleNo, recruitment, param).getScheduleNo();
+        return scheduleCommandService.editSchedule(scheduleNo, recruitment, param).getScheduleNo();
     }
 
     @Transactional
     public void deleteVolunteerPostSchedule(Long recruitmentNo, Long scheduleNo){
         recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        scheduleService.deleteSchedule(scheduleNo);
+        scheduleCommandService.deleteSchedule(scheduleNo);
 
         scheduleParticipationService.deleteScheduleParticipation(scheduleNo);
     }
@@ -53,14 +56,14 @@ public class ScheduleFacade {
     public List<Schedule> findVolunteerPostCalendarSchedules(Long recruitmentNo, LocalDate startDay, LocalDate endDay){
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        return scheduleService.findCalendarSchedules(recruitment, startDay, endDay);
+        return scheduleQueryService.findCalendarSchedules(recruitment, startDay, endDay);
     }
 
     public ScheduleDetails findVolunteerPostCalendarSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
         User user = userService.findUser(userNo);
         recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        Schedule calendarSchedule = scheduleService.findCalendarSchedule(scheduleNo);
+        Schedule calendarSchedule = scheduleQueryService.findCalendarSchedule(scheduleNo);
         String scheduleParticipationState = scheduleParticipationDtoService.findScheduleParticipationState(calendarSchedule, user);
 
         return ScheduleDetails.createScheduleDetails(calendarSchedule, scheduleParticipationState);
@@ -70,7 +73,7 @@ public class ScheduleFacade {
         User user = userService.findUser(userNo);
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        Schedule closestSchedule = scheduleService.findClosestSchedule(recruitment.getRecruitmentNo());
+        Schedule closestSchedule = scheduleQueryService.findClosestSchedule(recruitment.getRecruitmentNo());
         //TODO: 퍼사드 메서드에 로직이 들어가는게 좋은건가...움..
         //TODO: 가장 가까운 스케줄이 없으면 NULL을 리텅해야하긴 하는데..
         if(closestSchedule == null){

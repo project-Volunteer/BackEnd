@@ -40,7 +40,10 @@ class ScheduleServiceImplTestForQuery {
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ParticipantRepository participantRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired ScheduleService scheduleService;
+    @Autowired
+    ScheduleCommandUseCase scheduleCommandService;
+    @Autowired
+    ScheduleQueryUseCase scheduleQueryService;
 
     Recruitment saveRecruitment;
     @BeforeEach
@@ -104,7 +107,7 @@ class ScheduleServiceImplTestForQuery {
         스케줄_등록(LocalDate.of(2023, 4, 25), 3);
 
         //when
-        List<Schedule> schedules = scheduleService.findCalendarSchedules(
+        List<Schedule> schedules = scheduleQueryService.findCalendarSchedules(
                 saveRecruitment,
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31));
 
@@ -117,7 +120,7 @@ class ScheduleServiceImplTestForQuery {
     @DisplayName("팀원이 아닌 사용자가 캘린더 스케줄 조회를 시도하다.")
     @Transactional
     public void forbidden(){
-        assertThatThrownBy(() -> scheduleService.findCalendarSchedules(
+        assertThatThrownBy(() -> scheduleQueryService.findCalendarSchedules(
                 saveRecruitment,
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31)))
                 .isInstanceOf(BusinessException.class)

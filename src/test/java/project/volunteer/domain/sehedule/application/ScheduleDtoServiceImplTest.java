@@ -40,7 +40,10 @@ class ScheduleDtoServiceImplTest {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired ScheduleService scheduleService;
+    @Autowired
+    ScheduleCommandUseCase scheduleCommandService;
+    @Autowired
+    ScheduleQueryUseCase scheduleQueryService;
     @Autowired ParticipantRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
 
@@ -89,7 +92,7 @@ class ScheduleDtoServiceImplTest {
         Schedule schedule3 = 스케줄_등록(LocalDate.now().plusMonths(2), 3);
 
         //when
-        Schedule closestSchedule = scheduleService.findClosestSchedule(saveRecruitment.getRecruitmentNo());
+        Schedule closestSchedule = scheduleQueryService.findClosestSchedule(saveRecruitment.getRecruitmentNo());
 
         //then
         assertAll(
@@ -112,7 +115,7 @@ class ScheduleDtoServiceImplTest {
         clear();
 
         //when & then
-        assertThatThrownBy(() -> scheduleService.findClosestSchedule(saveRecruitment.getRecruitmentNo()))
+        assertThatThrownBy(() -> scheduleQueryService.findClosestSchedule(saveRecruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("FORBIDDEN_RECRUITMENT_TEAM");
     }
@@ -126,7 +129,7 @@ class ScheduleDtoServiceImplTest {
         Schedule schedule3 = 스케줄_등록(LocalDate.now(),3);
 
         //when
-        Schedule closestSchedule = scheduleService.findClosestSchedule(saveRecruitment.getRecruitmentNo());
+        Schedule closestSchedule = scheduleQueryService.findClosestSchedule(saveRecruitment.getRecruitmentNo());
 
         //then
         assertThat(closestSchedule).isNull();
@@ -142,7 +145,7 @@ class ScheduleDtoServiceImplTest {
         Schedule schedule3 = 스케줄_등록(LocalDate.now().plusMonths(4), 3);
 
         //when
-        Schedule closestSchedule = scheduleService.findClosestSchedule(saveRecruitment.getRecruitmentNo());
+        Schedule closestSchedule = scheduleQueryService.findClosestSchedule(saveRecruitment.getRecruitmentNo());
         clear();
 
         //then
@@ -162,7 +165,7 @@ class ScheduleDtoServiceImplTest {
         Schedule schedule = 스케줄_등록(LocalDate.now().plusDays(2), 3);
 
         //when
-        Schedule findSchedule = scheduleService.findCalendarSchedule(schedule.getScheduleNo());
+        Schedule findSchedule = scheduleQueryService.findCalendarSchedule(schedule.getScheduleNo());
 
         //then
         assertAll(
@@ -183,7 +186,7 @@ class ScheduleDtoServiceImplTest {
         clear();
 
         //when & then
-        assertThatThrownBy(() -> scheduleService.findCalendarSchedule(schedule.getScheduleNo()))
+        assertThatThrownBy(() -> scheduleQueryService.findCalendarSchedule(schedule.getScheduleNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("NOT_EXIST_SCHEDULE");
     }

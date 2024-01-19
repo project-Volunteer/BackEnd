@@ -29,7 +29,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.application.ScheduleService;
+import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -69,7 +69,8 @@ public class UserControllerDashboardTest {
     @Autowired ParticipantRepository participantRepository;
     @Autowired RecruitmentService recruitmentService;
     @Autowired RecruitmentRepository recruitmentRepository;
-    @Autowired ScheduleService scheduleService;
+    @Autowired
+    ScheduleCommandUseCase scheduleService;
     @Autowired ScheduleRepository scheduleRepository;
     @Autowired ScheduleParticipationRepository spRepository;
     @Autowired LogboardService logboardService;

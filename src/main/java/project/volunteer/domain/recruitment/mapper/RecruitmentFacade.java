@@ -20,7 +20,7 @@ import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
-import project.volunteer.domain.sehedule.application.ScheduleService;
+import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
@@ -36,7 +36,7 @@ public class RecruitmentFacade {
     private final RecruitmentService recruitmentService;
     private final RecruitmentDtoService recruitmentDtoService;
     private final RepeatPeriodService repeatPeriodService;
-    private final ScheduleService scheduleService;
+    private final ScheduleCommandUseCase scheduleService;
     private final ImageService imageService;
     private final ParticipationService participationService;
     private final ScheduleParticipationService scheduleParticipationService;
