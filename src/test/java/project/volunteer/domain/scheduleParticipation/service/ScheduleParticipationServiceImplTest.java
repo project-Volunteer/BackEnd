@@ -65,7 +65,7 @@ class ScheduleParticipationServiceImplTest {
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         //일정 저장
-        Schedule createSchedule = Schedule.createSchedule(
+        Schedule createSchedule = Schedule.create(
                 Timetable.createTimetable(
                         LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1),
                         HourFormat.AM, LocalTime.now(), 3),

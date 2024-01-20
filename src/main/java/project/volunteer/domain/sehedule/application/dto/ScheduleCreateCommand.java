@@ -1,6 +1,8 @@
 package project.volunteer.domain.sehedule.application.dto;
 
 import lombok.*;
+import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
@@ -13,19 +15,19 @@ import java.time.format.DateTimeFormatter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleParam {
-
+public class ScheduleCreateCommand {
     private Timetable timetable;
     private String organizationName;
     private Address address;
     private String content;
-    private Integer volunteerNum;
+    private Integer maxParticipationNum;
 
-    @Builder
-    public ScheduleParam(String startDay, String endDay, String hourFormat, String startTime, int progressTime,
-                         String organizationName, String sido, String sigungu, String details, String fullName, String content, int volunteerNum){
-
-        this.timetable = Timetable.builder()
+    public static ScheduleCreateCommand of(String startDay, String endDay, String hourFormat, String startTime,
+                                           int progressTime,
+                                           String organizationName, String sido, String sigungu, String details,
+                                           String fullName,
+                                           String content, int volunteerNum) {
+        Timetable timetable = Timetable.builder()
                 .startDay(LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
                 .endDay(LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
                 .hourFormat(HourFormat.ofName(hourFormat))
@@ -33,15 +35,18 @@ public class ScheduleParam {
                 .progressTime(progressTime)
                 .build();
 
-        this.address = Address.builder()
+        Address address = Address.builder()
                 .sido(sido)
                 .sigungu(sigungu)
                 .details(details)
                 .fullName(fullName)
                 .build();
-        this.organizationName = organizationName;
-        this.content = content;
-        this.volunteerNum = volunteerNum;
+
+        return new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
+    }
+
+    public Schedule toDomain(Recruitment recruitment) {
+        return Schedule.create(recruitment, timetable, content, organizationName, address, maxParticipationNum);
     }
 
 }

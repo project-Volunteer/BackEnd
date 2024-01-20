@@ -15,7 +15,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
+import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -75,7 +75,7 @@ class ScheduleServiceImplTestForEdit {
         recruitmentRepository.save(saveRecruitment);
 
         //일정 등록
-        saveSchedule = Schedule.createSchedule(timetable, "test", "organizaion", address, 8);
+        saveSchedule = Schedule.create(timetable, "test", "organizaion", address, 8);
         saveSchedule.setRecruitment(saveRecruitment);
         scheduleRepository.save(saveSchedule);
 
@@ -104,7 +104,7 @@ class ScheduleServiceImplTestForEdit {
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 6;
-        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
+        ScheduleCreateCommand param = new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
 
         //when
         Schedule schedule = scheduleService.editSchedule(saveSchedule.getScheduleNo(), saveRecruitment, param);
@@ -137,7 +137,7 @@ class ScheduleServiceImplTestForEdit {
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 3;
-        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
+        ScheduleCreateCommand param = new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
         assertThatThrownBy(() -> scheduleService.editSchedule(Long.MAX_VALUE,saveRecruitment,  param))
@@ -154,7 +154,7 @@ class ScheduleServiceImplTestForEdit {
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 4; // 현재 일정에 참가중인 인원수는 5명!
-        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
+        ScheduleCreateCommand param = new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
         assertThatThrownBy(() -> scheduleService.editSchedule(saveSchedule.getScheduleNo(),saveRecruitment, param))

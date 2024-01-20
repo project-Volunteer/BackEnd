@@ -20,7 +20,7 @@ import project.volunteer.domain.recruitment.domain.Week;
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
+import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -78,40 +78,6 @@ class ScheduleServiceImplTestForWrite {
         recruitmentRepository.save(saveRecruitment);
     }
 
-    @Test
-    @Transactional
-    @DisplayName("수동 봉사 일정 등록에 성공한다.")
-    public void createSchedule() {
-        //given
-        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details", "fullName");
-        final String organizationName = "test";
-        final String content = "test";
-        final int volunteerNum = 3;
-        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
-
-        //when
-        Schedule schedule = scheduleService.addSchedule(saveRecruitment, param);
-        clear();
-
-        //then
-        Schedule findSchedule = scheduleRepository.findById(schedule.getScheduleNo()).get();
-        assertAll(
-                () -> assertThat(findSchedule.getScheduleTimeTable().getProgressTime()).isEqualTo(timetable.getProgressTime()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getStartDay()).isEqualTo(timetable.getStartDay()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getEndDay()).isEqualTo(timetable.getEndDay()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getHourFormat()).isEqualTo(timetable.getHourFormat()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getStartTime().getHour()).isEqualTo(timetable.getStartTime().getHour()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getStartTime().getMinute()).isEqualTo(timetable.getStartTime().getMinute()),
-                () -> assertThat(findSchedule.getOrganizationName()).isEqualTo(organizationName),
-                () -> assertThat(findSchedule.getContent()).isEqualTo(content),
-                () -> assertThat(findSchedule.getVolunteerNum()).isEqualTo(volunteerNum),
-                () -> assertThat(findSchedule.getAddress().getSido()).isEqualTo(address.getSido()),
-                () -> assertThat(findSchedule.getAddress().getSigungu()).isEqualTo(address.getSigungu()),
-                () -> assertThat(findSchedule.getAddress().getDetails()).isEqualTo(address.getDetails())
-        );
-    }
-
     //TODO: 봉사 모집글 service 테스트 코드에 옮겨져야할 테스트
 //    @Test
 //    @Transactional
@@ -142,7 +108,7 @@ class ScheduleServiceImplTestForWrite {
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 3;
-        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
+        ScheduleCreateCommand param = new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
         assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment, param))
@@ -160,7 +126,7 @@ class ScheduleServiceImplTestForWrite {
         final String organizationName = "test";
         final String content = "test";
         final int volunteerNum = 100; //초과!!
-        ScheduleParam param = new ScheduleParam(timetable, organizationName, address, content, volunteerNum);
+        ScheduleCreateCommand param = new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
 
         //when && then
         assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment, param))

@@ -68,7 +68,7 @@ public class MockData {
                             .volunteeringCategory(VolunteeringCategory.EDUCATION)
                             .volunteeringType(VolunteeringType.REG)
                             .volunteerType(VolunteerType.ALL)
-                            .volunteerNum(9999)
+                            .participationNum(9999)
                             .isIssued(true)
                             .organizationName("1234" + i)
                             .address(

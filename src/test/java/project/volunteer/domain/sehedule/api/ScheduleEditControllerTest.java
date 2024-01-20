@@ -30,7 +30,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
-import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
+import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -100,7 +100,7 @@ class ScheduleEditControllerTest {
         recruitmentRepository.save(saveRecruitment);
 
         //일정 등록
-        saveSchedule = Schedule.createSchedule(timetable, "test", "organizaion", address, 8);
+        saveSchedule = Schedule.create(timetable, "test", "organizaion", address, 8);
         saveSchedule.setRecruitment(saveRecruitment);
         scheduleRepository.save(saveSchedule);
 
@@ -139,7 +139,7 @@ class ScheduleEditControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when
@@ -199,7 +199,7 @@ class ScheduleEditControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -229,7 +229,7 @@ class ScheduleEditControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 3; //현재 일정에 참여중인 인원수(5명) 보다 작을 수 없다.!
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -259,7 +259,7 @@ class ScheduleEditControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then

@@ -78,7 +78,7 @@ class ScheduleDtoServiceImplTest {
         Timetable timetable = Timetable.createTimetable(startDay, startDay, HourFormat.AM, LocalTime.now(), 10);
         Address address = Address.createAddress("1", "111", "test", "fullName");
 
-        Schedule schedule = Schedule.createSchedule(timetable, "test" ,"test", address, volunteerNum);
+        Schedule schedule = Schedule.create(timetable, "test" ,"test", address, volunteerNum);
         schedule.setRecruitment(saveRecruitment);
         return scheduleRepository.save(schedule);
     }

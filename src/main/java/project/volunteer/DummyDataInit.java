@@ -181,11 +181,11 @@ public class DummyDataInit {
         participantRepository.save(dummyParticipant9);
 
         //스케줄 더미데이터 세팅
-        Schedule dummySchedule1 = Schedule.createSchedule(Timetable.createTimetable(
+        Schedule dummySchedule1 = Schedule.create(Timetable.createTimetable(
                         LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(2), HourFormat.AM, LocalTime.now(), 5),
                 "content1", "organization1", Address.createAddress("11", "11010", "details1", "fullName1"), 10);
         dummySchedule1.setRecruitment(dummyRecruitment1);
-        Schedule dummySchedule2 = Schedule.createSchedule(Timetable.createTimetable(
+        Schedule dummySchedule2 = Schedule.create(Timetable.createTimetable(
                         LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 5),
                 "content2", "organization1", Address.createAddress("11", "11010", "details1", "fullName2"), 10);
         dummySchedule2.setRecruitment(dummyRecruitment1);

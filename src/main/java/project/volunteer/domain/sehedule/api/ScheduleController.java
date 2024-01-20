@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
+import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleListResponse;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
+import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.mapper.ScheduleFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
@@ -38,49 +38,20 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PostMapping("/{recruitmentNo}/schedule")
-    public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleRequest saveDto,
+    public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleUpsertRequest request,
                                       @PathVariable("recruitmentNo")Long no){
 
-        scheduleFacade.registerVolunteerPostSchedule(no,
-                ScheduleParam.builder()
-                        .startDay(saveDto.getStartDay())
-                        .endDay(saveDto.getStartDay())
-                        .hourFormat(saveDto.getHourFormat())
-                        .startTime(saveDto.getStartTime())
-                        .progressTime(saveDto.getProgressTime())
-                        .organizationName(saveDto.getOrganizationName())
-                        .sido(saveDto.getAddress().getSido())
-                        .sigungu(saveDto.getAddress().getSigungu())
-                        .details(saveDto.getAddress().getDetails())
-                        .fullName(saveDto.getAddress().getFullName())
-                        .content(saveDto.getContent())
-                        .volunteerNum(saveDto.getVolunteerNum())
-                        .build());
-
+        scheduleFacade.registerVolunteerPostSchedule(no, request.toDto());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}")
-    public ResponseEntity scheduleEdit(@RequestBody @Valid ScheduleRequest editDto,
+    public ResponseEntity scheduleEdit(@RequestBody @Valid ScheduleUpsertRequest request,
                                        @PathVariable("scheduleNo")Long scheduleNo,
                                        @PathVariable("recruitmentNo")Long recruitmentNo){
 
-        scheduleFacade.editVolunteerPostSchedule(recruitmentNo, scheduleNo
-                ,ScheduleParam.builder()
-                        .startDay(editDto.getStartDay())
-                        .endDay(editDto.getStartDay())
-                        .hourFormat(editDto.getHourFormat())
-                        .startTime(editDto.getStartTime())
-                        .progressTime(editDto.getProgressTime())
-                        .organizationName(editDto.getOrganizationName())
-                        .sido(editDto.getAddress().getSido())
-                        .sigungu(editDto.getAddress().getSigungu())
-                        .details(editDto.getAddress().getDetails())
-                        .fullName(editDto.getAddress().getFullName())
-                        .content(editDto.getContent())
-                        .volunteerNum(editDto.getVolunteerNum())
-                        .build());
+        scheduleFacade.editVolunteerPostSchedule(recruitmentNo, scheduleNo, request.toDto());
 
         return ResponseEntity.ok().build();
     }

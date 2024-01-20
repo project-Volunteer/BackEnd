@@ -43,7 +43,6 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.test.WithMockCustomUser;
 import project.volunteer.restdocs.document.config.RestDocsConfiguration;
@@ -108,7 +107,7 @@ class ScheduleParticipantControllerTest {
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         //일정 저장
-        Schedule createSchedule = Schedule.createSchedule(
+        Schedule createSchedule = Schedule.create(
                 Timetable.createTimetable(
                         LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1),
                         HourFormat.AM, LocalTime.now(), 3),

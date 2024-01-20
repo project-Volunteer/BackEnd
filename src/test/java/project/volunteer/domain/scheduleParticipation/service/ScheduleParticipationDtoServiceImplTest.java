@@ -1,6 +1,5 @@
 package project.volunteer.domain.scheduleParticipation.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
-import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -74,7 +72,7 @@ class ScheduleParticipationDtoServiceImplTest {
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         //일정 저장
-        Schedule createSchedule = Schedule.createSchedule(
+        Schedule createSchedule = Schedule.create(
                 Timetable.createTimetable(
                         LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1),
                         HourFormat.AM, LocalTime.now(), 3),

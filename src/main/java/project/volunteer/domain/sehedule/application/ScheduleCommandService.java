@@ -16,7 +16,7 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
+import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
@@ -38,18 +38,9 @@ public class ScheduleCommandService implements ScheduleCommandUseCase {
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
-    public Schedule addSchedule(Recruitment recruitment, ScheduleParam dto) {
-        //일정 참여가능 최대 수는 봉사 팀원 가능 인원보다 많을 수 없음.
-        if(recruitment.getVolunteerNum() < dto.getVolunteerNum()){
-            throw new BusinessException(ErrorCode.EXCEED_CAPACITY_PARTICIPANT,
-                    String.format("Recruitment VolunteerNum = [%d], Schedule VolunteerNum = [%d]", recruitment.getVolunteerNum(), dto.getVolunteerNum()));
-        }
-
-        Schedule createSchedule =
-                Schedule.createSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getVolunteerNum());
-        createSchedule.setRecruitment(recruitment);
-
-        return scheduleRepository.save(createSchedule);
+    public Long addSchedule(Recruitment recruitment, ScheduleCreateCommand command) {
+        Schedule schedule = command.toDomain(recruitment);
+        return scheduleRepository.save(schedule).getScheduleNo();
     }
 
     @Override
@@ -69,7 +60,7 @@ public class ScheduleCommandService implements ScheduleCommandUseCase {
                             Address.createAddress(dto.getAddress().getSido(), dto.getAddress().getSigungu(), dto.getAddress().getDetails(), dto.getAddress().getFullName());
 
                     Schedule schedule =
-                            Schedule.createSchedule(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());
+                            Schedule.create(timetable, dto.getContent(), dto.getOrganizationName(), address, dto.getVolunteerNum());
                     schedule.setRecruitment(recruitment);
                     return schedule;
                 })
@@ -81,26 +72,26 @@ public class ScheduleCommandService implements ScheduleCommandUseCase {
     }
 
     @Override
-    public Schedule editSchedule(Long scheduleNo, Recruitment recruitment, ScheduleParam dto) {
+    public Schedule editSchedule(Long scheduleNo, Recruitment recruitment, ScheduleCreateCommand dto) {
         //일정 검증
         Schedule findSchedule = validAndGetSchedule(scheduleNo);
 
         //수정할 참여 인원수는 현재 일정에 참여중인 인원수보다 적을 수 없음.
-        if(findSchedule.getCurrentVolunteerNum() > dto.getVolunteerNum()){
+        if(findSchedule.getCurrentVolunteerNum() > dto.getMaxParticipationNum()){
             throw new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY_PARTICIPANT,
                     String.format("ScheduleNo = [%d], activeVolunteerNum = [%d], editVolunteerNum = [%d]",
-                            scheduleNo, findSchedule.getCurrentVolunteerNum(), dto.getVolunteerNum()));
+                            scheduleNo, findSchedule.getCurrentVolunteerNum(), dto.getMaxParticipationNum()));
         }
 
         //일정 참여가능 최대 수는 봉사 팀원 가능 인원보다 많을 수 없음.
-        if(recruitment.getVolunteerNum() < dto.getVolunteerNum()){
-            throw new BusinessException(ErrorCode.EXCEED_CAPACITY_PARTICIPANT,
+        if(recruitment.getVolunteerNum() < dto.getMaxParticipationNum()){
+            throw new BusinessException(ErrorCode.EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM,
                     String.format("ScheduleNo = [%d], Recruitment VolunteerNum = [%d], editVolunteerNum = [%d]",
-                            scheduleNo, recruitment.getVolunteerNum(), dto.getVolunteerNum()));
+                            scheduleNo, recruitment.getVolunteerNum(), dto.getMaxParticipationNum()));
         }
 
         //일정 정보 수정
-        findSchedule.changeSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getVolunteerNum());
+        findSchedule.changeSchedule(dto.getTimetable(), dto.getContent(), dto.getOrganizationName(), dto.getAddress(), dto.getMaxParticipationNum());
         return findSchedule;
     }
 

@@ -36,7 +36,6 @@ import project.volunteer.global.common.component.*;
 import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.test.WithMockCustomUser;
 import project.volunteer.restdocs.document.config.RestDocsConfiguration;
-import project.volunteer.restdocs.document.util.DocumentFormatGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -47,7 +46,6 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -106,7 +104,7 @@ class ScheduleQueryControllerTest {
         Timetable timetable = Timetable.createTimetable(startDay, startDay, HourFormat.AM, LocalTime.now(), 10);
         Address address = Address.createAddress("1", "111", "test", "fullName");
 
-        Schedule schedule = Schedule.createSchedule(timetable, "test" ,"test", address, volunteerNum);
+        Schedule schedule = Schedule.create(timetable, "test" ,"test", address, volunteerNum);
         schedule.setRecruitment(saveRecruitment);
         return scheduleRepository.save(schedule);
     }

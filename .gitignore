@@ -39,6 +39,7 @@ out/
 ### project ignore ###
 src/main/resources/config/
 application.yml
+application-test.yml
 src/main/resources/static/docs/
 /Dockerfile
 Dockerfile

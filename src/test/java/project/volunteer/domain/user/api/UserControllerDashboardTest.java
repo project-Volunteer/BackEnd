@@ -30,7 +30,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParam;
+import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
@@ -200,16 +200,16 @@ public class UserControllerDashboardTest {
             모집글 1 - 스케줄 1, 2, 3 - 봉사시간 3,2,3 시간
             모집글 6 - 스케줄 4, 5, 6 - 봉사시간 2,3,2시간
             모집글 7 - 스케줄 7, 8 - 봉사시간 1시간씩 총 2시간 */
-        Schedule sNo1 = scheduleService.addSchedule(rNo1, makeScheduleParam(1, 3));
-        Schedule sNo2 = scheduleService.addSchedule(rNo1, makeScheduleParam(2, 2));
-        Schedule sNo3 = scheduleService.addSchedule(rNo1, makeScheduleParam(3, 3));
+        Long sNo1 = scheduleService.addSchedule(rNo1, makeScheduleParam(1, 3));
+        Long sNo2 = scheduleService.addSchedule(rNo1, makeScheduleParam(2, 2));
+        Long sNo3 = scheduleService.addSchedule(rNo1, makeScheduleParam(3, 3));
 
-        Schedule sNo4 = scheduleService.addSchedule(rNo6, makeScheduleParam(4, 2));
-        Schedule sNo5 = scheduleService.addSchedule(rNo6, makeScheduleParam(5, 3));
-        Schedule sNo6 = scheduleService.addSchedule(rNo6, makeScheduleParam(6, 2));
+        Long sNo4 = scheduleService.addSchedule(rNo6, makeScheduleParam(4, 2));
+        Long sNo5 = scheduleService.addSchedule(rNo6, makeScheduleParam(5, 3));
+        Long sNo6 = scheduleService.addSchedule(rNo6, makeScheduleParam(6, 2));
 
-        Schedule sNo7 = scheduleService.addSchedule(rNo7, makeScheduleParam(7, 1));
-        Schedule sNo8 = scheduleService.addSchedule(rNo7, makeScheduleParam(8, 1));
+        Long sNo7 = scheduleService.addSchedule(rNo7, makeScheduleParam(7, 1));
+        Long sNo8 = scheduleService.addSchedule(rNo7, makeScheduleParam(8, 1));
 
 
         /*  일정 잠여
@@ -220,55 +220,55 @@ public class UserControllerDashboardTest {
 			모집글 6 - 스케줄 4, 5, 6 - 사용자2 일정 참여중
 			모집글 7 - 스케줄 7, 8 - 사용자1 참여완료 대기 */
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo1.getScheduleNo()).get(), r1p1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+            scheduleRepository.findById(sNo1).get(), r1p1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo2.getScheduleNo()).get(), r1p1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+            scheduleRepository.findById(sNo2).get(), r1p1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo3.getScheduleNo()).get(), r1p1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+            scheduleRepository.findById(sNo3).get(), r1p1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
 
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo4.getScheduleNo()).get(), r6p5, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+            scheduleRepository.findById(sNo4).get(), r6p5, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo5.getScheduleNo()).get(), r6p5, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+            scheduleRepository.findById(sNo5).get(), r6p5, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo6.getScheduleNo()).get(), r6p5, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+            scheduleRepository.findById(sNo6).get(), r6p5, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
 
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo7.getScheduleNo()).get(), r7p6, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
+            scheduleRepository.findById(sNo7).get(), r7p6, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-            scheduleRepository.findById(sNo8.getScheduleNo()).get(), r7p6, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
+            scheduleRepository.findById(sNo8).get(), r7p6, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
 
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-                scheduleRepository.findById(sNo1.getScheduleNo()).get(), r1p7, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+                scheduleRepository.findById(sNo1).get(), r1p7, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-                scheduleRepository.findById(sNo2.getScheduleNo()).get(), r1p7, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
+                scheduleRepository.findById(sNo2).get(), r1p7, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
 
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-                scheduleRepository.findById(sNo4.getScheduleNo()).get(), r1p7, ParticipantState.PARTICIPATING));
+                scheduleRepository.findById(sNo4).get(), r1p7, ParticipantState.PARTICIPATING));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-                scheduleRepository.findById(sNo5.getScheduleNo()).get(), r1p7, ParticipantState.PARTICIPATING));
+                scheduleRepository.findById(sNo5).get(), r1p7, ParticipantState.PARTICIPATING));
         spRepository.save(ScheduleParticipation.createScheduleParticipation(
-                scheduleRepository.findById(sNo6.getScheduleNo()).get(), r1p7, ParticipantState.PARTICIPATING));
+                scheduleRepository.findById(sNo6).get(), r1p7, ParticipantState.PARTICIPATING));
 
 
         /*  로그 상세
             모집글 1 - 스케줄 1, 2, 3 - 사용자 1이 log 작성
 			모집글 1 - 스케줄 1 - 사용자 2가 log 임시저장
             모집글 5 - 스케줄 4, 5, 6 - 사용자 1이 log 임시 저장  */
-        logboardService.addLog(user1.getUserNo(), "test contents1", sNo1.getScheduleNo(), true);
-        logboardService.addLog(user1.getUserNo(), "test contents2", sNo2.getScheduleNo(), true);
-        logboardService.addLog(user1.getUserNo(), "test contents3", sNo3.getScheduleNo(), true);
+        logboardService.addLog(user1.getUserNo(), "test contents1", sNo1, true);
+        logboardService.addLog(user1.getUserNo(), "test contents2", sNo2, true);
+        logboardService.addLog(user1.getUserNo(), "test contents3", sNo3, true);
 
-        Long log1= logboardService.addLog(user1.getUserNo(), "test contents4", sNo4.getScheduleNo(), false);
-        Long log2= logboardService.addLog(user1.getUserNo(), "test contents5", sNo5.getScheduleNo(), false);
-        Long log3= logboardService.addLog(user1.getUserNo(), "test contents6", sNo6.getScheduleNo(), false);
+        Long log1= logboardService.addLog(user1.getUserNo(), "test contents4", sNo4, false);
+        Long log2= logboardService.addLog(user1.getUserNo(), "test contents5", sNo5, false);
+        Long log3= logboardService.addLog(user1.getUserNo(), "test contents6", sNo6, false);
 
         deleteLogboardNoList.add(log1);
         deleteLogboardNoList.add(log2);
         deleteLogboardNoList.add(log3);
 
 
-        logboardService.addLog(user2.getUserNo(), "test contents5", sNo1.getScheduleNo(), false);
+        logboardService.addLog(user2.getUserNo(), "test contents5", sNo1, false);
 
         clear();
     }
@@ -604,8 +604,8 @@ public class UserControllerDashboardTest {
                 , published);
     }
 
-    public ScheduleParam makeScheduleParam(int num, int progressTime){
-        return new ScheduleParam(
+    public ScheduleCreateCommand makeScheduleParam(int num, int progressTime){
+        return new ScheduleCreateCommand(
                   Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), progressTime)
                 , "schedule organizationName"+num
                 , Address.createAddress("Sido"+num, "Sigungu"+num, "details"+num, "fullName"+num)

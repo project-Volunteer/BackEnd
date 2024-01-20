@@ -154,7 +154,7 @@ public class LogboardQueryControllerTest {
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).volunteerNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);
@@ -169,29 +169,29 @@ public class LogboardQueryControllerTest {
 
 		// 스케줄 저장
 		Schedule createSchedule =
-				Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
+				Schedule.create(timetable, content, organizationName, address, volunteerNum);
 		createSchedule.setRecruitment(recruitment);
 		scheduleRepository.save(createSchedule);
 
 
 		// 스케줄 저장
-		Schedule schedule1 = Schedule.createSchedule(timetable1, content, organizationName, address, volunteerNum);
+		Schedule schedule1 = Schedule.create(timetable1, content, organizationName, address, volunteerNum);
 		schedule1.setRecruitment(recruitment);
 		scheduleRepository.save(schedule1);
 
-		Schedule schedule2 = Schedule.createSchedule(timetable2, content, organizationName, address, volunteerNum);
+		Schedule schedule2 = Schedule.create(timetable2, content, organizationName, address, volunteerNum);
 		schedule2.setRecruitment(recruitment);
 		scheduleRepository.save(schedule2);
 
-		Schedule schedule3 = Schedule.createSchedule(timetable3, content, organizationName, address, volunteerNum);
+		Schedule schedule3 = Schedule.create(timetable3, content, organizationName, address, volunteerNum);
 		schedule3.setRecruitment(recruitment);
 		scheduleRepository.save(schedule3);
 
-		Schedule schedule4 = Schedule.createSchedule(timetable4, content, organizationName, address, volunteerNum);
+		Schedule schedule4 = Schedule.create(timetable4, content, organizationName, address, volunteerNum);
 		schedule4.setRecruitment(recruitment);
 		scheduleRepository.save(schedule4);
 
-		Schedule schedule5 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
+		Schedule schedule5 = Schedule.create(timetable, content, organizationName, address, volunteerNum);
 		schedule5.setRecruitment(recruitment);
 		scheduleRepository.save(schedule5);
 

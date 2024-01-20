@@ -138,7 +138,7 @@ public class LogboardServiceImplTestForQuery {
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).volunteerNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);
@@ -153,7 +153,7 @@ public class LogboardServiceImplTestForQuery {
 
 		// 스케줄 저장
 		Schedule createSchedule =
-				Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
+				Schedule.create(timetable, content, organizationName, address, volunteerNum);
 		createSchedule.setRecruitment(recruitment);
 		scheduleRepository.save(createSchedule);
 		

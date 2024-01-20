@@ -26,7 +26,7 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
-import project.volunteer.domain.sehedule.api.dto.request.ScheduleRequest;
+import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -34,7 +34,6 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
 import project.volunteer.global.test.WithMockCustomUser;
 import project.volunteer.restdocs.document.config.RestDocsConfiguration;
-import project.volunteer.restdocs.document.util.DocumentFormatGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -102,7 +101,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when
@@ -159,7 +158,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 10;
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -189,7 +188,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 100; //max 조건 위반
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -219,7 +218,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 20; //봉사 팀원 최대인원보다 작아야 된다.
         final String content = "content";
-        ScheduleRequest dto = new ScheduleRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
