@@ -147,8 +147,7 @@ public class LogboardServiceImplTestForComment {
 
 		// 스케줄 저장
 		Schedule createSchedule =
-				Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		createSchedule.setRecruitment(recruitment);
+				Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(createSchedule);
 		
 		// 봉사 로그 저장(한 모집글에 2개)

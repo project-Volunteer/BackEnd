@@ -104,8 +104,7 @@ class ScheduleQueryControllerTest {
         Timetable timetable = Timetable.createTimetable(startDay, startDay, HourFormat.AM, LocalTime.now(), 10);
         Address address = Address.createAddress("1", "111", "test", "fullName");
 
-        Schedule schedule = Schedule.create(timetable, "test" ,"test", address, volunteerNum);
-        schedule.setRecruitment(saveRecruitment);
+        Schedule schedule = Schedule.create(saveRecruitment, timetable, "test" ,"test", address, volunteerNum);
         return scheduleRepository.save(schedule);
     }
     private ScheduleParticipation 스케줄_참여자_등록(Schedule schedule, Participant participant, ParticipantState state){

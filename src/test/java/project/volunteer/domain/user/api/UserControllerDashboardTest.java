@@ -30,9 +30,8 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
-import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
+import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
-import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
 import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -604,8 +603,8 @@ public class UserControllerDashboardTest {
                 , published);
     }
 
-    public ScheduleCreateCommand makeScheduleParam(int num, int progressTime){
-        return new ScheduleCreateCommand(
+    public ScheduleUpsertCommand makeScheduleParam(int num, int progressTime){
+        return new ScheduleUpsertCommand(
                   Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), progressTime)
                 , "schedule organizationName"+num
                 , Address.createAddress("Sido"+num, "Sigungu"+num, "details"+num, "fullName"+num)

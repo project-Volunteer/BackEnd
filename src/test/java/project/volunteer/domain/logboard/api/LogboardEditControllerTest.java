@@ -166,8 +166,7 @@ public class LogboardEditControllerTest {
 		
 
 		// 스케줄 저장
-		createSchedule = Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		createSchedule.setRecruitment(recruitment);
+		createSchedule = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(createSchedule);
 		
 		clear();

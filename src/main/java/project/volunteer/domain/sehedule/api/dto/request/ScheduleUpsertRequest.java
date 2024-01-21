@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
+import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
 
 @Getter
 @Setter
@@ -45,8 +45,8 @@ public class ScheduleUpsertRequest {
     @Length(max = 50)
     private String content;
 
-    public ScheduleCreateCommand toDto() {
-        return ScheduleCreateCommand.of(startDay, startDay, hourFormat, startTime, progressTime, organizationName,
+    public ScheduleUpsertCommand toDto() {
+        return ScheduleUpsertCommand.of(startDay, startDay, hourFormat, startTime, progressTime, organizationName,
                 address.getSido(), address.getSigungu(), address.getDetails(), address.getFullName(), content,
                 volunteerNum);
     }

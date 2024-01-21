@@ -14,9 +14,8 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
 import project.volunteer.domain.recruitment.domain.Day;
 import project.volunteer.domain.recruitment.domain.Period;
-import project.volunteer.domain.recruitment.domain.RepeatPeriod;
 import project.volunteer.domain.recruitment.domain.Week;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriod;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -110,7 +109,7 @@ class RecruitmentServiceImplTestForSave {
         final Period period = Period.WEEK;
         final Week week = null;
         final List<Day> days = List.of(Day.MON, Day.TUES);
-        RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(period, week, days);
+        RepeatPeriod repeatPeriodParam = new RepeatPeriod(period, week, days);
 
         //when
         Recruitment recruitment = recruitmentService.addRecruitment(writer, param);
@@ -121,7 +120,7 @@ class RecruitmentServiceImplTestForSave {
         Recruitment find = recruitmentRepository.findById(recruitment.getRecruitmentNo()).get();
         assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
 
-        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
+        List<project.volunteer.domain.recruitment.domain.RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
         assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
         assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
         assertThat(list.get(0).getPeriod()).isEqualTo(Period.WEEK);
@@ -152,7 +151,7 @@ class RecruitmentServiceImplTestForSave {
         final Period period = Period.MONTH;
         final Week week = Week.FIRST;
         final List<Day> days = List.of(Day.MON, Day.TUES);
-        RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(period, week, days);
+        RepeatPeriod repeatPeriodParam = new RepeatPeriod(period, week, days);
 
 
         //when
@@ -164,7 +163,7 @@ class RecruitmentServiceImplTestForSave {
         Recruitment find = recruitmentRepository.findById(recruitment.getRecruitmentNo()).get();
         assertThat(find.getVolunteeringType()).isEqualTo(volunteeringType);
 
-        List<RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
+        List<project.volunteer.domain.recruitment.domain.RepeatPeriod> list = repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitment.getRecruitmentNo());
         assertThat(list.get(0).getDay()).isEqualTo(Day.MON);
         assertThat(list.get(1).getDay()).isEqualTo(Day.TUES);
         assertThat(list.get(0).getPeriod()).isEqualTo(Period.MONTH);

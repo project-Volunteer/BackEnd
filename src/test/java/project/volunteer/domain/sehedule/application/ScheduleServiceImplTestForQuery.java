@@ -81,8 +81,7 @@ class ScheduleServiceImplTestForQuery {
         Timetable timetable = Timetable.createTimetable(day, day, HourFormat.AM, LocalTime.now(), 10);
         Address address = Address.createAddress("1", "111", "test", "fullName");
 
-        Schedule schedule = Schedule.create(timetable, "test" ,"test", address, volunteerNum);
-        schedule.setRecruitment(saveRecruitment);
+        Schedule schedule = Schedule.create(saveRecruitment, timetable, "test" ,"test", address, volunteerNum);
         return scheduleRepository.save(schedule);
     }
     private void clear() {

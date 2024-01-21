@@ -168,8 +168,7 @@ public class LogboardServiceImplTestForEdit {
 		participantRepository.save(createParticipant2);
 
 		// 스케줄 저장
-		createSchedule = Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		createSchedule.setRecruitment(createRecruitment);
+		createSchedule = Schedule.create(createRecruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(createSchedule);
 		
 		clear();

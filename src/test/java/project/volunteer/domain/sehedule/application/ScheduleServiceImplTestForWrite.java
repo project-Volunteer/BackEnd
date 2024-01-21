@@ -13,14 +13,13 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriod;
 import project.volunteer.domain.recruitment.domain.Day;
 import project.volunteer.domain.recruitment.domain.Period;
 import project.volunteer.domain.recruitment.domain.Week;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
+import project.volunteer.domain.sehedule.application.dto.RegularScheduleCreateCommand;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
-import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
+import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -97,43 +96,6 @@ class ScheduleServiceImplTestForWrite {
 //                .hasMessageContaining("NOT_EXIST_RECRUITMENT");
 //    }
 
-    @Disabled
-    @Test
-    @Transactional
-    @DisplayName("방장이 아닌 사용자가 일정을 등록을 시도하여 권한에러가 발생한다.")
-    public void notRecruitmentOwner(){
-        //given
-        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details", "fullName");
-        final String organizationName = "test";
-        final String content = "test";
-        final int volunteerNum = 3;
-        ScheduleCreateCommand param = new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
-
-        //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment, param))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("FORBIDDEN_RECRUITMENT");
-    }
-
-    @Test
-    @Transactional
-    @DisplayName("일정 모집 인원이 봉사 팀원 최대 모집인원을 초과하다.")
-    public void exceedScheduleVolunteerNum(){
-        //given
-        final Timetable timetable = Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),3);
-        final Address address = Address.createAddress("1", "111", "details", "fullName");
-        final String organizationName = "test";
-        final String content = "test";
-        final int volunteerNum = 100; //초과!!
-        ScheduleCreateCommand param = new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
-
-        //when && then
-        assertThatThrownBy(() -> scheduleService.addSchedule(saveRecruitment, param))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("EXCEED_CAPACITY_PARTICIPANT");
-    }
-
     @Test
     @Transactional
     @DisplayName("반복주기가 매달인 봉사 일정 자동 등록에 성공한다.")
@@ -145,8 +107,8 @@ class ScheduleServiceImplTestForWrite {
         final String content = "test";
         final int volunteerNum = 10;
         final Address address = Address.createAddress("1", "1111", "details", "fullName");
-        final RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(Period.MONTH, Week.FIRST, List.of(Day.MON, Day.TUES));
-        final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
+        final RepeatPeriod repeatPeriodParam = new RepeatPeriod(Period.MONTH, Week.FIRST, List.of(Day.MON, Day.TUES));
+        final RegularScheduleCreateCommand dto = new RegularScheduleCreateCommand(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
         List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment, dto);
@@ -167,8 +129,8 @@ class ScheduleServiceImplTestForWrite {
         final String content = "test";
         final int volunteerNum = 10;
         final Address address = Address.createAddress("1", "1111", "details", "fullName");
-        final RepeatPeriodParam repeatPeriodParam = new RepeatPeriodParam(Period.WEEK, null, List.of(Day.SAT, Day.SUN));
-        final ScheduleParamReg dto = new ScheduleParamReg(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
+        final RepeatPeriod repeatPeriodParam = new RepeatPeriod(Period.WEEK, null, List.of(Day.SAT, Day.SUN));
+        final RegularScheduleCreateCommand dto = new RegularScheduleCreateCommand(timetable, repeatPeriodParam, organizationName, address, content, volunteerNum);
 
         //when
         List<Long> saveScheduleNos = scheduleService.addRegSchedule(saveRecruitment, dto);

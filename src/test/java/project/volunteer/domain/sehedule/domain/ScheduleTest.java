@@ -1,11 +1,13 @@
 package project.volunteer.domain.sehedule.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -24,6 +26,21 @@ class ScheduleTest {
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
     private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
+    private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
+    private final Recruitment recruitment = Recruitment.builder()
+            .title("test")
+            .content("content")
+            .volunteeringCategory(VolunteeringCategory.EDUCATION)
+            .volunteerType(VolunteerType.ADULT)
+            .volunteeringType(VolunteeringType.IRREG)
+            .participationNum(9999)
+            .isIssued(true)
+            .organizationName("test")
+            .address(address)
+            .coordinate(coordinate)
+            .timetable(timetable)
+            .isPublished(true)
+            .build();
 
     @ParameterizedTest
     @ValueSource(strings = {"가", "구본식의 봉사기관", "unicef", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
@@ -38,6 +55,7 @@ class ScheduleTest {
                 .participationNum(10)
                 .isDeleted(IsDeleted.N)
                 .currentVolunteerNum(0)
+                .recruitment(recruitment)
                 .build())
                 .doesNotThrowAnyException();
     }
@@ -55,6 +73,7 @@ class ScheduleTest {
                 .participationNum(10)
                 .isDeleted(IsDeleted.N)
                 .currentVolunteerNum(0)
+                .recruitment(recruitment)
                 .build())
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_ORGANIZATION_NAME_SIZE.name());
@@ -73,6 +92,7 @@ class ScheduleTest {
                 .participationNum(10)
                 .isDeleted(IsDeleted.N)
                 .currentVolunteerNum(0)
+                .recruitment(recruitment)
                 .build())
                 .doesNotThrowAnyException();
     }
@@ -90,6 +110,7 @@ class ScheduleTest {
                 .participationNum(10)
                 .isDeleted(IsDeleted.N)
                 .currentVolunteerNum(0)
+                .recruitment(recruitment)
                 .build())
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_CONTENT_SIZE.name());
@@ -108,6 +129,7 @@ class ScheduleTest {
                 .participationNum(participationNum)
                 .isDeleted(IsDeleted.N)
                 .currentVolunteerNum(0)
+                .recruitment(recruitment)
                 .build())
                 .doesNotThrowAnyException();
     }
@@ -125,6 +147,7 @@ class ScheduleTest {
                 .participationNum(invalidParticipationNum)
                 .isDeleted(IsDeleted.N)
                 .currentVolunteerNum(0)
+                .recruitment(recruitment)
                 .build())
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_PARTICIPATION_NUM.name());
@@ -152,6 +175,51 @@ class ScheduleTest {
                 .hasMessage(ErrorCode.EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM.name());
     }
 
+    @Test
+    @DisplayName("일정 정보를 수정할 수 있다.")
+    void changeSchedule() {
+        // given
+        final Schedule schedule = Schedule.builder()
+                .timetable(timetable)
+                .content("test")
+                .organizationName("test")
+                .address(address)
+                .participationNum(10)
+                .isDeleted(IsDeleted.N)
+                .currentVolunteerNum(9)
+                .recruitment(recruitment)
+                .build();
+
+        final Timetable expectTimetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.PM,
+                LocalTime.now(), 20);
+        final Address expectAddress = new Address("222", "222", "change", "change");
+        final int expectParticipationNum = 100;
+        final String expectContent = "change";
+        final String expectOrganizationName = "change";
+
+        // when
+        schedule.change(recruitment, expectTimetable, expectContent, expectOrganizationName, expectAddress,
+                expectParticipationNum);
+
+        // then
+        assertThat(schedule).extracting("content", "organizationName", "volunteerNum")
+                .containsExactlyInAnyOrder(expectContent, expectOrganizationName, expectParticipationNum);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {5, 7})
+    @DisplayName("수정할 참여 인원 수가 현재 참여 인원 수보다 적을 경우 예외가 발생한다.")
+    void throwExceptionWhenChangeExceedParticipationNumThanCurrentParticipationNum(int invalidParticipationNum) {
+        // given
+        final Schedule schedule = createSchedule(10, 8);
+
+        // when & then
+        assertThatThrownBy(
+                () -> schedule.change(recruitment, timetable, "test", "test", address, invalidParticipationNum))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT.name());
+    }
+
     private Recruitment createRecruitment(int participationNum) {
         Coordinate coordinate = new Coordinate(1.2F, 2.2F);
         return Recruitment.builder()
@@ -167,6 +235,19 @@ class ScheduleTest {
                 .coordinate(coordinate)
                 .timetable(timetable)
                 .isPublished(true)
+                .build();
+    }
+
+    private Schedule createSchedule(int participationNum, int currentParticipationNum) {
+        return Schedule.builder()
+                .timetable(timetable)
+                .content("test")
+                .organizationName("test")
+                .address(address)
+                .participationNum(participationNum)
+                .isDeleted(IsDeleted.N)
+                .currentVolunteerNum(currentParticipationNum)
+                .recruitment(recruitment)
                 .build();
     }
 }

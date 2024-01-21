@@ -9,7 +9,6 @@ import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
 import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleListResponse;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
-import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.mapper.ScheduleFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;

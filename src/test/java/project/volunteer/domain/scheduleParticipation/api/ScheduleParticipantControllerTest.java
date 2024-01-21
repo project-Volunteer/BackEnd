@@ -108,12 +108,12 @@ class ScheduleParticipantControllerTest {
 
         //일정 저장
         Schedule createSchedule = Schedule.create(
+                saveRecruitment,
                 Timetable.createTimetable(
                         LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1),
                         HourFormat.AM, LocalTime.now(), 3),
                 "content", "organization",
                 Address.createAddress("11", "1111", "details", "fullName"), 3);
-        createSchedule.setRecruitment(saveRecruitment);
         saveSchedule = scheduleRepository.save(createSchedule);
 
         //로그인 유저 저장

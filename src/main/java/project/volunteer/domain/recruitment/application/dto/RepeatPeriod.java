@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RepeatPeriodParam {
+public class RepeatPeriod {
 
     private Period period;
     private Week week;
     private List<Day> days = new ArrayList<>();
 
-    public RepeatPeriodParam(String period, String week, List<String>days) {
+    public RepeatPeriod(String period, String week, List<String>days) {
 
         //주기 Enum 변환
         this.period = Period.of(period);
@@ -33,7 +33,7 @@ public class RepeatPeriodParam {
 
         //요일 Enum 변환
         this.days = days.stream().
-                map(day -> Day.of(day)).
+                map(Day::of).
                 collect(Collectors.toList());
     }
 }

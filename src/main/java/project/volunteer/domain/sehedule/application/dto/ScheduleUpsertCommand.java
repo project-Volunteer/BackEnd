@@ -1,7 +1,8 @@
 package project.volunteer.domain.sehedule.application.dto;
 
 import lombok.*;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
@@ -10,39 +11,42 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleParamReg {
-
+public class ScheduleUpsertCommand {
     private Timetable timetable;
-    private RepeatPeriodParam repeatPeriodParam;
     private String organizationName;
     private Address address;
     private String content;
-    private int volunteerNum;
+    private Integer maxParticipationNum;
 
-    @Builder
-    public ScheduleParamReg(String startDay, String endDay, String hourFormat, String startTime, int progressTime,
-                            String organizationName, String sido, String sigungu, String details, String fullName, String content,int volunteerNum,
-                            RepeatPeriodParam periodParam){
-        this.timetable = Timetable.builder()
+    public static ScheduleUpsertCommand of(String startDay, String endDay, String hourFormat, String startTime,
+                                           int progressTime,
+                                           String organizationName, String sido, String sigungu, String details,
+                                           String fullName,
+                                           String content, int maxParticipationNum) {
+        Timetable timetable = Timetable.builder()
                 .startDay(LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
                 .endDay(LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
                 .hourFormat(HourFormat.ofName(hourFormat))
                 .startTime(LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm")))
                 .progressTime(progressTime)
                 .build();
-        this.address = Address.builder()
+
+        Address address = Address.builder()
                 .sido(sido)
                 .sigungu(sigungu)
                 .details(details)
-            .fullName(fullName)
+                .fullName(fullName)
                 .build();
-        this.repeatPeriodParam = periodParam;
-        this.organizationName = organizationName;
-        this.content = content;
-        this.volunteerNum = volunteerNum;
+
+        return new ScheduleUpsertCommand(timetable, organizationName, address, content, maxParticipationNum);
     }
+
+    public Schedule toDomain(Recruitment recruitment) {
+        return Schedule.create(recruitment, timetable, content, organizationName, address, maxParticipationNum);
+    }
+
 }

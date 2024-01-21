@@ -100,8 +100,7 @@ class ScheduleEditControllerTest {
         recruitmentRepository.save(saveRecruitment);
 
         //일정 등록
-        saveSchedule = Schedule.create(timetable, "test", "organizaion", address, 8);
-        saveSchedule.setRecruitment(saveRecruitment);
+        saveSchedule = Schedule.create(saveRecruitment, timetable, "test", "organizaion", address, 8);
         scheduleRepository.save(saveSchedule);
 
         //봉사 팀원 및 일정 참여자 등록

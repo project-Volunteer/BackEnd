@@ -179,24 +179,19 @@ public class LogboardWriteControllerTest {
 		participantRepository.save(participant2);
 
 		// 스케줄 저장
-		schedule1 = Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		schedule1.setRecruitment(recruitment);
+		schedule1 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule1);
 
-		schedule2 = Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		schedule2.setRecruitment(recruitment);
+		schedule2 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule2);
 
-		schedule3 = Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		schedule3.setRecruitment(recruitment);
+		schedule3 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule3);
 
-		schedule4 = Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		schedule4.setRecruitment(recruitment);
+		schedule4 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule4);
 
-		schedule5 = Schedule.create(timetable, content, organizationName, address, volunteerNum);
-		schedule5.setRecruitment(recruitment);
+		schedule5 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule5);
 
 		// 방장 스케줄 참여

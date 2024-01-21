@@ -10,7 +10,7 @@ import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipat
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
-import project.volunteer.domain.sehedule.application.dto.ScheduleCreateCommand;
+import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
@@ -31,17 +31,17 @@ public class ScheduleFacade {
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
 
     @Transactional
-    public Long registerVolunteerPostSchedule(Long recruitmentNo, ScheduleCreateCommand param){
+    public Long registerVolunteerPostSchedule(Long recruitmentNo, ScheduleUpsertCommand param){
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
         return scheduleCommandService.addSchedule(recruitment, param);
     }
 
     @Transactional
-    public Long editVolunteerPostSchedule(Long recruitmentNo, Long scheduleNo, ScheduleCreateCommand param){
+    public Long editVolunteerPostSchedule(Long recruitmentNo, Long scheduleNo, ScheduleUpsertCommand param){
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
-        return scheduleCommandService.editSchedule(scheduleNo, recruitment, param).getScheduleNo();
+        return scheduleCommandService.editSchedule(scheduleNo, recruitment, param);
     }
 
     @Transactional

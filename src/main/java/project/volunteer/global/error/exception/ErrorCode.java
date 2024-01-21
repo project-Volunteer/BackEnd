@@ -46,10 +46,12 @@ public enum ErrorCode {
     INVALID_PARTICIPATION_NUM(HttpStatus.BAD_REQUEST, "invalid.participation.num"),
     EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM(HttpStatus.BAD_REQUEST,
             "exceed.participation.num.than.recruitment.participation.num"),
+    LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT(HttpStatus.BAD_REQUEST,
+            "less.participation.num.then.current.participant"),
 
     EXPIRED_PERIOD_SCHEDULE(HttpStatus.BAD_REQUEST, "expired.period.schedule"),
     NOT_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "notExist.schedule"),
-    INSUFFICIENT_CAPACITY_PARTICIPANT(HttpStatus.BAD_REQUEST, "insufficient.capacity.participant"),
+
     
     //로그보드 관련
     NOT_EXIST_LOGBOARD(HttpStatus.BAD_REQUEST, "notExist.logboard"),
