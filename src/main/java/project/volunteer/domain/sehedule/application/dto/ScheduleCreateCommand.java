@@ -26,7 +26,7 @@ public class ScheduleCreateCommand {
                                            int progressTime,
                                            String organizationName, String sido, String sigungu, String details,
                                            String fullName,
-                                           String content, int volunteerNum) {
+                                           String content, int maxParticipationNum) {
         Timetable timetable = Timetable.builder()
                 .startDay(LocalDate.parse(startDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
                 .endDay(LocalDate.parse(endDay, DateTimeFormatter.ofPattern("MM-dd-yyyy")))
@@ -42,7 +42,7 @@ public class ScheduleCreateCommand {
                 .fullName(fullName)
                 .build();
 
-        return new ScheduleCreateCommand(timetable, organizationName, address, content, volunteerNum);
+        return new ScheduleCreateCommand(timetable, organizationName, address, content, maxParticipationNum);
     }
 
     public Schedule toDomain(Recruitment recruitment) {

@@ -62,10 +62,10 @@ public class Schedule extends BaseTimeEntity {
     @Builder
     public Schedule(Timetable timetable, String content, String organizationName, Address address,
                     int participationNum,
-                    IsDeleted isDeleted, int currentVolunteerNum) {
+                    IsDeleted isDeleted, int currentVolunteerNum, Recruitment recruitment) {
         validateContentSize(content);
         validateOrganizationNameSize(organizationName);
-        validateParticipationNum(participationNum);
+        validateParticipationNum(participationNum, recruitment);
 
         this.scheduleTimeTable = timetable;
         this.content = content;
@@ -74,13 +74,12 @@ public class Schedule extends BaseTimeEntity {
         this.volunteerNum = participationNum;
         this.isDeleted = isDeleted;
         this.currentVolunteerNum = currentVolunteerNum;
+        this.recruitment = recruitment;
     }
 
     public static Schedule create(Recruitment recruitment, Timetable timetable, String content, String organizationName,
                                   Address address, int participationNum) {
-        validateParticipationNumWithRecruitment(recruitment, participationNum);
-
-        Schedule schedule = Schedule.builder()
+        return Schedule.builder()
                 .timetable(timetable)
                 .content(content)
                 .organizationName(organizationName)
@@ -88,9 +87,8 @@ public class Schedule extends BaseTimeEntity {
                 .participationNum(participationNum)
                 .isDeleted(IsDeleted.N)
                 .currentVolunteerNum(0)
+                .recruitment(recruitment)
                 .build();
-        schedule.recruitment = recruitment;
-        return schedule;
     }
 
     public static Schedule create(Timetable timetable, String content, String organizationName, Address address,
@@ -164,15 +162,12 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-    private void validateParticipationNum(final int participationNum) {
+    private void validateParticipationNum(final int participationNum, final Recruitment recruitment) {
         if (MIN_PARTICIPATION_NUM > participationNum || MAX_PARTICIPATION_NUM < participationNum) {
             throw new BusinessException(ErrorCode.INVALID_PARTICIPATION_NUM,
                     String.format("[%d]~[%d]", MIN_PARTICIPATION_NUM, MAX_PARTICIPATION_NUM));
         }
-    }
 
-    private static void validateParticipationNumWithRecruitment(final Recruitment recruitment,
-                                                                final int participationNum) {
         if (recruitment.isLessParticipationNumThan(participationNum)) {
             throw new BusinessException(ErrorCode.EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM,
                     String.format("Recruitment = [%d], Schedule = [%d]", recruitment.getVolunteerNum(),

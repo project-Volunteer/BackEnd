@@ -9,7 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.domain.VolunteerType;
+import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
+import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
@@ -131,14 +135,38 @@ class ScheduleTest {
     @DisplayName("참여 인원 수가 모집글 참여 인원 수보다 많을 경우 예외가 발생한다.")
     void throwExceptionWhenCreateExceedParticipationNumThanRecruitmentParticipationNum(int invalidParticipationNum) {
         // given
-        final Recruitment recruitment = Recruitment.builder()
-                .participationNum(9)
-                .build();
+        final Recruitment recruitment = createRecruitment(9);
 
         // when & then
-        assertThatThrownBy(
-                () -> Schedule.create(recruitment, timetable, "조심히", "unicef", address, invalidParticipationNum))
+        assertThatThrownBy(() -> Schedule.builder()
+                .timetable(timetable)
+                .content("조심히")
+                .organizationName("unicef")
+                .address(address)
+                .participationNum(invalidParticipationNum)
+                .isDeleted(IsDeleted.N)
+                .currentVolunteerNum(0)
+                .recruitment(recruitment)
+                .build())
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM.name());
+    }
+
+    private Recruitment createRecruitment(int participationNum) {
+        Coordinate coordinate = new Coordinate(1.2F, 2.2F);
+        return Recruitment.builder()
+                .title("test")
+                .content("content")
+                .volunteeringCategory(VolunteeringCategory.EDUCATION)
+                .volunteerType(VolunteerType.ADULT)
+                .volunteeringType(VolunteeringType.IRREG)
+                .participationNum(participationNum)
+                .isIssued(true)
+                .organizationName("test")
+                .address(address)
+                .coordinate(coordinate)
+                .timetable(timetable)
+                .isPublished(true)
+                .build();
     }
 }
