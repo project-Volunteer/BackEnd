@@ -91,6 +91,9 @@ public class Schedule extends BaseTimeEntity {
                 .build();
     }
 
+    /**
+     * 변경 메서드
+     */
     public void change(Recruitment recruitment, Timetable timetable, String content, String organizationName,
                        Address address,
                        int participationNum) {
@@ -108,12 +111,8 @@ public class Schedule extends BaseTimeEntity {
 
     public void delete() {
         this.isDeleted = IsDeleted.Y;
-    }
-
-    public void removeRecruitment() {
         this.recruitment = null;
     }
-
 
     public void increaseParticipant() {
         this.currentVolunteerNum++;

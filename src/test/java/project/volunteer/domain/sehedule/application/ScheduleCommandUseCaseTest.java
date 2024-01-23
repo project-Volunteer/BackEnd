@@ -6,6 +6,7 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -111,6 +112,34 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
         assertThat(scheduleNos).hasSize(6);
     }
 
+    @DisplayName("일정 삭제 시, 삭제 플레그 값을 업데이트한다.")
+    @Test
+    void deleteSchedule() {
+        //given
+        final Long schedule = createAndSaveSchedule();
+
+        //when
+        scheduleCommandUseCase.deleteSchedule(schedule);
+
+        //then
+        assertThat(findBy(schedule).getIsDeleted()).isEqualByComparingTo(IsDeleted.Y);
+    }
+
+    @DisplayName("모집글에 존재하는 일정들을 모두 삭제한다.")
+    @Test
+    void deleteAllScheduleExistInRecruitment() {
+        //given
+        List<Long> scheduleNos = List.of(createAndSaveSchedule(), createAndSaveSchedule(), createAndSaveSchedule());
+
+        //when
+        scheduleCommandUseCase.deleteAllSchedule(recruitment.getRecruitmentNo());
+
+        //then
+        assertThat(findBy(scheduleNos)).hasSize(3)
+                .extracting("isDeleted")
+                .containsExactly(IsDeleted.Y, IsDeleted.Y, IsDeleted.Y);
+    }
+
     private ScheduleUpsertCommand createCommand(String organizationName, String content, int participationNum) {
         return new ScheduleUpsertCommand(timetable, organizationName, address, content, participationNum);
     }
@@ -140,6 +169,12 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
     private Schedule findBy(Long scheduleNo) {
         return scheduleRepository.findById(scheduleNo)
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
+    }
+
+    private List<Schedule> findBy(List<Long> scheduleNos) {
+        return scheduleNos.stream()
+                .map(this::findBy)
+                .collect(Collectors.toList());
     }
 
 }

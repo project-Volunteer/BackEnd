@@ -1,10 +1,11 @@
-package project.volunteer.domain.sehedule.dao;
+package project.volunteer.domain.sehedule.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.sehedule.dao.CustomScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
 import javax.persistence.LockModeType;
@@ -12,9 +13,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface ScheduleRepository extends JpaRepository<Schedule,Long> ,CustomScheduleRepository {
+public interface ScheduleRepository extends JpaRepository<Schedule,Long> , CustomScheduleRepository {
 
-    public List<Schedule> findByRecruitment_RecruitmentNo(Long recruitmentNo);
+    List<Schedule> findByRecruitment_RecruitmentNo(Long recruitmentNo);
 
     //삭제되지 않은 일정 검색
     @Query("select s " +

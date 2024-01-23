@@ -31,7 +31,7 @@ import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationR
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
