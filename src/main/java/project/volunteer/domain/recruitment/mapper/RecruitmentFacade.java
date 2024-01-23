@@ -16,7 +16,7 @@ import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.RepeatPeriodService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriod;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
@@ -50,13 +50,13 @@ public class RecruitmentFacade {
         Recruitment recruitment = recruitmentService.addRecruitment(findUser, RecruitmentParam.ToRecruitmentParam(form));
         //정기일 경우
         if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())){
-            RepeatPeriod periodParam = new RepeatPeriod(form.getPeriod(), form.getWeek(), form.getDays());
+            RepeatPeriodCommand periodParam = new RepeatPeriodCommand(form.getPeriod(), form.getWeek(), form.getDays());
             //반복 주기 저장
             repeatPeriodService.addRepeatPeriod(recruitment, periodParam);
 
             //스케줄 자동 할당
-            scheduleService.addRegSchedule(recruitment,
-                    new RegularScheduleCreateCommand(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
+            scheduleService.addRegulaerSchedule(recruitment,
+                    RegularScheduleCreateCommand.of(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
                             form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
                             form.getAddress().getFullName(), form.getContent(), form.getVolunteerNum(), periodParam));
         }

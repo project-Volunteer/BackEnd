@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriod;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
     private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Transactional
-    public void addRepeatPeriod(Recruitment recruitment, RepeatPeriod saveDto) {
-        saveDto.getDays().stream().forEach(day -> {
+    public void addRepeatPeriod(Recruitment recruitment, RepeatPeriodCommand saveDto) {
+        saveDto.getDayOfWeeks().stream().forEach(day -> {
             project.volunteer.domain.recruitment.domain.RepeatPeriod period = project.volunteer.domain.recruitment.domain.RepeatPeriod.builder().week(saveDto.getWeek()).period(saveDto.getPeriod()).day(day).build();
             period.setRecruitment(recruitment);
             repeatPeriodRepository.save(period);

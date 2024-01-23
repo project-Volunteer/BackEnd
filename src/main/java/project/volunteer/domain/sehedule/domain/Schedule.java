@@ -110,10 +110,6 @@ public class Schedule extends BaseTimeEntity {
         this.isDeleted = IsDeleted.Y;
     }
 
-    public void setRecruitment(Recruitment recruitment) {
-        this.recruitment = recruitment;
-    }
-
     public void removeRecruitment() {
         this.recruitment = null;
     }

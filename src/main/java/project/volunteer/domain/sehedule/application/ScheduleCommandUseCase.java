@@ -3,7 +3,6 @@ package project.volunteer.domain.sehedule.application;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.application.dto.RegularScheduleCreateCommand;
-import project.volunteer.domain.sehedule.domain.Schedule;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public interface ScheduleCommandUseCase {
     Long addSchedule(Recruitment recruitment, ScheduleUpsertCommand dto);
 
     //스케줄 자동 등록(정기)
-    List<Long> addRegSchedule(Recruitment recruitment, RegularScheduleCreateCommand dto);
+    List<Long> addRegulaerSchedule(Recruitment recruitment, RegularScheduleCreateCommand dto);
 
     //스케줄 정보 수정
     Long editSchedule(Long scheduleNo, Recruitment recruitment, ScheduleUpsertCommand dto);

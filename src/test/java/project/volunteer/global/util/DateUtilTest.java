@@ -1,35 +1,66 @@
 package project.volunteer.global.util;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
+import project.volunteer.domain.recruitment.domain.Day;
+import project.volunteer.domain.recruitment.domain.Week;
 
 class DateUtilTest {
 
+    @DisplayName("년, 월, 주차, 요일에 해당하는 날짜를 찾는다.")
     @Test
-    public void getSpecificWeekDay() {
+    public void findSpecificDate() {
         //given
-        LocalDate date  = LocalDate.of(2023,4,1);
+        final LocalDate expectedDate = LocalDate.of(2024, 1, 7);
 
         //when
-        LocalDate specificWeekDay = DateUtil.findSpecificWeekDay(date, 1, DayOfWeek.MONDAY);
+        LocalDate specificDate = DateUtil.findSpecificDate(2024, 1, Week.FIRST, Day.SUN);
 
         //then
-        System.out.println("result = " + specificWeekDay);
+        assertThat(specificDate).isEqualTo(expectedDate);
     }
 
+    @DisplayName("주차 경계에 해당하는 년, 월, 주차, 요일에 해당하는 날짜를 찾는다.")
     @Test
-    public void isExistWeekDay() {
-        //give
-        LocalDate date  = LocalDate.of(2023,4,3);
+    public void findSpecificDateByWeekBoundary() {
+        //given
+        final LocalDate expectedDate = LocalDate.of(2024, 1, 29);
 
         //when
-        Boolean existWeekDay = DateUtil.isExistWeekDay(date, 1);
+        LocalDate specificDate = DateUtil.findSpecificDate(2024, 2, Week.FIRST, Day.MON);
 
         //then
-        Assertions.assertThat(existWeekDay).isTrue();
+        assertThat(specificDate).isEqualTo(expectedDate);
+    }
+
+    @DisplayName("2024년 3월에는 5주차가 존재하지 않는다.")
+    @Test
+    public void notExistWeek() {
+        //give
+        LocalDate date = LocalDate.of(2024, 3, 1);
+
+        //when
+        Boolean existWeekDay = DateUtil.isExistWeek(date, Week.FIVE);
+
+        //then
+        assertThat(existWeekDay).isFalse();
+    }
+
+    @DisplayName("2024년 2월에는 5주차가 존재한다.")
+    @Test
+    public void existWeek() {
+        //give
+        LocalDate date = LocalDate.of(2024, 2, 1);
+
+        //when
+        Boolean existWeekDay = DateUtil.isExistWeek(date, Week.FIVE);
+
+        //then
+        assertThat(existWeekDay).isTrue();
     }
 
 }

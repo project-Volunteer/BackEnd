@@ -1,31 +1,23 @@
 package project.volunteer.domain.sehedule.application;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.domain.Day;
-import project.volunteer.domain.recruitment.domain.Period;
-import project.volunteer.domain.recruitment.domain.Week;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.application.dto.RegularScheduleCreateCommand;
+import project.volunteer.domain.sehedule.application.timetableCreator.RepeatTimetableCreateProvider;
+import project.volunteer.domain.sehedule.application.timetableCreator.RepeatTimetableCreator;
 import project.volunteer.domain.sehedule.dao.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
-import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-import project.volunteer.global.util.DateUtil;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,48 +27,35 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScheduleCommandService implements ScheduleCommandUseCase {
     private final ScheduleRepository scheduleRepository;
+    private final RepeatTimetableCreateProvider repeatTimetableCreateProvider;
+
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
-    public Long addSchedule(Recruitment recruitment, ScheduleUpsertCommand command) {
-        Schedule schedule = command.toDomain(recruitment);
+    public Long addSchedule(final Recruitment recruitment, final ScheduleUpsertCommand command) {
+        final Schedule schedule = command.toDomain(recruitment);
         return scheduleRepository.save(schedule).getScheduleNo();
     }
 
     @Override
-    public List<Long> addRegSchedule(Recruitment recruitment, RegularScheduleCreateCommand command) {
-        List<LocalDate> scheduleDate = (command.getRepeatPeriod().getPeriod().equals(Period.MONTH)) ?
-                (makeDatesOfRegMonth(command.getTimetable().getStartDay(), command.getTimetable().getEndDay(),
-                        command.getRepeatPeriod().getWeek(), command.getRepeatPeriod().getDays())) :
-                (makeDatsOfRegWeek(command.getTimetable().getStartDay(), command.getTimetable().getEndDay(),
-                        command.getRepeatPeriod().getDays()));
+    public List<Long> addRegulaerSchedule(final Recruitment recruitment, final RegularScheduleCreateCommand command) {
+        RepeatTimetableCreator timetableCreator = repeatTimetableCreateProvider.getCreator(
+                command.getRepeatPeriod());
+        final List<Timetable> scheduleTimetable = timetableCreator.create(command.getRecruitmentTimetable(),
+                command.getRepeatPeriod());
+        final List<Schedule> schedules = command.toDomains(scheduleTimetable, recruitment);
 
-        //스케줄 등록
-        return scheduleDate.stream()
-                .map(date -> {
-                    Timetable timetable = Timetable.createTimetable(date, date, command.getTimetable().getHourFormat(),
-                            command.getTimetable().getStartTime(), command.getTimetable().getProgressTime());
-
-                    Address address =
-                            Address.createAddress(command.getAddress().getSido(), command.getAddress().getSigungu(),
-                                    command.getAddress().getDetails(), command.getAddress().getFullName());
-
-                    Schedule schedule =
-                            Schedule.create(recruitment, timetable, command.getContent(), command.getOrganizationName(), address,
-                                    command.getMaxParticipationNum());
-                    return schedule;
-                })
-                .map(s -> {
-                    Schedule saveSchedule = scheduleRepository.save(s);
-                    return saveSchedule.getScheduleNo();
-                })
+        return scheduleRepository.saveAll(schedules)
+                .stream()
+                .map(Schedule::getScheduleNo)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Long editSchedule(Long scheduleNo, Recruitment recruitment, ScheduleUpsertCommand command) {
+    public Long editSchedule(final Long scheduleNo, final Recruitment recruitment,
+                             final ScheduleUpsertCommand command) {
         //일정 검증
-        Schedule findSchedule = validAndGetSchedule(scheduleNo);
+        final Schedule findSchedule = validAndGetSchedule(scheduleNo);
         findSchedule.change(recruitment, command.getTimetable(), command.getContent(), command.getOrganizationName(),
                 command.getAddress(), command.getMaxParticipationNum());
 
@@ -121,59 +100,59 @@ public class ScheduleCommandService implements ScheduleCommandUseCase {
     }
 
     //반복 주기가 week 인 일정 날짜 생성
-    private List<LocalDate> makeDatsOfRegWeek(LocalDate startDay, LocalDate endDay, List<Day> days) {
-
-        //초기 날짜 세팅
-        List<LocalDate> init = days.stream()
-                .map(day -> DateUtil.findNearestDayOfWeek(startDay, day))
-                .collect(Collectors.toList());
-        List<LocalDate> newSchedule = new ArrayList<>();
-
-        //마감 날짜까지 반복
-        for (int index = 0; index < init.size(); index++) {
-            LocalDate startScheduleDate = init.get(index);
-            for (LocalDate start = startScheduleDate; DateUtil.isBefore(start, endDay);
-                 start = DateUtil.nextWeek(start)) {
-                //스케줄 예정 날짜로 추가
-                LocalDate newScheduleDate = LocalDate.of(start.getYear(), start.getMonthValue(), start.getDayOfMonth());
-                newSchedule.add(newScheduleDate);
-            }
-        }
-        return newSchedule;
-    }
+//    private List<LocalDate> makeDatsOfRegWeek(LocalDate startDay, LocalDate endDay, List<Day> days) {
+//
+//        //초기 날짜 세팅
+//        List<LocalDate> init = days.stream()
+//                .map(day -> DateUtil.findNearestDay(startDay, day))
+//                .collect(Collectors.toList());
+//        List<LocalDate> newSchedule = new ArrayList<>();
+//
+//        //마감 날짜까지 반복
+//        for (int index = 0; index < init.size(); index++) {
+//            LocalDate startScheduleDate = init.get(index);
+//            for (LocalDate start = startScheduleDate; DateUtil.isBefore(start, endDay);
+//                 start = DateUtil.nextWeek(start)) {
+//                //스케줄 예정 날짜로 추가
+//                LocalDate newScheduleDate = LocalDate.of(start.getYear(), start.getMonthValue(), start.getDayOfMonth());
+//                newSchedule.add(newScheduleDate);
+//            }
+//        }
+//        return newSchedule;
+//    }
 
     //반복주기가 month 인 일정 날짜 생성
-    private List<LocalDate> makeDatesOfRegMonth(LocalDate startDay, LocalDate endDay, Week week, List<Day> days) {
-        @Getter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        class DateSet {
-            LocalDate localDate;
-            Integer dayOfWeekValue; //요일 값
-        }
-        //초기 날짜 세팅(연도 넘어가는 경우 포함해서)
-        List<DateSet> init = new ArrayList<>();
-        for (int i = 0; i <= ((endDay.getYear() * 12 + endDay.getMonthValue()) - (startDay.getYear() * 12
-                + startDay.getMonthValue())); i++) {
-            for (Day day : days) {
-                init.add(new DateSet(startDay.plusMonths(i), day.getValue()));
-            }
-        }
-        //스케줄로 등록될 날짜 생성
-        List<LocalDate> scheduleDate = init.stream()
-                //해당 달의 특정 주가 존재하는지 검증
-                .filter(set -> DateUtil.isExistWeekDay(set.getLocalDate(), week.getValue()))
-                //년,월,주,요일에 해당하는 날짜 생성
-                .map(set -> DateUtil.findSpecificWeekDay(set.getLocalDate(), week.getValue(),
-                        DayOfWeek.of(set.getDayOfWeekValue())))
-                //시작 날짜 이후인지 검증
-                .filter(date -> DateUtil.isAfter(date, startDay))
-                //종료 날짜 이전인지 검증
-                .filter(date -> DateUtil.isBefore(date, endDay))
-                .collect(Collectors.toList());
-
-        return scheduleDate;
-    }
+//    private List<LocalDate> makeDatesOfRegMonth(LocalDate startDay, LocalDate endDay, Week week, List<Day> days) {
+//        @Getter
+//        @NoArgsConstructor
+//        @AllArgsConstructor
+//        class DateSet {
+//            LocalDate localDate;
+//            Integer dayOfWeekValue; //요일 값
+//        }
+//        //초기 날짜 세팅(연도 넘어가는 경우 포함해서)
+//        List<DateSet> init = new ArrayList<>();
+//        for (int i = 0; i <= ((endDay.getYear() * 12 + endDay.getMonthValue()) - (startDay.getYear() * 12
+//                + startDay.getMonthValue())); i++) {
+//            for (Day day : days) {
+//                init.add(new DateSet(startDay.plusMonths(i), day.getValue()));
+//            }
+//        }
+//        //스케줄로 등록될 날짜 생성
+//        List<LocalDate> scheduleDate = init.stream()
+//                //해당 달의 특정 주가 존재하는지 검증
+//                .filter(set -> DateUtil.isExistWeek(set.getLocalDate(), week.getValue()))
+//                //년,월,주,요일에 해당하는 날짜 생성
+//                .map(set -> DateUtil.findSpecificDate(set.getLocalDate(), week.getValue(),
+//                        DayOfWeek.of(set.getDayOfWeekValue())))
+//                //시작 날짜 이후인지 검증
+//                .filter(date -> DateUtil.isAfter(date, startDay))
+//                //종료 날짜 이전인지 검증
+//                .filter(date -> DateUtil.isBefore(date, endDay))
+//                .collect(Collectors.toList());
+//
+//        return scheduleDate;
+//    }
 
     //일정 유효성 검사
     private Schedule validAndGetSchedule(Long scheduleNo) {

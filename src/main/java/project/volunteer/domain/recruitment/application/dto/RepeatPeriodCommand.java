@@ -16,23 +16,17 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RepeatPeriod {
+public class RepeatPeriodCommand {
 
     private Period period;
     private Week week;
-    private List<Day> days = new ArrayList<>();
+    private List<Day> dayOfWeeks = new ArrayList<>();
 
-    public RepeatPeriod(String period, String week, List<String>days) {
-
-        //주기 Enum 변환
+    public RepeatPeriodCommand(String period, String week, List<String> dayOfWeeks) {
         this.period = Period.of(period);
-
-        //주기가 매월일 경우, 주 Enum 변환
         this.week = (this.period.equals(Period.MONTH))
-                ?(Week.of(week)):null;
-
-        //요일 Enum 변환
-        this.days = days.stream().
+                ? (Week.of(week)) : null;
+        this.dayOfWeeks = dayOfWeeks.stream().
                 map(Day::of).
                 collect(Collectors.toList());
     }

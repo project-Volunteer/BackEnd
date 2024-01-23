@@ -15,7 +15,7 @@ import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
 import project.volunteer.domain.recruitment.domain.Day;
 import project.volunteer.domain.recruitment.domain.Period;
 import project.volunteer.domain.recruitment.domain.Week;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriod;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -109,7 +109,7 @@ class RecruitmentServiceImplTestForSave {
         final Period period = Period.WEEK;
         final Week week = null;
         final List<Day> days = List.of(Day.MON, Day.TUES);
-        RepeatPeriod repeatPeriodParam = new RepeatPeriod(period, week, days);
+        RepeatPeriodCommand repeatPeriodParam = new RepeatPeriodCommand(period, week, days);
 
         //when
         Recruitment recruitment = recruitmentService.addRecruitment(writer, param);
@@ -151,7 +151,7 @@ class RecruitmentServiceImplTestForSave {
         final Period period = Period.MONTH;
         final Week week = Week.FIRST;
         final List<Day> days = List.of(Day.MON, Day.TUES);
-        RepeatPeriod repeatPeriodParam = new RepeatPeriod(period, week, days);
+        RepeatPeriodCommand repeatPeriodParam = new RepeatPeriodCommand(period, week, days);
 
 
         //when
