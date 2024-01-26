@@ -33,20 +33,8 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
-    private final Recruitment recruitment = Recruitment.builder()
-            .title("title")
-            .content("content")
-            .volunteeringCategory(VolunteeringCategory.EDUCATION)
-            .volunteeringType(VolunteeringType.REG)
-            .volunteerType(VolunteerType.ADULT)
-            .participationNum(999)
-            .isIssued(true)
-            .organizationName("unicef")
-            .address(address)
-            .coordinate(coordinate)
-            .timetable(timetable)
-            .isPublished(true)
-            .build();
+    private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
+            VolunteeringType.REG, VolunteerType.ADULT, 999, true, "unicef", address, coordinate, timetable, true);
 
     @BeforeEach
     void setUp() {
@@ -92,7 +80,7 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
                 Period.WEEK, null, List.of(Day.SAT, Day.SUN));
 
         //when
-        List<Long> scheduleNos = scheduleCommandUseCase.addRegulaerSchedule(recruitment, command);
+        List<Long> scheduleNos = scheduleCommandUseCase.addRegularSchedule(recruitment, command);
 
         //then
         assertThat(scheduleNos).hasSize(16);
@@ -106,7 +94,7 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
                 Period.MONTH, Week.THIRD, List.of(Day.SAT, Day.SUN));
 
         //when
-        List<Long> scheduleNos = scheduleCommandUseCase.addRegulaerSchedule(recruitment, command);
+        List<Long> scheduleNos = scheduleCommandUseCase.addRegularSchedule(recruitment, command);
 
         //then
         assertThat(scheduleNos).hasSize(6);

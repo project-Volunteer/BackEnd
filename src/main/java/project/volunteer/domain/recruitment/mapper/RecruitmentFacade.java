@@ -55,7 +55,7 @@ public class RecruitmentFacade {
             repeatPeriodService.addRepeatPeriod(recruitment, periodParam);
 
             //스케줄 자동 할당
-            scheduleService.addRegulaerSchedule(recruitment,
+            scheduleService.addRegularSchedule(recruitment,
                     RegularScheduleCreateCommand.of(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
                             form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
                             form.getAddress().getFullName(), form.getContent(), form.getVolunteerNum(), periodParam));
