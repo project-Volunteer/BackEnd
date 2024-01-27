@@ -27,8 +27,6 @@ public class ScheduleCommandService implements ScheduleCommandUseCase {
     private final ScheduleRepository scheduleRepository;
     private final RepeatTimetableCreateProvider repeatTimetableCreateProvider;
 
-    private final ScheduleParticipationRepository scheduleParticipationRepository;
-
     @Override
     public Long addSchedule(final Recruitment recruitment, final ScheduleUpsertCommand command) {
         final Schedule schedule = command.toDomain(recruitment);
