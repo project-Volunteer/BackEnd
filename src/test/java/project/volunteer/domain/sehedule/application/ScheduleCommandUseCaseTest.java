@@ -6,8 +6,7 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
+가import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import project.volunteer.common.ServiceTest;
@@ -51,9 +50,8 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
         Long scheduleNo = scheduleCommandUseCase.addSchedule(recruitment, command);
 
         //then
-        assertThat(findBy(scheduleNo)).extracting("organizationName", "content", "volunteerNum")
+        assertThat(findScheduleBy(scheduleNo)).extracting("organizationName", "content", "volunteerNum")
                 .containsExactly(command.getOrganizationName(), command.getContent(), command.getMaxParticipationNum());
-
     }
 
     @DisplayName("일정 정보를 수정한다.")
@@ -67,7 +65,7 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
         scheduleCommandUseCase.editSchedule(scheduleNo, recruitment, changeCommand);
 
         // then
-        assertThat(findBy(scheduleNo)).extracting("content", "organizationName", "volunteerNum")
+        assertThat(findScheduleBy(scheduleNo)).extracting("content", "organizationName", "volunteerNum")
                 .containsExactlyInAnyOrder(changeCommand.getContent(), changeCommand.getOrganizationName(),
                         changeCommand.getMaxParticipationNum());
     }
@@ -80,10 +78,10 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
                 Period.WEEK, null, List.of(Day.SAT, Day.SUN));
 
         //when
-        List<Long> scheduleNos = scheduleCommandUseCase.addRegularSchedule(recruitment, command);
+        scheduleCommandUseCase.addRegularSchedule(recruitment, command);
 
         //then
-        assertThat(scheduleNos).hasSize(16);
+        assertThat(findScheduleByRecruitmentNo(recruitment.getRecruitmentNo())).hasSize(16);
     }
 
     @DisplayName("매달 셋째주 토요일, 일요일 반복하는 일정을 생성하고 저장한다.")
@@ -94,10 +92,10 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
                 Period.MONTH, Week.THIRD, List.of(Day.SAT, Day.SUN));
 
         //when
-        List<Long> scheduleNos = scheduleCommandUseCase.addRegularSchedule(recruitment, command);
+        scheduleCommandUseCase.addRegularSchedule(recruitment, command);
 
         //then
-        assertThat(scheduleNos).hasSize(6);
+        assertThat(findScheduleByRecruitmentNo(recruitment.getRecruitmentNo())).hasSize(6);
     }
 
     @DisplayName("일정 삭제 시, 삭제 플레그 값을 업데이트한다.")
@@ -110,7 +108,7 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
         scheduleCommandUseCase.deleteSchedule(schedule);
 
         //then
-        assertThat(findBy(schedule).getIsDeleted()).isEqualByComparingTo(IsDeleted.Y);
+        assertThat(findScheduleBy(schedule).getIsDeleted()).isEqualByComparingTo(IsDeleted.Y);
     }
 
     @DisplayName("모집글에 존재하는 일정들을 모두 삭제한다.")
@@ -123,7 +121,7 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
         scheduleCommandUseCase.deleteAllSchedule(recruitment.getRecruitmentNo());
 
         //then
-        assertThat(findBy(scheduleNos)).hasSize(3)
+        assertThat(findScheduleByRecruitmentNo(recruitment.getRecruitmentNo())).hasSize(3)
                 .extracting("isDeleted")
                 .containsExactly(IsDeleted.Y, IsDeleted.Y, IsDeleted.Y);
     }
@@ -154,15 +152,13 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
         return scheduleRepository.save(schedule).getScheduleNo();
     }
 
-    private Schedule findBy(Long scheduleNo) {
+    private Schedule findScheduleBy(Long scheduleNo) {
         return scheduleRepository.findById(scheduleNo)
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
     }
 
-    private List<Schedule> findBy(List<Long> scheduleNos) {
-        return scheduleNos.stream()
-                .map(this::findBy)
-                .collect(Collectors.toList());
+    private List<Schedule> findScheduleByRecruitmentNo(Long recruitmentNo) {
+        return scheduleRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
     }
 
 }
