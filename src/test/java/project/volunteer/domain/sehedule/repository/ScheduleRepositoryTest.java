@@ -1,9 +1,11 @@
 package project.volunteer.domain.sehedule.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.Assertions;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,7 @@ import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 
-class ScheduleQueryDSLRepositoryTest extends RepositoryTest {
+class ScheduleRepositoryTest extends RepositoryTest {
     private final Address address = new Address("111", "11", "test", "test");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
@@ -45,13 +47,28 @@ class ScheduleQueryDSLRepositoryTest extends RepositoryTest {
         Long scheduleNo3 = createAndSaveSchedule(LocalDate.of(2024, 1, 13));
 
         //when
-        List<ScheduleCalendarSearchResult> scheduleCalendar = scheduleRepository.findScheduleDate(
+        List<ScheduleCalendarSearchResult> scheduleCalendar = scheduleRepository.findScheduleDateBy(
                 recruitment, toDate, fromDate);
 
         //then
-        Assertions.assertThat(scheduleCalendar).hasSize(2)
+        assertThat(scheduleCalendar).hasSize(2)
                 .extracting("scheduleNo")
                 .contains(scheduleNo1, scheduleNo3);
+    }
+
+    @DisplayName("일정 id로 삭제된 봉사 일정을 조회할 경우 null를 반환한다.")
+    @Test
+    void findDeletedSchedule() {
+        //given
+        Schedule schedule = scheduleRepository.save(
+                new Schedule(timetable, "test", "test", address, 10, IsDeleted.N, 8, recruitment));
+        schedule.delete();
+
+        //when
+        Optional<Schedule> result = scheduleRepository.findNotDeletedSchedule(schedule.getScheduleNo());
+
+        //then
+        assertThat(result).isEmpty();
     }
 
     private Long createAndSaveSchedule(LocalDate startDate) {

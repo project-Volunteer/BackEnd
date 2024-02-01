@@ -142,7 +142,7 @@ public class ParticipationServiceConcurrent {
 
     private Schedule isActiveScheduleWithoutLock(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
-        Schedule findSchedule = scheduleRepository.findValidSchedule(scheduleNo)
+        Schedule findSchedule = scheduleRepository.findNotDeletedSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
 

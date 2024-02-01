@@ -157,36 +157,4 @@ class ScheduleDtoServiceImplTest {
                 () ->  assertThat(closestSchedule.getCurrentVolunteerNum()).isEqualTo(0));
     }
 
-    @Test
-    @DisplayName("캘린더를 통한 스케줄 상세 조회에 성공하다.")
-    public void findCalendarSchedule(){
-        //given
-        Schedule schedule = 스케줄_등록(LocalDate.now().plusDays(2), 3);
-
-        //when
-        Schedule findSchedule = scheduleQueryService.findCalendarSchedule(schedule.getScheduleNo());
-
-        //then
-        assertAll(
-                () -> assertThat(findSchedule.getContent()).isEqualTo(schedule.getContent()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getStartDay()).isEqualTo(schedule.getScheduleTimeTable().getStartDay()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getHourFormat()).isEqualTo(schedule.getScheduleTimeTable().getHourFormat()),
-                () -> assertThat(findSchedule.getScheduleTimeTable().getStartTime()).isEqualTo(schedule.getScheduleTimeTable().getStartTime()),
-                () -> assertThat(findSchedule.getVolunteerNum()).isEqualTo(schedule.getVolunteerNum()),
-                () ->  assertThat(findSchedule.getCurrentVolunteerNum()).isEqualTo(0));
-    }
-
-    @Test
-    @DisplayName("스케줄 삭제로 인해 캘린 스케줄 상세 조회에 실패하다.")
-    public void deletedSchedule(){
-        //given
-        Schedule schedule = 스케줄_등록(LocalDate.now(), 3);
-        schedule.delete();
-        clear();
-
-        //when & then
-        assertThatThrownBy(() -> scheduleQueryService.findCalendarSchedule(schedule.getScheduleNo()))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("NOT_EXIST_SCHEDULE");
-    }
 }

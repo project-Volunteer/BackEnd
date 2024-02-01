@@ -37,7 +37,7 @@ public class ScheduleParticipantFacade {
 
     @Transactional
     public void cancelParticipationVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findActivatedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryService.findScheduleInProgress(scheduleNo);
 
         Participant participation = participationService.findParticipation(recruitmentNo, userNo);
 
@@ -46,7 +46,7 @@ public class ScheduleParticipantFacade {
 
     @Transactional
     public void approvalCancellationVolunteerPostSchedule(Long scheduleNo, Long scheduleParticipantNo){
-        Schedule schedule = scheduleQueryService.findActivatedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryService.findScheduleInProgress(scheduleNo);
 
         scheduleParticipationService.approvalCancellation(schedule, scheduleParticipantNo);
     }

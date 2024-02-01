@@ -21,6 +21,13 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "join sp.participant p on p.participant.userNo=:userNo " +
             "and sp.schedule.scheduleNo=:scheduleNo")
     Optional<ScheduleParticipation> findByUserNoAndScheduleNo(@Param("userNo")Long userNo, @Param("scheduleNo")Long scheduleNo);
+
+    @Query("select sp.state " +
+            "from ScheduleParticipation sp " +
+            "join sp.participant p on p.participant.userNo=:userNo " +
+            "and sp.schedule.scheduleNo=:scheduleNo")
+    Optional<ParticipantState> findStateBy(@Param("userNo")Long userNo, @Param("scheduleNo")Long scheduleNo);
+
     Optional<ScheduleParticipation> findByScheduleAndParticipant(Schedule schedule, Participant participant);
 
     //일정 참여 중인 인원 수 반환 쿼리

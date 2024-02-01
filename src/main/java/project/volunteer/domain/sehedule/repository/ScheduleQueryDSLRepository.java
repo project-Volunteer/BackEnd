@@ -4,8 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 
 public interface ScheduleQueryDSLRepository {
-    List<ScheduleCalendarSearchResult> findScheduleDate(Recruitment recruitment, LocalDate toDate, LocalDate fromDate);
+    List<ScheduleCalendarSearchResult> findScheduleDateBy(Recruitment recruitment, LocalDate toDate, LocalDate fromDate);
+
+    ScheduleDetailSearchResult findScheduleDetailBy(Long scheduleNo);
 
 }

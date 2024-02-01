@@ -1,5 +1,6 @@
 package project.volunteer.domain.sehedule.mapper;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +10,7 @@ import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipat
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
-import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -18,6 +19,7 @@ import project.volunteer.domain.user.domain.User;
 
 import java.time.LocalDate;
 import java.util.List;
+import project.volunteer.global.common.component.ParticipantState;
 
 @Service
 @RequiredArgsConstructor
@@ -59,17 +61,17 @@ public class ScheduleFacade {
         return scheduleQueryService.searchScheduleCalender(recruitment, startDay, endDay);
     }
 
-    public ScheduleDetails findVolunteerPostCalendarSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
-        User user = userService.findUser(userNo);
-        recruitmentService.findPublishedRecruitment(recruitmentNo);
+    public ScheduleDetailSearchResult findScheduleDetail(Long userNo, Long scheduleNo){
+        ScheduleDetailSearchResult scheduleSearchResult = scheduleQueryService.searchScheduleDetail(scheduleNo);
+        Optional<ParticipantState> participantState = scheduleParticipationDtoService.searchState(scheduleNo, userNo);
+        scheduleSearchResult.setResponseState(participantState);
 
-        Schedule calendarSchedule = scheduleQueryService.findCalendarSchedule(scheduleNo);
-        String scheduleParticipationState = scheduleParticipationDtoService.findScheduleParticipationState(calendarSchedule, user);
-
-        return ScheduleDetails.createScheduleDetails(calendarSchedule, scheduleParticipationState);
+        return scheduleSearchResult;
     }
 
-    public ScheduleDetails findClosestVolunteerPostSchedule(Long recruitmentNo, Long userNo){
+    public ScheduleDetailSearchResult findClosestVolunteerPostSchedule(Long recruitmentNo, Long userNo){
+
+
         User user = userService.findUser(userNo);
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
 
@@ -80,8 +82,9 @@ public class ScheduleFacade {
             return null;
         }
 
-        String scheduleParticipationState = scheduleParticipationDtoService.findScheduleParticipationState(closestSchedule, user);
+        Optional<ParticipantState> participantState = scheduleParticipationDtoService.searchState(closestSchedule.getScheduleNo(), userNo);
 
-        return ScheduleDetails.createScheduleDetails(closestSchedule, scheduleParticipationState);
+//        return ScheduleDetailSearchResult.createScheduleDetails(closestSchedule, scheduleParticipationState);
+        return null;
     }
 }

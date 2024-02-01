@@ -68,7 +68,7 @@ public class ScheduleCommandService implements ScheduleCommandUseCase {
 
     //일정 유효성 검사
     private Schedule validAndGetSchedule(Long scheduleNo) {
-        return scheduleRepository.findValidSchedule(scheduleNo)
+        return scheduleRepository.findNotDeletedSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule No = [%d]", scheduleNo)));
     }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.error.exception.BusinessException;
@@ -21,14 +22,22 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
     private final ScheduleRepository scheduleRepository;
 
     @Override
-    public List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay, LocalDate endDay) {
-        return scheduleRepository.findScheduleDate(recruitment ,startDay, endDay);
+    public List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay,
+                                                                     LocalDate endDay) {
+        return scheduleRepository.findScheduleDateBy(recruitment, startDay, endDay);
     }
 
     @Override
-    public Schedule findCalendarSchedule(Long scheduleNo) {
-        return validAndGetSchedule(scheduleNo);
+    public ScheduleDetailSearchResult searchScheduleDetail(Long scheduleNo) {
+        return scheduleRepository.findScheduleDetailBy(scheduleNo);
     }
+
+
+
+
+
+
+
 
     @Override
     public Schedule findClosestSchedule(Long recruitmentNo) {
@@ -47,8 +56,8 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
     }
 
     @Override
-    public Schedule findActivatedSchedule(Long scheduleNo) {
-        Schedule schedule = validAndGetSchedule(scheduleNo);
+    public Schedule findScheduleInProgress(Long scheduleNo) {
+        Schedule schedule = validAndGetNotDeletedSchedule(scheduleNo);
 
         //일정 마감 일자 조회
         validateSchedulePeriod(schedule);
@@ -57,23 +66,26 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
 
     @Override
     public Schedule findPublishedSchedule(Long scheduleNo) {
-        return validAndGetSchedule(scheduleNo);
+        return validAndGetNotDeletedSchedule(scheduleNo);
     }
 
-    private Schedule validAndGetSchedule(Long scheduleNo){
-        return scheduleRepository.findValidSchedule(scheduleNo)
+    private Schedule validAndGetNotDeletedSchedule(Long scheduleNo) {
+        return scheduleRepository.findNotDeletedSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(
                         ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
     }
-    private Schedule validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo){
+
+    private Schedule validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {
         return scheduleRepository.findValidScheduleWithPESSIMISTIC_WRITE_Lock(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
     }
-    private void validateSchedulePeriod(Schedule schedule){
-        if(!schedule.isAvailableDate()){
+
+    private void validateSchedulePeriod(Schedule schedule) {
+        if (!schedule.isAvailableDate()) {
             throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE,
-                    String.format("ScheduleNo = [%d], participation period = [%s]", schedule.getScheduleNo(), schedule.getScheduleTimeTable().getEndDay().toString()));
+                    String.format("ScheduleNo = [%d], participation period = [%s]", schedule.getScheduleNo(),
+                            schedule.getScheduleTimeTable().getEndDay().toString()));
         }
     }
 }
