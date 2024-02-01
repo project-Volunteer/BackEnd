@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.error.exception.BusinessException;
@@ -19,11 +19,10 @@ import project.volunteer.global.error.exception.ErrorCode;
 @RequiredArgsConstructor
 public class ScheduleQueryService implements ScheduleQueryUseCase {
     private final ScheduleRepository scheduleRepository;
-    private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
-    public List<Schedule> findCalendarSchedules(Recruitment recruitment, LocalDate startDay, LocalDate endDay) {
-        return scheduleRepository.findScheduleWithinRecruitmentPeriod(recruitment, startDay, endDay);
+    public List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay, LocalDate endDay) {
+        return scheduleRepository.findScheduleDate(recruitment ,startDay, endDay);
     }
 
     @Override

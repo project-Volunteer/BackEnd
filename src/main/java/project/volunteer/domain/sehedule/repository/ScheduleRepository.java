@@ -15,11 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import project.volunteer.global.common.component.IsDeleted;
 
-public interface ScheduleRepository extends JpaRepository<Schedule, Long>, CustomScheduleRepository {
+public interface ScheduleRepository extends JpaRepository<Schedule, Long>, CustomScheduleRepository, ScheduleQueryDSLRepository{
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Schedule s SET s.isDeleted = :isDeleted WHERE s.recruitment.recruitmentNo = :recruitmentNo")
     void bulkUpdateIsDeleted(@Param("isDeleted") IsDeleted isDeleted, @Param("recruitmentNo") Long recruitmentNo);
+
+
 
     List<Schedule> findByRecruitment_RecruitmentNo(Long recruitmentNo);
 
@@ -44,15 +46,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, Custo
     @Lock(LockModeType.PESSIMISTIC_WRITE) //비관적 락 사용
     public Optional<Schedule> findValidScheduleWithPESSIMISTIC_WRITE_Lock(@Param("no") Long scheduleNo);
 
-
-    @Query("select s " +
-            "from Schedule s " +
-            "where s.recruitment =:recruitment " +
-            "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
-            "and s.scheduleTimeTable.startDay between :startDay and :endDay " +
-            "order by s.scheduleTimeTable.startDay asc ")
-    public List<Schedule> findScheduleWithinRecruitmentPeriod(@Param("recruitment") Recruitment recruitment,
-                                                              @Param("startDay") LocalDate startDay,
-                                                              @Param("endDay") LocalDate endDay);
 
 }

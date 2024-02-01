@@ -89,37 +89,12 @@ class ScheduleServiceImplTestForQuery {
         em.clear();
     }
 
-    @Test
-    @DisplayName("특정 달의 스케줄들을 조회한다.")
-    @Transactional
-    public void findSchedulesWithinPeriod(){
-        //given
-        스케줄_등록(LocalDate.of(2023, 5, 1), 3);
-        스케줄_등록(LocalDate.of(2023, 5, 15), 3);
-        스케줄_등록(LocalDate.of(2023, 5, 20), 3);
-        스케줄_등록(LocalDate.of(2023, 5, 21), 3);
-        스케줄_등록(LocalDate.of(2023, 5, 10), 3);
-        스케줄_등록(LocalDate.of(2023, 5, 31), 3);
-
-        스케줄_등록(LocalDate.of(2023, 6, 10), 3);
-        스케줄_등록(LocalDate.of(2023, 6, 15), 3);
-        스케줄_등록(LocalDate.of(2023, 4, 25), 3);
-
-        //when
-        List<Schedule> schedules = scheduleQueryService.findCalendarSchedules(
-                saveRecruitment,
-                LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31));
-
-        //then
-        assertThat(schedules.size()).isEqualTo(6);
-    }
-
     @Disabled
     @Test
     @DisplayName("팀원이 아닌 사용자가 캘린더 스케줄 조회를 시도하다.")
     @Transactional
     public void forbidden(){
-        assertThatThrownBy(() -> scheduleQueryService.findCalendarSchedules(
+        assertThatThrownBy(() -> scheduleQueryService.searchScheduleCalender(
                 saveRecruitment,
                 LocalDate.of(2023, 5, 1), LocalDate.of(2023, 5, 31)))
                 .isInstanceOf(BusinessException.class)

@@ -11,6 +11,7 @@ import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
 import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
@@ -53,10 +54,9 @@ public class ScheduleFacade {
         scheduleParticipationService.deleteScheduleParticipation(scheduleNo);
     }
 
-    public List<Schedule> findVolunteerPostCalendarSchedules(Long recruitmentNo, LocalDate startDay, LocalDate endDay){
+    public List<ScheduleCalendarSearchResult> findScheduleCalendar(Long recruitmentNo, LocalDate startDay, LocalDate endDay){
         Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
-
-        return scheduleQueryService.findCalendarSchedules(recruitment, startDay, endDay);
+        return scheduleQueryService.searchScheduleCalender(recruitment, startDay, endDay);
     }
 
     public ScheduleDetails findVolunteerPostCalendarSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){

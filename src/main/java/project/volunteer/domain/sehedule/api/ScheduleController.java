@@ -6,10 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
-import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleList;
-import project.volunteer.domain.sehedule.api.dto.response.CalendarScheduleListResponse;
+import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
 import project.volunteer.domain.sehedule.application.dto.ScheduleDetails;
-import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.mapper.ScheduleFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
@@ -19,7 +18,6 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,8 +27,9 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping(value = "/{recruitmentNo}/schedule", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ScheduleDetails> scheduleDetails(@PathVariable Long recruitmentNo){
-        ScheduleDetails details = scheduleFacade.findClosestVolunteerPostSchedule(recruitmentNo, SecurityUtil.getLoginUserNo());
+    public ResponseEntity<ScheduleDetails> scheduleDetails(@PathVariable Long recruitmentNo) {
+        ScheduleDetails details = scheduleFacade.findClosestVolunteerPostSchedule(recruitmentNo,
+                SecurityUtil.getLoginUserNo());
 
         return ResponseEntity.ok(details);
     }
@@ -38,7 +37,7 @@ public class ScheduleController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PostMapping("/{recruitmentNo}/schedule")
     public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleUpsertRequest request,
-                                      @PathVariable("recruitmentNo")Long no){
+                                      @PathVariable("recruitmentNo") Long no) {
 
         scheduleFacade.registerVolunteerPostSchedule(no, request.toDto());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -47,8 +46,8 @@ public class ScheduleController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}")
     public ResponseEntity scheduleEdit(@RequestBody @Valid ScheduleUpsertRequest request,
-                                       @PathVariable("scheduleNo")Long scheduleNo,
-                                       @PathVariable("recruitmentNo")Long recruitmentNo){
+                                       @PathVariable("scheduleNo") Long scheduleNo,
+                                       @PathVariable("recruitmentNo") Long recruitmentNo) {
 
         scheduleFacade.editVolunteerPostSchedule(recruitmentNo, scheduleNo, request.toDto());
 
@@ -58,7 +57,7 @@ public class ScheduleController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/{recruitmentNo}/schedule/{scheduleNo}")
     public ResponseEntity scheduleDelete(@PathVariable("scheduleNo") Long scheduleNo,
-                                         @PathVariable("recruitmentNo") Long recruitmentNo){
+                                         @PathVariable("recruitmentNo") Long recruitmentNo) {
 
         scheduleFacade.deleteVolunteerPostSchedule(recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
@@ -66,28 +65,25 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar")
-    public ResponseEntity<CalendarScheduleListResponse> scheduleList(@PathVariable("recruitmentNo")Long recruitmentNo,
-                                       @RequestParam("year")Integer year,
-                                       @RequestParam("mon")Integer mon){
+    public ResponseEntity<ScheduleCalenderSearchResponses> scheduleList(@PathVariable("recruitmentNo") Long recruitmentNo,
+                                                                        @RequestParam("year") Integer year,
+                                                                        @RequestParam("mon") Integer mon) {
+        final LocalDate startDay = LocalDate.of(year, mon, 1);
+        final LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
 
-        LocalDate startDay = LocalDate.of(year, mon, 1);
-        LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
+        List<ScheduleCalendarSearchResult> result = scheduleFacade.findScheduleCalendar(
+                recruitmentNo, startDay, endDay);
 
-        List<Schedule> calendarSchedules = scheduleFacade.findVolunteerPostCalendarSchedules(recruitmentNo, startDay, endDay);
-
-        //response
-        List<CalendarScheduleList> list = calendarSchedules.stream()
-                .map(c -> CalendarScheduleList.createCalendarSchedule(c.getScheduleNo(), c.getScheduleTimeTable().getStartDay()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(new CalendarScheduleListResponse(list));
+        return ResponseEntity.ok(ScheduleCalenderSearchResponses.from(result));
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar/{scheduleNo}")
-    public ResponseEntity<ScheduleDetails> calendarScheduleDetails(@PathVariable("recruitmentNo")Long recruitmentNo,
-                                                  @PathVariable("scheduleNo")Long scheduleNo){
+    public ResponseEntity<ScheduleDetails> calendarScheduleDetails(@PathVariable("recruitmentNo") Long recruitmentNo,
+                                                                   @PathVariable("scheduleNo") Long scheduleNo) {
 
-        ScheduleDetails details = scheduleFacade.findVolunteerPostCalendarSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
+        ScheduleDetails details = scheduleFacade.findVolunteerPostCalendarSchedule(SecurityUtil.getLoginUserNo(),
+                recruitmentNo, scheduleNo);
         return ResponseEntity.ok(details);
     }
 }

@@ -3,11 +3,11 @@ package project.volunteer.domain.sehedule.application;
 import java.time.LocalDate;
 import java.util.List;
 import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
 public interface ScheduleQueryUseCase {
-    //캘린더 스케줄 리스트 조회
-    List<Schedule> findCalendarSchedules(Recruitment recruitment, LocalDate startDay, LocalDate endDay);
+    List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay, LocalDate endDay);
 
     //캘린더 스케줄 상세 조회
     Schedule findCalendarSchedule(Long scheduleNo);
