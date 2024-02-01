@@ -1,6 +1,7 @@
 package project.volunteer.domain.sehedule.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -23,6 +24,8 @@ import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 class ScheduleQueryUseCaseTest extends ServiceTest {
     private final Address address = new Address("111", "11", "test", "test");
@@ -85,6 +88,20 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
                 () -> assertThat(result.getActiveVolunteerNum()).isEqualTo(schedule.getCurrentVolunteerNum()),
                 () -> assertThat(result.getContent()).isEqualTo(schedule.getContent())
         );
+    }
+
+    @DisplayName("삭제된 일정 정보를 조회할 경우, 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenDeletedSchedule() {
+        // given
+        Schedule schedule = scheduleRepository.save(
+                new Schedule(timetable, "test", "test", address, 10, IsDeleted.N, 8, recruitment));
+        schedule.delete();
+
+        // when & then
+        assertThatThrownBy(() -> scheduleQueryUseCase.searchScheduleDetail(schedule.getScheduleNo()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.NOT_EXIST_SCHEDULE.name());
     }
 
     private Long createAndSaveSchedule(LocalDate startDate) {
