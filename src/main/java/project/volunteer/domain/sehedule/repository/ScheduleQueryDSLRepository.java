@@ -11,4 +11,8 @@ public interface ScheduleQueryDSLRepository {
 
     ScheduleDetailSearchResult findScheduleDetailBy(Long scheduleNo);
 
+    ScheduleDetailSearchResult findNearestScheduleDetailBy(Long recruitmentNo, LocalDate currentDate);
+
+    Boolean existNearestSchedule(Long recruitmentNo, LocalDate currentDate);
+
 }

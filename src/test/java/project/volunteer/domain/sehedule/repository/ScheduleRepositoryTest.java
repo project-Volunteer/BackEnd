@@ -71,6 +71,23 @@ class ScheduleRepositoryTest extends RepositoryTest {
         assertThat(result).isEmpty();
     }
 
+    @DisplayName("봉사 모집글에 존재하는 일정들 중, 참여 가능한 일정이 있는지 확인한다.")
+    @Test
+    void existSchedule() {
+        //given
+        final LocalDate currentDate = LocalDate.of(2024, 1, 10);
+
+        final Long scheduleNo1 = createAndSaveSchedule(LocalDate.of(2024, 1, 9)); // 참여 불가능
+        final Long scheduleNo2 = createAndSaveSchedule(LocalDate.of(2024, 1, 10)); // 참여 불가능
+
+        //when
+        Boolean result = scheduleRepository.existNearestSchedule(recruitment.getRecruitmentNo(), currentDate);
+
+        //then
+        assertThat(result).isFalse();
+    }
+
+
     private Long createAndSaveSchedule(LocalDate startDate) {
         Timetable time = new Timetable(startDate, startDate, HourFormat.PM, LocalTime.now(), 10);
         Schedule schedule = new Schedule(time, "test", "test", address, 10, IsDeleted.N, 8, recruitment);

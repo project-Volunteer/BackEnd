@@ -12,10 +12,9 @@ public interface ScheduleQueryUseCase {
 
     ScheduleDetailSearchResult searchScheduleDetail(Long scheduleNo);
 
+    ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo, LocalDate currentDate);
 
 
-    //가장 가까운 스케줄 찾기
-    Schedule findClosestSchedule(Long recruitmentNo);
 
     //활동 중인 스케줄 찾는 메서드(비관적 락 사용)
     Schedule findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo);

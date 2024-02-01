@@ -33,19 +33,19 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
         return scheduleRepository.findScheduleDetailBy(scheduleNo);
     }
 
-
-
-
-
-
-
-
     @Override
-    public Schedule findClosestSchedule(Long recruitmentNo) {
-        //모집 중인 가장 가까운 봉사 스케줄 찾기
-        //없는 경우 NULL
-        return scheduleRepository.findNearestSchedule(recruitmentNo).orElseGet(() -> null);
+    public ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo, LocalDate currentDate) {
+        if(!scheduleRepository.existNearestSchedule(recruitmentNo, currentDate)) {
+            return null;
+        }
+        return scheduleRepository.findNearestScheduleDetailBy(recruitmentNo, currentDate);
     }
+
+
+
+
+
+
 
     @Override
     public Schedule findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {

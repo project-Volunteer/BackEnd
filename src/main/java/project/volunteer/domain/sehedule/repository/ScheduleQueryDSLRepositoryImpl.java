@@ -45,4 +45,33 @@ public class ScheduleQueryDSLRepositoryImpl implements ScheduleQueryDSLRepositor
                 .fetchOne();
     }
 
+    @Override
+    public ScheduleDetailSearchResult findNearestScheduleDetailBy(Long recruitmentNo, LocalDate currentDate) {
+        return queryFactory.select(
+                        Projections.constructor(ScheduleDetailSearchResult.class, schedule.scheduleNo, schedule.address.sido,
+                                schedule.address.sigungu, schedule.address.details, schedule.address.fullName,
+                                schedule.scheduleTimeTable.startDay, schedule.scheduleTimeTable.startTime,
+                                schedule.scheduleTimeTable.hourFormat, schedule.scheduleTimeTable.progressTime,
+                                schedule.volunteerNum, schedule.content, schedule.currentVolunteerNum))
+                .from(schedule)
+                .where(schedule.isDeleted.eq(IsDeleted.N),
+                        schedule.recruitment.recruitmentNo.eq(recruitmentNo),
+                        schedule.scheduleTimeTable.startDay.after(currentDate))
+                .orderBy(schedule.scheduleTimeTable.startDay.asc())
+                .fetchFirst();
+    }
+
+    @Override
+    public Boolean existNearestSchedule(Long recruitmentNo, LocalDate currentDate) {
+        Integer isExist = queryFactory.selectOne()
+                .from(schedule)
+                .where(schedule.isDeleted.eq(IsDeleted.N),
+                        schedule.recruitment.recruitmentNo.eq(recruitmentNo),
+                        schedule.scheduleTimeTable.startDay.after(currentDate))
+                .fetchFirst();
+
+        return isExist != null;
+    }
+
+
 }

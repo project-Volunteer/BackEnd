@@ -28,8 +28,8 @@ public class ScheduleController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping(value = "/{recruitmentNo}/schedule", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ScheduleDetailSearchResult> scheduleDetails(@PathVariable Long recruitmentNo) {
-        ScheduleDetailSearchResult details = scheduleFacade.findClosestVolunteerPostSchedule(recruitmentNo,
-                SecurityUtil.getLoginUserNo());
+        ScheduleDetailSearchResult details = scheduleFacade.findClosestScheduleDetail(SecurityUtil.getLoginUserNo(),
+                recruitmentNo);
 
         return ResponseEntity.ok(details);
     }
@@ -65,9 +65,10 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar")
-    public ResponseEntity<ScheduleCalenderSearchResponses> scheduleList(@PathVariable("recruitmentNo") Long recruitmentNo,
-                                                                        @RequestParam("year") Integer year,
-                                                                        @RequestParam("mon") Integer mon) {
+    public ResponseEntity<ScheduleCalenderSearchResponses> scheduleList(
+            @PathVariable("recruitmentNo") Long recruitmentNo,
+            @RequestParam("year") Integer year,
+            @RequestParam("mon") Integer mon) {
         final LocalDate startDay = LocalDate.of(year, mon, 1);
         final LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
 
@@ -78,10 +79,12 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar/{scheduleNo}")
-    public ResponseEntity<ScheduleDetailSearchResult> calendarScheduleDetails(@PathVariable("recruitmentNo") Long recruitmentNo,
-                                                                        @PathVariable("scheduleNo") Long scheduleNo) {
+    public ResponseEntity<ScheduleDetailSearchResult> calendarScheduleDetails(
+            @PathVariable("recruitmentNo") Long recruitmentNo,
+            @PathVariable("scheduleNo") Long scheduleNo) {
 
-        ScheduleDetailSearchResult result = scheduleFacade.findScheduleDetail(SecurityUtil.getLoginUserNo(), scheduleNo);
+        ScheduleDetailSearchResult result = scheduleFacade.findScheduleDetail(SecurityUtil.getLoginUserNo(),
+                scheduleNo);
         return ResponseEntity.ok(result);
     }
 }

@@ -104,6 +104,42 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
                 .hasMessage(ErrorCode.NOT_EXIST_SCHEDULE.name());
     }
 
+    @DisplayName("봉사 모집글에 존재하는 일정 중 참여가 가능 하면서, 가장 가까운 일정 정보를 상세 조회한다.")
+    @Test
+    void searchClosestScheduleDetail() {
+        //given
+        final LocalDate currentDate = LocalDate.of(2024, 1, 16);
+
+        final Long scheduleNo1 = createAndSaveSchedule(LocalDate.of(2024, 1, 15));
+        final Long scheduleNo2 = createAndSaveSchedule(LocalDate.of(2024, 1, 16));
+        final Long scheduleNo3 = createAndSaveSchedule(LocalDate.of(2024, 1, 17));
+        final Long scheduleNo4 = createAndSaveSchedule(LocalDate.of(2024, 1, 20));
+
+        //when
+        ScheduleDetailSearchResult result = scheduleQueryUseCase.searchClosestScheduleDetail(
+                recruitment.getRecruitmentNo(), currentDate);
+
+        //then
+        assertThat(result.getNo()).isEqualTo(scheduleNo3);
+    }
+
+    @DisplayName("봉사 모집글에 존재하는 일정 중 모두 참여 불가능한 일정일 경우, null DTO를 반환한다.")
+    @Test
+    void notExistClosestSchedule() {
+        //given
+        final LocalDate currentDate = LocalDate.of(2024, 1, 16);
+
+        final Long scheduleNo1 = createAndSaveSchedule(LocalDate.of(2024, 1, 15));
+        final Long scheduleNo2 = createAndSaveSchedule(LocalDate.of(2024, 1, 16));
+
+        //when
+        ScheduleDetailSearchResult result = scheduleQueryUseCase.searchClosestScheduleDetail(
+                recruitment.getRecruitmentNo(), currentDate);
+
+        //then
+        assertThat(result).isNull();
+    }
+
     private Long createAndSaveSchedule(LocalDate startDate) {
         Timetable time = new Timetable(startDate, startDate, HourFormat.PM, LocalTime.now(), 10);
         Schedule schedule = new Schedule(time, "test", "test", address, 10, IsDeleted.N, 8, recruitment);
