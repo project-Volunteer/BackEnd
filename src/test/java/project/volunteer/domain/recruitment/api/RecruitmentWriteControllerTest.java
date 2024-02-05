@@ -31,7 +31,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.infra.s3.FileService;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,8 +46,8 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getTimeFormat;
 
 //TODO: 컨트롤러 테스트 리팩토링 전체적으로 필요!!!!
 //TODO: Rest docs 문서화를 위한 컨트롤러 테스트로

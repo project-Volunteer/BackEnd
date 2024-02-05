@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getTimeFormat;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -74,7 +74,7 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 @SpringBootTest
 @AutoConfigureMockMvc

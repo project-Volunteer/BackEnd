@@ -1,4 +1,4 @@
-package project.volunteer.restdocs.document.dto;
+package project.volunteer.document.restdocs.dto;
 
 import lombok.Builder;
 import lombok.Getter;

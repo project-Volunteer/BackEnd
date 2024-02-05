@@ -45,7 +45,7 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.test.WithMockCustomUser;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

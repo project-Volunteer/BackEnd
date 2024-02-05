@@ -33,7 +33,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
 import project.volunteer.global.test.WithMockCustomUser;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -46,8 +46,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getTimeFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc

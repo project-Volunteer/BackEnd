@@ -1,4 +1,4 @@
-package project.volunteer.restdocs.document.util;
+package project.volunteer.document.restdocs.util;
 
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.operation.Operation;

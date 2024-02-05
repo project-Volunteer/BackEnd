@@ -1,4 +1,4 @@
-package project.volunteer.restdocs.document;
+package project.volunteer.document.restdocs;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import project.volunteer.domain.recruitment.domain.Week;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.converter.CodeCommonType;
 import project.volunteer.global.common.dto.StateResponse;
-import project.volunteer.restdocs.document.util.CustomResponseFieldsSnippet;
+import project.volunteer.document.restdocs.util.CustomResponseFieldsSnippet;
 
 import java.util.Arrays;
 import java.util.Map;

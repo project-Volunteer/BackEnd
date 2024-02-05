@@ -54,7 +54,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.infra.s3.FileService;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -72,8 +72,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getDateFormat;
-import static project.volunteer.restdocs.document.util.DocumentFormatGenerator.getTimeFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getDateFormat;
+import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getTimeFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc

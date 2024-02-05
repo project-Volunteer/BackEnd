@@ -1,4 +1,4 @@
-package project.volunteer.restdocs.document.config;
+package project.volunteer.document.restdocs.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
