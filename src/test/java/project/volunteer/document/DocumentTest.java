@@ -19,7 +19,8 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.sehedule.application.ScheduleCommandService;
+import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -27,6 +28,7 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.jwt.util.JwtProvider;
 
@@ -55,13 +57,14 @@ public abstract class DocumentTest {
     protected RecruitmentRepository recruitmentRepository;
 
     @Autowired
-    protected ScheduleCommandService scheduleCommandService;
+    protected ScheduleRepository scheduleRepository;
 
 
     protected String AUTHORIZATION_HEADER = "accessToken";
     protected String recruitmentOwnerAccessToken;
     protected User user;
     protected Recruitment recruitment;
+    protected Schedule schedule;
 
 
     @BeforeEach
@@ -77,14 +80,22 @@ public abstract class DocumentTest {
                 new User("bonsik1234", "password", "bonsik", "test@email.com", Gender.M, LocalDate.of(1999, 7, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
 
-        final Address address = new Address("111", "11", "test", "test");
-        final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
-        final Timetable timetable = new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
-                LocalTime.now(), 10);
-
         recruitment = recruitmentRepository.save(
                 new Recruitment("title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
-                        VolunteerType.ADULT, 9999, true, "unicef", address, coordinate, timetable, true, user));
+                        VolunteerType.ADULT, 9999, true, "unicef",
+                        new Address("111", "11", "test", "test"),
+                        new Coordinate(1.2F, 2.2F),
+                        new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
+                                LocalTime.now(), 10),
+                        true, user));
+
+        schedule = scheduleRepository.save(
+                new Schedule(new Timetable(LocalDate.of(2024, 2, 10), LocalDate.of(2024, 2, 10), HourFormat.AM,
+                        LocalTime.now(), 10),
+                        "test", "test",
+                        new Address("111", "11", "test", "test"),
+                        100, IsDeleted.N, 8, recruitment)
+        );
 
     }
 
