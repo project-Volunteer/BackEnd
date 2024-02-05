@@ -24,20 +24,22 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
     private final Clock clock;
 
     @Override
-    public List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay,
-                                                                     LocalDate endDay) {
+    public List<ScheduleCalendarSearchResult> searchScheduleCalender(final Recruitment recruitment,
+                                                                     final LocalDate startDay,
+                                                                     final LocalDate endDay) {
         return scheduleRepository.findScheduleDateBy(recruitment, startDay, endDay);
     }
 
     @Override
-    public ScheduleDetailSearchResult searchScheduleDetail(Long scheduleNo) {
+    public ScheduleDetailSearchResult searchScheduleDetail(final Long scheduleNo) {
         validAndGetNotDeletedSchedule(scheduleNo);
         return scheduleRepository.findScheduleDetailBy(scheduleNo);
     }
 
     @Override
-    public ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo, LocalDate currentDate) {
-        if(!scheduleRepository.existNearestSchedule(recruitmentNo, currentDate)) {
+    public ScheduleDetailSearchResult searchClosestScheduleDetail(final Long recruitmentNo,
+                                                                  final LocalDate currentDate) {
+        if (!scheduleRepository.existNearestSchedule(recruitmentNo, currentDate)) {
             return null;
         }
         return scheduleRepository.findNearestScheduleDetailBy(recruitmentNo, currentDate);
@@ -64,7 +66,6 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
 
 
 
-
     @Override
     public Schedule findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {
         Schedule findSchedule = validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(scheduleNo);
@@ -73,7 +74,6 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
         validateSchedulePeriod(findSchedule);
         return findSchedule;
     }
-
 
 
     private Schedule validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {
