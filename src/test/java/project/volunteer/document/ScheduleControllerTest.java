@@ -151,5 +151,31 @@ public class ScheduleControllerTest extends DocumentTest {
                 );
     }
 
+    @DisplayName("일정 삭제에 성공하다.")
+    @Test
+    public void deleteSchedule() throws Exception {
+        //given & when
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.delete("/recruitment/{recruitmentNo}/schedule/{scheduleNo}",
+                                recruitment.getRecruitmentNo(), schedule.getScheduleNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
+                                )
+                        )
+                );
+    }
+
 
 }

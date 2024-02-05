@@ -210,33 +210,6 @@ class ScheduleEditControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("봉사 일정 삭제에 성공하다.")
-    @Test
-    @Transactional
-    @WithUserDetails(value = "sctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void deleteSchedule() throws Exception {
-        //given & when
-        ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.delete("/recruitment/{recruitmentNo}/schedule/{scheduleNo}", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
-                .header(AUTHORIZATION_HEADER, "access Token")
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
-                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
-                                )
-                        )
-                );
-    }
-
     private <T> String toJson(T data) throws JsonProcessingException {
         return objectMapper.writeValueAsString(data);
     }
