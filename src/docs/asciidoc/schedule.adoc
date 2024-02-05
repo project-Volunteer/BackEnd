@@ -16,20 +16,20 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/http-request.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/http-response.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/response-fields.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/response-fields.adoc[]
 
 
 === 봉사 일정 등록

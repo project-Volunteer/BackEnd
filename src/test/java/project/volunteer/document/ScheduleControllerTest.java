@@ -1,17 +1,21 @@
 package project.volunteer.document;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getDateFormat;
 import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getTimeFormat;
 
+import java.time.Instant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -20,6 +24,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
+import project.volunteer.global.common.dto.StateResponse;
 
 public class ScheduleControllerTest extends DocumentTest {
 
@@ -177,5 +182,59 @@ public class ScheduleControllerTest extends DocumentTest {
                 );
     }
 
+    @DisplayName("가장 가까운 일정 상세 조회에 성공하다.")
+    @Test
+    public void detailSchedule() throws Exception {
+        // given
+        given(clock.instant()).willReturn(Instant.parse("2024-02-01T10:00:00Z"));
+
+        // when
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/schedule",
+                                recruitment.getRecruitmentNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("activeVolunteerNum").value(0))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 일정 고유키 PK"),
+                                        fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("address.sigungu").type(JsonFieldType.STRING)
+                                                .description("시/군/구/ 코드"),
+                                        fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING)
+                                                .description("전체 주소 이름"),
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING)
+                                                .attributes(getDateFormat()).description("봉사 일정 시작날짜"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING)
+                                                .attributes(getTimeFormat()).description("봉사 일정 시작시간"),
+                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING)
+                                                .description("Code HourFormat 참고바람."),
+                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER)
+                                                .description("봉사 일정 진행시간"),
+                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER)
+                                                .description("봉사 일정 참여 가능 인원"),
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .description("봉사 일정 관련 간단 문구"),
+                                        fieldWithPath("activeVolunteerNum").type(JsonFieldType.NUMBER)
+                                                .description("현재 봉사 일정 참여 인원"),
+                                        fieldWithPath("state").type(JsonFieldType.STRING)
+                                                .description("Code ClientState 참고바람.")
+                                )
+                        )
+                );
+    }
 
 }

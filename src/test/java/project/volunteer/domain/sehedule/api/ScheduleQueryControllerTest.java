@@ -112,51 +112,6 @@ class ScheduleQueryControllerTest {
         return scheduleParticipationRepository.save(sp);
     }
 
-    @Test
-    @Transactional
-    @DisplayName("팀원이 모집중인 가장 가까운 일정 상세 조회에 성공한다.")
-    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void findMainSchedule() throws Exception {
-        //given
-        스케줄_등록(LocalDate.now().plusMonths(2), 2);
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/schedule", saveRecruitment.getRecruitmentNo())
-                .header(AUTHORIZATION_HEADER, "access Token")
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-                                ),
-                                responseFields(
-                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 일정 고유키 PK"),
-                                        fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
-                                        fieldWithPath("address.sigungu").type(JsonFieldType.STRING).description("시/군/구/ 코드"),
-                                        fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
-                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING).description("전체 주소 이름"),
-                                        fieldWithPath("startDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 시작날짜"),
-                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 일정 시작시간"),
-                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
-                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER).description("봉사 일정 진행시간"),
-                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).description("봉사 일정 참여 가능 인원"),
-                                        fieldWithPath("content").type(JsonFieldType.STRING).description("봉사 일정 관련 간단 문구"),
-                                        fieldWithPath("activeVolunteerNum").type(JsonFieldType.NUMBER).description("현재 봉사 일정 참여 인원"),
-                                        fieldWithPath("state").type(JsonFieldType.STRING).description("Code ClientState 참고바람.")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @Test
     @Transactional
