@@ -12,11 +12,9 @@ import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipat
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
-import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
+import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
-import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.application.UserService;
-import project.volunteer.domain.user.domain.User;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -30,7 +30,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
-import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
+import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
 import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;

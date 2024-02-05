@@ -21,7 +21,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
-import project.volunteer.domain.sehedule.application.dto.RegularScheduleCreateCommand;
+import project.volunteer.domain.sehedule.application.dto.command.RegularScheduleCreateCommand;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;

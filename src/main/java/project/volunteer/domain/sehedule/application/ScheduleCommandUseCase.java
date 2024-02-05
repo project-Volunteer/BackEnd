@@ -1,10 +1,8 @@
 package project.volunteer.domain.sehedule.application;
 
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.sehedule.application.dto.ScheduleUpsertCommand;
-import project.volunteer.domain.sehedule.application.dto.RegularScheduleCreateCommand;
-
-import java.util.List;
+import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertCommand;
+import project.volunteer.domain.sehedule.application.dto.command.RegularScheduleCreateCommand;
 
 public interface ScheduleCommandUseCase {
 

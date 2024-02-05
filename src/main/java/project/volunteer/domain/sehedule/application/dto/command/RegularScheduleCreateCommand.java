@@ -1,4 +1,4 @@
-package project.volunteer.domain.sehedule.application.dto;
+package project.volunteer.domain.sehedule.application.dto.command;
 
 import java.util.List;
 import java.util.stream.Collectors;

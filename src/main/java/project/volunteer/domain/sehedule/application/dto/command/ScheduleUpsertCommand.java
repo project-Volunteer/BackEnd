@@ -1,4 +1,4 @@
-package project.volunteer.domain.sehedule.application.dto;
+package project.volunteer.domain.sehedule.application.dto.command;
 
 import lombok.*;
 import project.volunteer.domain.recruitment.domain.Recruitment;
