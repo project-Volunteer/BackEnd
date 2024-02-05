@@ -3,14 +3,12 @@ package project.volunteer.domain.scheduleParticipation.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
-import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.dto.StateResponse;
 

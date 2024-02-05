@@ -1,4 +1,4 @@
-package project.volunteer.domain.sehedule.dao;
+package project.volunteer.domain.scheduleParticipation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,22 +8,14 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import project.volunteer.common.TestQueryDslConfig;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
+import project.volunteer.common.RepositoryTest;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.domain.Schedule;
-import project.volunteer.domain.sehedule.repository.ScheduleRepository;
-import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
@@ -33,11 +25,8 @@ import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
-import project.volunteer.global.config.JpaAuditingConfig;
 
-@DataJpaTest
-@Import({TestQueryDslConfig.class, JpaAuditingConfig.class})
-class ScheduleParticipantQueryDSLDaoTest {
+class ScheduleParticipationRepositoryTest extends RepositoryTest {
     private final Address address = new Address("111", "11", "test", "test");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
@@ -50,24 +39,6 @@ class ScheduleParticipantQueryDSLDaoTest {
             true, true, true, Role.USER, "test", "test", null);
     private final Participant participant1 = new Participant(recruitment, user1, ParticipantState.JOIN_APPROVAL);
     private final Participant participant2 = new Participant(recruitment, user2, ParticipantState.JOIN_APPROVAL);
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RecruitmentRepository recruitmentRepository;
-
-    @Autowired
-    private ParticipantRepository participantRepository;
-
-    @Autowired
-    private ScheduleRepository scheduleRepository;
-
-    @Autowired
-    private ScheduleParticipationRepository scheduleParticipationRepository;
-
-    @Autowired
-    private ScheduleParticipantQueryDSLDao scheduleParticipantQueryDSLDao;
 
     @BeforeEach
     void setUp() {
@@ -91,7 +62,7 @@ class ScheduleParticipantQueryDSLDaoTest {
         final Long scheduleParticipationNo2 = createAndSaveScheduleParticipation(finishedSchedule, participant2);
 
         //when
-        scheduleParticipantQueryDSLDao.unApprovedCompleteOfAllFinishedScheduleParticipant(currentDate);
+        scheduleParticipationRepository.unApprovedCompleteOfAllFinishedScheduleParticipant(currentDate);
 
         //then
         assertThat(findBy(scheduleParticipationNo1).getState()).isEqualByComparingTo(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
@@ -109,7 +80,7 @@ class ScheduleParticipantQueryDSLDaoTest {
         final Long scheduleParticipationNo2 = createAndSaveScheduleParticipation(recruitingSchedule, participant2);
 
         //when
-        scheduleParticipantQueryDSLDao.unApprovedCompleteOfAllFinishedScheduleParticipant(currentDate);
+        scheduleParticipationRepository.unApprovedCompleteOfAllFinishedScheduleParticipant(currentDate);
 
         //then
         assertThat(findBy(scheduleParticipationNo1).getState()).isEqualByComparingTo(ParticipantState.PARTICIPATING);

@@ -1,17 +1,17 @@
-package project.volunteer.domain.sehedule.system;
+package project.volunteer.domain.scheduleParticipation.system;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import project.volunteer.domain.sehedule.dao.ScheduleParticipantQueryDSLDao;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationQueryDSLRepositoryImpl;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SpringScheduler {
-    private final ScheduleParticipantQueryDSLDao scheduleParticipantQueryDSLDao;
+    private final ScheduleParticipationQueryDSLRepositoryImpl scheduleParticipantQueryDSLDao;
 
     @Scheduled(cron = "0 1 0 * * * ", zone = "Asia/Seoul") //매 00시 01분 마다 실행
     public void scheduleCompletionValidation(){

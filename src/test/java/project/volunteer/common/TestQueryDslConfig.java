@@ -5,7 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import project.volunteer.domain.sehedule.dao.ScheduleParticipantQueryDSLDao;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationQueryDSLRepositoryImpl;
 
 @TestConfiguration
 public class TestQueryDslConfig {
@@ -18,8 +18,8 @@ public class TestQueryDslConfig {
     }
 
     @Bean
-    public ScheduleParticipantQueryDSLDao scheduleParticipantQueryDSLDao(){
-        return new ScheduleParticipantQueryDSLDao(jpaQueryFactory(), em);
+    public ScheduleParticipationQueryDSLRepositoryImpl scheduleParticipantQueryDSLDao(){
+        return new ScheduleParticipationQueryDSLRepositoryImpl(jpaQueryFactory(), em);
     }
 
 }

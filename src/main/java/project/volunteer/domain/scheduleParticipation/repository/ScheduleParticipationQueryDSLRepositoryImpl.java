@@ -1,4 +1,4 @@
-package project.volunteer.domain.sehedule.dao;
+package project.volunteer.domain.scheduleParticipation.repository;
 
 import static project.volunteer.domain.scheduleParticipation.domain.QScheduleParticipation.scheduleParticipation;
 import static project.volunteer.domain.sehedule.domain.QSchedule.schedule;
@@ -14,10 +14,11 @@ import project.volunteer.global.common.component.ParticipantState;
 
 @Repository
 @RequiredArgsConstructor
-public class ScheduleParticipantQueryDSLDao {
+public class ScheduleParticipationQueryDSLRepositoryImpl implements ScheduleParticipationQueryDSLRepository {
     private final JPAQueryFactory factory;
     private final EntityManager em;
 
+    @Override
     public void unApprovedCompleteOfAllFinishedScheduleParticipant(final LocalDate currentDate) {
         factory.update(scheduleParticipation)
                 .set(scheduleParticipation.state, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)

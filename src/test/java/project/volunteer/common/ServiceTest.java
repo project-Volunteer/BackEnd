@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
