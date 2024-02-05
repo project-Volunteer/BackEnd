@@ -29,7 +29,7 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping(value = "/{recruitmentNo}/schedule", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ScheduleDetailSearchResult> scheduleDetails(@PathVariable Long recruitmentNo) {
+    public ResponseEntity<ScheduleDetailSearchResult> closestScheduleDetails(@PathVariable Long recruitmentNo) {
         ScheduleDetailSearchResult details = scheduleQueryFacade.findClosestScheduleDetail(
                 SecurityUtil.getLoginUserNo(),
                 recruitmentNo);
@@ -68,7 +68,7 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar")
-    public ResponseEntity<ScheduleCalenderSearchResponses> scheduleList(
+    public ResponseEntity<ScheduleCalenderSearchResponses> calendarScheduleList(
             @PathVariable("recruitmentNo") Long recruitmentNo,
             @RequestParam("year") Integer year,
             @RequestParam("mon") Integer mon) {
@@ -82,7 +82,7 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping("/{recruitmentNo}/calendar/{scheduleNo}")
-    public ResponseEntity<ScheduleDetailSearchResult> calendarScheduleDetails(
+    public ResponseEntity<ScheduleDetailSearchResult> scheduleDetails(
             @PathVariable("recruitmentNo") Long recruitmentNo,
             @PathVariable("scheduleNo") Long scheduleNo) {
 

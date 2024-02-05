@@ -185,7 +185,7 @@ public class ScheduleControllerTest extends DocumentTest {
 
     @DisplayName("가장 가까운 일정 상세 조회에 성공하다.")
     @Test
-    public void detailSchedule() throws Exception {
+    public void detailClosestSchedule() throws Exception {
         // given
         given(clock.instant()).willReturn(Instant.parse("2024-02-01T10:00:00Z"));
 
@@ -238,9 +238,9 @@ public class ScheduleControllerTest extends DocumentTest {
                 );
     }
 
-    @DisplayName("2024년 2월 캘린더에 존재하는 일정 리스트를 조회에 성공하다.")
+    @DisplayName("2024년 2월 캘린더에 존재하는 일정 리스트 조회에 성공하다.")
     @Test
-    public void CalendarListSchedule() throws Exception {
+    public void CalendarScheduleList() throws Exception {
         // given
         final String searchYear = "2024";
         final String searchMonth = "2";
@@ -277,6 +277,59 @@ public class ScheduleControllerTest extends DocumentTest {
                                                 .description("봉사 일정 고유키 PK"),
                                         fieldWithPath("scheduleList[].day").type(JsonFieldType.STRING)
                                                 .attributes(getDateFormat()).description("봉사 일정 날짜")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("일정 상세 조회에 성공하다.")
+    public void detailSchedule() throws Exception {
+        // given && when
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}",
+                                recruitment.getRecruitmentNo(), schedule1.getScheduleNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("activeVolunteerNum").value(0))
+                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 일정 고유키 PK"),
+                                        fieldWithPath("address.sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("address.sigungu").type(JsonFieldType.STRING)
+                                                .description("시/군/구/ 코드"),
+                                        fieldWithPath("address.details").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING)
+                                                .description("전체 주소 이름"),
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING)
+                                                .attributes(getDateFormat()).description("봉사 일정 시작날짜"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING)
+                                                .attributes(getTimeFormat()).description("봉사 일정 시작시간"),
+                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING)
+                                                .description("Code HourFormat 참고바람."),
+                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER)
+                                                .description("봉사 일정 진행시간"),
+                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER)
+                                                .description("봉사 일정 참여 가능 인원"),
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .description("봉사 일정 관련 간단 문구"),
+                                        fieldWithPath("activeVolunteerNum").type(JsonFieldType.NUMBER)
+                                                .description("현재 봉사 일정 참여 인원"),
+                                        fieldWithPath("state").type(JsonFieldType.STRING)
+                                                .description("Code ClientState 참고바람.")
                                 )
                         )
                 );
