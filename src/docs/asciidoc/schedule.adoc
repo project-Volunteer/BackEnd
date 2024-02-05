@@ -46,20 +46,20 @@ include::{snippets}/schedule-query-controller-test/find-main-schedule/response-f
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-write-controller-test/save-schedule/http-request.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-write-controller-test/save-schedule/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-write-controller-test/save-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/schedule-write-controller-test/save-schedule/request-fields.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-write-controller-test/save-schedule/http-response.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/http-response.adoc[]
 
 
 === 봉사 일정 수정

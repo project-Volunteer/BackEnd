@@ -83,62 +83,6 @@ class ScheduleWriteControllerTest {
         recruitmentRepository.save(saveRecruitment);
     }
 
-    @DisplayName("수동 일정 등록에 성공하다.")
-    @Test
-    @Transactional
-    @WithUserDetails(value = "sctfw1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void saveSchedule() throws Exception {
-        //given
-        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        final String sido = "1";
-        final String sigungu = "1111";
-        final String details = "details";
-        final String fullName = "fullName";
-        final String startDay = "05-26-2023";
-        final String hourFormat = "AM";
-        final String startTime = "10:00";
-        final Integer progressTime = 2;
-        final String organizationName = "organization";
-        final Integer volunteerNum = 10;
-        final String content = "content";
-        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
-                organizationName, volunteerNum, content);
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.post("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .content(toJson(dto))
-        );
-
-        //then
-        result.andExpect(status().isCreated())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-                                ),
-                                requestFields(
-                                        fieldWithPath("address.sido").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 5이하")).description("시/도 코드"),
-                                        fieldWithPath("address.sigungu").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 10이하")).description("시/군/구/ 코드"),
-                                        fieldWithPath("address.details").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 50이하")).description("상세주소"),
-                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING).attributes(key("constraints").value("1이상 255이하")).description("전체 주소 이름"),
-                                        fieldWithPath("startDay").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 시작날짜"),
-                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING).description("Code HourFormat 참고바람."),
-                                        fieldWithPath("startTime").type(JsonFieldType.STRING).attributes(getTimeFormat()).description("봉사 일정 시작시간"),
-                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER).attributes(key("constraints").value("1이상 24이하")).description("봉사 일정 진행시간"),
-                                        fieldWithPath("organizationName").type(JsonFieldType.STRING).description("봉사 기관이름"),
-                                        fieldWithPath("volunteerNum").type(JsonFieldType.NUMBER).attributes(key("constraints").value("1이상 50이하 & 승인된 봉사 팀원 총 인원보다 많을 수 없음.")).description("봉사 일정 참여가능 인원"),
-                                        fieldWithPath("content").type(JsonFieldType.STRING).optional().attributes(key("constraints").value("50이하")).description("봉사 일정 관련 간단 문구")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @DisplayName("방장이 아닌 사용자가 수동 일정 등록을 시도하다.")
     @Test

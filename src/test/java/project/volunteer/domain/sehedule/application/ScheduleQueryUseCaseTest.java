@@ -35,7 +35,7 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
     private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
-            VolunteeringType.REG, VolunteerType.ADULT, 999, true, "unicef", address, coordinate, timetable, true);
+            VolunteeringType.REG, VolunteerType.ADULT, 999, true, "unicef", address, coordinate, timetable, true, null);
 
     @BeforeEach
     void setUp() {

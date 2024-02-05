@@ -89,7 +89,7 @@ public class Recruitment extends BaseTimeEntity {
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
                        VolunteerType volunteerType, Integer participationNum, Boolean isIssued,
                        String organizationName, Address address, Coordinate coordinate,
-                       Timetable timetable, Boolean isPublished) {
+                       Timetable timetable, Boolean isPublished, User writer) {
 
         this.title = title;
         this.content = content;
@@ -103,6 +103,7 @@ public class Recruitment extends BaseTimeEntity {
         this.coordinate = coordinate;
         this.VolunteeringTimeTable = timetable;
         this.isPublished = isPublished;
+        this.writer = writer;
 
         this.likeCount = 0;
         this.viewCount = 0;

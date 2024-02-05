@@ -39,10 +39,10 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PostMapping("/{recruitmentNo}/schedule")
-    public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleUpsertRequest request,
+    public ResponseEntity<Void> scheduleAdd(@RequestBody @Valid ScheduleUpsertRequest request,
                                       @PathVariable("recruitmentNo") Long no) {
 
-        scheduleCommandFacade.registerSchedule(no, request.toDto());
+        scheduleCommandFacade.registerSchedule(no, request.toCommand());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -52,7 +52,7 @@ public class ScheduleController {
                                        @PathVariable("scheduleNo") Long scheduleNo,
                                        @PathVariable("recruitmentNo") Long recruitmentNo) {
 
-        scheduleCommandFacade.updateSchedule(recruitmentNo, scheduleNo, request.toDto());
+        scheduleCommandFacade.updateSchedule(recruitmentNo, scheduleNo, request.toCommand());
 
         return ResponseEntity.ok().build();
     }

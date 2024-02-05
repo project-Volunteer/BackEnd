@@ -29,7 +29,7 @@ class ScheduleTest {
     private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
-            VolunteeringType.REG, VolunteerType.ADULT, 9999, true, "unicef", address, coordinate, timetable, true);
+            VolunteeringType.REG, VolunteerType.ADULT, 9999, true, "unicef", address, coordinate, timetable, true, null);
 
     @ParameterizedTest
     @ValueSource(strings = {"가", "구본식의 봉사기관", "unicef", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})

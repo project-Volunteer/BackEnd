@@ -39,13 +39,12 @@ public class ScheduleUpsertRequest {
     private String organizationName;
 
     @NotNull
-    @Range(min = 1, max = 50)
     private Integer volunteerNum;
 
     @Length(max = 50)
     private String content;
 
-    public ScheduleUpsertCommand toDto() {
+    public ScheduleUpsertCommand toCommand() {
         return ScheduleUpsertCommand.of(startDay, startDay, hourFormat, startTime, progressTime, organizationName,
                 address.getSido(), address.getSigungu(), address.getDetails(), address.getFullName(), content,
                 volunteerNum);
