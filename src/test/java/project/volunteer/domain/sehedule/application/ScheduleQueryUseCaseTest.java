@@ -29,7 +29,7 @@ import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
-class ScheduleQueryUseCaseTest extends ServiceTest{
+class ScheduleQueryUseCaseTest extends ServiceTest {
     private final Address address = new Address("111", "11", "test", "test");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
@@ -110,16 +110,16 @@ class ScheduleQueryUseCaseTest extends ServiceTest{
     @Test
     void searchClosestScheduleDetail() {
         //given
-        final LocalDate currentDate = LocalDate.of(2024, 1, 16);
-
         final Long scheduleNo1 = createAndSaveSchedule(LocalDate.of(2024, 1, 15));
         final Long scheduleNo2 = createAndSaveSchedule(LocalDate.of(2024, 1, 16));
         final Long scheduleNo3 = createAndSaveSchedule(LocalDate.of(2024, 1, 17));
         final Long scheduleNo4 = createAndSaveSchedule(LocalDate.of(2024, 1, 20));
 
+        given(clock.instant()).willReturn(Instant.parse("2024-01-16T10:00:00Z"));
+
         //when
         ScheduleDetailSearchResult result = scheduleQueryUseCase.searchClosestScheduleDetail(
-                recruitment.getRecruitmentNo(), currentDate);
+                recruitment.getRecruitmentNo());
 
         //then
         assertThat(result.getNo()).isEqualTo(scheduleNo3);
@@ -129,14 +129,14 @@ class ScheduleQueryUseCaseTest extends ServiceTest{
     @Test
     void notExistClosestSchedule() {
         //given
-        final LocalDate currentDate = LocalDate.of(2024, 1, 16);
-
         final Long scheduleNo1 = createAndSaveSchedule(LocalDate.of(2024, 1, 15));
         final Long scheduleNo2 = createAndSaveSchedule(LocalDate.of(2024, 1, 16));
 
+        given(clock.instant()).willReturn(Instant.parse("2024-01-16T10:00:00Z"));
+
         //when
         ScheduleDetailSearchResult result = scheduleQueryUseCase.searchClosestScheduleDetail(
-                recruitment.getRecruitmentNo(), currentDate);
+                recruitment.getRecruitmentNo());
 
         //then
         assertThat(result).isNull();

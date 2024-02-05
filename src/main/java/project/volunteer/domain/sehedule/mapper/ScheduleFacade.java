@@ -72,9 +72,8 @@ public class ScheduleFacade {
     }
 
     public ScheduleDetailSearchResult findClosestScheduleDetail(Long userNo, Long recruitmentNo) {
-        LocalDate currentDate = LocalDate.now();
         ScheduleDetailSearchResult scheduleSearchResult = scheduleQueryService.searchClosestScheduleDetail(
-                recruitmentNo, currentDate);
+                recruitmentNo);
 
         if (Objects.nonNull(scheduleSearchResult)) {
             Optional<ParticipantState> participantState = scheduleParticipationDtoService.searchState(
