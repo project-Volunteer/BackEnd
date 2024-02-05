@@ -1,4 +1,4 @@
-package project.volunteer.common;
+package project.volunteer.support;
 
 import java.time.Clock;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package project.volunteer.common;
+package project.volunteer.support;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;

@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import project.volunteer.common.ServiceTest;
+import project.volunteer.support.ServiceTest;
 import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
 import project.volunteer.domain.recruitment.domain.Day;
 import project.volunteer.domain.recruitment.domain.Period;
