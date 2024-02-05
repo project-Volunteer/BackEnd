@@ -28,7 +28,7 @@ public class ScheduleParticipantFacade {
 
     @Transactional
     public void participateVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(scheduleNo);
+        Schedule schedule = scheduleQueryService.findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(scheduleNo);
 
         Participant participation = participationService.findParticipation(recruitmentNo, userNo);
 

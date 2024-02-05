@@ -24,28 +24,20 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, Sched
             "AND s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
     Optional<Schedule> findNotDeletedSchedule(@Param("no") Long scheduleNo);
 
-
-
-
-
+    @Query("select s " +
+            "from Schedule s " +
+            "where s.scheduleNo=:no " +
+            "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Schedule> findNotDeletedScheduleByPERSSIMITIC_LOCK(@Param("no") Long scheduleNo);
 
     List<Schedule> findByRecruitment_RecruitmentNo(Long recruitmentNo);
 
-    //삭제되지 않은 일정 검색
-
     @Query("select s " +
             "from Schedule s " +
             "where s.scheduleNo=:no " +
             "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    @Lock(LockModeType.OPTIMISTIC) //낙관적 락 사용
-    public Optional<Schedule> findValidScheduleWithOPTIMSTICLock(@Param("no") Long scheduleNo);
-
-    @Query("select s " +
-            "from Schedule s " +
-            "where s.scheduleNo=:no " +
-            "and s.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    @Lock(LockModeType.PESSIMISTIC_WRITE) //비관적 락 사용
-    public Optional<Schedule> findValidScheduleWithPESSIMISTIC_WRITE_Lock(@Param("no") Long scheduleNo);
-
+    @Lock(LockModeType.OPTIMISTIC)
+    Optional<Schedule> findNotDeletedScheduleByOPTIMSTIC_LOCK(@Param("no") Long scheduleNo);
 
 }

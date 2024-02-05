@@ -156,7 +156,7 @@ public class ParticipationServiceConcurrent {
     }
     private Schedule isActiveScheduleWithOPTIMSTICLock(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
-        Schedule findSchedule = scheduleRepository.findValidScheduleWithOPTIMSTICLock(scheduleNo)
+        Schedule findSchedule = scheduleRepository.findNotDeletedScheduleByOPTIMSTIC_LOCK(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
 
@@ -170,7 +170,7 @@ public class ParticipationServiceConcurrent {
     }
     private Schedule isActiveScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
-        Schedule findSchedule = scheduleRepository.findValidScheduleWithPESSIMISTIC_WRITE_Lock(scheduleNo)
+        Schedule findSchedule = scheduleRepository.findNotDeletedScheduleByPERSSIMITIC_LOCK(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
 

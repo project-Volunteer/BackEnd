@@ -14,14 +14,13 @@ public interface ScheduleQueryUseCase {
 
     ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo);
 
-    // 삭제되지 않고, 모집 중인 일정
+    // 삭제 되지 않고, 모집 중인 일정
     Schedule findScheduleInProgress(Long scheduleNo);
 
-    // 살제되지 않은 일정
+    // 삭제 되지 않은 일정
     Schedule findActivitedSchedule(Long scheduleNo);
 
-
-    //활동 중인 스케줄 찾는 메서드(비관적 락 사용)
-    Schedule findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo);
+    // 삭제 되지 않은 일정(비관적 락 사용)
+    Schedule findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(Long scheduleNo);
 
 }

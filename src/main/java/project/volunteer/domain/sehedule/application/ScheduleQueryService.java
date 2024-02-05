@@ -60,33 +60,17 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
     private Schedule validAndGetNotDeletedSchedule(final Long scheduleNo) {
         return scheduleRepository.findNotDeletedSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(
-                        ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
+                        ErrorCode.NOT_EXIST_SCHEDULE, String.format("ScheduleNo = [%d]", scheduleNo)));
     }
-
-
-
 
     @Override
-    public Schedule findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {
-        Schedule findSchedule = validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(scheduleNo);
+    public Schedule findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(final Long scheduleNo) {
+        final Schedule schedule = scheduleRepository.findNotDeletedScheduleByPERSSIMITIC_LOCK(scheduleNo)
+                .orElseThrow(() -> new BusinessException(
+                        ErrorCode.NOT_EXIST_SCHEDULE, String.format("ScheduleNo = [%d]", scheduleNo)));
 
-        //일정 마감 일자 조회
-        validateSchedulePeriod(findSchedule);
-        return findSchedule;
+        schedule.checkDoneDate(LocalDate.now(clock));
+        return schedule;
     }
 
-
-    private Schedule validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {
-        return scheduleRepository.findValidScheduleWithPESSIMISTIC_WRITE_Lock(scheduleNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
-                        String.format("Schedule to participant = [%d]", scheduleNo)));
-    }
-
-    private void validateSchedulePeriod(Schedule schedule) {
-        if (!schedule.isAvailableDate()) {
-            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE,
-                    String.format("ScheduleNo = [%d], participation period = [%s]", schedule.getScheduleNo(),
-                            schedule.getScheduleTimeTable().getEndDay().toString()));
-        }
-    }
 }
