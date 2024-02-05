@@ -1,5 +1,7 @@
-package project.volunteer.domain.sehedule.mapper;
+package project.volunteer.domain.sehedule.application;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -8,52 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
-import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
-import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
-import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
-import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
-import project.volunteer.domain.user.application.UserService;
-
-import java.time.LocalDate;
-import java.util.List;
+import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.global.common.component.ParticipantState;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ScheduleFacade {
-    private final UserService userService;
+public class ScheduleQueryFacade {
     private final RecruitmentService recruitmentService;
-    private final ScheduleCommandUseCase scheduleCommandService;
     private final ScheduleQueryUseCase scheduleQueryService;
-
-    private final ScheduleParticipationService scheduleParticipationService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
-
-    @Transactional
-    public Long registerVolunteerPostSchedule(Long recruitmentNo, ScheduleUpsertCommand param) {
-        Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
-
-        return scheduleCommandService.addSchedule(recruitment, param);
-    }
-
-    @Transactional
-    public Long editVolunteerPostSchedule(Long recruitmentNo, Long scheduleNo, ScheduleUpsertCommand param) {
-        Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
-
-        return scheduleCommandService.editSchedule(scheduleNo, recruitment, param);
-    }
-
-    @Transactional
-    public void deleteVolunteerPostSchedule(Long recruitmentNo, Long scheduleNo) {
-        recruitmentService.findPublishedRecruitment(recruitmentNo);
-
-        scheduleCommandService.deleteSchedule(scheduleNo);
-
-        scheduleParticipationService.deleteScheduleParticipation(scheduleNo);
-    }
 
     public List<ScheduleCalendarSearchResult> findScheduleCalendar(Long recruitmentNo, LocalDate startDay,
                                                                    LocalDate endDay) {

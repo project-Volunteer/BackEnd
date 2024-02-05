@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
+import project.volunteer.domain.sehedule.application.ScheduleQueryFacade;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
-import project.volunteer.domain.sehedule.mapper.ScheduleFacade;
+import project.volunteer.domain.sehedule.application.ScheduleCommandFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
 import project.volunteer.global.util.SecurityUtil;
@@ -23,12 +24,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class ScheduleController {
-    private final ScheduleFacade scheduleFacade;
+    private final ScheduleCommandFacade scheduleCommandFacade;
+    private final ScheduleQueryFacade scheduleQueryFacade;
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_TEAM)
     @GetMapping(value = "/{recruitmentNo}/schedule", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ScheduleDetailSearchResult> scheduleDetails(@PathVariable Long recruitmentNo) {
-        ScheduleDetailSearchResult details = scheduleFacade.findClosestScheduleDetail(SecurityUtil.getLoginUserNo(),
+        ScheduleDetailSearchResult details = scheduleQueryFacade.findClosestScheduleDetail(
+                SecurityUtil.getLoginUserNo(),
                 recruitmentNo);
 
         return ResponseEntity.ok(details);
@@ -39,7 +42,7 @@ public class ScheduleController {
     public ResponseEntity scheduleAdd(@RequestBody @Valid ScheduleUpsertRequest request,
                                       @PathVariable("recruitmentNo") Long no) {
 
-        scheduleFacade.registerVolunteerPostSchedule(no, request.toDto());
+        scheduleCommandFacade.registerSchedule(no, request.toDto());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -49,7 +52,7 @@ public class ScheduleController {
                                        @PathVariable("scheduleNo") Long scheduleNo,
                                        @PathVariable("recruitmentNo") Long recruitmentNo) {
 
-        scheduleFacade.editVolunteerPostSchedule(recruitmentNo, scheduleNo, request.toDto());
+        scheduleCommandFacade.updateSchedule(recruitmentNo, scheduleNo, request.toDto());
 
         return ResponseEntity.ok().build();
     }
@@ -59,7 +62,7 @@ public class ScheduleController {
     public ResponseEntity scheduleDelete(@PathVariable("scheduleNo") Long scheduleNo,
                                          @PathVariable("recruitmentNo") Long recruitmentNo) {
 
-        scheduleFacade.deleteVolunteerPostSchedule(recruitmentNo, scheduleNo);
+        scheduleCommandFacade.deleteSchedule(recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
     }
 
@@ -72,7 +75,7 @@ public class ScheduleController {
         final LocalDate startDay = LocalDate.of(year, mon, 1);
         final LocalDate endDay = startDay.with(TemporalAdjusters.lastDayOfMonth());
 
-        List<ScheduleCalendarSearchResult> result = scheduleFacade.findScheduleCalendar(
+        List<ScheduleCalendarSearchResult> result = scheduleQueryFacade.findScheduleCalendar(
                 recruitmentNo, startDay, endDay);
         return ResponseEntity.ok(ScheduleCalenderSearchResponses.from(result));
     }
@@ -83,7 +86,7 @@ public class ScheduleController {
             @PathVariable("recruitmentNo") Long recruitmentNo,
             @PathVariable("scheduleNo") Long scheduleNo) {
 
-        ScheduleDetailSearchResult result = scheduleFacade.findScheduleDetail(SecurityUtil.getLoginUserNo(),
+        ScheduleDetailSearchResult result = scheduleQueryFacade.findScheduleDetail(SecurityUtil.getLoginUserNo(),
                 scheduleNo);
         return ResponseEntity.ok(result);
     }
