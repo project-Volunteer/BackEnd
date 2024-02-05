@@ -132,23 +132,23 @@ include::{snippets}/schedule-controller-test/delete-schedule/http-response.adoc[
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/http-request.adoc[]
+include::{snippets}/schedule-controller-test/calendar-list-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/calendar-list-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/calendar-list-schedule/path-parameters.adoc[]
 
 *Request Parameters*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/request-parameters.adoc[]
+include::{snippets}/schedule-controller-test/calendar-list-schedule/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/http-response.adoc[]
+include::{snippets}/schedule-controller-test/calendar-list-schedule/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/response-fields.adoc[]
+include::{snippets}/schedule-controller-test/calendar-list-schedule/response-fields.adoc[]
 
 
 === 봉사 일정 상세 캘린더 조회

@@ -77,12 +77,13 @@ public abstract class DocumentTest {
     protected User ownerUser;
     protected User teamUser;
     protected Recruitment recruitment;
-    protected Schedule schedule;
+    protected Schedule schedule1;
+    protected Schedule schedule2;
+    protected Schedule schedule3;
 
 
     @BeforeEach
     void setUp() {
-
         saveBaseData();
         recruitmentOwnerAccessToken = jwtProvider.createAccessToken(ownerUser.getId());
         recruitmentTeamAccessToken = jwtProvider.createAccessToken(teamUser.getId());
@@ -102,8 +103,24 @@ public abstract class DocumentTest {
                                 LocalTime.now(), 10),
                         true, ownerUser));
 
-        schedule = scheduleRepository.save(
+        schedule1 = scheduleRepository.save(
                 new Schedule(new Timetable(LocalDate.of(2024, 2, 10), LocalDate.of(2024, 2, 10), HourFormat.AM,
+                        LocalTime.now(), 10),
+                        "test", "test",
+                        new Address("111", "11", "test", "test"),
+                        100, IsDeleted.N, 0, recruitment)
+        );
+
+        schedule2 = scheduleRepository.save(
+                new Schedule(new Timetable(LocalDate.of(2024, 2, 20), LocalDate.of(2024, 2, 20), HourFormat.AM,
+                        LocalTime.now(), 10),
+                        "test", "test",
+                        new Address("111", "11", "test", "test"),
+                        100, IsDeleted.N, 0, recruitment)
+        );
+
+        schedule3 = scheduleRepository.save(
+                new Schedule(new Timetable(LocalDate.of(2024, 2, 15), LocalDate.of(2024, 2, 15), HourFormat.AM,
                         LocalTime.now(), 10),
                         "test", "test",
                         new Address("111", "11", "test", "test"),

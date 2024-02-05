@@ -8,6 +8,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -100,7 +101,7 @@ public class ScheduleControllerTest extends DocumentTest {
         //when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}",
-                                recruitment.getRecruitmentNo(), schedule.getScheduleNo())
+                                recruitment.getRecruitmentNo(), schedule1.getScheduleNo())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
                         .content(toJson(request))
@@ -162,7 +163,7 @@ public class ScheduleControllerTest extends DocumentTest {
         //given & when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.delete("/recruitment/{recruitmentNo}/schedule/{scheduleNo}",
-                                recruitment.getRecruitmentNo(), schedule.getScheduleNo())
+                                recruitment.getRecruitmentNo(), schedule1.getScheduleNo())
                         .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
         );
 
@@ -232,6 +233,50 @@ public class ScheduleControllerTest extends DocumentTest {
                                                 .description("현재 봉사 일정 참여 인원"),
                                         fieldWithPath("state").type(JsonFieldType.STRING)
                                                 .description("Code ClientState 참고바람.")
+                                )
+                        )
+                );
+    }
+
+    @DisplayName("2024년 2월 캘린더에 존재하는 일정 리스트를 조회에 성공하다.")
+    @Test
+    public void CalendarListSchedule() throws Exception {
+        // given
+        final String searchYear = "2024";
+        final String searchMonth = "2";
+
+        // when
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar",
+                                recruitment.getRecruitmentNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+                        .queryParam("year", searchYear)
+                        .queryParam("mon", searchMonth)
+        );
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.scheduleList[0].no").value(schedule1.getScheduleNo()))
+                .andExpect(jsonPath("$.scheduleList[1].no").value(schedule3.getScheduleNo()))
+                .andExpect(jsonPath("$.scheduleList[2].no").value(schedule2.getScheduleNo()))
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
+                                ),
+                                requestParameters(
+                                        parameterWithName("year").description("년도"),
+                                        parameterWithName("mon").description("월")
+                                ),
+                                responseFields(
+                                        fieldWithPath("scheduleList[].no").type(JsonFieldType.NUMBER)
+                                                .description("봉사 일정 고유키 PK"),
+                                        fieldWithPath("scheduleList[].day").type(JsonFieldType.STRING)
+                                                .attributes(getDateFormat()).description("봉사 일정 날짜")
                                 )
                         )
                 );

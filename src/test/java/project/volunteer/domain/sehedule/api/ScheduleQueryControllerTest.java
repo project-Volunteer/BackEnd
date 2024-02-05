@@ -230,59 +230,6 @@ class ScheduleQueryControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @Transactional
-    @DisplayName("2023년 5월 캘린더에 존재하는 일정 리스트를 조회한다")
-    @WithUserDetails(value = "sctfq0", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void findListCalendar() throws Exception {
-        //given
-        Schedule schedule1 = 스케줄_등록(LocalDate.of(2023, 5, 1), 3);
-        Schedule schedule2 = 스케줄_등록(LocalDate.of(2023, 5, 15), 3);
-        Schedule schedule3 = 스케줄_등록(LocalDate.of(2023, 5, 20), 3);
-        Schedule schedule4 = 스케줄_등록(LocalDate.of(2023, 5, 21), 3);
-        Schedule schedule5 = 스케줄_등록(LocalDate.of(2023, 5, 10), 3);
-        Schedule schedule6 = 스케줄_등록(LocalDate.of(2023, 5, 31), 3);
-
-        스케줄_등록(LocalDate.of(2023, 6, 10), 3);
-        스케줄_등록(LocalDate.of(2023, 6, 15), 3);
-        스케줄_등록(LocalDate.of(2023, 4, 25), 3);
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar", saveRecruitment.getRecruitmentNo())
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .queryParam("year", "2023")
-                .queryParam("mon", "5")
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.scheduleList[0].no").value(schedule1.getScheduleNo()))
-                .andExpect(jsonPath("$.scheduleList[1].no").value(schedule5.getScheduleNo()))
-                .andExpect(jsonPath("$.scheduleList[2].no").value(schedule2.getScheduleNo()))
-                .andExpect(jsonPath("$.scheduleList[3].no").value(schedule3.getScheduleNo()))
-                .andExpect(jsonPath("$.scheduleList[4].no").value(schedule4.getScheduleNo()))
-                .andExpect(jsonPath("$.scheduleList[5].no").value(schedule6.getScheduleNo()))
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-                                ),
-                                requestParameters(
-                                        parameterWithName("year").description("년도"),
-                                        parameterWithName("mon").description("월")
-                                ),
-                                responseFields(
-                                        fieldWithPath("scheduleList[].no").type(JsonFieldType.NUMBER).description("봉사 일정 고유키 PK"),
-                                        fieldWithPath("scheduleList[].day").type(JsonFieldType.STRING).attributes(getDateFormat()).description("봉사 일정 날짜")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @Test
     @Transactional
