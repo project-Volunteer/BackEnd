@@ -48,7 +48,6 @@ public enum ErrorCode {
             "exceed.participation.num.than.recruitment.participation.num"),
     LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT(HttpStatus.BAD_REQUEST,
             "less.participation.num.then.current.participant"),
-
     EXPIRED_PERIOD_SCHEDULE(HttpStatus.BAD_REQUEST, "expired.period.schedule"),
     NOT_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "notExist.schedule"),
 

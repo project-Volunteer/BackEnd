@@ -3,7 +3,9 @@ package project.volunteer.domain.sehedule.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
@@ -27,7 +29,7 @@ import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
-class ScheduleQueryUseCaseTest extends ServiceTest {
+class ScheduleQueryUseCaseTest extends ServiceTest{
     private final Address address = new Address("111", "11", "test", "test");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
@@ -138,6 +140,19 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
 
         //then
         assertThat(result).isNull();
+    }
+
+    @DisplayName("모집 기간이 지난 일정을 조회할 경우 예외가 발생한다.")
+    @Test
+    void searchDoneScheduleWithException() {
+        //given
+        final Long scheduleNo = createAndSaveSchedule(LocalDate.of(2024, 1, 16));
+        given(clock.instant()).willReturn(Instant.parse("2024-01-17T10:00:00Z"));
+
+        //when & then
+        assertThatThrownBy(() -> scheduleQueryUseCase.findScheduleInProgress(scheduleNo))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
     }
 
     private Long createAndSaveSchedule(LocalDate startDate) {

@@ -129,6 +129,7 @@ public class Schedule extends BaseTimeEntity {
         return this.scheduleTimeTable.getStartDay().isAfter(LocalDate.now());
     }
 
+
     /**
      * 검증 메서드
      **/
@@ -164,6 +165,12 @@ public class Schedule extends BaseTimeEntity {
             throw new BusinessException(ErrorCode.LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT,
                     String.format("currentParticipationNum = [%d], requestParticipationNum = [%d]", currentVolunteerNum,
                             participationNum));
+        }
+    }
+
+    public void checkDoneDate(LocalDate currentDate) {
+        if (scheduleTimeTable.getStartDay().isBefore(currentDate)) {
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE);
         }
     }
 

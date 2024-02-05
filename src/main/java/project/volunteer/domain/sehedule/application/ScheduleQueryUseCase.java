@@ -14,15 +14,14 @@ public interface ScheduleQueryUseCase {
 
     ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo, LocalDate currentDate);
 
+    // 삭제되지 않고, 모집 중인 일정
+    Schedule findScheduleInProgress(Long scheduleNo);
+
+    // 살제되지 않은 일정
+    Schedule findActivitedSchedule(Long scheduleNo);
 
 
     //활동 중인 스케줄 찾는 메서드(비관적 락 사용)
     Schedule findActivatedScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo);
-
-    //활동 중인 스케줄 찾는 메서드
-    Schedule findScheduleInProgress(Long scheduleNo);
-
-    //출판된(삭제되지 않은) 스케줄 찾는 메서드
-    Schedule findPublishedSchedule(Long scheduleNo);
 
 }

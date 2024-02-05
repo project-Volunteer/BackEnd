@@ -53,25 +53,25 @@ public class ScheduleParticipantFacade {
 
     @Transactional
     public void approvalCompletionVolunteerPostSchedule(Long scheduleNo, List<Long> scheduleParticipantNos){
-        scheduleQueryService.findPublishedSchedule(scheduleNo);
+        scheduleQueryService.findActivitedSchedule(scheduleNo);
 
         scheduleParticipationService.approvalCompletion(scheduleParticipantNos);
     }
 
     public List<ParticipatingParticipantList> findParticipatingParticipantsSchedule(Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findPublishedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryService.findActivitedSchedule(scheduleNo);
 
         return scheduleParticipationDtoService.findParticipatingParticipants(schedule);
     }
 
     public List<CancelledParticipantList> findCancelledParticipantsSchedule(Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findPublishedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryService.findActivitedSchedule(scheduleNo);
 
         return scheduleParticipationDtoService.findCancelledParticipants(schedule);
     }
 
     public List<CompletedParticipantList> findCompletedParticipantsSchedule(Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findPublishedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryService.findActivitedSchedule(scheduleNo);
 
         return scheduleParticipationDtoService.findCompletedParticipants(schedule);
     }

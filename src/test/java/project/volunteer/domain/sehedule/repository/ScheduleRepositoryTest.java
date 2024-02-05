@@ -87,7 +87,6 @@ class ScheduleRepositoryTest extends RepositoryTest {
         assertThat(result).isFalse();
     }
 
-
     private Long createAndSaveSchedule(LocalDate startDate) {
         Timetable time = new Timetable(startDate, startDate, HourFormat.PM, LocalTime.now(), 10);
         Schedule schedule = new Schedule(time, "test", "test", address, 10, IsDeleted.N, 8, recruitment);

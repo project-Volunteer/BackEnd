@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,20 +28,8 @@ class ScheduleTest {
             10);
     private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
-    private final Recruitment recruitment = Recruitment.builder()
-            .title("test")
-            .content("content")
-            .volunteeringCategory(VolunteeringCategory.EDUCATION)
-            .volunteerType(VolunteerType.ADULT)
-            .volunteeringType(VolunteeringType.IRREG)
-            .participationNum(9999)
-            .isIssued(true)
-            .organizationName("test")
-            .address(address)
-            .coordinate(coordinate)
-            .timetable(timetable)
-            .isPublished(true)
-            .build();
+    private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
+            VolunteeringType.REG, VolunteerType.ADULT, 9999, true, "unicef", address, coordinate, timetable, true);
 
     @ParameterizedTest
     @ValueSource(strings = {"가", "구본식의 봉사기관", "unicef", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
@@ -218,6 +207,29 @@ class ScheduleTest {
                 () -> schedule.change(recruitment, timetable, "test", "test", address, invalidParticipationNum))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT.name());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2024-01-25", "2024-01-26", "2024-02-10"})
+    @DisplayName("현재 날짜가 일정 시작일 이후일 경우 예외가 발생한다.")
+    void throwExceptionWhenCurrentDateAfterStartDate(String invalidDateStr) {
+        //given
+        final LocalDate invalidDate = toLocalDate(invalidDateStr);
+        final LocalDate currentDate = LocalDate.of(2024, 2, 11);
+
+        final Schedule schedule = new Schedule(
+                new Timetable(invalidDate, invalidDate, HourFormat.AM, LocalTime.now(), 10),
+                "test", "test", address, 10, IsDeleted.N, 8, recruitment);
+
+        //when & then
+        assertThatThrownBy(
+                () -> schedule.checkDoneDate(currentDate))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
+    }
+
+    private LocalDate toLocalDate(String date) {
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     private Recruitment createRecruitment(int participationNum) {

@@ -1,5 +1,6 @@
 package project.volunteer.domain.sehedule.application;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import project.volunteer.global.error.exception.ErrorCode;
 @RequiredArgsConstructor
 public class ScheduleQueryService implements ScheduleQueryUseCase {
     private final ScheduleRepository scheduleRepository;
+    private final Clock clock;
 
     @Override
     public List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay,
@@ -41,7 +43,23 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
         return scheduleRepository.findNearestScheduleDetailBy(recruitmentNo, currentDate);
     }
 
+    @Override
+    public Schedule findScheduleInProgress(final Long scheduleNo) {
+        final Schedule schedule = validAndGetNotDeletedSchedule(scheduleNo);
+        schedule.checkDoneDate(LocalDate.now(clock));
+        return schedule;
+    }
 
+    @Override
+    public Schedule findActivitedSchedule(final Long scheduleNo) {
+        return validAndGetNotDeletedSchedule(scheduleNo);
+    }
+
+    private Schedule validAndGetNotDeletedSchedule(final Long scheduleNo) {
+        return scheduleRepository.findNotDeletedSchedule(scheduleNo)
+                .orElseThrow(() -> new BusinessException(
+                        ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
+    }
 
 
 
@@ -56,25 +74,7 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
         return findSchedule;
     }
 
-    @Override
-    public Schedule findScheduleInProgress(Long scheduleNo) {
-        Schedule schedule = validAndGetNotDeletedSchedule(scheduleNo);
 
-        //일정 마감 일자 조회
-        validateSchedulePeriod(schedule);
-        return schedule;
-    }
-
-    @Override
-    public Schedule findPublishedSchedule(Long scheduleNo) {
-        return validAndGetNotDeletedSchedule(scheduleNo);
-    }
-
-    private Schedule validAndGetNotDeletedSchedule(Long scheduleNo) {
-        return scheduleRepository.findNotDeletedSchedule(scheduleNo)
-                .orElseThrow(() -> new BusinessException(
-                        ErrorCode.NOT_EXIST_SCHEDULE, String.format("Schedule No = [%d]", scheduleNo)));
-    }
 
     private Schedule validAndGetScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo) {
         return scheduleRepository.findValidScheduleWithPESSIMISTIC_WRITE_Lock(scheduleNo)
