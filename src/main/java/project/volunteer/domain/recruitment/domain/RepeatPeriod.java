@@ -27,7 +27,7 @@ public class RepeatPeriod {
     private Week week;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "day", length = 10, nullable = false)
+    @Column(name = "day_of_week", length = 10, nullable = false)
     private Day day;
 
     @ManyToOne(fetch = FetchType.LAZY)

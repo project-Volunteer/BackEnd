@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 

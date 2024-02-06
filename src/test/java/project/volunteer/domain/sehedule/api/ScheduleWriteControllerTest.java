@@ -12,20 +12,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
+import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -38,16 +35,9 @@ import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getDateFormat;
-import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getTimeFormat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -84,36 +74,6 @@ class ScheduleWriteControllerTest {
     }
 
     @Disabled
-    @DisplayName("방장이 아닌 사용자가 수동 일정 등록을 시도하다.")
-    @Test
-    @Transactional
-    @WithMockCustomUser(tempValue = "sctfw_forbidden")
-    public void forbidden() throws Exception {
-        //given
-        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        final String sido = "1";
-        final String sigungu = "1111";
-        final String details = "details";
-        final String fullName = "fullName";
-        final String startDay = "05-26-2023";
-        final String hourFormat = "AM";
-        final String startTime = "10:00";
-        final Integer progressTime = 2;
-        final String organizationName = "organization";
-        final Integer volunteerNum = 10;
-        final String content = "content";
-        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
-                organizationName, volunteerNum, content);
-
-        //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
-                .andExpect(status().isForbidden())
-                .andDo(print());
-    }
-
-    @Disabled
     @DisplayName("수동 일정 등록간 입력값 조건을 위반하다.")
     @Test
     @Transactional
@@ -132,37 +92,7 @@ class ScheduleWriteControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 100; //max 조건 위반
         final String content = "content";
-        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
-                organizationName, volunteerNum, content);
-
-        //when & then
-        mockMvc.perform(post("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dto)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-    }
-
-    @Disabled
-    @DisplayName("수동 일정 등록간 모집 인원은 봉사 팀원 최대 인원보다 많을 수 없다.")
-    @Test
-    @Transactional
-    @WithUserDetails(value = "sctfw1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void exceedVolunteerNum() throws Exception {
-        //given
-        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        final String sido = "1";
-        final String sigungu = "1111";
-        final String details = "details";
-        final String fullName = "fullName";
-        final String startDay = "05-26-2023";
-        final String hourFormat = "AM";
-        final String startTime = "10:00";
-        final Integer progressTime = 2;
-        final String organizationName = "organization";
-        final Integer volunteerNum = 20; //봉사 팀원 최대인원보다 작아야 된다.
-        final String content = "content";
-        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new ScheduleAddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then

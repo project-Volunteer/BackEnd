@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.document.restdocs.config.RestDocsConfiguration;
@@ -42,6 +43,7 @@ import project.volunteer.global.jwt.util.JwtProvider;
 @AutoConfigureRestDocs
 @Import(RestDocsConfiguration.class)
 @Transactional
+@ActiveProfiles("test")
 public abstract class DocumentTest {
     @Autowired
     protected MockMvc mockMvc;

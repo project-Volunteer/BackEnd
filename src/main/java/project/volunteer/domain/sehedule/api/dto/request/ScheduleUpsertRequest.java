@@ -18,7 +18,7 @@ import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertC
 @NoArgsConstructor
 public class ScheduleUpsertRequest {
 
-    private AddressRequest address;
+    private ScheduleAddressRequest address;
 
     @NotEmpty
     @Pattern(regexp = "^(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])-\\d{4}$")

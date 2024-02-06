@@ -12,13 +12,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
@@ -29,7 +26,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
+import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -46,13 +43,9 @@ import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -139,7 +132,7 @@ class ScheduleEditControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new ScheduleAddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -169,7 +162,7 @@ class ScheduleEditControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 3; //현재 일정에 참여중인 인원수(5명) 보다 작을 수 없다.!
         final String content = "content";
-        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new ScheduleAddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then
@@ -199,7 +192,7 @@ class ScheduleEditControllerTest {
         final String organizationName = "organization";
         final Integer volunteerNum = 6;
         final String content = "content";
-        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new AddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
+        ScheduleUpsertRequest dto = new ScheduleUpsertRequest(new ScheduleAddressRequest(sido, sigungu, details, fullName), startDay, hourFormat, startTime, progressTime,
                 organizationName, volunteerNum, content);
 
         //when & then

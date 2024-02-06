@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
-import project.volunteer.domain.sehedule.api.dto.request.AddressRequest;
+import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.global.common.dto.StateResponse;
 
@@ -34,7 +34,7 @@ public class ScheduleControllerTest extends DocumentTest {
     public void saveSchedule() throws Exception {
         //given
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
-                new AddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
                 "unicef", 100, "content");
 
         //when
@@ -95,7 +95,7 @@ public class ScheduleControllerTest extends DocumentTest {
     public void editSchedule() throws Exception {
         //given
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
-                new AddressRequest("1", "1111", "1111", "1111"), "02-15-2024", "AM", "10:00", 2,
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-15-2024", "AM", "10:00", 2,
                 "unicef", 50, "content");
 
         //when
