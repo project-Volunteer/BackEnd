@@ -28,6 +28,9 @@ public class AcceptanceTest {
 
     protected String bonsikToken;
     protected String soeunToken;
+    protected Long soeunNo;
+    protected String changHoeunToken;
+    protected Long changHoeunNo;
     protected final String AUTHORIZATION_HEADER = "accessToken";
 
     @BeforeEach
@@ -43,10 +46,16 @@ public class AcceptanceTest {
         bonsikToken = jwtProvider.createAccessToken("kakao_" + providerId1);
 
         final String providerId2 = "4567";
-        userSignupService.addUser(
+        soeunNo = userSignupService.addUser(
                 new UserSignupRequest("soeun", "http://www...", "test@email.com", "1999-07-27",
                         1, true, true, true, true, "kakao", providerId2));
         soeunToken = jwtProvider.createAccessToken("kakao_" + providerId2);
+
+        final String providerId3 = "990";
+        changHoeunNo = userSignupService.addUser(
+                new UserSignupRequest("soeun", "http://www...", "test@email.com", "1999-07-27",
+                        1, true, true, true, true, "kakao", providerId3));
+        changHoeunToken = jwtProvider.createAccessToken("kakao_" + providerId3);
     }
 
 }

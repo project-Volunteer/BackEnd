@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
+import project.volunteer.domain.sehedule.api.dto.response.ScheduleUpsertResponse;
 import project.volunteer.domain.sehedule.application.ScheduleQueryFacade;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
@@ -39,21 +40,22 @@ public class ScheduleController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PostMapping("/{recruitmentNo}/schedule")
-    public ResponseEntity<Void> scheduleAdd(@RequestBody @Valid ScheduleUpsertRequest request,
+    public ResponseEntity<ScheduleUpsertResponse> scheduleAdd(@RequestBody @Valid ScheduleUpsertRequest request,
                                       @PathVariable("recruitmentNo") Long no) {
 
-        scheduleCommandFacade.registerSchedule(no, request.toCommand());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Long scheduleNo = scheduleCommandFacade.registerSchedule(no, request.toCommand());
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ScheduleUpsertResponse(scheduleNo));
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}")
-    public ResponseEntity scheduleEdit(@RequestBody @Valid ScheduleUpsertRequest request,
+    public ResponseEntity<Void> scheduleEdit(@RequestBody @Valid ScheduleUpsertRequest request,
                                        @PathVariable("scheduleNo") Long scheduleNo,
                                        @PathVariable("recruitmentNo") Long recruitmentNo) {
 
         scheduleCommandFacade.updateSchedule(recruitmentNo, scheduleNo, request.toCommand());
-
         return ResponseEntity.ok().build();
     }
 
