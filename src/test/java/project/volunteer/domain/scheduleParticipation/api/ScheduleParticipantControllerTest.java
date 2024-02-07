@@ -371,11 +371,13 @@ class ScheduleParticipantControllerTest {
         //given
         User test1 = 사용자_등록("test1", "test1", "test1@naver.com");
         Participant participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
-        일정_참여상태_추가(saveSchedule, participant1, ParticipantState.PARTICIPATION_CANCEL);
+        ScheduleParticipation scheduleParticipation1 = 일정_참여상태_추가(saveSchedule, participant1,
+                ParticipantState.PARTICIPATION_CANCEL);
 
         User test2 = 사용자_등록("test2", "test2", "test2@naver.com");
         Participant participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
-        일정_참여상태_추가(saveSchedule, participant2, ParticipantState.PARTICIPATION_CANCEL);
+        ScheduleParticipation scheduleParticipation2 =
+                일정_참여상태_추가(saveSchedule, participant2, ParticipantState.PARTICIPATION_CANCEL);
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling",
@@ -385,11 +387,11 @@ class ScheduleParticipantControllerTest {
 
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.cancelling[0].no").value(test1.getUserNo()))
+                .andExpect(jsonPath("$.cancelling[0].scheduleParticipationNo").value(scheduleParticipation1.getScheduleParticipationNo()))
                 .andExpect(jsonPath("$.cancelling[0].nickname").value(test1.getNickName()))
                 .andExpect(jsonPath("$.cancelling[0].email").value(test1.getEmail()))
                 .andExpect(jsonPath("$.cancelling[0].profile").value(test1.getPicture()))
-                .andExpect(jsonPath("$.cancelling[1].no").value(test2.getUserNo()))
+                .andExpect(jsonPath("$.cancelling[1].scheduleParticipationNo").value(scheduleParticipation2.getScheduleParticipationNo()))
                 .andExpect(jsonPath("$.cancelling[1].nickname").value(test2.getNickName()))
                 .andExpect(jsonPath("$.cancelling[1].email").value(test2.getEmail()))
                 .andExpect(jsonPath("$.cancelling[1].profile").value(test2.getPicture()))
@@ -404,7 +406,7 @@ class ScheduleParticipantControllerTest {
                                         parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
                                 ),
                                 responseFields(
-                                        fieldWithPath("cancelling[].no").type(JsonFieldType.NUMBER).description("취소 요청자 고유키 PK"),
+                                        fieldWithPath("cancelling[].scheduleParticipationNo").type(JsonFieldType.NUMBER).description("취소 요청자 고유키 PK"),
                                         fieldWithPath("cancelling[].nickname").type(JsonFieldType.STRING).description("취소 요청자 닉네임"),
                                         fieldWithPath("cancelling[].email").type(JsonFieldType.STRING).description("취소 요청자 이메일"),
                                         fieldWithPath("cancelling[].profile").type(JsonFieldType.STRING).description("취소 요청자 프로필 URL")
@@ -456,7 +458,7 @@ class ScheduleParticipantControllerTest {
                                         parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
                                 ),
                                 responseFields(
-                                        fieldWithPath("done[].no").type(JsonFieldType.NUMBER).description("참가 완료자 고유키 PK"),
+                                        fieldWithPath("done[].scheduleParticipationNo").type(JsonFieldType.NUMBER).description("참가 완료자 고유키 PK"),
                                         fieldWithPath("done[].nickname").type(JsonFieldType.STRING).description("참가 완료자 닉네임"),
                                         fieldWithPath("done[].email").type(JsonFieldType.STRING).description("참가 완료자 이메일"),
                                         fieldWithPath("done[].profile").type(JsonFieldType.STRING).description("참가 완료자 프로필 URL"),
