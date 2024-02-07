@@ -23,6 +23,7 @@ public class ScheduleDetailSearchResult {
     private String content;
     private int activeVolunteerNum;
     private String state;
+    private Boolean hasData;
 
     @Getter
     @AllArgsConstructor
@@ -47,6 +48,17 @@ public class ScheduleDetailSearchResult {
         this.volunteerNum = volunteerNum;
         this.content = content;
         this.activeVolunteerNum = activeVolunteerNum;
+        this.hasData = true;
+    }
+
+    public static ScheduleDetailSearchResult createEmpty() {
+        ScheduleDetailSearchResult result = new ScheduleDetailSearchResult();
+        result.hasData = false;
+        return result;
+    }
+
+    public Boolean hasData() {
+        return this.hasData;
     }
 
     public void setResponseState(Optional<ParticipantState> state) {

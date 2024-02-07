@@ -122,10 +122,13 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
                 recruitment.getRecruitmentNo());
 
         //then
-        assertThat(result.getNo()).isEqualTo(scheduleNo3);
+        assertAll(
+                () -> assertThat(result.getHasData()).isTrue(),
+                () -> assertThat(result.getNo()).isEqualTo(scheduleNo3)
+        );
     }
 
-    @DisplayName("봉사 모집글에 존재하는 일정 중 모두 참여 불가능한 일정일 경우, null DTO를 반환한다.")
+    @DisplayName("봉사 모집글에 존재하는 일정 중 모두 참여 불가능한 일정일 경우, hasData컬럼이 false가 된다.")
     @Test
     void notExistClosestSchedule() {
         //given
@@ -139,7 +142,7 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
                 recruitment.getRecruitmentNo());
 
         //then
-        assertThat(result).isNull();
+        assertThat(result.hasData()).isFalse();
     }
 
     @DisplayName("모집 기간이 지난 일정을 조회할 경우 예외가 발생한다.")

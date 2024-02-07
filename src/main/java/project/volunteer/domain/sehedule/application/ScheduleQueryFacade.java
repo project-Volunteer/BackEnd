@@ -2,7 +2,6 @@ package project.volunteer.domain.sehedule.application;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ public class ScheduleQueryFacade {
         ScheduleDetailSearchResult scheduleSearchResult = scheduleQueryService.searchClosestScheduleDetail(
                 recruitmentNo);
 
-        if (Objects.nonNull(scheduleSearchResult)) {
+        if (scheduleSearchResult.hasData()) {
             Optional<ParticipantState> participantState = scheduleParticipationDtoService.searchState(
                     scheduleSearchResult.getNo(), userNo);
             scheduleSearchResult.setResponseState(participantState);

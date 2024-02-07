@@ -232,7 +232,9 @@ public class ScheduleControllerTest extends DocumentTest {
                                         fieldWithPath("activeVolunteerNum").type(JsonFieldType.NUMBER)
                                                 .description("현재 봉사 일정 참여 인원"),
                                         fieldWithPath("state").type(JsonFieldType.STRING)
-                                                .description("Code ClientState 참고바람.")
+                                                .description("Code ClientState 참고바람."),
+                                        fieldWithPath("hasData").type(JsonFieldType.BOOLEAN)
+                                                .description("응답 데이터 값의 존재 여부, 참여 가능한 가장 가까운 일정이 없는 경우 false 입니다.")
                                 )
                         )
                 );
@@ -329,7 +331,9 @@ public class ScheduleControllerTest extends DocumentTest {
                                         fieldWithPath("activeVolunteerNum").type(JsonFieldType.NUMBER)
                                                 .description("현재 봉사 일정 참여 인원"),
                                         fieldWithPath("state").type(JsonFieldType.STRING)
-                                                .description("Code ClientState 참고바람.")
+                                                .description("Code ClientState 참고바람."),
+                                        fieldWithPath("hasData").type(JsonFieldType.BOOLEAN)
+                                                .description("응답 데이터 값의 존재여부, 정상 응답일 경우 항상 true입니다.")
                                 )
                         )
                 );

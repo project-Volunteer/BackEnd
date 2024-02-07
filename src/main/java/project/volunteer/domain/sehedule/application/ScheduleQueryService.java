@@ -40,7 +40,7 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
     public ScheduleDetailSearchResult searchClosestScheduleDetail(final Long recruitmentNo) {
         final LocalDate now = LocalDate.now(clock);
         if (!scheduleRepository.existNearestSchedule(recruitmentNo, now)) {
-            return null;
+            return ScheduleDetailSearchResult.createEmpty();
         }
         return scheduleRepository.findNearestScheduleDetailBy(recruitmentNo, now);
     }
