@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import project.volunteer.domain.scheduleParticipation.system.SpringScheduler;
 import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.signup.application.UserSignupService;
 import project.volunteer.global.jwt.util.JwtProvider;
@@ -30,6 +31,9 @@ public class AcceptanceTest {
 
     @SpyBean
     protected Clock clock;
+
+    @Autowired
+    protected SpringScheduler springScheduler;
 
     protected String bonsikToken;
     protected String soeunToken;
@@ -61,6 +65,10 @@ public class AcceptanceTest {
                 new UserSignupRequest("soeun", "http://www...", "test@email.com", "1999-07-27",
                         1, true, true, true, true, "kakao", providerId3));
         changHoeunToken = jwtProvider.createAccessToken("kakao_" + providerId3);
+    }
+
+    protected void 봉사_일정_참여완료_미승인_스케줄링() {
+        springScheduler.scheduleCompletionValidation();
     }
 
 }

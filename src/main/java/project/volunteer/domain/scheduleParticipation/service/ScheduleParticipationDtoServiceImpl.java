@@ -38,7 +38,7 @@ public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipatio
     @Override
     public List<CancelledParticipantList> findCancelledParticipants(Schedule schedule) {
         return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(), List.of(ParticipantState.PARTICIPATION_CANCEL)).stream()
-                .map(p -> new CancelledParticipantList(p.getUserNo(), p.getNickname(), p.getEmail(), p.getProfile()))
+                .map(p -> new CancelledParticipantList(p.getScheduleParticipationNo(), p.getNickname(), p.getEmail(), p.getProfile()))
                 .collect(Collectors.toList());
     }
 
@@ -48,7 +48,7 @@ public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipatio
                 List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)).stream()
                 .map(sp -> {
                     StateResponse state = sp.isEqualParticipantState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)?(StateResponse.COMPLETE_APPROVED):(StateResponse.COMPLETE_UNAPPROVED);
-                    return new CompletedParticipantList(sp.getUserNo(), sp.getNickname(), sp.getEmail(), sp.getProfile(), state.getId());
+                    return new CompletedParticipantList(sp.getScheduleParticipationNo(), sp.getNickname(), sp.getEmail(), sp.getProfile(), state.getId());
                 })
                 .collect(Collectors.toList());
     }

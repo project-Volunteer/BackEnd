@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class CancelledParticipantList {
-    Long no;
+    Long scheduleParticipationNo;
     String nickname;
     String email;
     String profile;

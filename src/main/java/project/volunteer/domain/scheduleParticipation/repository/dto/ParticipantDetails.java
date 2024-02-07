@@ -9,7 +9,7 @@ import project.volunteer.global.common.component.ParticipantState;
 @NoArgsConstructor
 @Getter
 public class ParticipantDetails {
-    Long userNo;
+    Long scheduleParticipationNo;
     String nickname;
     String email;
     String profile;

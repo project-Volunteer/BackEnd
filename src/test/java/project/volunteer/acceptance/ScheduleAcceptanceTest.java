@@ -9,10 +9,17 @@ import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_�
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_팀원_가입_요청;
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_일정_등록;
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_일정_참여;
+import static project.volunteer.acceptance.AcceptanceFixtures.봉사_일정_참여_취소승인;
+import static project.volunteer.acceptance.AcceptanceFixtures.봉사_일정_참여_취소요청;
+import static project.volunteer.acceptance.AcceptanceFixtures.봉사_일정_참여완료_승인;
+import static project.volunteer.acceptance.AcceptanceFixtures.봉사_일정_참여완료_조회;
+import static project.volunteer.acceptance.AcceptanceFixtures.봉사_일정_취소요청_조회;
+import static project.volunteer.acceptance.AcceptanceFixtures.캘린더_일정_조회;
 
 import java.io.File;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,10 +28,16 @@ import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
+import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
+import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponse;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.dto.StateResponse;
 
 public class ScheduleAcceptanceTest extends AcceptanceTest {
 
@@ -282,7 +295,6 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         final ScheduleUpsertRequest insertRequest3 = new ScheduleUpsertRequest(
                 new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-04-2024", "AM", "10:00", 2,
                 "unicef", 50, "content");
-
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest3);
@@ -323,6 +335,444 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .when().get("/recruitment/{recruitmentNo}/schedule", recruitmentNo)
                 .then().log().all()
                 .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 정보를 성공적으로 조회한다.")
+    @Test
+    void findSchedule() {
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest3 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-04-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+        final Long scheduleNo3 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest3);
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(bonsikToken, recruitmentNo, 2024, 2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, bonsikToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertThat(response.getNo()).isEqualTo(scheduleNo3);
+    }
+
+    @DisplayName("팀원이 아니면 봉사 모집글 일정 상세 조회할 수 없다.")
+    @Test
+    void findScheduleNotRecruitmentTeam() {
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-02-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final Long scheduleNo = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest);
+
+        given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, scheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 참여가 가능한 일정이면 state필드가 AVAILABLE로 나온다.")
+    @Test
+    void findScheduleAvailableState() {
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.AVAILABLE.getId())
+        );
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 모집 기간이 지난 일정이면 state필드가 DONE로 나온다.")
+    @Test
+    void findScheduleDoneState() {
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-04T10:00:00Z"));
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.DONE.getId())
+        );
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 이미 참여중인 일정이면 state필드가 PARTICIPATING로 나온다.")
+    @Test
+    void findScheduleParticipatingState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.PARTICIPATING.getId())
+        );
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 인원이 가득한 일정이면 state필드가 FULL로 나온다.")
+    @Test
+    void findScheduleFullState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 1, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo, changHoeunNo)));
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(changHoeunToken, recruitmentNo, 2024,
+                2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, changHoeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.FULL.getId())
+        );
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 일정 참가 완료 미승인 된 일정이면 state필드가 COMPLETE_UNAPPROVED로 나온다.")
+    @Test
+    void findScheduleCompleteUnapprovedState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 1, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-10T10:00:00Z"));
+        봉사_일정_참여완료_미승인_스케줄링();
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024,
+                2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.COMPLETE_UNAPPROVED.getId())
+        );
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 일정 참가 완료 승인 된 일정이면 state필드가 COMPLETE_APPROVED로 나온다.")
+    @Test
+    void findScheduleCompleteApprovedState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 1, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-10T10:00:00Z"));
+        봉사_일정_참여완료_미승인_스케줄링();
+
+        final List<CompletedParticipantList> completedScheduleParticipants =
+                봉사_일정_참여완료_조회(bonsikToken, recruitmentNo, scheduleNo2);
+
+        final CompleteApproval completeApprovalRequest = new CompleteApproval(
+                completedScheduleParticipants.stream()
+                        .map(CompletedParticipantList::getScheduleParticipationNo)
+                        .collect(Collectors.toList())
+        );
+        봉사_일정_참여완료_승인(bonsikToken, recruitmentNo, scheduleNo2, completeApprovalRequest);
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.COMPLETE_APPROVED.getId())
+        );
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 참가 취소한 일정이면 state필드가 CANCELLING로 나온다.")
+    @Test
+    void findScheduleCancellingState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 1, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
+
+        봉사_일정_참여_취소요청(soeunToken, recruitmentNo, scheduleNo2);
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.CANCELLING.getId())
+        );
+    }
+
+    @DisplayName("캘린더를 통한 일정 상세 조회시, 참가 취소가 승인된 일정이면 state필드가 AVAILABLE로 나온다.")
+    @Test
+    void findScheduleAvailableStateAfterApprovalCancel() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 1, "content");
+        봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
+
+        봉사_일정_참여_취소요청(soeunToken, recruitmentNo, scheduleNo2);
+
+        final List<CancelledParticipantList> cancelledParticipants =
+                봉사_일정_취소요청_조회(bonsikToken, recruitmentNo, scheduleNo2);
+
+        final CancelApproval cancelApprovalRequest = new CancelApproval(
+                cancelledParticipants.get(0).getScheduleParticipationNo());
+        봉사_일정_참여_취소승인(bonsikToken, recruitmentNo, scheduleNo2, cancelApprovalRequest);
+
+        final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
+        final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
+
+        ScheduleDetailSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}", recruitmentNo, lastCalendarScheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleDetailSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
+                () -> assertThat(response.getState()).isEqualTo(StateResponse.AVAILABLE.getId())
+        );
     }
 
 }

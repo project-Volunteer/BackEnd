@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class CompletedParticipantList {
 
-    Long no;
+    Long scheduleParticipationNo;
     String nickname;
     String email;
     String profile;

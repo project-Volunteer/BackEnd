@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
+import lombok.NoArgsConstructor;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class ScheduleCalenderSearchResponses {
     private List<ScheduleCalenderSearchResponse> scheduleList;
 

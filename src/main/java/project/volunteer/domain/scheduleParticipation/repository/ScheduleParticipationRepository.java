@@ -68,7 +68,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
     List<ScheduleParticipation> findByScheduleParticipationNoIn(List<Long> spNos);
 
     //N+1 문제를 막기 위해서 Projection + Join 방식 사용
-    @Query("select new project.volunteer.domain.scheduleParticipation.repository.dto.ParticipantDetails(u.userNo,u.nickName,u.email,coalesce(s.imagePath,u.picture),sp.state) "
+    @Query("select new project.volunteer.domain.scheduleParticipation.repository.dto.ParticipantDetails(sp.scheduleParticipationNo,u.nickName,u.email,coalesce(s.imagePath,u.picture),sp.state) "
             +
             "from ScheduleParticipation sp " +
             "join sp.participant p " +
