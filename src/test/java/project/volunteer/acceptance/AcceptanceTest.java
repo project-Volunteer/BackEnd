@@ -1,9 +1,11 @@
 package project.volunteer.acceptance;
 
 import io.restassured.RestAssured;
+import java.time.Clock;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
@@ -25,6 +27,9 @@ public class AcceptanceTest {
 
     @Autowired
     protected DatabaseCleaner databaseCleaner;
+
+    @SpyBean
+    protected Clock clock;
 
     protected String bonsikToken;
     protected String soeunToken;
