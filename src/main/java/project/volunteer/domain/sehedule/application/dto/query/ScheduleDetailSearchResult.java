@@ -61,11 +61,11 @@ public class ScheduleDetailSearchResult {
         return this.hasData;
     }
 
-    public void setResponseState(Optional<ParticipantState> state) {
-        this.state = getResponseState(state);
+    public void setResponseState(Optional<ParticipantState> state, LocalDate now) {
+        this.state = getResponseState(state, now);
     }
 
-    private String getResponseState(Optional<ParticipantState> state) {
+    private String getResponseState(Optional<ParticipantState> state, LocalDate now) {
         //일정 참가 완료 미승인
         if (state.isPresent() && state.get().equals(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)) {
             return StateResponse.COMPLETE_UNAPPROVED.getId();
@@ -77,7 +77,7 @@ public class ScheduleDetailSearchResult {
         }
 
         //일정 참여 기간 만료
-        if (isDone()) {
+        if (isDone(now)) {
             return StateResponse.DONE.getId();
         }
 
@@ -104,8 +104,8 @@ public class ScheduleDetailSearchResult {
         return volunteerNum == activeVolunteerNum;
     }
 
-    private boolean isDone() {
-        return startDate.isBefore(LocalDate.now());
+    private boolean isDone(LocalDate now) {
+        return startDate.isBefore(now);
     }
 
 }

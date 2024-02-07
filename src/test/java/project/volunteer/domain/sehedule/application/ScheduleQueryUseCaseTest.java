@@ -115,11 +115,11 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
         final Long scheduleNo3 = createAndSaveSchedule(LocalDate.of(2024, 1, 17));
         final Long scheduleNo4 = createAndSaveSchedule(LocalDate.of(2024, 1, 20));
 
-        given(clock.instant()).willReturn(Instant.parse("2024-01-16T10:00:00Z"));
+        final LocalDate now = LocalDate.of(2024, 1, 16);
 
         //when
         ScheduleDetailSearchResult result = scheduleQueryUseCase.searchClosestScheduleDetail(
-                recruitment.getRecruitmentNo());
+                recruitment.getRecruitmentNo(), now);
 
         //then
         assertAll(
@@ -135,11 +135,11 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
         final Long scheduleNo1 = createAndSaveSchedule(LocalDate.of(2024, 1, 15));
         final Long scheduleNo2 = createAndSaveSchedule(LocalDate.of(2024, 1, 16));
 
-        given(clock.instant()).willReturn(Instant.parse("2024-01-16T10:00:00Z"));
+        final LocalDate now = LocalDate.of(2024, 1, 16);
 
         //when
         ScheduleDetailSearchResult result = scheduleQueryUseCase.searchClosestScheduleDetail(
-                recruitment.getRecruitmentNo());
+                recruitment.getRecruitmentNo(), now);
 
         //then
         assertThat(result.hasData()).isFalse();

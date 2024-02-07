@@ -12,7 +12,7 @@ public interface ScheduleQueryUseCase {
 
     ScheduleDetailSearchResult searchScheduleDetail(Long scheduleNo);
 
-    ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo);
+    ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo, LocalDate now);
 
     // 삭제 되지 않고, 모집 중인 일정
     Schedule findScheduleInProgress(Long scheduleNo);

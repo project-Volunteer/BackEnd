@@ -1,5 +1,6 @@
 package project.volunteer.domain.sehedule.application;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class ScheduleQueryFacade {
     private final RecruitmentService recruitmentService;
     private final ScheduleQueryUseCase scheduleQueryService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
+    private final Clock clock;
 
     public List<ScheduleCalendarSearchResult> findScheduleCalendar(Long recruitmentNo, LocalDate startDay,
                                                                    LocalDate endDay) {
@@ -28,21 +30,23 @@ public class ScheduleQueryFacade {
     }
 
     public ScheduleDetailSearchResult findScheduleDetail(Long userNo, Long scheduleNo) {
+        LocalDate now = LocalDate.now(clock);
         ScheduleDetailSearchResult scheduleSearchResult = scheduleQueryService.searchScheduleDetail(scheduleNo);
         Optional<ParticipantState> participantState = scheduleParticipationDtoService.searchState(scheduleNo, userNo);
-        scheduleSearchResult.setResponseState(participantState);
+        scheduleSearchResult.setResponseState(participantState, now);
 
         return scheduleSearchResult;
     }
 
     public ScheduleDetailSearchResult findClosestScheduleDetail(Long userNo, Long recruitmentNo) {
+        LocalDate now = LocalDate.now(clock);
         ScheduleDetailSearchResult scheduleSearchResult = scheduleQueryService.searchClosestScheduleDetail(
-                recruitmentNo);
+                recruitmentNo, now);
 
         if (scheduleSearchResult.hasData()) {
             Optional<ParticipantState> participantState = scheduleParticipationDtoService.searchState(
                     scheduleSearchResult.getNo(), userNo);
-            scheduleSearchResult.setResponseState(participantState);
+            scheduleSearchResult.setResponseState(participantState, now);
         }
 
         return scheduleSearchResult;
