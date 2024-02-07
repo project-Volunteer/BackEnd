@@ -47,7 +47,7 @@ import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
@@ -84,7 +84,8 @@ public class LogboardEditControllerTest {
 	@Autowired ParticipantRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
-	@Autowired RecruitmentService recruitmentService;
+	@Autowired
+	RecruitmentCommandUseCase recruitmentService;
 	@Autowired ImageService imageService;
 	@Autowired FileService fileService;
 	@Autowired UserService userService;

@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -66,7 +66,8 @@ public class UserControllerDashboardTest {
     @Autowired ObjectMapper objectMapper;
     @Autowired UserRepository userRepository;
     @Autowired ParticipantRepository participantRepository;
-    @Autowired RecruitmentService recruitmentService;
+    @Autowired
+    RecruitmentCommandUseCase recruitmentService;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired
     ScheduleCommandUseCase scheduleService;

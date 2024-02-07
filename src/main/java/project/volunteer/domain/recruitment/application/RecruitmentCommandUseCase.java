@@ -4,9 +4,9 @@ import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 
-public interface RecruitmentService {
+public interface RecruitmentCommandUseCase {
 
-    public Recruitment addRecruitment(User writer, RecruitmentParam saveDto);
+    Recruitment addRecruitment(User writer, RecruitmentParam saveDto);
 
     public void deleteRecruitment(Long deleteNo);
 

@@ -1,7 +1,6 @@
 package project.volunteer.domain.notice.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.application.ConfirmationService;
@@ -12,7 +11,7 @@ import project.volunteer.domain.notice.application.NoticeDtoService;
 import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.notice.application.dto.NoticeDetails;
 import project.volunteer.domain.notice.domain.Notice;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.reply.application.ReplyService;
 import project.volunteer.domain.reply.application.dto.CommentDetails;
@@ -27,7 +26,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class NoticeFacade {
     private final UserService userService;
-    private final RecruitmentService recruitmentService;
+    private final RecruitmentCommandUseCase recruitmentService;
     private final NoticeService noticeService;
     private final NoticeDtoService noticeDtoService;
     private final ConfirmationService confirmationService;

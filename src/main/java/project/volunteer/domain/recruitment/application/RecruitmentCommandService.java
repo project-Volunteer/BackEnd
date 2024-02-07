@@ -11,16 +11,11 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class RecruitmentServiceImpl implements RecruitmentService{
+public class RecruitmentCommandService implements RecruitmentCommandUseCase {
     private final RecruitmentRepository recruitmentRepository;
 
     @Transactional

@@ -14,7 +14,7 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.image.domain.Storage;
@@ -40,7 +40,8 @@ class ImageServiceImplTestForEdit {
 
     @Autowired EntityManager em;
     @Autowired UserRepository userRepository;
-    @Autowired RecruitmentService recruitmentService;
+    @Autowired
+    RecruitmentCommandUseCase recruitmentService;
     @Autowired ImageService imageService;
     @Autowired ImageRepository imageRepository;
     @Autowired FileService fileService;

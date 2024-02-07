@@ -52,7 +52,8 @@ class RecruitmentDtoServiceImplTest {
 
     @PersistenceContext EntityManager em;
     @Autowired UserRepository userRepository;
-    @Autowired RecruitmentDtoService recruitmentDtoService;
+    @Autowired
+    RecruitmentQueryUseCase recruitmentDtoService;
     @Autowired RepeatPeriodRepository repeatPeriodRepository;
     @Autowired ImageService imageService;
     @Autowired FileService fileService;

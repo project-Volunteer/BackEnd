@@ -3,7 +3,7 @@ package project.volunteer.domain.sehedule.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertCommand;
@@ -12,7 +12,7 @@ import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertC
 @RequiredArgsConstructor
 @Transactional
 public class ScheduleCommandFacade {
-    private final RecruitmentService recruitmentService;
+    private final RecruitmentCommandUseCase recruitmentService;
     private final ScheduleCommandUseCase scheduleCommandService;
     private final ScheduleParticipationService scheduleParticipationService;
 

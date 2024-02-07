@@ -7,7 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
@@ -18,7 +18,7 @@ import project.volunteer.global.common.component.ParticipantState;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ScheduleQueryFacade {
-    private final RecruitmentService recruitmentService;
+    private final RecruitmentCommandUseCase recruitmentService;
     private final ScheduleQueryUseCase scheduleQueryService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
     private final Clock clock;

@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class RecruitmentDtoServiceImpl implements RecruitmentDtoService{
+public class RecruitmentQueryService implements RecruitmentQueryUseCase {
 
     private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;

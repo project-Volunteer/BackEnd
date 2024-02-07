@@ -28,7 +28,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,7 +37,8 @@ class RecruitmentServiceImplTestForEdit {
 
     @PersistenceContext EntityManager em;
     @Autowired UserRepository userRepository;
-    @Autowired RecruitmentService recruitmentService;
+    @Autowired
+    RecruitmentCommandUseCase recruitmentService;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired RepeatPeriodService repeatPeriodService;
     @Autowired RepeatPeriodRepository repeatPeriodRepository;

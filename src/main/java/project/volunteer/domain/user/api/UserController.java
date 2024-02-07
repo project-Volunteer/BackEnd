@@ -24,7 +24,7 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.logboard.application.LogboardService;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
 import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;
 import project.volunteer.domain.user.api.dto.response.*;
@@ -43,7 +43,7 @@ public class UserController {
 	private final UserService userService;
 	private final UserDtoService userDtoService;
 	private final ImageService imageService;
-	private final RecruitmentService recruitmentService;
+	private final RecruitmentCommandUseCase recruitmentService;
 	private final LogboardService logboardService;
     private final ImageRepository imageRepository;
 	private final UserQueryDtoRepository userQueryDtoRepository;

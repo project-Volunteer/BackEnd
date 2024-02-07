@@ -11,8 +11,8 @@ import project.volunteer.domain.participation.application.ParticipationService;
 import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.api.dto.response.RecruitmentDetailsResponse;
-import project.volunteer.domain.recruitment.application.RecruitmentDtoService;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
+import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.RepeatPeriodService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
@@ -33,8 +33,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class RecruitmentFacade {
     private final UserService userService;
-    private final RecruitmentService recruitmentService;
-    private final RecruitmentDtoService recruitmentDtoService;
+    private final RecruitmentCommandUseCase recruitmentService;
+    private final RecruitmentQueryUseCase recruitmentDtoService;
     private final RepeatPeriodService repeatPeriodService;
     private final ScheduleCommandUseCase scheduleService;
     private final ImageService imageService;

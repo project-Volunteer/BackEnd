@@ -11,7 +11,7 @@ import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepo
 import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
 import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
-import project.volunteer.domain.recruitment.application.RecruitmentDtoService;
+import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.util.SecurityUtil;
@@ -26,7 +26,7 @@ import static project.volunteer.global.Interceptor.OrganizationAuth.*;
 @RestController
 @RequiredArgsConstructor
 public class RecruitmentController {
-    private final RecruitmentDtoService recruitmentDtoService;
+    private final RecruitmentQueryUseCase recruitmentDtoService;
     private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
     private final RecruitmentFacade recruitmentFacade;
 

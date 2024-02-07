@@ -37,7 +37,8 @@ class RecruitmentServiceImplTestForSave {
 
 
     @Autowired private EntityManager em;
-    @Autowired RecruitmentService recruitmentService;
+    @Autowired
+    RecruitmentCommandUseCase recruitmentService;
     @Autowired RepeatPeriodService repeatPeriodService;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired RepeatPeriodRepository repeatPeriodRepository;
