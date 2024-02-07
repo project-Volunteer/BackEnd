@@ -35,6 +35,7 @@ import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParti
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponse;
+import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.dto.StateResponse;
@@ -773,6 +774,49 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
                 () -> assertThat(response.getState()).isEqualTo(StateResponse.AVAILABLE.getId())
         );
+    }
+
+    @DisplayName("캘린더를 통한 일정 리스트 정보를 성공적으로 조회한다.")
+    @Test
+    void findCalendarScheduleList() {
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                10,
+                null, null, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest2 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-03-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest3 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-04-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final ScheduleUpsertRequest insertRequest4 = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "03-01-2024", "AM", "10:00", 2,
+                "unicef", 50, "content");
+        final Long scheduleNo1 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
+        final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
+        final Long scheduleNo3 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest3);
+        final Long scheduleNo4 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest4);
+
+        List<ScheduleCalenderSearchResponse> response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, bonsikToken)
+                .queryParam("year", 2024)
+                .queryParam("mon", 2)
+                .when().get("/recruitment/{recruitmentNo}/calendar", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ScheduleCalenderSearchResponses.class)
+                .getScheduleList();
+        assertThat(response).hasSize(3)
+                .extracting("no")
+                .containsExactlyInAnyOrder(scheduleNo1, scheduleNo2, scheduleNo3);
     }
 
 }
