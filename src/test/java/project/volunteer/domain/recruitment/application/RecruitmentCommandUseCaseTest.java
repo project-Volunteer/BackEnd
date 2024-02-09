@@ -136,10 +136,9 @@ class RecruitmentCommandUseCaseTest extends ServiceTest {
     @Test
     void deleteRecruitment() {
         //given
-        final Long recruitmentNo = createAndSaveRecruitment(VolunteeringType.REG,
+        final Long recruitmentNo = createAndSaveRecruitment(VolunteeringType.REG, IsDeleted.N, user,
                 List.of(new RepeatPeriod(Period.WEEK, Week.NONE, Day.MON, null, IsDeleted.N),
-                        new RepeatPeriod(Period.WEEK, Week.NONE, Day.TUES, null, IsDeleted.N)))
-                .getRecruitmentNo();
+                        new RepeatPeriod(Period.WEEK, Week.NONE, Day.TUES, null, IsDeleted.N)));
 
         //when
         recruitmentCommandUseCase.deleteRecruitment(recruitmentNo);
@@ -163,11 +162,10 @@ class RecruitmentCommandUseCaseTest extends ServiceTest {
     @Test
     void deleteRemovedRecruitment() {
         //given
-        final Recruitment recruitment = createAndSaveRecruitment(VolunteeringType.IRREG, List.of());
-        recruitment.delete();
+        final Long recruitmentNo = createAndSaveRecruitment(VolunteeringType.IRREG, IsDeleted.Y, null, List.of());
 
         //when & then
-        assertThatThrownBy(() -> recruitmentCommandUseCase.deleteRecruitment(recruitment.getRecruitmentNo()))
+        assertThatThrownBy(() -> recruitmentCommandUseCase.deleteRecruitment(recruitmentNo))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.NOT_EXIST_RECRUITMENT.name());
     }
@@ -181,7 +179,7 @@ class RecruitmentCommandUseCaseTest extends ServiceTest {
                 address, coordinate, timetable, repeatPeriodCreateCommand, isStaticImage, uploadImageFile);
     }
 
-    private Recruitment createAndSaveRecruitment(VolunteeringType type, List<RepeatPeriod> repeatPeriods) {
+    private Long createAndSaveRecruitment(VolunteeringType type, IsDeleted isDeleted, User writer, List<RepeatPeriod> repeatPeriods) {
         Recruitment recruitment = Recruitment.builder()
                 .title("title")
                 .content("content")
@@ -198,11 +196,11 @@ class RecruitmentCommandUseCaseTest extends ServiceTest {
                 .viewCount(0)
                 .likeCount(0)
                 .isPublished(true)
-                .isDeleted(IsDeleted.N)
-                .writer(user)
+                .isDeleted(isDeleted)
+                .writer(writer)
                 .build();
         recruitment.setRepeatPeriods(repeatPeriods);
-        return recruitmentRepository.save(recruitment);
+        return recruitmentRepository.save(recruitment).getRecruitmentNo();
     }
 
     private Recruitment findRecruitmentBy(Long recruitmentNo) {
