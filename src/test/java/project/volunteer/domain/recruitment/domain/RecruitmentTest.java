@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -176,6 +177,44 @@ class RecruitmentTest {
                 .build())
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_CONTENT_SIZE.name());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2024-01-10", "2024-01-15"})
+    @DisplayName("현재 날짜가 모집글 마감일 이후일 경우 예외가 발생한다.")
+    void throwExceptionWhenAfterEndDate(String invalidEndDateStr) {
+        //given
+        final LocalDate invalidEndDate = toLocalDate(invalidEndDateStr);
+        final LocalDate startDate = invalidEndDate.minusDays(2);
+        final LocalDate now = LocalDate.of(2024, 1, 16);
+
+        final Recruitment recruitment = Recruitment.builder()
+                .title("title")
+                .content("content")
+                .volunteeringCategory(VolunteeringCategory.EDUCATION)
+                .volunteerType(VolunteerType.ADULT)
+                .volunteeringType(VolunteeringType.IRREG)
+                .maxParticipationNum(9999)
+                .currentVolunteerNum(0)
+                .isIssued(true)
+                .organizationName("organization")
+                .address(address)
+                .coordinate(coordinate)
+                .timetable(new Timetable(startDate, invalidEndDate, HourFormat.AM, LocalTime.now(), 10))
+                .viewCount(0)
+                .likeCount(0)
+                .isPublished(true)
+                .isDeleted(IsDeleted.N)
+                .build();
+
+        //when & then
+        assertThatThrownBy(() -> recruitment.checkDoneDate(now))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.EXPIRED_PERIOD_RECRUITMENT.name());
+    }
+
+    private LocalDate toLocalDate(String date) {
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
 }

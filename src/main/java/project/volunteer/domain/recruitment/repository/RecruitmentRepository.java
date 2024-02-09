@@ -8,13 +8,22 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 
 import java.util.List;
 import java.util.Optional;
+import project.volunteer.global.common.component.IsDeleted;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
 
-    @Query("select r from Recruitment  r " +
-            "where r.recruitmentNo=:no " +
-            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    @Query("SELECT r FROM Recruitment r "
+            + "WHERE r.recruitmentNo =:no AND r.isDeleted =:isDeleted AND r.isPublished = :isPublished")
+    Optional<Recruitment> findRecruitmentBy(@Param("no") Long recruitmentNo, @Param("isDeleted") IsDeleted isDeleted,
+                                            @Param("isPublished") Boolean isPublished);
+
+    @Query("SELECT r FROM Recruitment r " +
+            "WHERE r.recruitmentNo=:no " +
+            "AND r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
     Optional<Recruitment> findNotDeletedRecruitment(@Param("no") Long recruitmentNo);
+
+
+
 
 
 
@@ -36,7 +45,7 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             "where r.recruitmentNo=:no " +
             "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
             "and r.isPublished=true")
-    Optional<Recruitment> findPublishedByRecruitmentNo(@Param("no")Long recruitmentNo);
+    Optional<Recruitment> findPublishedByRecruitmentNo(@Param("no") Long recruitmentNo);
 
 
     //모집중인 봉사 모집글(삭제 x, 임시 저장 x, 봉사 모집 종료일 내)
@@ -52,5 +61,6 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             "where r.writer.userNo=:loginUserNo " +
             "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
             "and r.isPublished=:isPublished")
-    List<Recruitment> findRecruitmentListByUserNoAndPublishedYn(@Param("loginUserNo")Long loginUserNo, @Param("isPublished") boolean isPublished);
+    List<Recruitment> findRecruitmentListByUserNoAndPublishedYn(@Param("loginUserNo") Long loginUserNo,
+                                                                @Param("isPublished") boolean isPublished);
 }

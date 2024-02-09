@@ -53,45 +53,4 @@ public class RecruitmentCommandService implements RecruitmentCommandUseCase {
         recruitment.delete();
     }
 
-
-
-
-
-    @Override
-    public Recruitment findPublishedRecruitment(Long recruitmentNo) {
-        return validateAndGetPublishedRecruitment(recruitmentNo);
-    }
-
-    @Override
-    public Recruitment findActivatedRecruitment(Long recruitmentNo) {
-        Recruitment findRecruitment = validateAndGetPublishedRecruitment(recruitmentNo);
-
-        //봉사 모집글 마감 일자 조회
-        if (findRecruitment.isDoneDate()) {
-            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d]", recruitmentNo));
-        }
-        return findRecruitment;
-    }
-
-    @Override
-    public void validRecruitmentOwner(Long recruitmentNo, Long loginUserNo) {
-        Recruitment findRecruitment = recruitmentRepository.findById(recruitmentNo).orElseThrow(
-                () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
-                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
-
-        if (!findRecruitment.isRecruitmentOwner(loginUserNo)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(),
-                            loginUserNo));
-        }
-    }
-
-    private Recruitment validateAndGetPublishedRecruitment(Long recruitmentNo) {
-        return recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
-                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
-    }
-
-
 }

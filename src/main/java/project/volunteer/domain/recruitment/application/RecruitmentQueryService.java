@@ -1,6 +1,7 @@
 package project.volunteer.domain.recruitment.application;
 
-
+import java.time.Clock;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentL
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.RepeatPeriod;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.recruitment.application.dto.WriterDetails;
 import project.volunteer.domain.recruitment.dto.PictureDetails;
@@ -38,11 +40,36 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RecruitmentQueryService implements RecruitmentQueryUseCase {
-
     private final RecruitmentRepository recruitmentRepository;
+    private final Clock clock;
+
+
+
     private final RecruitmentQueryDtoRepository recruitmentQueryDtoRepository;
     private final ImageRepository imageRepository;
     private final RepeatPeriodRepository repeatPeriodRepository;
+
+    @Override
+    public Recruitment findActivatedRecruitment(final Long recruitmentNo) {
+        return recruitmentRepository.findRecruitmentBy(recruitmentNo, IsDeleted.N, true)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
+    }
+
+    @Override
+    public Recruitment findRecruitmentInProgress(final Long recruitmentNo) {
+        final Recruitment findRecruitment = recruitmentRepository.findRecruitmentBy(recruitmentNo, IsDeleted.N, true)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
+        findRecruitment.checkDoneDate(LocalDate.now(clock));
+        return findRecruitment;
+    }
+
+
+
+
+
+
 
     @Override
     public RecruitmentDetails findRecruitmentAndWriterDto(Long no) {
@@ -142,4 +169,18 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
 
         return new RepeatPeriodDetails(period, week, days);
     }
+
+    @Override
+    public void validRecruitmentOwner(Long recruitmentNo, Long loginUserNo) {
+        Recruitment findRecruitment = recruitmentRepository.findById(recruitmentNo).orElseThrow(
+                () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
+
+        if (!findRecruitment.isRecruitmentOwner(loginUserNo)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(),
+                            loginUserNo));
+        }
+    }
+
 }

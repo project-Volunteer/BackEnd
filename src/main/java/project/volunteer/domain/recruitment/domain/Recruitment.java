@@ -199,7 +199,11 @@ public class Recruitment extends BaseTimeEntity {
         }
     }
 
-
+    public void checkDoneDate(LocalDate now) {
+        if (timetable.getEndDay().isBefore(now)) {
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT);
+        }
+    }
 
 
 

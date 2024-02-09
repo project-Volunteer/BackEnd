@@ -7,7 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
+import project.volunteer.domain.recruitment.application.RecruitmentQueryService;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
@@ -18,14 +18,14 @@ import project.volunteer.global.common.component.ParticipantState;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ScheduleQueryFacade {
-    private final RecruitmentCommandUseCase recruitmentService;
+    private final RecruitmentQueryService recruitmentQueryService;
     private final ScheduleQueryUseCase scheduleQueryService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
     private final Clock clock;
 
     public List<ScheduleCalendarSearchResult> findScheduleCalendar(Long recruitmentNo, LocalDate startDay,
                                                                    LocalDate endDay) {
-        Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
+        Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
         return scheduleQueryService.searchScheduleCalender(recruitment, startDay, endDay);
     }
 

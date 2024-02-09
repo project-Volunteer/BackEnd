@@ -64,7 +64,7 @@ public class ScheduleController {
     public ResponseEntity scheduleDelete(@PathVariable("scheduleNo") Long scheduleNo,
                                          @PathVariable("recruitmentNo") Long recruitmentNo) {
 
-        scheduleCommandFacade.deleteSchedule(recruitmentNo, scheduleNo);
+        scheduleCommandFacade.deleteSchedule(scheduleNo);
         return ResponseEntity.ok().build();
     }
 

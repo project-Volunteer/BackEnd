@@ -27,8 +27,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class RecruitmentFacade {
     private final UserService userService;
-    private final RecruitmentCommandUseCase recruitmentService;
-    private final RecruitmentQueryUseCase recruitmentDtoService;
+    private final RecruitmentCommandUseCase recruitmentCommandUseCase;
+    private final RecruitmentQueryUseCase recruitmentQueryService;
     private final ScheduleCommandUseCase scheduleService;
     private final ImageService imageService;
     private final ParticipationService participationService;
@@ -39,11 +39,13 @@ public class RecruitmentFacade {
     @Transactional
     public Long registerRecruitment(Long userId, RecruitmentRequest request){
         User findUser = userService.findUser(userId);
-        return recruitmentService.addRecruitment(findUser, request.toCommand());
+        return recruitmentCommandUseCase.addRecruitment(findUser, request.toCommand());
     }
 
     @Transactional
     public void deleteRecruitment(Long recruitmentNo){
+        recruitmentCommandUseCase.deleteRecruitment(recruitmentNo);
+
         //이미지 삭제
         imageService.deleteImage(RealWorkCode.RECRUITMENT, recruitmentNo);
 
@@ -61,9 +63,6 @@ public class RecruitmentFacade {
 
         //봉사 참여자 삭제
         participationService.deleteParticipations(recruitmentNo);
-
-        //봉사 모집글 삭제
-        recruitmentService.deleteRecruitment(recruitmentNo);
     }
 
 
@@ -74,7 +73,7 @@ public class RecruitmentFacade {
 
     public RecruitmentDetailsResponse findVolunteerPostDetails(Long recruitmentNo){
         //봉사 모집글 관련 정보 DTO 세팅(봉사 모집글 정보 + 이미지, 작성자 정보 + 이미지, 정기 일 경우 반복주기)
-        RecruitmentDetails recruitmentAndWriterDto = recruitmentDtoService.findRecruitmentAndWriterDto(recruitmentNo);
+        RecruitmentDetails recruitmentAndWriterDto = recruitmentQueryService.findRecruitmentAndWriterDto(recruitmentNo);
 
         //참여자(승인,신청) 리스트 DTO
         AllParticipantDetails allParticipantDto = participationService.findAllParticipantDto(recruitmentNo);
@@ -86,7 +85,7 @@ public class RecruitmentFacade {
     public String findVolunteerPostParticipationState(Long recruitmentNo, Long userNo){
         User findUser = userService.findUser(userNo);
 
-        Recruitment recruitment = recruitmentService.findPublishedRecruitment(recruitmentNo);
+        Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
 
         return participationService.findParticipationState(recruitment, findUser);
     }
