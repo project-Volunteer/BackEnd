@@ -3,7 +3,7 @@ package project.volunteer.domain.participation.dao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
+import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
 import project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 
     List<Participant> findByRecruitment_RecruitmentNo(Long recruitmentNo);
-    @Query("select new project.volunteer.domain.participation.dao.dto.ParticipantStateDetails" +
+    @Query("select new project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail" +
             "(p.state, u.userNo, u.nickName, coalesce(s.imagePath, u.picture)) " +
             "from Participant p " +
             "join p.participant as u " +
@@ -27,7 +27,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             "left join i.storage as s " +
             "where p.recruitment.recruitmentNo=:no " +
             "and p.state in :states ")
-    List<ParticipantStateDetails> findParticipantsByOptimization(@Param("no") Long recruitmentNo, @Param("states") List<ParticipantState> states);
+    List<RecruitmentParticipantDetail> findParticipantsDetailBy(@Param("no") Long recruitmentNo, @Param("states") List<ParticipantState> states);
 
     Optional<Participant> findByRecruitmentAndParticipant(Recruitment recruitment, User participant);
     Optional<Participant> findByRecruitment_RecruitmentNoAndParticipant_UserNo(Long recruitmentNo, Long participantNo);

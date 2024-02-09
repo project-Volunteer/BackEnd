@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentListQuery;
-import project.volunteer.domain.recruitment.dto.PictureDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.PictureDetail;
 
 import java.time.format.DateTimeFormatter;
 
@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 public class RecruitmentList {
     private Long no;
     private String volunteeringCategory;
-    private PictureDetails picture;
+    private PictureDetail picture;
     private String title;
     private String sido;
     private String sigungu;

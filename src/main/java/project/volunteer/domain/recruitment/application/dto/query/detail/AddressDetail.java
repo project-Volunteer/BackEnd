@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.application.dto;
+package project.volunteer.domain.recruitment.application.dto.query.detail;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import project.volunteer.global.common.component.Coordinate;
 @Setter
 @NoArgsConstructor
 @ToString
-public class AddressDetails {
+public class AddressDetail {
 
     private String sido;
     private String sigungu;
@@ -20,7 +20,7 @@ public class AddressDetails {
     private Float latitude;
     private Float longitude;
 
-    public AddressDetails(Address address, Coordinate coordinate){
+    public AddressDetail(Address address, Coordinate coordinate){
         this.sido = address.getSido();
         this.sigungu = address.getSigungu();
         this.details = address.getDetails();

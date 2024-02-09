@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.repository.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
 import project.volunteer.domain.recruitment.api.dto.response.*;
@@ -79,9 +80,9 @@ public class RecruitmentController {
 
 //    @LogExecutionTime
     @GetMapping("/recruitment/{no}")
-    public ResponseEntity<RecruitmentDetailsResponse> recruitmentDetails(@PathVariable Long no){
-        RecruitmentDetailsResponse dto = recruitmentFacade.findVolunteerPostDetails(no);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<RecruitmentDetailSearchResult> recruitmentDetails(@PathVariable Long no){
+        RecruitmentDetailSearchResult result = recruitmentFacade.findRecruitmentDetail(no);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/recruitment/{no}/status")

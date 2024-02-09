@@ -11,14 +11,14 @@ import lombok.Setter;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.dto.PictureDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.PictureDetail;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class UserRecruitingQuery {
 	private Long no;
-	private PictureDetails picture;
+	private PictureDetail picture;
 	private String startDay;
 	private String endDay;
 	private String title;
@@ -38,9 +38,9 @@ public class UserRecruitingQuery {
 								int volunteerNum, long currentVolunteerNum) {
 		this.no = no;
 		if(uploadImage == null){
-			picture = new PictureDetails(true, null);
+			picture = new PictureDetail(true, null);
 		}else{
-			picture = new PictureDetails(false, uploadImage);
+			picture = new PictureDetail(false, uploadImage);
 		}
 		this.startDay = startDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
 		this.endDay = endDay.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));

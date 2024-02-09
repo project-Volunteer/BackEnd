@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import project.volunteer.global.common.component.IsDeleted;
 
-public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
+public interface RecruitmentRepository extends JpaRepository<Recruitment, Long>, RecruitmentQueryDSLRepository {
 
     @Query("SELECT r FROM Recruitment r "
             + "WHERE r.recruitmentNo =:no AND r.isDeleted =:isDeleted AND r.isPublished = :isPublished")

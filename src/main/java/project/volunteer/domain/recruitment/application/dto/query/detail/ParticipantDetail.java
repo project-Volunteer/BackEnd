@@ -1,13 +1,11 @@
-package project.volunteer.domain.participation.application.dto;
+package project.volunteer.domain.recruitment.application.dto.query.detail;
 
 import lombok.*;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParticipantDetails {
-
+public class ParticipantDetail {
     private Long userNo;
     private String nickName;
     private String imageUrl;

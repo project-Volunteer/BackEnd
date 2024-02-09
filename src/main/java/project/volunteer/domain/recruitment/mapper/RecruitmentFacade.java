@@ -7,12 +7,10 @@ import project.volunteer.domain.confirmation.application.ConfirmationService;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.participation.application.ParticipationService;
-import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
-import project.volunteer.domain.recruitment.api.dto.response.RecruitmentDetailsResponse;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
@@ -65,22 +63,17 @@ public class RecruitmentFacade {
         participationService.deleteParticipations(recruitmentNo);
     }
 
-
-
-
-
-
-
-    public RecruitmentDetailsResponse findVolunteerPostDetails(Long recruitmentNo){
-        //봉사 모집글 관련 정보 DTO 세팅(봉사 모집글 정보 + 이미지, 작성자 정보 + 이미지, 정기 일 경우 반복주기)
-        RecruitmentDetails recruitmentAndWriterDto = recruitmentQueryService.findRecruitmentAndWriterDto(recruitmentNo);
-
-        //참여자(승인,신청) 리스트 DTO
-        AllParticipantDetails allParticipantDto = participationService.findAllParticipantDto(recruitmentNo);
-
-        return new RecruitmentDetailsResponse(
-                recruitmentAndWriterDto, allParticipantDto.getApprovalVolunteer(), allParticipantDto.getRequiredVolunteer());
+    public RecruitmentDetailSearchResult findRecruitmentDetail(Long recruitmentNo){
+        return recruitmentQueryService.searchRecruitmentDetail(recruitmentNo);
     }
+
+
+
+
+
+
+
+
 
     public String findVolunteerPostParticipationState(Long recruitmentNo, Long userNo){
         User findUser = userService.findUser(userNo);

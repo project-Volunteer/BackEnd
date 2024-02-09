@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.participation.application.dto.ParticipantDetails;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.ParticipantDetail;
+import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecruitmentDetailsResponse {
-    private RecruitmentDetails recruitment;
-    private List<ParticipantDetails> approvalVolunteer;
-    private List<ParticipantDetails> requiredVolunteer;
+    private RecruitmentDetailSearchResult recruitment;
+    private List<ParticipantDetail> approvalVolunteer;
+    private List<ParticipantDetail> requiredVolunteer;
 }

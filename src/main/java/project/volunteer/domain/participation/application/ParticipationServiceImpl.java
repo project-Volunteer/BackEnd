@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
-import project.volunteer.domain.participation.application.dto.ParticipantDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.ParticipantDetail;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
+import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
@@ -107,19 +107,19 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Override
     public AllParticipantDetails findAllParticipantDto(Long recruitmentNo) {
-        List<ParticipantDetails> approvedList = new ArrayList<>();
-        List<ParticipantDetails> requiredList = new ArrayList<>();
+        List<ParticipantDetail> approvedList = new ArrayList<>();
+        List<ParticipantDetail> requiredList = new ArrayList<>();
 
         //최적화한 쿼리(쿼리 1번)
-        List<ParticipantStateDetails> participants = participantRepository.findParticipantsByOptimization(recruitmentNo,
+        List<RecruitmentParticipantDetail> participants = participantRepository.findParticipantsDetailBy(recruitmentNo,
                 List.of(ParticipantState.JOIN_REQUEST, ParticipantState.JOIN_APPROVAL));
 
         participants.stream()
                 .forEach(p -> {
                     if(p.getState().equals(ParticipantState.JOIN_REQUEST)){
-                        requiredList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                        requiredList.add(new ParticipantDetail(p.getUserNo(), p.getNickName(), p.getImageUrl()));
                     }else{
-                        approvedList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                        approvedList.add(new ParticipantDetail(p.getUserNo(), p.getNickName(), p.getImageUrl()));
                     }
                 });
 

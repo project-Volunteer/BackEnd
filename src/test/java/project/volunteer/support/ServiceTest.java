@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
+import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.repository.RepeatPeriodRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
@@ -43,6 +44,9 @@ public abstract class ServiceTest {
 
     @Autowired
     protected RecruitmentCommandUseCase recruitmentCommandUseCase;
+
+    @Autowired
+    protected RecruitmentQueryUseCase recruitmentQueryUseCase;
 
     @Autowired
     protected ScheduleCommandUseCase scheduleCommandUseCase;

@@ -3,14 +3,14 @@ package project.volunteer.domain.user.api.dto.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.dto.PictureDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.PictureDetail;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class JoinRecruitmentList {
     private Long no;
-    private PictureDetails picture;
+    private PictureDetail picture;
     private String startDay;
     private String endDay;
     private String title;
@@ -29,9 +29,9 @@ public class JoinRecruitmentList {
 
         joinRecruitmentList.no = no;
         if(picture == null){
-            joinRecruitmentList.picture = new PictureDetails(true, null);
+            joinRecruitmentList.picture = new PictureDetail(true, null);
         }else{
-            joinRecruitmentList.picture = new PictureDetails(false, picture);
+            joinRecruitmentList.picture = new PictureDetail(false, picture);
         }
         joinRecruitmentList.startDay = startDay;
         joinRecruitmentList.endDay = endDay;
