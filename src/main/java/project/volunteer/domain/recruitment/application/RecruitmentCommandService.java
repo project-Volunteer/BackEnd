@@ -26,7 +26,6 @@ public class RecruitmentCommandService implements RecruitmentCommandUseCase {
     private final ImageService imageService;
     private final PeriodValidationProvider periodValidationProvider;
 
-    @Transactional
     public Long addRecruitment(final User writer, final RecruitmentCreateCommand command) {
         final Recruitment recruitment = command.toRecruitmentDomain(writer);
         recruitmentRepository.save(recruitment);
@@ -46,21 +45,17 @@ public class RecruitmentCommandService implements RecruitmentCommandUseCase {
         return recruitment.getRecruitmentNo();
     }
 
-
-
-
     @Override
-    @Transactional
-    public void deleteRecruitment(Long deleteNo) {
-        Recruitment findRecruitment =
-                recruitmentRepository.findValidRecruitment(deleteNo).orElseThrow(
-                        () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
-                                String.format("Delete Recruitment ID = [%d]", deleteNo)));
-
-        //삭제 플래그 처리 및 연관관계 끊기
-        findRecruitment.setDeleted();
-        findRecruitment.removeUser();
+    public void deleteRecruitment(final Long recruitmentNo) {
+        Recruitment recruitment = recruitmentRepository.findNotDeletedRecruitment(recruitmentNo).orElseThrow(
+                () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("Delete Recruitment ID = [%d]", recruitmentNo)));
+        recruitment.delete();
     }
+
+
+
+
 
     @Override
     public Recruitment findPublishedRecruitment(Long recruitmentNo) {

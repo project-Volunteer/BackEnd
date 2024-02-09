@@ -1,6 +1,7 @@
 package project.volunteer.domain.recruitment.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
@@ -25,6 +26,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.RepeatPeriod;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -32,8 +34,11 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.global.infra.s3.FileFolder;
 import project.volunteer.support.ServiceTest;
 
@@ -127,6 +132,46 @@ class RecruitmentCommandUseCaseTest extends ServiceTest {
         );
     }
 
+    @DisplayName("봉사 모집글을 정상적으로 삭제한다.")
+    @Test
+    void deleteRecruitment() {
+        //given
+        final Long recruitmentNo = createAndSaveRecruitment(VolunteeringType.REG,
+                List.of(new RepeatPeriod(Period.WEEK, Week.NONE, Day.MON, null, IsDeleted.N),
+                        new RepeatPeriod(Period.WEEK, Week.NONE, Day.TUES, null, IsDeleted.N)))
+                .getRecruitmentNo();
+
+        //when
+        recruitmentCommandUseCase.deleteRecruitment(recruitmentNo);
+
+        //then
+        Recruitment findRecruitment = findRecruitmentBy(recruitmentNo);
+        List<RepeatPeriod> findRepeatPeriods = repeatPeriodRepository.findAll();
+        assertAll(
+                () -> assertThat(findRecruitment.getIsDeleted()).isEqualTo(IsDeleted.Y),
+                () -> assertThat(findRecruitment.getWriter()).isNull()
+        );
+        assertThat(findRepeatPeriods).hasSize(2)
+                .extracting("isDeleted", "recruitment")
+                .containsExactlyInAnyOrder(
+                        tuple(IsDeleted.Y, null),
+                        tuple(IsDeleted.Y, null)
+                );
+    }
+
+    @DisplayName("이미 삭제된 봉사 모집글 제거 시도 시, 예외를 발생시킨다.")
+    @Test
+    void deleteRemovedRecruitment() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(VolunteeringType.IRREG, List.of());
+        recruitment.delete();
+
+        //when & then
+        assertThatThrownBy(() -> recruitmentCommandUseCase.deleteRecruitment(recruitment.getRecruitmentNo()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.NOT_EXIST_RECRUITMENT.name());
+    }
+
     private RecruitmentCreateCommand createCommand(VolunteeringCategory category, VolunteeringType volunteeringType,
                                                    VolunteerType volunteerType, int maxParticipationNum,
                                                    RepeatPeriodCreateCommand repeatPeriodCreateCommand,
@@ -134,6 +179,30 @@ class RecruitmentCommandUseCaseTest extends ServiceTest {
         return new RecruitmentCreateCommand("title", "content", category,
                 volunteeringType, volunteerType, maxParticipationNum, true, "organization", true,
                 address, coordinate, timetable, repeatPeriodCreateCommand, isStaticImage, uploadImageFile);
+    }
+
+    private Recruitment createAndSaveRecruitment(VolunteeringType type, List<RepeatPeriod> repeatPeriods) {
+        Recruitment recruitment = Recruitment.builder()
+                .title("title")
+                .content("content")
+                .volunteeringCategory(VolunteeringCategory.EDUCATION)
+                .volunteeringType(type)
+                .volunteerType(VolunteerType.ADULT)
+                .maxParticipationNum(9999)
+                .currentVolunteerNum(0)
+                .isIssued(true)
+                .organizationName("unicef")
+                .address(address)
+                .coordinate(coordinate)
+                .timetable(timetable)
+                .viewCount(0)
+                .likeCount(0)
+                .isPublished(true)
+                .isDeleted(IsDeleted.N)
+                .writer(user)
+                .build();
+        recruitment.setRepeatPeriods(repeatPeriods);
+        return recruitmentRepository.save(recruitment);
     }
 
     private Recruitment findRecruitmentBy(Long recruitmentNo) {

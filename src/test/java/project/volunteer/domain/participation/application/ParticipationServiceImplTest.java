@@ -53,13 +53,13 @@ class ParticipationServiceImplTest {
         writer = userRepository.save(writerUser);
 
         //모집글 저장
-        Recruitment createRecruitment = new Recruitment(0L, "title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
+        Recruitment createRecruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
                 VolunteerType.ADULT, 9999,0,true, "unicef",
                 new Address("111", "11", "test", "test"),
                 new Coordinate(1.2F, 2.2F),
                 new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
                         LocalTime.now(), 10),
-                0, 0, true, IsDeleted.N, writer, null);
+                0, 0, true, IsDeleted.N, writer);
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         clear();

@@ -64,25 +64,9 @@ public class RepeatPeriod {
         this.recruitment = recruitment;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void setDeleted() {
+    public void delete() {
+        this.recruitment = null;
         this.isDeleted = IsDeleted.Y;
     }
 
-    public void removeRecruitment() {
-        this.recruitment = null;
-    }
 }

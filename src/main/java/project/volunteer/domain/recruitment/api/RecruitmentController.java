@@ -93,7 +93,7 @@ public class RecruitmentController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/recruitment/{recruitmentNo}")
     public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
-        recruitmentFacade.deleteVolunteerPost(no);
+        recruitmentFacade.deleteRecruitment(no);
         return new ResponseEntity(HttpStatus.OK);
     }
 

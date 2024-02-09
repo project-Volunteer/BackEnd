@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -93,20 +94,19 @@ public class Recruitment extends BaseTimeEntity {
     private User writer;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "recruitment", cascade = CascadeType.ALL)
-    private List<RepeatPeriod> repeatPeriods;
+    private List<RepeatPeriod> repeatPeriods = new ArrayList<>();
 
     @Builder
-    public Recruitment(Long recruitmentNo, String title, String content, VolunteeringCategory volunteeringCategory,
+    public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory,
                        VolunteeringType volunteeringType, VolunteerType volunteerType, Integer maxParticipationNum,
                        Integer currentVolunteerNum, Boolean isIssued, String organizationName, Address address,
                        Coordinate coordinate, Timetable timetable, Integer viewCount, Integer likeCount,
-                       Boolean isPublished, IsDeleted isDeleted, User writer, List<RepeatPeriod> repeatPeriods) {
+                       Boolean isPublished, IsDeleted isDeleted, User writer) {
         validateOrganizationNameSize(organizationName);
         validateParticipationNum(maxParticipationNum);
         validateTitleSize(title);
         validateContentSize(content);
 
-        this.recruitmentNo = recruitmentNo;
         this.title = title;
         this.content = content;
         this.volunteeringCategory = volunteeringCategory;
@@ -124,7 +124,6 @@ public class Recruitment extends BaseTimeEntity {
         this.isPublished = isPublished;
         this.isDeleted = isDeleted;
         this.writer = writer;
-        this.repeatPeriods = repeatPeriods;
     }
 
     public static Recruitment create(String title, String content, VolunteeringCategory volunteeringCategory,
@@ -157,6 +156,12 @@ public class Recruitment extends BaseTimeEntity {
     public void setRepeatPeriods(List<RepeatPeriod> repeatPeriods) {
         repeatPeriods.forEach(repeatPeriod -> repeatPeriod.assignRecruitment(this));
         this.repeatPeriods = repeatPeriods;
+    }
+
+    public void delete() {
+        this.isDeleted = IsDeleted.Y;
+        this.writer = null;
+        this.repeatPeriods.forEach(RepeatPeriod::delete);
     }
 
     public Boolean isRegularRecruitment() {
@@ -203,16 +208,12 @@ public class Recruitment extends BaseTimeEntity {
 
 
 
+
+
+
+
     public void setWriter(User user) {
         this.writer = user;
-    }
-
-    public void setDeleted() {
-        this.isDeleted = IsDeleted.Y;
-    }
-
-    public void removeUser() {
-        this.writer = null;
     }
 
     public void setIsPublished(Boolean isPublished) {

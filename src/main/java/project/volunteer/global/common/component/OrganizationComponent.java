@@ -60,7 +60,7 @@ public class OrganizationComponent {
 
         //기본 Spring OSIV 모드 트랜잭션 읽기 모드 사용(수정 변경 불가, 단순 읽기만, 영속 상태)
         //삭제만 되지 않은 봉사 모집글 검색(임시 봉사 모집글을 위해서)
-        return recruitmentRepository.findValidRecruitment(recruitmentNo)
+        return recruitmentRepository.findNotDeletedRecruitment(recruitmentNo)
                 .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
     }
     private void isRecruitmentTeam(Recruitment recruitment, Long loginUserNo){

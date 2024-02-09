@@ -11,6 +11,17 @@ import java.util.Optional;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
 
+    @Query("select r from Recruitment  r " +
+            "where r.recruitmentNo=:no " +
+            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
+    Optional<Recruitment> findNotDeletedRecruitment(@Param("no") Long recruitmentNo);
+
+
+
+
+
+
+
     //모집글, 작성자 정보 쿼리 한번에 가져오기(left join)
     @EntityGraph(attributePaths = {"writer"})
     @Query("select r from Recruitment r " +
@@ -26,12 +37,6 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
             "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
             "and r.isPublished=true")
     Optional<Recruitment> findPublishedByRecruitmentNo(@Param("no")Long recruitmentNo);
-
-    //삭제되지 않은 게시물
-    @Query("select r from Recruitment  r " +
-            "where r.recruitmentNo=:no " +
-            "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N")
-    Optional<Recruitment> findValidRecruitment(@Param("no") Long recruitmentNo);
 
 
     //모집중인 봉사 모집글(삭제 x, 임시 저장 x, 봉사 모집 종료일 내)

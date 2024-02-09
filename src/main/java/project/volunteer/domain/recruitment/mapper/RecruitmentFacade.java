@@ -12,7 +12,6 @@ import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.api.dto.response.RecruitmentDetailsResponse;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.application.RepeatPeriodService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
@@ -30,7 +29,6 @@ public class RecruitmentFacade {
     private final UserService userService;
     private final RecruitmentCommandUseCase recruitmentService;
     private final RecruitmentQueryUseCase recruitmentDtoService;
-    private final RepeatPeriodService repeatPeriodService;
     private final ScheduleCommandUseCase scheduleService;
     private final ImageService imageService;
     private final ParticipationService participationService;
@@ -44,13 +42,8 @@ public class RecruitmentFacade {
         return recruitmentService.addRecruitment(findUser, request.toCommand());
     }
 
-
-
     @Transactional
-    public void deleteVolunteerPost(Long recruitmentNo){
-        //일정 삭제
-        repeatPeriodService.deleteRepeatPeriod(recruitmentNo);
-
+    public void deleteRecruitment(Long recruitmentNo){
         //이미지 삭제
         imageService.deleteImage(RealWorkCode.RECRUITMENT, recruitmentNo);
 
@@ -72,6 +65,12 @@ public class RecruitmentFacade {
         //봉사 모집글 삭제
         recruitmentService.deleteRecruitment(recruitmentNo);
     }
+
+
+
+
+
+
 
     public RecruitmentDetailsResponse findVolunteerPostDetails(Long recruitmentNo){
         //봉사 모집글 관련 정보 DTO 세팅(봉사 모집글 정보 + 이미지, 작성자 정보 + 이미지, 정기 일 경우 반복주기)
