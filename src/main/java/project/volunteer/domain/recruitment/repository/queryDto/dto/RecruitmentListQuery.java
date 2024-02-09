@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.dao.queryDto.dto;
+package project.volunteer.domain.recruitment.repository.queryDto.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
@@ -26,14 +26,14 @@ public class RecruitmentListQuery {
     private VolunteeringType volunteeringType;
     private VolunteerType volunteerType;
     private Boolean isIssued;
-    private Integer volunteerNum;
+    private Integer maxParticipationNum;
 //    private Long currentVolunteerNum; //참여자 매핑 테이블에서 추출
     private String uploadImage; //storage 테이블에서 추출
 
     @QueryProjection
     public RecruitmentListQuery(Long no, VolunteeringCategory category, String title, String sido, String sigungu, String fullName,
                                 LocalDate startDay, LocalDate endDay, VolunteeringType volunteeringType,
-                                VolunteerType volunteerType, Boolean isIssued, int volunteerNum, String uploadImage){
+                                VolunteerType volunteerType, Boolean isIssued, int maxParticipationNum, String uploadImage){
         this.no  = no;
         this.category = category;
         this.title = title;
@@ -45,7 +45,7 @@ public class RecruitmentListQuery {
         this.volunteeringType = volunteeringType;
         this.volunteerType = volunteerType;
         this.isIssued = isIssued;
-        this.volunteerNum = volunteerNum;
+        this.maxParticipationNum = maxParticipationNum;
         this.uploadImage = uploadImage;
     }
 }

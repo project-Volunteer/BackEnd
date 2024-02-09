@@ -21,9 +21,8 @@ import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
-import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -145,22 +144,22 @@ public class UserControllerDashboardTest {
 			모집글 4, 5, 6, 7 - 사용자2가 만듦
 			모집글 8, 9, 10, 11 - 사용자2가 임시저장
 			*/
-        Recruitment rNo1 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(1, 3 , true ));
-        Recruitment rNo2 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(2, 3 , true ));
-        Recruitment rNo3 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(3, 3 , false ));
-        Recruitment rNo4 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(4, 2 , true ));
-        Recruitment rNo5 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(5, 2 , true ));
-        Recruitment rNo6 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(6, 2 , true ));
-        Recruitment rNo7 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(7, 1 , true ));
+        Long rNo1 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(1, 3 , true ));
+        Long rNo2 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(2, 3 , true ));
+        Long rNo3 = recruitmentService.addRecruitment(user1, makeRecruitmentParam(3, 3 , false ));
+        Long rNo4 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(4, 2 , true ));
+        Long rNo5 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(5, 2 , true ));
+        Long rNo6 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(6, 2 , true ));
+        Long rNo7 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(7, 1 , true ));
 
-        Recruitment rNo8 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(8, 3 , false ));
-        Recruitment rNo9 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(9, 3 , false ));
-        Recruitment rNo10 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(0, 3 , false ));
-        Recruitment rNo11 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(1, 3 , false ));
+        Long rNo8 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(8, 3 , false ));
+        Long rNo9 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(9, 3 , false ));
+        Long rNo10 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(0, 3 , false ));
+        Long rNo11 = recruitmentService.addRecruitment(user2, makeRecruitmentParam(1, 3 , false ));
 
-        deleteRecruitmentNoList.add(rNo9.getRecruitmentNo());
-        deleteRecruitmentNoList.add(rNo10.getRecruitmentNo());
-        deleteRecruitmentNoList.add(rNo11.getRecruitmentNo());
+        deleteRecruitmentNoList.add(rNo9);
+        deleteRecruitmentNoList.add(rNo10);
+        deleteRecruitmentNoList.add(rNo11);
 
 
 
@@ -171,28 +170,28 @@ public class UserControllerDashboardTest {
 			모집글 1 - 사용자2가 승인 완료
 			모집글 2 - 사용자2가 참여 요청 */
         Participant r1p1 = participantRepository.save(Participant.builder()
-                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo1.getRecruitmentNo()).get())
+                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo1).get())
                 .build());
         Participant r2p2 = participantRepository.save(Participant.builder()
-                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo2.getRecruitmentNo()).get())
+                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo2).get())
                 .build());
         Participant r4p3 = participantRepository.save(Participant.builder()
-                .participant(user1).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo4.getRecruitmentNo()).get())
+                .participant(user1).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo4).get())
                 .build());
         Participant r5p4 =  participantRepository.save(Participant.builder()
-                .participant(user1).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo5.getRecruitmentNo()).get())
+                .participant(user1).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo5).get())
                 .build());
         Participant r6p5 = participantRepository.save(Participant.builder()
-                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo6.getRecruitmentNo()).get())
+                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo6).get())
                 .build());
         Participant r7p6 = participantRepository.save(Participant.builder()
-                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo7.getRecruitmentNo()).get())
+                .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo7).get())
                 .build());
         Participant r1p7 = participantRepository.save(Participant.builder()
-                .participant(user2).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo1.getRecruitmentNo()).get())
+                .participant(user2).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo1).get())
                 .build());
         Participant r2p8 = participantRepository.save(Participant.builder()
-                .participant(user2).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo2.getRecruitmentNo()).get())
+                .participant(user2).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo2).get())
                 .build());
 
 
@@ -200,16 +199,16 @@ public class UserControllerDashboardTest {
             모집글 1 - 스케줄 1, 2, 3 - 봉사시간 3,2,3 시간
             모집글 6 - 스케줄 4, 5, 6 - 봉사시간 2,3,2시간
             모집글 7 - 스케줄 7, 8 - 봉사시간 1시간씩 총 2시간 */
-        Long sNo1 = scheduleService.addSchedule(rNo1, makeScheduleParam(1, 3));
-        Long sNo2 = scheduleService.addSchedule(rNo1, makeScheduleParam(2, 2));
-        Long sNo3 = scheduleService.addSchedule(rNo1, makeScheduleParam(3, 3));
+        Long sNo1 = scheduleService.addSchedule(recruitmentRepository.findById(rNo1).get(), makeScheduleParam(1, 3));
+        Long sNo2 = scheduleService.addSchedule(recruitmentRepository.findById(rNo1).get(), makeScheduleParam(2, 2));
+        Long sNo3 = scheduleService.addSchedule(recruitmentRepository.findById(rNo1).get(), makeScheduleParam(3, 3));
 
-        Long sNo4 = scheduleService.addSchedule(rNo6, makeScheduleParam(4, 2));
-        Long sNo5 = scheduleService.addSchedule(rNo6, makeScheduleParam(5, 3));
-        Long sNo6 = scheduleService.addSchedule(rNo6, makeScheduleParam(6, 2));
+        Long sNo4 = scheduleService.addSchedule(recruitmentRepository.findById(rNo6).get(), makeScheduleParam(4, 2));
+        Long sNo5 = scheduleService.addSchedule(recruitmentRepository.findById(rNo6).get(), makeScheduleParam(5, 3));
+        Long sNo6 = scheduleService.addSchedule(recruitmentRepository.findById(rNo6).get(), makeScheduleParam(6, 2));
 
-        Long sNo7 = scheduleService.addSchedule(rNo7, makeScheduleParam(7, 1));
-        Long sNo8 = scheduleService.addSchedule(rNo7, makeScheduleParam(8, 1));
+        Long sNo7 = scheduleService.addSchedule(recruitmentRepository.findById(rNo7).get(), makeScheduleParam(7, 1));
+        Long sNo8 = scheduleService.addSchedule(recruitmentRepository.findById(rNo7).get(), makeScheduleParam(8, 1));
 
 
         /*  일정 잠여
@@ -588,25 +587,28 @@ public class UserControllerDashboardTest {
                 .andDo(print());
     }
 
-    public RecruitmentParam makeRecruitmentParam(int num, int progressTime, boolean published){
-        return new RecruitmentParam(
+    public RecruitmentCreateCommand makeRecruitmentParam(int num, int progressTime, boolean published){
+        return new RecruitmentCreateCommand(
                  "recruitment title "+num
                 , "recruitment content "+num
                 , VolunteeringCategory.ADMINSTRATION_ASSISTANCE
-                , VolunteeringType.REG
+                , VolunteeringType.IRREG
                 , VolunteerType.ALL
                 , 10
                 , true
                 , "recruitment organizationName "+num
+                , true
                 , Address.createAddress("Rido"+num,"Rigungu"+num,"detail"+num, "fullName"+num)
                 , Coordinate.createCoordinate(Float.valueOf(num+num+num+num), Float.valueOf(num+num+num))
-                , Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(1), HourFormat.AM, LocalTime.now(), progressTime)
-                , published);
+                , new Timetable(LocalDate.now(), LocalDate.now().plusMonths(1), HourFormat.AM, LocalTime.now(), progressTime)
+                , null
+                , true
+                , null);
     }
 
     public ScheduleUpsertCommand makeScheduleParam(int num, int progressTime){
         return new ScheduleUpsertCommand(
-                  Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), progressTime)
+                new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), progressTime)
                 , "schedule organizationName"+num
                 , Address.createAddress("Sido"+num, "Sigungu"+num, "details"+num, "fullName"+num)
                 , "schedule content"+num

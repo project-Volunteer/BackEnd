@@ -1,13 +1,13 @@
 package project.volunteer.global.util;
 
 import lombok.extern.slf4j.Slf4j;
-import project.volunteer.domain.recruitment.domain.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
-import project.volunteer.domain.recruitment.domain.Week;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 
 @Slf4j
 public class DateUtil {

@@ -7,7 +7,7 @@ import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;

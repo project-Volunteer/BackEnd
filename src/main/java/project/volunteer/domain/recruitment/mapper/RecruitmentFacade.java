@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.application.ConfirmationService;
 import project.volunteer.domain.image.application.ImageService;
-import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.participation.application.ParticipationService;
 import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
@@ -15,13 +14,9 @@ import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.RepeatPeriodService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
-import project.volunteer.domain.sehedule.application.dto.command.RegularScheduleCreateCommand;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
@@ -44,34 +39,12 @@ public class RecruitmentFacade {
     private final ConfirmationService confirmationService;
 
     @Transactional
-    public Long registerVolunteerPost(Long userId, RecruitmentRequest form){
+    public Long registerRecruitment(Long userId, RecruitmentRequest request){
         User findUser = userService.findUser(userId);
-
-        Recruitment recruitment = recruitmentService.addRecruitment(findUser, RecruitmentParam.ToRecruitmentParam(form));
-        //정기일 경우
-        if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())){
-            RepeatPeriodCommand periodParam = new RepeatPeriodCommand(form.getPeriod(), form.getWeek(), form.getDays());
-            //반복 주기 저장
-            repeatPeriodService.addRepeatPeriod(recruitment, periodParam);
-
-            //스케줄 자동 할당
-            scheduleService.addRegularSchedule(recruitment,
-                    RegularScheduleCreateCommand.of(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
-                            form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
-                            form.getAddress().getFullName(), form.getContent(), form.getVolunteerNum(), periodParam));
-        }
-
-        //업로드 이미지 저장
-        if(!form.getPicture().getIsStaticImage()) {
-            imageService.addImage(ImageParam.builder()
-                    .code(RealWorkCode.RECRUITMENT)
-                    .no(recruitment.getRecruitmentNo())
-                    .uploadImage(form.getPicture().getUploadImage())
-                    .build());
-        }
-
-        return recruitment.getRecruitmentNo();
+        return recruitmentService.addRecruitment(findUser, request.toCommand());
     }
+
+
 
     @Transactional
     public void deleteVolunteerPost(Long recruitmentNo){

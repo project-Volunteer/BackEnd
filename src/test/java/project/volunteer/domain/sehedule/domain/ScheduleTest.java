@@ -28,8 +28,24 @@ class ScheduleTest {
             10);
     private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
-    private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
-            VolunteeringType.REG, VolunteerType.ADULT, 9999, true, "unicef", address, coordinate, timetable, true, null);
+    private final Recruitment recruitment = Recruitment.builder()
+            .title("title")
+            .content("content")
+            .volunteeringCategory(VolunteeringCategory.EDUCATION)
+            .volunteerType(VolunteerType.ADULT)
+            .volunteeringType(VolunteeringType.IRREG)
+            .maxParticipationNum(999)
+            .currentVolunteerNum(0)
+            .isIssued(true)
+            .organizationName("organization")
+            .address(address)
+            .coordinate(coordinate)
+            .timetable(timetable)
+            .viewCount(0)
+            .likeCount(0)
+            .isPublished(true)
+            .isDeleted(IsDeleted.N)
+            .build();
 
     @ParameterizedTest
     @ValueSource(strings = {"가", "구본식의 봉사기관", "unicef", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
@@ -240,7 +256,7 @@ class ScheduleTest {
                 .volunteeringCategory(VolunteeringCategory.EDUCATION)
                 .volunteerType(VolunteerType.ADULT)
                 .volunteeringType(VolunteeringType.IRREG)
-                .participationNum(participationNum)
+                .maxParticipationNum(participationNum)
                 .isIssued(true)
                 .organizationName("test")
                 .address(address)

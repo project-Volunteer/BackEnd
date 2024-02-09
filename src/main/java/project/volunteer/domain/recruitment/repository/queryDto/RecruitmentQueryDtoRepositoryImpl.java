@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.dao.queryDto;
+package project.volunteer.domain.recruitment.repository.queryDto;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.QRecruitmentListQuery;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
+import project.volunteer.domain.recruitment.repository.queryDto.dto.QRecruitmentListQuery;
+import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.domain.*;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
+import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentCond;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
 
@@ -41,8 +41,8 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .select(
                         new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.volunteeringCategory,recruitment.title,
                                 recruitment.address.sido, recruitment.address.sigungu, recruitment.address.fullName,
-                                recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
-                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, storage.imagePath))
+                                recruitment.timetable.startDay, recruitment.timetable.endDay, recruitment.volunteeringType,
+                                recruitment.volunteerType, recruitment.isIssued, recruitment.maxParticipationNum, storage.imagePath))
                 .from(recruitment)
                 .leftJoin(image)
                 .on(
@@ -75,8 +75,8 @@ public class RecruitmentQueryDtoRepositoryImpl implements RecruitmentQueryDtoRep
                 .select(
                         new QRecruitmentListQuery(recruitment.recruitmentNo, recruitment.volunteeringCategory,recruitment.title,
                                 recruitment.address.sido, recruitment.address.sigungu, recruitment.address.fullName,
-                                recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay, recruitment.volunteeringType,
-                                recruitment.volunteerType, recruitment.isIssued, recruitment.volunteerNum, storage.imagePath))
+                                recruitment.timetable.startDay, recruitment.timetable.endDay, recruitment.volunteeringType,
+                                recruitment.volunteerType, recruitment.isIssued, recruitment.maxParticipationNum, storage.imagePath))
                 .from(recruitment)
                 .leftJoin(image)
                 .on(

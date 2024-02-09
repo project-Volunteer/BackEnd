@@ -13,7 +13,7 @@ import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;

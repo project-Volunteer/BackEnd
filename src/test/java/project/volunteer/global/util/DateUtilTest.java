@@ -6,8 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import project.volunteer.domain.recruitment.domain.Day;
-import project.volunteer.domain.recruitment.domain.Week;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 
 class DateUtilTest {
 

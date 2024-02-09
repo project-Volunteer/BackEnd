@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -97,13 +97,13 @@ public abstract class DocumentTest {
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
 
         recruitment = recruitmentRepository.save(
-                new Recruitment("title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
-                        VolunteerType.ADULT, 9999, true, "unicef",
+                new Recruitment(0L, "title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
+                        VolunteerType.ADULT, 9999,0,true, "unicef",
                         new Address("111", "11", "test", "test"),
                         new Coordinate(1.2F, 2.2F),
                         new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
                                 LocalTime.now(), 10),
-                        true, ownerUser));
+                        0, 0, true, IsDeleted.N, ownerUser, null));
 
         schedule1 = scheduleRepository.save(
                 new Schedule(new Timetable(LocalDate.of(2024, 2, 10), LocalDate.of(2024, 2, 10), HourFormat.AM,

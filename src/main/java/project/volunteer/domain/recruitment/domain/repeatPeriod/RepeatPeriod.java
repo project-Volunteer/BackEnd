@@ -1,9 +1,11 @@
-package project.volunteer.domain.recruitment.domain;
+package project.volunteer.domain.recruitment.domain.repeatPeriod;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.validator.PeriodValidation;
 import project.volunteer.global.common.component.IsDeleted;
 
 import javax.persistence.*;
@@ -14,7 +16,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RepeatPeriod {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "repeat_period_no")
     private Long repeatPeriodNo;
 
@@ -39,29 +42,47 @@ public class RepeatPeriod {
     private IsDeleted isDeleted;
 
     @Builder
-    public RepeatPeriod(Period period, Week week, Day day) {
+    public RepeatPeriod(Period period, Week week, Day day, Recruitment recruitment, IsDeleted isDeleted) {
         this.period = period;
         this.week = week;
         this.day = day;
-
-        this.isDeleted = IsDeleted.N;
+        this.recruitment = recruitment;
+        this.isDeleted = isDeleted;
     }
 
-    public static RepeatPeriod createRepeatPeriod(Period period, Week week, Day day){
-        RepeatPeriod repeatPeriod = new RepeatPeriod();
-        repeatPeriod.period = period;
-        repeatPeriod.week = week;
-        repeatPeriod.day = day;
-        repeatPeriod.isDeleted = IsDeleted.N;
-        return repeatPeriod;
+    public static RepeatPeriod create(Period period, Week week, Day dayOfWeek, PeriodValidation periodValidation) {
+        periodValidation.validate(period, week, dayOfWeek);
+        return RepeatPeriod.builder()
+                .period(period)
+                .week(week)
+                .day(dayOfWeek)
+                .isDeleted(IsDeleted.N)
+                .build();
     }
 
-    public void setRecruitment(Recruitment recruitment){
+    public void assignRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
     }
 
-    public void setDeleted(){
-        this.isDeleted=IsDeleted.Y;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void setDeleted() {
+        this.isDeleted = IsDeleted.Y;
     }
-    public void removeRecruitment(){this.recruitment = null;}
+
+    public void removeRecruitment() {
+        this.recruitment = null;
+    }
 }

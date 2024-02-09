@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
-import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.application.dto.command.RepeatPeriodCreateCommand;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.util.DateUtil;
 
@@ -14,13 +14,13 @@ import project.volunteer.global.util.DateUtil;
 public class WeeklyRepeatTimetableCreator implements RepeatTimetableCreator {
 
     @Override
-    public boolean isSupported(final RepeatPeriodCommand repeatPeriod) {
+    public boolean isSupported(final RepeatPeriodCreateCommand repeatPeriod) {
         return repeatPeriod.getPeriod()
                 .equals(Period.WEEK);
     }
 
     @Override
-    public List<Timetable> create(final Timetable recruitmentTimetable, final RepeatPeriodCommand repeatPeriod) {
+    public List<Timetable> create(final Timetable recruitmentTimetable, final RepeatPeriodCreateCommand repeatPeriod) {
         List<LocalDate> initScheduleStartDates = repeatPeriod.getDayOfWeeks().stream()
                 .map(dayOfWeek -> DateUtil.findNearestDateByDayOfWeek(recruitmentTimetable.getStartDay(), dayOfWeek))
                 .collect(Collectors.toList());
@@ -38,7 +38,7 @@ public class WeeklyRepeatTimetableCreator implements RepeatTimetableCreator {
              DateUtil.isBefore(scheduleDate, recruitmentTimetable.getEndDay());
              scheduleDate = DateUtil.nextWeek(scheduleDate)) {
 
-            Timetable timetable = Timetable.createTimetable(scheduleDate, scheduleDate,
+            Timetable timetable = new Timetable(scheduleDate, scheduleDate,
                     recruitmentTimetable.getHourFormat(),
                     recruitmentTimetable.getStartTime(), recruitmentTimetable.getProgressTime());
             scheduleTimetables.add(timetable);

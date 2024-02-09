@@ -42,12 +42,12 @@ public class RecruitmentDetails {
         this.isIssued = recruitment.getIsIssued();
         this.volunteeringType = recruitment.getVolunteeringType().getId();
         this.volunteerType = recruitment.getVolunteerType().getId();
-        this.volunteerNum = recruitment.getVolunteerNum();
-        this.startDay = recruitment.getVolunteeringTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.endDay = recruitment.getVolunteeringTimeTable().getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
-        this.hourFormat = recruitment.getVolunteeringTimeTable().getHourFormat().getId();
-        this.startTime = recruitment.getVolunteeringTimeTable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-        this.progressTime = recruitment.getVolunteeringTimeTable().getProgressTime();
+        this.volunteerNum = recruitment.getMaxParticipationNum();
+        this.startDay = recruitment.getTimetable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        this.endDay = recruitment.getTimetable().getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        this.hourFormat = recruitment.getTimetable().getHourFormat().getId();
+        this.startTime = recruitment.getTimetable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+        this.progressTime = recruitment.getTimetable().getProgressTime();
         this.title = recruitment.getTitle();
         this.content = recruitment.getContent();
     }

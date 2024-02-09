@@ -34,7 +34,7 @@ import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -139,7 +139,7 @@ public class LogboardServiceImplTestForQuery {
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);

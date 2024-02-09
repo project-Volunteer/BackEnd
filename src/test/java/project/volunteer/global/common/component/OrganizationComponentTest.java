@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerMapping;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -47,11 +47,29 @@ class OrganizationComponentTest {
         userRepository.save(writer);
 
         //정기 모집글 등록
-        Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
-                VolunteerType.TEENAGER, 3, true, "organization",
-                Address.createAddress("11", "1111","details", "fullName"), Coordinate.createCoordinate(3.2F, 3.2F),
-                Timetable.createTimetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(), 3), true);
-        createRecruitment.setWriter(writer);
+        final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
+                10);
+        final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
+        final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
+        Recruitment createRecruitment = Recruitment.builder()
+                .title("title")
+                .content("content")
+                .volunteeringCategory(VolunteeringCategory.EDUCATION)
+                .volunteerType(VolunteerType.ADULT)
+                .volunteeringType(VolunteeringType.IRREG)
+                .maxParticipationNum(999)
+                .currentVolunteerNum(0)
+                .isIssued(true)
+                .organizationName("organization")
+                .address(address)
+                .coordinate(coordinate)
+                .timetable(timetable)
+                .viewCount(0)
+                .likeCount(0)
+                .isPublished(true)
+                .isDeleted(IsDeleted.N)
+                .writer(writer)
+                .build();
         saveRecruitment = recruitmentRepository.save(createRecruitment);
     }
 

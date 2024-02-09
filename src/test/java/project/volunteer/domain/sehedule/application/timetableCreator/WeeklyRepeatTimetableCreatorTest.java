@@ -7,9 +7,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
-import project.volunteer.domain.recruitment.domain.Day;
-import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.application.dto.command.RepeatPeriodCreateCommand;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.Timetable;
 
@@ -23,7 +23,7 @@ class WeeklyRepeatTimetableCreatorTest {
         final Timetable recruitmentTimetable = createTimetable(
                 LocalDate.of(2024, 1, 1),
                 LocalDate.of(2024, 1, 29));
-        final RepeatPeriodCommand repeatPeriod = new RepeatPeriodCommand(Period.WEEK, null,
+        final RepeatPeriodCreateCommand repeatPeriod = new RepeatPeriodCreateCommand(Period.WEEK, null,
                 List.of(Day.SUN, Day.MON));
 
         //when
@@ -52,7 +52,7 @@ class WeeklyRepeatTimetableCreatorTest {
         final Timetable recruitmentTimetable = createTimetable(
                 LocalDate.of(2023, 12, 25),
                 LocalDate.of(2024, 1, 8));
-        final RepeatPeriodCommand repeatPeriod = new RepeatPeriodCommand(Period.WEEK, null,
+        final RepeatPeriodCreateCommand repeatPeriod = new RepeatPeriodCreateCommand(Period.WEEK, null,
                 List.of(Day.WED, Day.SAT));
 
         //when

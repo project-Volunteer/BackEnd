@@ -10,14 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import project.volunteer.support.ServiceTest;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
-import project.volunteer.domain.recruitment.domain.Day;
-import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.application.dto.command.RepeatPeriodCreateCommand;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.domain.Week;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.sehedule.application.dto.command.RegularScheduleCreateCommand;
 import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertCommand;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -32,8 +32,24 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
-    private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
-            VolunteeringType.REG, VolunteerType.ADULT, 999, true, "unicef", address, coordinate, timetable, true, null);
+    private final Recruitment recruitment = Recruitment.builder()
+            .title("title")
+            .content("content")
+            .volunteeringCategory(VolunteeringCategory.EDUCATION)
+            .volunteerType(VolunteerType.ADULT)
+            .volunteeringType(VolunteeringType.IRREG)
+            .maxParticipationNum(999)
+            .currentVolunteerNum(0)
+            .isIssued(true)
+            .organizationName("organization")
+            .address(address)
+            .coordinate(coordinate)
+            .timetable(timetable)
+            .viewCount(0)
+            .likeCount(0)
+            .isPublished(true)
+            .isDeleted(IsDeleted.N)
+            .build();
 
     @BeforeEach
     void setUp() {
@@ -134,7 +150,7 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
                                                        Period period, Week week, List<Day> dayOfWeeks) {
         Timetable timetable = new Timetable(recruitmentStartDate, recruitmentEndDate, HourFormat.PM, LocalTime.now(),
                 10);
-        RepeatPeriodCommand repeatPeriod = new RepeatPeriodCommand(period, week, dayOfWeeks);
+        RepeatPeriodCreateCommand repeatPeriod = new RepeatPeriodCreateCommand(period, week, dayOfWeeks);
         return new RegularScheduleCreateCommand(timetable, repeatPeriod, "test", address, "test", 10);
     }
 

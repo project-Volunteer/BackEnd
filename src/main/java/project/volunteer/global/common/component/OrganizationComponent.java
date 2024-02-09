@@ -1,23 +1,17 @@
 package project.volunteer.global.common.component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.reply.domain.Reply;
-import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;
 import project.volunteer.global.common.validate.ReplyValidate;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor

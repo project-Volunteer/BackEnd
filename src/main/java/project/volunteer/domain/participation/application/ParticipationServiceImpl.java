@@ -31,7 +31,7 @@ public class ParticipationServiceImpl implements ParticipationService{
         //참여 가능 인원이 꽉 찬경우
         if(recruitment.isFullTeamMember()){
             throw  new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
-                    String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitment.getRecruitmentNo(), recruitment.getVolunteerNum()));
+                    String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitment.getRecruitmentNo(), recruitment.getMaxParticipationNum()));
         }
 
         //재신청 or 신규 신청

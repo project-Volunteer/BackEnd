@@ -30,7 +30,7 @@ import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -178,7 +178,7 @@ public class UserServiceImplTest {
 
 		Recruitment create1 = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category1).volunteeringType(volunteeringType1)
-				.volunteerType(volunteerType1).participationNum(volunteerNum1).isIssued(isIssued1).organizationName(organizationName)
+				.volunteerType(volunteerType1).maxParticipationNum(volunteerNum1).isIssued(isIssued1).organizationName(organizationName)
 				.address(address1).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create1.setWriter(saveUser);
@@ -187,7 +187,7 @@ public class UserServiceImplTest {
 
 		Recruitment create2 = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category2).volunteeringType(volunteeringType2)
-				.volunteerType(volunteerType2).participationNum(volunteerNum2).isIssued(isIssued2).organizationName(organizationName)
+				.volunteerType(volunteerType2).maxParticipationNum(volunteerNum2).isIssued(isIssued2).organizationName(organizationName)
 				.address(address2).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create2.setWriter(saveUser);
@@ -196,7 +196,7 @@ public class UserServiceImplTest {
 
 		Recruitment create3 = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category3).volunteeringType(volunteeringType1)
-				.volunteerType(volunteerType3).participationNum(volunteerNum3).isIssued(isIssued1).organizationName(organizationName)
+				.volunteerType(volunteerType3).maxParticipationNum(volunteerNum3).isIssued(isIssued1).organizationName(organizationName)
 				.address(address3).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create3.setWriter(userNo2);
@@ -205,7 +205,7 @@ public class UserServiceImplTest {
 
 		Recruitment create4 = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category4).volunteeringType(volunteeringType2)
-				.volunteerType(volunteerType1).participationNum(volunteerNum4).isIssued(isIssued2).organizationName(organizationName)
+				.volunteerType(volunteerType1).maxParticipationNum(volunteerNum4).isIssued(isIssued2).organizationName(organizationName)
 				.address(address4).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create4.setWriter(userNo3);

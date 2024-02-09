@@ -37,15 +37,17 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.volunteer.domain.image.application.ImageService;
-import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.dao.StorageRepository;
-import project.volunteer.global.common.component.RealWorkCode;
+import project.volunteer.domain.recruitment.domain.VolunteerType;
+import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
+import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.image.domain.Storage;
@@ -55,6 +57,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
@@ -112,11 +115,11 @@ public class UserControllerJoinRequestTest {
     
 	private void setData() throws IOException {
 		// 모집글 데이터
-		String category1 = "001";
-		String category2 = "002";
-		String volunteeringType = VolunteeringType.IRREG.name();
-		String volunteerType1 = "1"; // all
-		String volunteerType2 = "3"; // teenager
+		VolunteeringCategory category1 = VolunteeringCategory.ADMINSTRATION_ASSISTANCE;
+		VolunteeringCategory category2 = VolunteeringCategory.CULTURAL_EVENT;
+		VolunteeringType volunteeringType = VolunteeringType.IRREG;
+		VolunteerType volunteerType1 = VolunteerType.ALL; // all
+		VolunteerType volunteerType2 = VolunteerType.TEENAGER; // teenager
 		Boolean isIssued1 = true;
 		Boolean isIssued2 = false;
 		String sido1 = "11";
@@ -135,23 +138,22 @@ public class UserControllerJoinRequestTest {
 		String title = "title", content = "content";
 		Boolean isPublished = true;
 
-		RecruitmentParam saveRecruitDto1 = new RecruitmentParam(category1, organizationName, sido1, sigungu1,
-				details, "fullName", latitude, longitude, isIssued1, volunteerType1, volunteerNum, volunteeringType, startDay,
-				endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-		RecruitmentParam saveRecruitDto2 = new RecruitmentParam(category2, organizationName, sido2, sigungu2,
-				details, "fullName", latitude, longitude, isIssued2, volunteerType2, volunteerNum, volunteeringType, startDay,
-				endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-		Long no1 = recruitmentService.addRecruitment(saveUser, saveRecruitDto1).getRecruitmentNo();
-		Long no2 = recruitmentService.addRecruitment(saveUser, saveRecruitDto2).getRecruitmentNo();
+		RecruitmentCreateCommand saveRecruitDto1 = new RecruitmentCreateCommand(title, content, category1,
+				volunteeringType, volunteerType1, volunteerNum, isIssued1, organizationName, isPublished,
+				new Address(sido1, sigungu1, details, "fullName"), new Coordinate(latitude, longitude),
+				Timetable.of(startDay, endDay, hourFormat, startTime, progressTime),
+				null, true, null);
+		RecruitmentCreateCommand saveRecruitDto2 = new RecruitmentCreateCommand(title, content, category2,
+				volunteeringType, volunteerType2, volunteerNum, isIssued2, organizationName, isPublished,
+				new Address(sido2, sigungu2, details, "fullName"), new Coordinate(latitude, longitude),
+				Timetable.of(startDay, endDay, hourFormat, startTime, progressTime),
+				null, true, null);
+		Long no1 = recruitmentService.addRecruitment(saveUser, saveRecruitDto1);
+		Long no2 = recruitmentService.addRecruitment(saveUser, saveRecruitDto2);
 
 		saveRecruitmentNoList.add(no1);
 		saveRecruitmentNoList.add(no2);
 
-		ImageParam uploadImageDto = ImageParam.builder().code(RealWorkCode.RECRUITMENT).no(no2).uploadImage(getMockMultipartFile()).build();
-		Long saveId2 = imageService.addImage(uploadImageDto);
-		deleteS3ImageNoList.add(saveId2); // S3에 저장된 이미지 추후 삭제 예정
-	
-	
 		// 참여자 저장
 		Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
 		Participant participant1 = Participant.builder().participant(saveUser).recruitment(recruitment1)

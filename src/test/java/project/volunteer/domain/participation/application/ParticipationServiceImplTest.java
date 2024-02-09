@@ -10,11 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -53,11 +53,13 @@ class ParticipationServiceImplTest {
         writer = userRepository.save(writerUser);
 
         //모집글 저장
-        Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
-                VolunteerType.TEENAGER, 4, true, "organization",
-                Address.createAddress("11", "1111","details", "fullName"), Coordinate.createCoordinate(3.2F, 3.2F),
-                Timetable.createTimetable(LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3), true);
-        createRecruitment.setWriter(writer);
+        Recruitment createRecruitment = new Recruitment(0L, "title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
+                VolunteerType.ADULT, 9999,0,true, "unicef",
+                new Address("111", "11", "test", "test"),
+                new Coordinate(1.2F, 2.2F),
+                new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
+                        LocalTime.now(), 10),
+                0, 0, true, IsDeleted.N, writer, null);
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         clear();
@@ -436,8 +438,8 @@ class ParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("new");
         //봉사 모집글 시간 정보 변경
-        saveRecruitment.setVolunteeringTimeTable(
-                Timetable.createTimetable(LocalDate.now().minusDays(2), LocalDate.now().minusDays(1), HourFormat.AM,
+        saveRecruitment.setTimetable(
+                new Timetable(LocalDate.now().minusDays(2), LocalDate.now().minusDays(1), HourFormat.AM,
                         LocalTime.now(), 3)
         );
         clear();

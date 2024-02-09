@@ -27,11 +27,11 @@ import project.volunteer.domain.notice.api.dto.request.NoticeAdd;
 import project.volunteer.domain.notice.api.dto.request.NoticeEdit;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.reply.dao.ReplyRepository;
 import project.volunteer.domain.reply.domain.Reply;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -81,11 +81,13 @@ class NoticeControllerTest {
         writer = userRepository.save(writerUser);
 
         //모집글 저장
-        Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
-                VolunteerType.TEENAGER, 3, true, "organization",
-                Address.createAddress("11", "1111","details", "fullName"), Coordinate.createCoordinate(3.2F, 3.2F),
-                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3), true);
-        createRecruitment.setWriter(writer);
+        Recruitment createRecruitment = new Recruitment(0L, "title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
+                VolunteerType.ADULT, 9999,0,true, "unicef",
+                new Address("111", "11", "test", "test"),
+                new Coordinate(1.2F, 2.2F),
+                new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
+                        LocalTime.now(), 10),
+                0, 0, true, IsDeleted.N, writerUser, null);
         saveRecruitment = recruitmentRepository.save(createRecruitment);
     }
 

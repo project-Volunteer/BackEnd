@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.dao;
+package project.volunteer.domain.recruitment.repository;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,7 +37,7 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
     //모집중인 봉사 모집글(삭제 x, 임시 저장 x, 봉사 모집 종료일 내)
     @Query("select r from Recruitment r " +
             "where r.recruitmentNo=:no " +
-            "and r.VolunteeringTimeTable.endDay >= current_date " +
+            "and r.timetable.endDay >= current_date " +
             "and r.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
             "and r.isPublished=true")
     Optional<Recruitment> findActivatedRecruitment(@Param("no") Long recruitmentNo);

@@ -5,7 +5,7 @@ import project.volunteer.global.common.component.RealWorkCode;
 
 public interface ImageService {
 
-    public Long addImage(ImageParam saveImageDto);
+    Long addImage(ImageParam saveImageDto);
 
     public void deleteImage(RealWorkCode code, Long no);
 

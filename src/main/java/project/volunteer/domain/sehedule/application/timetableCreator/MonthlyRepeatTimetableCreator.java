@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.springframework.stereotype.Component;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
-import project.volunteer.domain.recruitment.domain.Period;
+import project.volunteer.domain.recruitment.application.dto.command.RepeatPeriodCreateCommand;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.util.DateUtil;
 
@@ -15,13 +15,13 @@ public class MonthlyRepeatTimetableCreator implements RepeatTimetableCreator {
     private final static int MONTHS_IN_YEAR = 12;
 
     @Override
-    public boolean isSupported(final RepeatPeriodCommand repeatPeriod) {
+    public boolean isSupported(final RepeatPeriodCreateCommand repeatPeriod) {
         return repeatPeriod.getPeriod()
                 .equals(Period.MONTH);
     }
 
     @Override
-    public List<Timetable> create(final Timetable recruitmentTimetable, final RepeatPeriodCommand repeatPeriod) {
+    public List<Timetable> create(final Timetable recruitmentTimetable, final RepeatPeriodCreateCommand repeatPeriod) {
         int totalMonthByEndDay =
                 recruitmentTimetable.getEndDay().getYear() * MONTHS_IN_YEAR + recruitmentTimetable.getEndDay()
                         .getMonthValue();
@@ -40,14 +40,14 @@ public class MonthlyRepeatTimetableCreator implements RepeatTimetableCreator {
     }
 
     private List<Timetable> generateTimetableByWeekAndDayOfWeek(final Timetable recruitmentTimetable,
-                                                                final RepeatPeriodCommand repeatPeriod,
+                                                                final RepeatPeriodCreateCommand repeatPeriod,
                                                                 final LocalDate targetDate) {
         return repeatPeriod.getDayOfWeeks().stream()
                 .map(dayOfWeek -> DateUtil.findSpecificDate(targetDate.getYear(), targetDate.getMonthValue(),
                         repeatPeriod.getWeek(), dayOfWeek))
                 .filter(date -> DateUtil.isAfter(date, recruitmentTimetable.getStartDay()))
                 .filter(date -> DateUtil.isBefore(date, recruitmentTimetable.getEndDay()))
-                .map(date -> Timetable.createTimetable(date, date,
+                .map(date -> new Timetable(date, date,
                         recruitmentTimetable.getHourFormat(),
                         recruitmentTimetable.getStartTime(), recruitmentTimetable.getProgressTime()))
                 .collect(Collectors.toList());

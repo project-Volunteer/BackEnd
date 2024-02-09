@@ -17,7 +17,11 @@ public enum ErrorCode {
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "unsupported.mediaType"),
     MISSING_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "missing.request.parameter"),
 
-    //모집글 관련
+    //봉사 모집글 관련
+    INVALID_TITLE_SIZE(HttpStatus.BAD_REQUEST, "invalid.title.size"),
+    INVALID_PERIOD_PARAMETER(HttpStatus.BAD_REQUEST, "invalid.period.parameter"),
+
+
     NOT_EXIST_RECRUITMENT(HttpStatus.BAD_REQUEST, "notExist.recruitment"),
     EXPIRED_PERIOD_RECRUITMENT(HttpStatus.BAD_REQUEST, "expired.period.recruitment"),
     FORBIDDEN_RECRUITMENT(HttpStatus.FORBIDDEN, "forbidden.recruitment"),

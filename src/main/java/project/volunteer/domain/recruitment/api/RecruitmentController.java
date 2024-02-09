@@ -7,12 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.volunteer.domain.recruitment.dao.queryDto.RecruitmentQueryDtoRepository;
+import project.volunteer.domain.recruitment.repository.queryDto.RecruitmentQueryDtoRepository;
 import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
 import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentCond;
+import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentCond;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -32,7 +32,7 @@ public class RecruitmentController {
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
-        Long recruitmentNo = recruitmentFacade.registerVolunteerPost(SecurityUtil.getLoginUserNo(), form);
+        Long recruitmentNo = recruitmentFacade.registerRecruitment(SecurityUtil.getLoginUserNo(), form);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(getSingleResponseDto("no", recruitmentNo));
     }

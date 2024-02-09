@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
+import project.volunteer.domain.recruitment.repository.RepeatPeriodRepository;
+import project.volunteer.domain.recruitment.application.dto.command.RepeatPeriodCreateCommand;
 
 import java.util.List;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.RepeatPeriod;
 
 @Slf4j
 @Service
@@ -18,10 +19,10 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
     private final RepeatPeriodRepository repeatPeriodRepository;
 
     @Transactional
-    public void addRepeatPeriod(Recruitment recruitment, RepeatPeriodCommand saveDto) {
+    public void addRepeatPeriod(Recruitment recruitment, RepeatPeriodCreateCommand saveDto) {
         saveDto.getDayOfWeeks().stream().forEach(day -> {
-            project.volunteer.domain.recruitment.domain.RepeatPeriod period = project.volunteer.domain.recruitment.domain.RepeatPeriod.builder().week(saveDto.getWeek()).period(saveDto.getPeriod()).day(day).build();
-            period.setRecruitment(recruitment);
+            RepeatPeriod period = RepeatPeriod.builder().week(saveDto.getWeek()).period(saveDto.getPeriod()).day(day).build();
+            period.assignRecruitment(recruitment);
             repeatPeriodRepository.save(period);
         });
     }
@@ -29,7 +30,7 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
     @Override
     @Transactional
     public void deleteRepeatPeriod(Long recruitmentNo) {
-        List<project.volunteer.domain.recruitment.domain.RepeatPeriod> findPeriod = getRepeatPeriods(recruitmentNo);
+        List<RepeatPeriod> findPeriod = getRepeatPeriods(recruitmentNo);
         findPeriod.stream()
                 .forEach(p -> {
                     //삭제 플래그 처리 및 연관관계 끊기
@@ -38,7 +39,7 @@ public class RepeatPeriodServiceImpl implements RepeatPeriodService {
                 });
     }
 
-    private List<project.volunteer.domain.recruitment.domain.RepeatPeriod> getRepeatPeriods(Long recruitmentNo){
+    private List<RepeatPeriod> getRepeatPeriods(Long recruitmentNo){
         return repeatPeriodRepository.findByRecruitment_RecruitmentNo(recruitmentNo);
     }
 }

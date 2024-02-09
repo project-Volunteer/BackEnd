@@ -1,12 +1,14 @@
 package project.volunteer.domain.recruitment.application;
 
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
+import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 
 public interface RecruitmentCommandUseCase {
 
-    Recruitment addRecruitment(User writer, RecruitmentParam saveDto);
+    Long addRecruitment(User writer, RecruitmentCreateCommand command);
+
+
 
     public void deleteRecruitment(Long deleteNo);
 

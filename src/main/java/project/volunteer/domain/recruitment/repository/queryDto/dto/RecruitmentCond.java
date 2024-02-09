@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.dao.queryDto.dto;
+package project.volunteer.domain.recruitment.repository.queryDto.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +11,6 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.global.util.LegacyCodeEnumValueConverterUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

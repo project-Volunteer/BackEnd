@@ -3,7 +3,7 @@ package project.volunteer.domain.recruitment.application.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import project.volunteer.domain.recruitment.dao.queryDto.dto.RecruitmentListQuery;
+import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentListQuery;
 import project.volunteer.domain.recruitment.dto.PictureDetails;
 
 import java.time.format.DateTimeFormatter;
@@ -39,7 +39,7 @@ public class RecruitmentList {
         dto.startDay = recruitmentDto.getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         dto.endDay = recruitmentDto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         dto.volunteeringType = recruitmentDto.getVolunteeringType().getId();
-        dto.volunteerNum = recruitmentDto.getVolunteerNum();
+        dto.volunteerNum = recruitmentDto.getMaxParticipationNum();
         dto.isIssued = recruitmentDto.getIsIssued();
         //TODO: 쿼리에서 Integer로 조회가 안되서?
         dto.currentVolunteerNum = currentVolunteerNum.intValue(); //Long 이지만 int 를 실제로 넘을수 없다.(모집 인원수가 int로 정해져있어서)
