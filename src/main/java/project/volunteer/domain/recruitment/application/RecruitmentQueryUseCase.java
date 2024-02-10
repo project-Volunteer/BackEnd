@@ -1,10 +1,10 @@
 package project.volunteer.domain.recruitment.application;
 
 import org.springframework.data.domain.Pageable;
-import project.volunteer.domain.recruitment.api.dto.response.RecruitmentListResponse;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentCond;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentSearchCond;
 
 //화면에 맞춘 서비스 로직(읽기 전용)
 public interface RecruitmentQueryUseCase {
@@ -16,16 +16,14 @@ public interface RecruitmentQueryUseCase {
 
     RecruitmentDetailSearchResult searchRecruitmentDetail(Long recruitmentNo);
 
+    RecruitmentListSearchResult searchRecruitmentList(Pageable pageable, RecruitmentSearchCond cond);
+
+    RecruitmentListSearchResult searchRecruitmentList(Pageable pageable, String keyWord);
 
 
 
 
 
-
-
-    RecruitmentListResponse findSliceRecruitmentDtosByRecruitmentCond(Pageable pageable, RecruitmentCond cond);
-
-    RecruitmentListResponse findSliceRecruitmentDtosByKeyWord(Pageable pageable, String keyWord);
 
     void validRecruitmentOwner(Long recruitmentNo, Long loginUserNo);
 }

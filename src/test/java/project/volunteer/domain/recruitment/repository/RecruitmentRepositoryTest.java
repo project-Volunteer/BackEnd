@@ -2,14 +2,20 @@ package project.volunteer.domain.recruitment.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.Storage;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentList;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentSearchCond;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -94,6 +100,151 @@ class RecruitmentRepositoryTest extends RepositoryTest {
         assertThatThrownBy(() -> recruitmentRepository.findRecruitmentAndUserDetailBy(recruitment.getRecruitmentNo()))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.NOT_EXIST_RECRUITMENT.name());
+    }
+
+    @DisplayName("필터링 조건으로 봉사 모집글 리스트를 조회한다.")
+    @Test
+    void findRecruitmentListBySearchCond() {
+        //given
+        final String imagePath1 = "http://recruitment1";
+        final String imagePath2 = "http://recruitment2";
+        final String imagePath3 = "http://recruitment3";
+
+        User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+        Recruitment recruitment1 = recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment2 = recruitmentRepository.save(
+                new Recruitment("title2", "content2", VolunteeringCategory.EDUCATION,
+                        VolunteeringType.IRREG, VolunteerType.ADULT, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment3 = recruitmentRepository.save(
+                new Recruitment("title3", "content3", VolunteeringCategory.DISASTER,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment1.getRecruitmentNo(), imagePath1);
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment2.getRecruitmentNo(), imagePath2);
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment3.getRecruitmentNo(), imagePath3);
+
+        final RecruitmentSearchCond searchCond = new RecruitmentSearchCond(
+                List.of(VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringCategory.DISASTER), null, null, null,
+                VolunteerType.TEENAGER, null);
+
+        //when
+        Slice<RecruitmentList> actual = recruitmentRepository.findRecruitmentListBy(PageRequest.of(0, 10), searchCond);
+
+        //then
+        assertAll(
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual.isLast()).isTrue(),
+                () -> assertThat(actual)
+                        .extracting("no", "picture.isStaticImage", "picture.uploadImage")
+                        .containsExactly(
+                                tuple(recruitment3.getRecruitmentNo(), false, imagePath3),
+                                tuple(recruitment1.getRecruitmentNo(), false, imagePath1))
+        );
+    }
+
+    @DisplayName("필터링 조건으로 두번째 페이지 봉사 모집글 리스트를 조회한다.")
+    @Test
+    void findSecondPageRecruitmentListBySearchCond() {
+        //given
+        final String imagePath1 = "http://recruitment1";
+        final String imagePath2 = "http://recruitment2";
+        final String imagePath3 = "http://recruitment3";
+        final String imagePath4 = "http://recruitment4";
+        final String imagePath5 = "http://recruitment5";
+
+        User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+        Recruitment recruitment1 = recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment2 = recruitmentRepository.save(
+                new Recruitment("title2", "content2", VolunteeringCategory.EDUCATION,
+                        VolunteeringType.IRREG, VolunteerType.ADULT, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment3 = recruitmentRepository.save(
+                new Recruitment("title3", "content3", VolunteeringCategory.ETC,
+                        VolunteeringType.IRREG, VolunteerType.ALL, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment4 = recruitmentRepository.save(
+                new Recruitment("title4", "content4", VolunteeringCategory.FOREIGN_COUNTRY,
+                        VolunteeringType.IRREG, VolunteerType.ALL, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment5 = recruitmentRepository.save(
+                new Recruitment("title5", "content5", VolunteeringCategory.DISASTER,
+                        VolunteeringType.IRREG, VolunteerType.ADULT, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment1.getRecruitmentNo(), imagePath1);
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment2.getRecruitmentNo(), imagePath2);
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment3.getRecruitmentNo(), imagePath3);
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment4.getRecruitmentNo(), imagePath4);
+        createAndSaveUploadImage(RealWorkCode.RECRUITMENT, recruitment5.getRecruitmentNo(), imagePath5);
+
+        final RecruitmentSearchCond searchCond = new RecruitmentSearchCond(
+                null, null, null, VolunteeringType.IRREG, null, true);
+
+        //when
+        Slice<RecruitmentList> actual = recruitmentRepository.findRecruitmentListBy(PageRequest.of(1, 2), searchCond);
+
+        //then
+        assertAll(
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual.isLast()).isFalse(),
+                () -> assertThat(actual)
+                        .extracting("no", "picture.isStaticImage", "picture.uploadImage")
+                        .containsExactly(
+                                tuple(recruitment3.getRecruitmentNo(), false, imagePath3),
+                                tuple(recruitment2.getRecruitmentNo(), false, imagePath2))
+        );
+    }
+
+    @DisplayName("title에 키워드가 포함된 봉사 모집글 리스트를 조회한다.")
+    @Test
+    void findRecruitmentListByKeyWard() {
+        //given
+        final String keyWord = "bonsik";
+        final String title1 = "bonsik-title";
+        final String title2 = "title";
+        final String title3 = "title-bonsik";
+
+        User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+        Recruitment recruitment1 = recruitmentRepository.save(
+                new Recruitment(title1, "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment2 = recruitmentRepository.save(
+                new Recruitment(title2, "content2", VolunteeringCategory.EDUCATION,
+                        VolunteeringType.IRREG, VolunteerType.ADULT, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        Recruitment recruitment3 = recruitmentRepository.save(
+                new Recruitment(title3, "content3", VolunteeringCategory.DISASTER,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+
+        //when
+        Slice<RecruitmentList> actual = recruitmentRepository.findRecruitmentListByTitle(PageRequest.of(0, 5), keyWord);
+
+        //then
+        assertAll(
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual.isLast()).isTrue(),
+                () -> assertThat(actual)
+                        .extracting("no", "title")
+                        .containsExactly(
+                                tuple(recruitment3.getRecruitmentNo(), title3),
+                                tuple(recruitment1.getRecruitmentNo(), title1))
+        );
     }
 
     private Recruitment createAndSaveRecruitment(User writer, IsDeleted isDeleted) {

@@ -8,12 +8,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
-import project.volunteer.domain.recruitment.repository.queryDto.RecruitmentQueryDtoRepository;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
 import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
-import project.volunteer.domain.recruitment.api.dto.response.*;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
-import project.volunteer.domain.recruitment.repository.queryDto.dto.RecruitmentCond;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentSearchCond;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -39,23 +38,23 @@ public class RecruitmentController {
     }
 
     @GetMapping("/recruitment")
-    public ResponseEntity<RecruitmentListResponse> recruitmentList(@PageableDefault(size = 6) Pageable pageable,
-                                                                   @RequestParam(required = false) List<String> volunteering_category,
-                                                                   @RequestParam(required = false) String sido,
-                                                                   @RequestParam(required = false) String sigungu,
-                                                                   @RequestParam(required = false) String volunteering_type,
-                                                                   @RequestParam(required = false) String volunteer_type,
-                                                                   @RequestParam(required = false) Boolean is_issued) {
+    public ResponseEntity<RecruitmentListSearchResult> recruitmentList(@PageableDefault(size = 6) Pageable pageable,
+                                                                       @RequestParam(required = false) List<String> volunteering_category,
+                                                                       @RequestParam(required = false) String sido,
+                                                                       @RequestParam(required = false) String sigungu,
+                                                                       @RequestParam(required = false) String volunteering_type,
+                                                                       @RequestParam(required = false) String volunteer_type,
+                                                                       @RequestParam(required = false) Boolean is_issued) {
 
-        return ResponseEntity.ok(recruitmentDtoService.findSliceRecruitmentDtosByRecruitmentCond(pageable,
-                new RecruitmentCond(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued)));
+        return ResponseEntity.ok(recruitmentDtoService.searchRecruitmentList(pageable,
+                RecruitmentSearchCond.of(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued)));
     }
 
     @GetMapping("/recruitment/search")
-    public ResponseEntity<RecruitmentListResponse> recruitmentListByKeyWord(@PageableDefault(size = 6) Pageable pageable,
+    public ResponseEntity<RecruitmentListSearchResult> recruitmentListByKeyWord(@PageableDefault(size = 6) Pageable pageable,
                                                                             @RequestParam String keyword){
 
-        return ResponseEntity.ok(recruitmentDtoService.findSliceRecruitmentDtosByKeyWord(pageable, keyword));
+        return ResponseEntity.ok(recruitmentDtoService.searchRecruitmentList(pageable, keyword));
     }
 
     @GetMapping("/recruitment/count")
@@ -66,14 +65,7 @@ public class RecruitmentController {
                                                                          @RequestParam(required = false) String volunteer_type,
                                                                          @RequestParam(required = false) Boolean is_issued){
         Long recruitmentsCount = recruitmentQueryDtoRepository.findRecruitmentCountBySearchType(
-                RecruitmentCond.builder()
-                        .category(volunteering_category)
-                        .sido(sido)
-                        .sigungu(sigungu)
-                        .volunteeringType(volunteering_type)
-                        .volunteerType(volunteer_type)
-                        .isIssued(is_issued)
-                        .build());
+                RecruitmentSearchCond.of(volunteering_category, sido, sigungu, volunteering_type, volunteer_type, is_issued));
 
         return ResponseEntity.ok(getSingleResponseDto("totalCnt", recruitmentsCount));
     }
