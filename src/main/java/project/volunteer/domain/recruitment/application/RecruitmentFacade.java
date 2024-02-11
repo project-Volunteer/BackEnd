@@ -1,4 +1,4 @@
-package project.volunteer.domain.recruitment.mapper;
+package project.volunteer.domain.recruitment.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

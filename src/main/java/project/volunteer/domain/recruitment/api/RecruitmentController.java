@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
-import project.volunteer.domain.recruitment.mapper.RecruitmentFacade;
+import project.volunteer.domain.recruitment.application.RecruitmentFacade;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentSearchCond;
