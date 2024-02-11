@@ -98,23 +98,4 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
         return new RecruitmentCountResult(recruitmentCount);
     }
 
-
-
-
-
-
-
-    @Override
-    public void validRecruitmentOwner(Long recruitmentNo, Long loginUserNo) {
-        Recruitment findRecruitment = recruitmentRepository.findById(recruitmentNo).orElseThrow(
-                () -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
-                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
-
-        if (!findRecruitment.isRecruitmentOwner(loginUserNo)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(),
-                            loginUserNo));
-        }
-    }
-
 }

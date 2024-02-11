@@ -205,8 +205,10 @@ public class Recruitment extends BaseTimeEntity {
         }
     }
 
-
-
+    public Boolean isOwner(Long userNo) {
+        return this.writer.getUserNo()
+                .equals(userNo);
+    }
 
 
 
@@ -226,13 +228,6 @@ public class Recruitment extends BaseTimeEntity {
 
     public void setTimetable(Timetable timetable) {
         this.timetable = timetable;
-    }
-
-    public Boolean isRecruitmentOwner(Long userNo) {
-        if (this.getWriter().getUserNo().equals(userNo)) {
-            return true;
-        }
-        return false;
     }
 
     public void increaseTeamMember() {

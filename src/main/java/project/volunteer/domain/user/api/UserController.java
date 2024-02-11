@@ -31,6 +31,8 @@ import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam
 import project.volunteer.domain.user.api.dto.response.*;
 import project.volunteer.domain.user.dao.queryDto.UserQueryDtoRepository;
 import project.volunteer.domain.user.dao.queryDto.dto.UserHistoryQuery;
+import project.volunteer.global.Interceptor.OrganizationAuth;
+import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.user.api.dto.request.UserAlarmRequestParam;
 import project.volunteer.domain.user.api.dto.request.UserInfoRequestParam;
@@ -127,12 +129,11 @@ public class UserController {
 		return ResponseEntity.ok(userDtoService.findLoboardTempDtos(SecurityUtil.getLoginUserNo()));
 	}
 
-
+	@OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
 	@DeleteMapping ("/user/recruitment/temp")
 	public ResponseEntity myRecruitmentTempDelete(@RequestBody @Valid RecruitmentListRequestParam dto) {
 		Long userNo = SecurityUtil.getLoginUserNo();
 		for(Long recruitmentNo : dto.getRecruitmentList()){
-			recruitmentQueryService.validRecruitmentOwner(recruitmentNo, userNo);
 			recruitmentCommandUseCase.deleteRecruitment(recruitmentNo);
 		}
 		return ResponseEntity.ok().build();

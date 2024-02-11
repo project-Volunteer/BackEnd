@@ -2,6 +2,7 @@ package project.volunteer.global.common.component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerMapping;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
+@Transactional(readOnly = true)
 //TODO: 리팩토링 필요.
 //TODO: 서비스 레이어를 재사용하는 게 좋지 않을까?
 public class OrganizationComponent {
@@ -32,7 +34,7 @@ public class OrganizationComponent {
     public void validRecruitmentOwner(HttpServletRequest request, Long loginUserNo){
         Recruitment findRecruitment = getRecruitment(request);
         //DDD 설계 살려서
-        if(!findRecruitment.isRecruitmentOwner(loginUserNo)){
+        if(!findRecruitment.isOwner(loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(), loginUserNo));
         }
@@ -66,7 +68,7 @@ public class OrganizationComponent {
     private void isRecruitmentTeam(Recruitment recruitment, Long loginUserNo){
         //기본 Spring OSIV 모드 트랜잭션 읽기 모드 사용(수정 변경 불가, 단순 읽기만, 영속 상태)
         //팀원 or 방장
-        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo) && !recruitment.isRecruitmentOwner(loginUserNo)){
+        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo) && !recruitment.isOwner(loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
         }

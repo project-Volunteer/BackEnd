@@ -23,9 +23,4 @@ public interface RecruitmentQueryUseCase {
 
     RecruitmentCountResult searchRecruitmentCount(RecruitmentSearchCond searchCond);
 
-
-
-
-
-    void validRecruitmentOwner(Long recruitmentNo, Long loginUserNo);
 }
