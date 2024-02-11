@@ -10,7 +10,6 @@ import project.volunteer.domain.participation.application.ParticipationService;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
@@ -61,10 +60,6 @@ public class RecruitmentFacade {
 
         //봉사 참여자 삭제
         participationService.deleteParticipations(recruitmentNo);
-    }
-
-    public RecruitmentDetailSearchResult findRecruitmentDetail(Long recruitmentNo){
-        return recruitmentQueryService.searchRecruitmentDetail(recruitmentNo);
     }
 
 

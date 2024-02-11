@@ -247,6 +247,44 @@ class RecruitmentRepositoryTest extends RepositoryTest {
         );
     }
 
+    @DisplayName("필터링 조건으로 봉사 모집글 개수를 조회한다.")
+    @Test
+    void findRecruitmentCountBySearchCond() {
+        User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+        recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        recruitmentRepository.save(
+                new Recruitment("title2", "content2", VolunteeringCategory.EDUCATION,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, false, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        recruitmentRepository.save(
+                new Recruitment("title3", "content3", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, false, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        recruitmentRepository.save(
+                new Recruitment("title4", "content4", VolunteeringCategory.FOREIGN_COUNTRY,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 9999, 0, false, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+        recruitmentRepository.save(
+                new Recruitment("title5", "content5", VolunteeringCategory.DISASTER,
+                        VolunteeringType.IRREG, VolunteerType.ALL, 9999, 0, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+
+        final RecruitmentSearchCond searchCond = new RecruitmentSearchCond(
+                List.of(VolunteeringCategory.EDUCATION, VolunteeringCategory.ADMINSTRATION_ASSISTANCE), null, null,
+                null, VolunteerType.TEENAGER, false);
+
+        //when
+        Long result = recruitmentRepository.findRecruitmentCountBy(searchCond);
+
+        //then
+        assertThat(result).isEqualTo(2);
+    }
+
     private Recruitment createAndSaveRecruitment(User writer, IsDeleted isDeleted) {
         return recruitmentRepository.save(Recruitment.builder()
                 .title("title")

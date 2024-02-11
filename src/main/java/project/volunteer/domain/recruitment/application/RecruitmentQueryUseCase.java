@@ -1,6 +1,7 @@
 package project.volunteer.domain.recruitment.application;
 
 import org.springframework.data.domain.Pageable;
+import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -16,10 +17,11 @@ public interface RecruitmentQueryUseCase {
 
     RecruitmentDetailSearchResult searchRecruitmentDetail(Long recruitmentNo);
 
-    RecruitmentListSearchResult searchRecruitmentList(Pageable pageable, RecruitmentSearchCond cond);
+    RecruitmentListSearchResult searchRecruitmentList(Pageable pageable, RecruitmentSearchCond searchCond);
 
     RecruitmentListSearchResult searchRecruitmentList(Pageable pageable, String keyWord);
 
+    RecruitmentCountResult searchRecruitmentCount(RecruitmentSearchCond searchCond);
 
 
 

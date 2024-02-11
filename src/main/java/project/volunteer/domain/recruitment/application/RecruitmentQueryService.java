@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
+import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RepeatPeriodDetail;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -37,7 +38,6 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
     private final RepeatPeriodRepository repeatPeriodRepository;
     private final ParticipantRepository participantRepository;
     private final Clock clock;
-
 
     @Override
     public Recruitment findActivatedRecruitment(final Long recruitmentNo) {
@@ -92,6 +92,11 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
                 result.getContent().get(result.getContent().size() - 1).getNo());
     }
 
+    @Override
+    public RecruitmentCountResult searchRecruitmentCount(RecruitmentSearchCond searchCond) {
+        Long recruitmentCount = recruitmentRepository.findRecruitmentCountBy(searchCond);
+        return new RecruitmentCountResult(recruitmentCount);
+    }
 
 
 

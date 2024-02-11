@@ -13,4 +13,6 @@ public interface RecruitmentQueryDSLRepository {
 
     Slice<RecruitmentList> findRecruitmentListByTitle(Pageable pageable, String keyWard);
 
+    Long findRecruitmentCountBy(RecruitmentSearchCond searchCond);
+
 }

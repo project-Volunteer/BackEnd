@@ -120,6 +120,24 @@ public class RecruitmentQueryDSLRepositoryImpl implements RecruitmentQueryDSLRep
         return checkEndPage(pageable, result);
     }
 
+    @Override
+    public Long findRecruitmentCountBy(RecruitmentSearchCond searchCond) {
+        return queryFactory
+                .select(recruitment.count())
+                .from(recruitment)
+                .where(
+                        inCategory(searchCond.getCategory()),
+                        eqSidoCode(searchCond.getSido()),
+                        eqSigunguCode(searchCond.getSigungu()),
+                        eqVolunteeringType(searchCond.getVolunteeringType()),
+                        eqVolunteerType(searchCond.getVolunteerType()),
+                        eqIsIssued(searchCond.getIsIssued()),
+                        recruitment.isPublished.eq(Boolean.TRUE),
+                        recruitment.isDeleted.eq(IsDeleted.N)
+                )
+                .fetchOne();
+    }
+
     private ConstructorExpression<RecruitmentList> getRecruitmentListConstructor() {
         return Projections.constructor(RecruitmentList.class, recruitment.recruitmentNo,
                 recruitment.volunteeringCategory, recruitment.volunteeringType, recruitment.volunteerType,
@@ -160,7 +178,7 @@ public class RecruitmentQueryDSLRepositoryImpl implements RecruitmentQueryDSLRep
     }
 
     private BooleanExpression eqIsIssued(Boolean isIssued) {
-        if(Objects.isNull(isIssued)) {
+        if (Objects.isNull(isIssued)) {
             return null;
         }
         return recruitment.isIssued.eq(isIssued);
