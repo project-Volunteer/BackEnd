@@ -108,7 +108,7 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
         );
     }
 
-    @DisplayName("삭제된 일정 정보를 조회할 경우, 예외가 발생한다.")
+    @DisplayName("삭제된 일정 정보를 상세 조회할 경우, 예외가 발생한다.")
     @Test
     void throwExceptionWhenDeletedSchedule() {
         // given
@@ -118,6 +118,14 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
 
         // when & then
         assertThatThrownBy(() -> scheduleQueryUseCase.searchScheduleDetail(schedule.getScheduleNo()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.NOT_EXIST_SCHEDULE.name());
+    }
+
+    @DisplayName("존재하지 않는 일정 정보를 상세 조회할 경우, 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenNotExistedSchedule() {
+        assertThatThrownBy(() -> scheduleQueryUseCase.searchScheduleDetail(999L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.NOT_EXIST_SCHEDULE.name());
     }

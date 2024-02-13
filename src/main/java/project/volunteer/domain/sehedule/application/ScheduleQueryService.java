@@ -32,7 +32,6 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
 
     @Override
     public ScheduleDetailSearchResult searchScheduleDetail(final Long scheduleNo) {
-        validAndGetNotDeletedSchedule(scheduleNo);
         return scheduleRepository.findScheduleDetailBy(scheduleNo);
     }
 

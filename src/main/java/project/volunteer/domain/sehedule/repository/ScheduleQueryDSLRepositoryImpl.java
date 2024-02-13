@@ -6,12 +6,15 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.global.common.component.IsDeleted;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,7 +36,7 @@ public class ScheduleQueryDSLRepositoryImpl implements ScheduleQueryDSLRepositor
 
     @Override
     public ScheduleDetailSearchResult findScheduleDetailBy(Long scheduleNo) {
-        return queryFactory.select(
+        ScheduleDetailSearchResult result = queryFactory.select(
                         Projections.constructor(ScheduleDetailSearchResult.class, schedule.scheduleNo, schedule.address.sido,
                                 schedule.address.sigungu, schedule.address.details, schedule.address.fullName,
                                 schedule.scheduleTimeTable.startDay, schedule.scheduleTimeTable.startTime,
@@ -42,7 +45,13 @@ public class ScheduleQueryDSLRepositoryImpl implements ScheduleQueryDSLRepositor
                 .from(schedule)
                 .where(schedule.isDeleted.eq(IsDeleted.N),
                         schedule.scheduleNo.eq(scheduleNo))
-                .fetchOne();
+                .fetchFirst();
+
+        if(Objects.isNull(result)) {
+            throw new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("ScheduleNo=[%d]", scheduleNo));
+        }
+
+        return result;
     }
 
     @Override
