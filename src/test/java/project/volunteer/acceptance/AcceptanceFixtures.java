@@ -105,6 +105,15 @@ public class AcceptanceFixtures {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_취소(String token, Long recruitmentNo) {
+        return given().log().all()
+                .header(AUTHORIZATION_HEADER, token)
+                .when().put("/recruitment/{recruitmentNo}/cancel", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
     public static Long 봉사_일정_등록(String token, Long recruitmentNo,
                                 ScheduleUpsertRequest request) {
         return given().log().all()

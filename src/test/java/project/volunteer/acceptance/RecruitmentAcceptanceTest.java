@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_등록;
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_팀원_가입_승인;
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_팀원_가입_요청;
+import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_팀원_가입_취소;
 
 import java.io.File;
 import java.time.Instant;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.recruitment.api.dto.response.StatusResponse;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
@@ -26,6 +28,7 @@ import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.dto.StateResult;
 
 public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
@@ -249,6 +252,106 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
                         .extracting("no")
                         .containsExactly(recruitmentNo1)
         );
+    }
+
+    @DisplayName("참여 가능한 봉사 모집글이면 staus는 AVAILABLE로 나온다.")
+    @Test
+    void getAvailableState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.ADMINSTRATION_ASSISTANCE, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F,
+                true,
+                VolunteerType.ADULT, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        StatusResponse response = given().log().all()
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().get("/recruitment/{no}/status", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(StatusResponse.class);
+        assertThat(response.getStatus()).isEqualTo(StateResult.AVAILABLE.getId());
+    }
+
+    @DisplayName("인원이 가득찬 봉사 모집글이면 staus는 FULL로 나온다.")
+    @Test
+    void getFullState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.ADMINSTRATION_ASSISTANCE, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F,
+                true,
+                VolunteerType.ADULT, 1, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        Long participationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participationNo1)));
+
+        StatusResponse response = given().log().all()
+                .header(AUTHORIZATION_HEADER, changHoeunToken)
+                .when().get("/recruitment/{no}/status", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(StatusResponse.class);
+        assertThat(response.getStatus()).isEqualTo(StateResult.FULL.getId());
+    }
+
+    @DisplayName("신청이 가능하고 참여 신청 취소 이력을 가진 봉사 모집글이면 status는 AVAILABLE로 나온다.")
+    @Test
+    void getAvailableStateCancelledRecruitment() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.ADMINSTRATION_ASSISTANCE, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F,
+                true,
+                VolunteerType.ADULT, 5, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        봉사_게시물_팀원_가입_취소(soeunToken, recruitmentNo);
+
+        StatusResponse response = given().log().all()
+                .header(AUTHORIZATION_HEADER, changHoeunToken)
+                .when().get("/recruitment/{no}/status", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(StatusResponse.class);
+        assertThat(response.getStatus()).isEqualTo(StateResult.AVAILABLE.getId());
+    }
+
+    @DisplayName("마감된 봉사 모집글이면 status는 DONE이 나온다.")
+    @Test
+    void getDoneState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-11T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.ADMINSTRATION_ASSISTANCE, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F,
+                true,
+                VolunteerType.ADULT, 5, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        StatusResponse response = given().log().all()
+                .header(AUTHORIZATION_HEADER, changHoeunToken)
+                .when().get("/recruitment/{no}/status", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(StatusResponse.class);
+        assertThat(response.getStatus()).isEqualTo(StateResult.DONE.getId());
     }
 
 }
