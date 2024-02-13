@@ -2,6 +2,7 @@ package project.volunteer.domain.recruitment.application;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import project.volunteer.domain.recruitment.application.dto.query.detail.Recruit
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.dto.StateResult;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -79,12 +81,13 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
     }
 
     @Override
-    public RecruitmentListSearchResult searchRecruitmentList(final Pageable pageable, final RecruitmentSearchCond searchCond) {
+    public RecruitmentListSearchResult searchRecruitmentList(final Pageable pageable,
+                                                             final RecruitmentSearchCond searchCond) {
         Slice<RecruitmentList> result = recruitmentRepository.findRecruitmentListBy(pageable, searchCond);
         return new RecruitmentListSearchResult(result.getContent(), result.isLast(),
                 result.getContent().get(result.getContent().size() - 1).getNo());
     }
-    
+
     @Override
     public RecruitmentListSearchResult searchRecruitmentList(final Pageable pageable, final String keyWord) {
         Slice<RecruitmentList> result = recruitmentRepository.findRecruitmentListByTitle(pageable, keyWord);
@@ -96,6 +99,16 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
     public RecruitmentCountResult searchRecruitmentCount(RecruitmentSearchCond searchCond) {
         Long recruitmentCount = recruitmentRepository.findRecruitmentCountBy(searchCond);
         return new RecruitmentCountResult(recruitmentCount);
+    }
+
+    @Override
+    public StateResult searchState(Long userNo, Long recruitmentNo) {
+        Recruitment recruitment = recruitmentRepository.findRecruitmentBy(recruitmentNo, IsDeleted.N, true)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
+
+        Optional<ParticipantState> state = participantRepository.findStateBy(recruitment.getRecruitmentNo(), userNo);
+        return StateResult.getRecruitmentState(state, recruitment.isDone(LocalDate.now(clock)), recruitment.isFull());
     }
 
 }

@@ -168,6 +168,29 @@ public class Recruitment extends BaseTimeEntity {
         return volunteeringType.equals(VolunteeringType.REG);
     }
 
+    public void checkDoneDate(LocalDate now) {
+        if (isDone(now)) {
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT);
+        }
+    }
+
+    public Boolean isOwner(Long userNo) {
+        return this.writer.getUserNo()
+                .equals(userNo);
+    }
+
+    public Boolean isDone(LocalDate now) {
+        return this.timetable.getEndDay().isBefore(now);
+    }
+
+    public Boolean isFull() {
+        return maxParticipationNum.equals(currentVolunteerNum);
+    }
+
+    public boolean isLessParticipationNumThan(final int participationNum) {
+        return this.maxParticipationNum < participationNum;
+    }
+
     /**
      * 검증 메서드
      **/
@@ -199,16 +222,6 @@ public class Recruitment extends BaseTimeEntity {
         }
     }
 
-    public void checkDoneDate(LocalDate now) {
-        if (timetable.getEndDay().isBefore(now)) {
-            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT);
-        }
-    }
-
-    public Boolean isOwner(Long userNo) {
-        return this.writer.getUserNo()
-                .equals(userNo);
-    }
 
 
 
@@ -238,23 +251,8 @@ public class Recruitment extends BaseTimeEntity {
         this.currentVolunteerNum--;
     }
 
-    public Boolean isFullTeamMember() {
-        return this.currentVolunteerNum == this.maxParticipationNum;
-    }
-
     public Integer getAvailableTeamMemberCount() {
         return this.maxParticipationNum - this.currentVolunteerNum;
     }
-
-    public Boolean isDoneDate() {
-        return this.timetable.getEndDay().isBefore(LocalDate.now());
-    }
-
-
-    // 비교 메서드
-    public boolean isLessParticipationNumThan(final int participationNum) {
-        return this.maxParticipationNum < participationNum;
-    }
-
 
 }

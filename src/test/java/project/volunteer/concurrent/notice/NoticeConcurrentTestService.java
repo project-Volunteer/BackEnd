@@ -1,5 +1,6 @@
 package project.volunteer.concurrent.notice;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +101,7 @@ public class NoticeConcurrentTestService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
 
         //모집글 공지사항 작성 가능 일자 검증
-        if(findRecruitment.isDoneDate()){
+        if(findRecruitment.isDone(LocalDate.now())){
             throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo));
         }
         return findRecruitment;

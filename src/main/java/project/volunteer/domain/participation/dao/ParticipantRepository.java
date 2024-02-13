@@ -29,6 +29,10 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             "and p.state in :states ")
     List<RecruitmentParticipantDetail> findParticipantsDetailBy(@Param("no") Long recruitmentNo, @Param("states") List<ParticipantState> states);
 
+    @Query("SELECT p.state FROM Participant p "
+            + "WHERE p.recruitment.recruitmentNo=:recruitmentNo AND p.participant.userNo=:userNo")
+    Optional<ParticipantState> findStateBy(@Param("recruitmentNo") Long recruitmentNo, @Param("userNo") Long userNo);
+
     Optional<Participant> findByRecruitmentAndParticipant(Recruitment recruitment, User participant);
     Optional<Participant> findByRecruitment_RecruitmentNoAndParticipant_UserNo(Long recruitmentNo, Long participantNo);
 

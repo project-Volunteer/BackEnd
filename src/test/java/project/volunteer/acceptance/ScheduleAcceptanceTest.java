@@ -38,7 +38,7 @@ import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearch
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 
 public class ScheduleAcceptanceTest extends AcceptanceTest {
 
@@ -436,7 +436,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.AVAILABLE.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.AVAILABLE.getId())
         );
     }
 
@@ -478,7 +478,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.DONE.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.DONE.getId())
         );
     }
 
@@ -522,7 +522,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.PARTICIPATING.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.PARTICIPATING.getId())
         );
     }
 
@@ -568,7 +568,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.FULL.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.FULL.getId())
         );
     }
 
@@ -616,7 +616,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.COMPLETE_UNAPPROVED.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.COMPLETE_UNAPPROVED.getId())
         );
     }
 
@@ -673,7 +673,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.COMPLETE_APPROVED.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.COMPLETE_APPROVED.getId())
         );
     }
 
@@ -719,7 +719,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.CANCELLING.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.CANCELLING.getId())
         );
     }
 
@@ -772,7 +772,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.AVAILABLE.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.AVAILABLE.getId())
         );
     }
 

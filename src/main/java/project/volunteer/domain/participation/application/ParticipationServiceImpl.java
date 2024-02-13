@@ -11,13 +11,11 @@ import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Override
     public void participate(User user, Recruitment recruitment) {
         //참여 가능 인원이 꽉 찬경우
-        if(recruitment.isFullTeamMember()){
+        if(recruitment.isFull()){
             throw  new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
                     String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitment.getRecruitmentNo(), recruitment.getMaxParticipationNum()));
         }
@@ -132,33 +130,33 @@ public class ParticipationServiceImpl implements ParticipationService{
      * L3 : 팀 신청 인원 마감
      * L4 : 팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴)
      */
-    @Override
-    public String findParticipationState(Recruitment recruitment, User user) {
-        Optional<Participant> findParticipant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
-
-        //봉사 모집 기간 만료
-        if(recruitment.isDoneDate()){
-            return StateResponse.DONE.getId();
-        }
-
-        //팀 신청
-        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
-            return StateResponse.PENDING.getId();
-        }
-
-        //팀 신청 승인
-        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
-            return StateResponse.APPROVED.getId();
-        }
-
-        //팀 신청 인원 마감
-        if(recruitment.isFullTeamMember()){
-            return StateResponse.FULL.getId();
-        }
-
-        //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
-        return StateResponse.AVAILABLE.getId();
-    }
+//    @Override
+//    public String findParticipationState(Recruitment recruitment, User user) {
+//        Optional<Participant> findParticipant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
+//
+//        //봉사 모집 기간 만료
+//        if(recruitment.isDone()){
+//            return StateResponse.DONE.getId();
+//        }
+//
+//        //팀 신청
+//        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
+//            return StateResponse.PENDING.getId();
+//        }
+//
+//        //팀 신청 승인
+//        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
+//            return StateResponse.APPROVED.getId();
+//        }
+//
+//        //팀 신청 인원 마감
+//        if(recruitment.isFull()){
+//            return StateResponse.FULL.getId();
+//        }
+//
+//        //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
+//        return StateResponse.AVAILABLE.getId();
+//    }
 
     @Override
     public Participant findParticipation(Long recruitmentNo, Long userNo) {

@@ -10,7 +10,7 @@ import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.converter.CodeCommonType;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 import project.volunteer.document.restdocs.dto.APIResponseDto;
 import project.volunteer.document.restdocs.dto.EnumDocs;
 
@@ -25,7 +25,7 @@ public class EnumViewController {
     public APIResponseDto<EnumDocs> enums(){
 
         Map<String,String > hourFormat = getDocs(HourFormat.values());
-        Map<String,String> clientState = getDocs(StateResponse.values());
+        Map<String,String> clientState = getDocs(StateResult.values());
         Map<String,String> volunteeringCategory = getDocs(VolunteeringCategory.values());
         Map<String,String> volunteerType = getDocs(VolunteerType.values());
         Map<String,String> volunteeringType = getDocs(VolunteeringType.values());

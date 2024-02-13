@@ -3,7 +3,9 @@ package project.volunteer.domain.recruitment.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,6 +33,7 @@ import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
+import project.volunteer.global.common.dto.StateResult;
 import project.volunteer.support.ServiceTest;
 
 class RecruitmentQueryUseCaseTest extends ServiceTest {
@@ -82,6 +85,76 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
                         .extracting("userNo", "nickName", "imageUrl")
                         .containsExactlyInAnyOrder(tuple(user1.getUserNo(), user1.getNickName(), userUploadImagePath1))
         );
+    }
+
+    @DisplayName("봉사 모집글 참여 가능 인원이 가득찰 경우, 요청한 회원 상태는 FULL이 된다.")
+    @Test
+    void searchStateWithFullRecruitment() {
+        //given
+        User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+        Recruitment recruitment = recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.N, writer));
+
+        //when
+        StateResult stateResponse = recruitmentQueryUseCase.searchState(writer.getUserNo(),
+                recruitment.getRecruitmentNo());
+
+        //then
+        assertThat(stateResponse).isEqualByComparingTo(StateResult.FULL);
+    }
+
+    @DisplayName("봉사 모집글 모집 기간이 지난 경우, 요청한 회원 상태는 DONE이 된다.")
+    @Test
+    void searchStateWithDoneRecruitment() {
+        //given
+        User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+        Recruitment recruitment = recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
+                        new Timetable(LocalDate.of(2024, 2, 11), LocalDate.of(2024, 2, 13), HourFormat.AM,
+                                LocalTime.now(), 10),
+                        0, 0, true, IsDeleted.N, writer));
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-14T10:00:00Z"));
+
+        //when
+        StateResult stateResponse = recruitmentQueryUseCase.searchState(writer.getUserNo(),
+                recruitment.getRecruitmentNo());
+
+        //then
+        assertThat(stateResponse).isEqualByComparingTo(StateResult.DONE);
+    }
+
+    @DisplayName("봉사 모집글 참여 승인된 회원일 경우, 회원 상태는 APPROVED 된다.")
+    @Test
+    void searchStateWithApprovedRecruitment() {
+        //given
+        User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+        Recruitment recruitment = recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
+                        new Timetable(LocalDate.of(2024, 2, 11), LocalDate.of(2024, 2, 13), HourFormat.AM,
+                                LocalTime.now(), 10),
+                        0, 0, true, IsDeleted.N, writer));
+
+        User user = userRepository.save(
+                new User("user", "user", "user", "user@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "4567", null));
+        participantRepository.save(new Participant(recruitment, user, ParticipantState.JOIN_APPROVAL));
+
+        //when
+        StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(), recruitment.getRecruitmentNo());
+
+        //then
+        assertThat(stateResponse).isEqualByComparingTo(StateResult.APPROVED);
     }
 
     private Recruitment createAndSaveRecruitment(User writer, VolunteeringType volunteeringType,

@@ -25,7 +25,7 @@ public interface ParticipationService {
 
     public AllParticipantDetails findAllParticipantDto(Long recruitmentNo);
 
-    public String findParticipationState(Recruitment recruitment, User user);
+//    String findParticipationState(Recruitment recruitment, User user);
 
     public Participant findParticipation(Long recruitmentNo, Long userNo);
 

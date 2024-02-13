@@ -8,9 +8,6 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.participation.application.ParticipationService;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
-import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
-import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.user.application.UserService;
@@ -18,6 +15,7 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
 
 import java.util.List;
+import project.volunteer.global.common.dto.StateResult;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +23,10 @@ import java.util.List;
 public class RecruitmentFacade {
     private final UserService userService;
     private final RecruitmentCommandUseCase recruitmentCommandUseCase;
-    private final RecruitmentQueryUseCase recruitmentQueryService;
-    private final ScheduleCommandUseCase scheduleService;
+    private final RecruitmentQueryUseCase recruitmentQueryUseCase;
+    private final ScheduleCommandUseCase scheduleCommandUseCase;
+
+
     private final ImageService imageService;
     private final ParticipationService participationService;
     private final ScheduleParticipationService scheduleParticipationService;
@@ -43,6 +43,10 @@ public class RecruitmentFacade {
     public void deleteRecruitment(Long recruitmentNo){
         recruitmentCommandUseCase.deleteRecruitment(recruitmentNo);
 
+        scheduleCommandUseCase.deleteAllSchedule(recruitmentNo);
+
+
+
         //이미지 삭제
         imageService.deleteImage(RealWorkCode.RECRUITMENT, recruitmentNo);
 
@@ -55,26 +59,13 @@ public class RecruitmentFacade {
         //일정 참여자 삭제
         scheduleParticipationService.deleteAllScheduleParticipation(recruitmentNo);
 
-        //일정 삭제
-        scheduleService.deleteAllSchedule(recruitmentNo);
-
         //봉사 참여자 삭제
         participationService.deleteParticipations(recruitmentNo);
     }
 
-
-
-
-
-
-
-
-
-    public String findVolunteerPostParticipationState(Long recruitmentNo, Long userNo){
-        User findUser = userService.findUser(userNo);
-
-        Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
-
-        return participationService.findParticipationState(recruitment, findUser);
+    public StateResult findState(Long recruitmentNo, Long userNo){
+        User user = userService.findUser(userNo);
+        return recruitmentQueryUseCase.searchState(user.getUserNo(), recruitmentNo);
     }
+
 }

@@ -25,7 +25,7 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -162,7 +162,7 @@ class ScheduleParticipationDtoServiceImplTest {
         assertThat(findCompletedParticipants.size()).isEqualTo(3);
         for(CompletedParticipantList p : findCompletedParticipants){
             assertThat(p.getProfile()).isEqualTo("picture");
-            assertThat(p.getStatus()).isIn(StateResponse.COMPLETE_APPROVED.name(), StateResponse.COMPLETE_UNAPPROVED.name());
+            assertThat(p.getStatus()).isIn(StateResult.COMPLETE_APPROVED.name(), StateResult.COMPLETE_UNAPPROVED.name());
         }
     }
 

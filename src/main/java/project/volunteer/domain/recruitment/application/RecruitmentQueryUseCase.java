@@ -6,6 +6,7 @@ import project.volunteer.domain.recruitment.application.dto.query.detail.Recruit
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentSearchCond;
+import project.volunteer.global.common.dto.StateResult;
 
 //화면에 맞춘 서비스 로직(읽기 전용)
 public interface RecruitmentQueryUseCase {
@@ -23,4 +24,5 @@ public interface RecruitmentQueryUseCase {
 
     RecruitmentCountResult searchRecruitmentCount(RecruitmentSearchCond searchCond);
 
+    StateResult searchState(Long userNo, Long recruitmentNo);
 }

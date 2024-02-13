@@ -25,7 +25,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 
 public class ScheduleControllerTest extends DocumentTest {
 
@@ -199,7 +199,7 @@ public class ScheduleControllerTest extends DocumentTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResult.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
                         restDocs.document(
@@ -297,7 +297,7 @@ public class ScheduleControllerTest extends DocumentTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResult.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
                         restDocs.document(
