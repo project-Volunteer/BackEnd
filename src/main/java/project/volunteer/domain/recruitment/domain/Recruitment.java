@@ -180,7 +180,7 @@ public class Recruitment extends BaseTimeEntity {
     }
 
     public Boolean isDone(LocalDate now) {
-        return this.timetable.getEndDay().isBefore(now);
+        return this.timetable.isDoneByEndDate(now);
     }
 
     public Boolean isFull() {
