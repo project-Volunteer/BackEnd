@@ -20,12 +20,12 @@ public class ParticipationFacade {
     private final ParticipationService participationService;
 
     @Transactional
-    public void participateVolunteerTeam(Long userNo, Long recruitmentNo){
+    public Long participateVolunteerTeam(Long userNo, Long recruitmentNo){
         User user = userService.findUser(userNo);
 
         Recruitment recruitment = recruitmentQueryService.findRecruitmentInProgress(recruitmentNo);
 
-        participationService.participate(user, recruitment);
+        return participationService.participate(user, recruitment);
     }
 
     @Transactional

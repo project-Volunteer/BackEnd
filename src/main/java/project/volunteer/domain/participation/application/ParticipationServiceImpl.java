@@ -1,5 +1,6 @@
 package project.volunteer.domain.participation.application;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,33 +26,52 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void participate(User user, Recruitment recruitment) {
+    public Long participate(User user, Recruitment recruitment) {
         //참여 가능 인원이 꽉 찬경우
         if(recruitment.isFull()){
             throw  new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
                     String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitment.getRecruitmentNo(), recruitment.getMaxParticipationNum()));
         }
 
-        //재신청 or 신규 신청
-        participantRepository.findByRecruitmentAndParticipant(recruitment, user)
-                .ifPresentOrElse(
-                        p -> {
-                            //중복 신청인 경우
-                            if(p.isEqualState(ParticipantState.JOIN_REQUEST) || p.isEqualState(ParticipantState.JOIN_APPROVAL)){
-                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
-                                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
-                                                user.getUserNo(), recruitment.getRecruitmentNo(), p.getState().name()));
-                            }
+        Optional<Participant> participant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
 
-                            //재신청에 해당(재신청 가능 상태 리스트: 팀 신청 취소, 팀 탈퇴, 팀 강제탈퇴)
-                            p.updateState(ParticipantState.JOIN_REQUEST);
-                        },
-                        () -> {
-                            //첫 신청인 경우
-                            Participant newParticipant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
-                            participantRepository.save(newParticipant);
-                        }
-                );
+        if(participant.isEmpty()) {
+            Participant newParticipant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
+            return participantRepository.save(newParticipant).getParticipantNo();
+        } else {
+            Participant findParticipant = participant.get();
+
+            if(findParticipant.isEqualState(ParticipantState.JOIN_REQUEST) || findParticipant.isEqualState(ParticipantState.JOIN_APPROVAL)){
+                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
+                                user.getUserNo(), recruitment.getRecruitmentNo(), findParticipant.getState().name()));
+            }
+
+            findParticipant.updateState(ParticipantState.JOIN_REQUEST);
+            return findParticipant.getParticipantNo();
+        }
+
+
+        //재신청 or 신규 신청
+//                .ifPresentOrElse(
+//                        p -> {
+//                            //중복 신청인 경우
+//                            if(p.isEqualState(ParticipantState.JOIN_REQUEST) || p.isEqualState(ParticipantState.JOIN_APPROVAL)){
+//                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+//                                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
+//                                                user.getUserNo(), recruitment.getRecruitmentNo(), p.getState().name()));
+//                            }
+//
+//                            //재신청에 해당(재신청 가능 상태 리스트: 팀 신청 취소, 팀 탈퇴, 팀 강제탈퇴)
+//                            p.updateState(ParticipantState.JOIN_REQUEST);
+//                        },
+//                        () -> {
+//                            //첫 신청인 경우
+//                            Participant newParticipant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
+//                            participantRepository.save(newParticipant);
+//                        }
+//                );
+
     }
 
     @Transactional

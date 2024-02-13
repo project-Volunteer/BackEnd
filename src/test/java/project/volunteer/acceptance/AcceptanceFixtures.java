@@ -5,12 +5,12 @@ import static io.restassured.RestAssured.given;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
+import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.participation.api.dto.response.JoinResponse;
 import project.volunteer.domain.recruitment.api.dto.response.RecruitmentSaveResponse;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -82,13 +82,15 @@ public class AcceptanceFixtures {
                 .getNo();
     }
 
-    public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_요청(String token, Long recruitmentNo) {
+    public static Long 봉사_게시물_팀원_가입_요청(String token, Long recruitmentNo) {
         return given().log().all()
                 .header(AUTHORIZATION_HEADER, token)
                 .when().put("/recruitment/{recruitmentNo}/join", recruitmentNo)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .extract();
+                .extract()
+                .as(JoinResponse.class)
+                .getRecruitmentParticipationNo();
     }
 
     public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_승인(String token, Long recruitmentNo,

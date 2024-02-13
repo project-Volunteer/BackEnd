@@ -62,7 +62,7 @@ public class AcceptanceTest {
 
         final String providerId3 = "990";
         changHoeunNo = userSignupService.addUser(
-                new UserSignupRequest("soeun", "http://www...", "test@email.com", "1999-07-27",
+                new UserSignupRequest("changHoeun", "http://www...", "test@email.com", "1999-07-27",
                         1, true, true, true, true, "kakao", providerId3));
         changHoeunToken = jwtProvider.createAccessToken("kakao_" + providerId3);
     }

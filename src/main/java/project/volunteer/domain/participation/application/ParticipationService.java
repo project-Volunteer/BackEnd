@@ -10,7 +10,7 @@ import java.util.List;
 public interface ParticipationService {
 
     //팀 참가 신청
-    public void participate(User user, Recruitment recruitment);
+    Long participate(User user, Recruitment recruitment);
 
     //팀 참가 취소
     public void cancelParticipation(User user, Recruitment recruitment);
