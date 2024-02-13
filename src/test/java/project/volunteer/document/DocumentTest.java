@@ -116,7 +116,7 @@ public abstract class DocumentTest {
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
 
         recruitment1 = recruitmentRepository.save(
-                new Recruitment("title", "content", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
+                new Recruitment("title1", "content", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
                         VolunteerType.TEENAGER, 9999,0,true, "unicef",
                         new Address("11", "1111", "test", "test"),
                         new Coordinate(1.2F, 2.2F),
@@ -131,7 +131,7 @@ public abstract class DocumentTest {
         imageRepository.save(image1);
 
         recruitment2 = recruitmentRepository.save(
-                new Recruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.REG,
+                new Recruitment("2title2", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.REG,
                         VolunteerType.TEENAGER, 9999,0,true, "unicef",
                         new Address("11", "1111", "test", "test"),
                         new Coordinate(1.2F, 2.2F),

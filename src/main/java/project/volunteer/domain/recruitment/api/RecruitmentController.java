@@ -52,7 +52,7 @@ public class RecruitmentController {
                         is_issued)));
     }
 
-    @GetMapping("/recruitment/search")
+    @GetMapping("/recruitment/keyward")
     public ResponseEntity<RecruitmentListSearchResult> recruitmentListByKeyWord(
             @PageableDefault(size = 6) Pageable pageable,
             @RequestParam String keyword) {

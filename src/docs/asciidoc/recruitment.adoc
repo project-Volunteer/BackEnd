@@ -43,20 +43,20 @@ include::{snippets}/recruitment-controller-test/save-recruitment/response-fields
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-controller-test/find-list-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-controller-test/find-list-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/request-headers.adoc[]
 
 *Request Parameters*
-include::{snippets}/recruitment-controller-test/find-list-recruitment/request-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-controller-test/find-list-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-controller-test/find-list-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/response-fields.adoc[]
 
 
 === 봉사 모집글 리스트 키워드 조회
@@ -72,20 +72,20 @@ include::{snippets}/recruitment-controller-test/find-list-recruitment/response-f
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/request-headers.adoc[]
 
 *Request Parameters*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/request-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/response-fields.adoc[]
 
 
 === 봉사 모집글 카운트 조회
