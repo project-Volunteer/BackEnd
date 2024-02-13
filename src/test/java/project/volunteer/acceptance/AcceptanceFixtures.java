@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentSaveResponse;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -45,7 +46,7 @@ public class AcceptanceFixtures {
                 .map(Day::getId)
                 .collect(Collectors.toList());
 
-        Integer recruitmentNo = (Integer) given().log().all()
+        return given().log().all()
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header(AUTHORIZATION_HEADER, token)
                 .multiPart("picture.uploadImage", file)
@@ -77,10 +78,8 @@ public class AcceptanceFixtures {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
-                .as(HashMap.class)
-                .get("no");
-
-        return Long.valueOf(recruitmentNo);
+                .as(RecruitmentSaveResponse.class)
+                .getNo();
     }
 
     public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_요청(String token, Long recruitmentNo) {

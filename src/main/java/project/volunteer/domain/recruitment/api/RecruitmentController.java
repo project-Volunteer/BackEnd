@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentSaveResponse;
 import project.volunteer.domain.recruitment.api.dto.response.StatusResponse;
 import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
@@ -33,10 +34,10 @@ public class RecruitmentController {
     private final RecruitmentQueryUseCase recruitmentQueryService;
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Map<String, Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest request) {
+    public ResponseEntity<RecruitmentSaveResponse> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest request) {
         Long recruitmentNo = recruitmentFacade.registerRecruitment(SecurityUtil.getLoginUserNo(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(getSingleResponseDto("no", recruitmentNo));
+                .body(new RecruitmentSaveResponse(recruitmentNo));
     }
 
     @GetMapping("/recruitment")
