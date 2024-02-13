@@ -108,31 +108,6 @@
 //                .forEach(s -> fileService.deleteFile(s.getFakeImageName()));
 //    }
 //
-//    @DisplayName("정기 모집글 삭제 테스트")
-//    @Test
-//    @WithUserDetails(value = "rctfe1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-//    @Rollback(value = false)
-//    public void deleteRecruitment() throws Exception {
-//        //given & when
-//        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.delete("/recruitment/{recruitmentNo}", saveRecruitmentNo)
-//                        .header(AUTHORIZATION_HEADER, "access Token")
-//                );
-//
-//        //then
-//        result.andExpect(status().isOk())
-//                .andDo(print())
-//                .andDo(
-//                        restDocs.document(
-//                                requestHeaders(
-//                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-//                                ),
-//                                pathParameters(
-//                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-//                                )
-//                        )
-//                );
-//    }
-//
 //    @Disabled
 //    @DisplayName("정기 모집글 방장이 아닌 사용자가 삭제를 시도하다.")
 //    @Test
