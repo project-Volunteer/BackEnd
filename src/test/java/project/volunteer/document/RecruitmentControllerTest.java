@@ -14,6 +14,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getDateFormat;
 import static project.volunteer.document.restdocs.util.DocumentFormatGenerator.getTimeFormat;
@@ -317,7 +318,8 @@ public class RecruitmentControllerTest extends DocumentTest {
                                         fieldWithPath("sido").type(JsonFieldType.STRING).description("시/구 코드"),
                                         fieldWithPath("sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
                                         fieldWithPath("fullName").type(JsonFieldType.STRING).description("전체 주소 이름"),
-                                        fieldWithPath("startDate").type(JsonFieldType.STRING).attributes(getDateFormat())
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING)
+                                                .attributes(getDateFormat())
                                                 .description("봉사 모집 시작 날짜"),
                                         fieldWithPath("endDate").type(JsonFieldType.STRING).attributes(getDateFormat())
                                                 .description("봉사 모집 종료 날짜"),
@@ -331,6 +333,51 @@ public class RecruitmentControllerTest extends DocumentTest {
                                                 .description("현재 봉사 모집글 참여(승인된) 인원"),
                                         fieldWithPath("volunteerType").type(JsonFieldType.STRING)
                                                 .description("Code VolunteerType 참고바람."))
+                        )
+                );
+    }
+
+    @Test
+    public void findRecruitmentCount() throws Exception {
+        //given
+        final MultiValueMap<String, String> query = new LinkedMultiValueMap<>();
+        query.add("volunteering_category", "001");
+        query.add("volunteering_category", "002");
+        query.add("sido", "11");
+        query.add("sigungu", "1111");
+        query.add("volunteering_type", VolunteeringType.REG.getId());
+        query.add("volunteer_type", VolunteerType.TEENAGER.getId());
+        query.add("is_issued", "true");
+
+        //when
+        ResultActions result = mockMvc.perform(get("/recruitment/count")
+                .header(AUTHORIZATION_HEADER, ownerUser)
+                .queryParams(query)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("totalCnt").value(2))
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
+                                ),
+                                requestParameters(
+                                        parameterWithName("volunteering_category").optional()
+                                                .description("Code VolunteeringCategory 참고바람(다중 선택 가능)"),
+                                        parameterWithName("sido").optional().description("시/도 코드"),
+                                        parameterWithName("sigungu").optional().description("시/군/구 코드"),
+                                        parameterWithName("volunteering_type").optional()
+                                                .description("Code VolunteeringType 참고바람."),
+                                        parameterWithName("volunteer_type").optional()
+                                                .description("Code VolunteerType 참고바람."),
+                                        parameterWithName("is_issued").optional().description("봉사 시간 인증 가능 여부")
+                                ),
+                                responseFields(
+                                        fieldWithPath("totalCnt").type(JsonFieldType.NUMBER)
+                                                .description("필터링된 봉사 모집글 개수")
+                                )
                         )
                 );
     }

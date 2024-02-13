@@ -21,9 +21,7 @@ import project.volunteer.global.common.dto.StateResult;
 import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static project.volunteer.global.Interceptor.OrganizationAuth.*;
 
@@ -98,9 +96,4 @@ public class RecruitmentController {
                 .build();
     }
 
-    private Map<String, Object> getSingleResponseDto(String field, Object value) {
-        Map<String, Object> result = new HashMap<>();
-        result.put(field, value);
-        return result;
-    }
 }
