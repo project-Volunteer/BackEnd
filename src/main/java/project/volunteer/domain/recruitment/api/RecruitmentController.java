@@ -92,9 +92,10 @@ public class RecruitmentController {
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @DeleteMapping("/recruitment/{recruitmentNo}")
-    public ResponseEntity recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
+    public ResponseEntity<Void> recruitmentDelete(@PathVariable("recruitmentNo") Long no) {
         recruitmentFacade.deleteRecruitment(no);
-        return new ResponseEntity(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
     }
 
     private Map<String, Object> getSingleResponseDto(String field, Object value) {
