@@ -90,7 +90,8 @@ public abstract class DocumentTest {
 
     protected String AUTHORIZATION_HEADER = "accessToken";
     protected String recruitmentOwnerAccessToken;
-    protected String recruitmentTeamAccessToken;
+    protected String recruitmentTeamAccessToken1;
+    protected String recruitmentTeamAccessToken2;
     protected User ownerUser;
     protected User teamUser1;
     protected User teamUser2;
@@ -105,7 +106,8 @@ public abstract class DocumentTest {
     void setUp() {
         saveBaseData();
         recruitmentOwnerAccessToken = jwtProvider.createAccessToken(ownerUser.getId());
-        recruitmentTeamAccessToken = jwtProvider.createAccessToken(teamUser1.getId());
+        recruitmentTeamAccessToken1 = jwtProvider.createAccessToken(teamUser1.getId());
+        recruitmentTeamAccessToken2 = jwtProvider.createAccessToken(teamUser2.getId());
     }
 
     private void saveBaseData() {

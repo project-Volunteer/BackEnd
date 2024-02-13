@@ -350,32 +350,6 @@
 //                .andExpect(jsonPath("totalCnt").value(10));
 //    }
 //
-//    @Test
-//    @WithUserDetails(value = "rctfqt", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-//    public void findParticipantState() throws Exception {
-//        //given & when
-//        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{no}/status",saveRecruitmentList.get(0).getRecruitmentNo())
-//                .header(AUTHORIZATION_HEADER, "access Token")
-//        );
-//
-//        //then
-//        result.andExpect(status().isOk())
-//                .andExpect(jsonPath("status").value(StateResponse.APPROVED.getId()))
-//                .andDo(
-//                        restDocs.document(
-//                                requestHeaders(
-//                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-//                                ),
-//                                pathParameters(
-//                                        parameterWithName("no").description("봉사 모집글 고유키 PK")
-//                                ),
-//                                responseFields(
-//                                        fieldWithPath("status").type(JsonFieldType.STRING).description("Code ClientState 참고바람.")
-//                                )
-//                        )
-//                );
-//    }
-//
 //    private MockMultipartFile getMockMultipartFile() throws IOException {
 //        return new MockMultipartFile(
 //                "file", "file.PNG", "image/jpg", new FileInputStream("src/main/resources/static/test/file.PNG"));

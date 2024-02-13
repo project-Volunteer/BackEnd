@@ -149,20 +149,20 @@ include::{snippets}/recruitment-controller-test/find-recruitment-detail/response
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/http-request.adoc[]
 
 *Request Path*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/path-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/path-parameters.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/request-headers.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/response-fields.adoc[]
 
 
 === 봉사 모집글 삭제

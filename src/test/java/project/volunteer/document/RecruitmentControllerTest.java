@@ -36,6 +36,7 @@ import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.dto.StateResult;
 
 public class RecruitmentControllerTest extends DocumentTest {
 
@@ -377,6 +378,33 @@ public class RecruitmentControllerTest extends DocumentTest {
                                 responseFields(
                                         fieldWithPath("totalCnt").type(JsonFieldType.NUMBER)
                                                 .description("필터링된 봉사 모집글 개수")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    public void findParticipantState() throws Exception {
+        //given & when
+        ResultActions result = mockMvc.perform(
+                get("/recruitment/{no}/status", recruitment1.getRecruitmentNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken2)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("status").value(StateResult.PENDING.getId()))
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("no").description("봉사 모집글 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("status").type(JsonFieldType.STRING)
+                                                .description("Code ClientState 참고바람.")
                                 )
                         )
                 );

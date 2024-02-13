@@ -193,7 +193,7 @@ public class ScheduleControllerTest extends DocumentTest {
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/schedule",
                                 recruitment1.getRecruitmentNo())
-                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken1)
         );
 
         //then
@@ -251,7 +251,7 @@ public class ScheduleControllerTest extends DocumentTest {
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar",
                                 recruitment1.getRecruitmentNo())
-                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken1)
                         .queryParam("year", searchYear)
                         .queryParam("mon", searchMonth)
         );
@@ -292,7 +292,7 @@ public class ScheduleControllerTest extends DocumentTest {
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}",
                                 recruitment1.getRecruitmentNo(), schedule1.getScheduleNo())
-                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken1)
         );
 
         //then
