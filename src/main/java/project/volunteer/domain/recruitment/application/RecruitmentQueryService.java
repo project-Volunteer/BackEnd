@@ -96,13 +96,13 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
     }
 
     @Override
-    public RecruitmentCountResult searchRecruitmentCount(RecruitmentSearchCond searchCond) {
+    public RecruitmentCountResult searchRecruitmentCount(final RecruitmentSearchCond searchCond) {
         Long recruitmentCount = recruitmentRepository.findRecruitmentCountBy(searchCond);
         return new RecruitmentCountResult(recruitmentCount);
     }
 
     @Override
-    public StateResult searchState(Long userNo, Long recruitmentNo) {
+    public StateResult searchState(final Long userNo, final Long recruitmentNo) {
         Recruitment recruitment = recruitmentRepository.findRecruitmentBy(recruitmentNo, IsDeleted.N, true)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
                         String.format("RecruitmentNo = [%d]", recruitmentNo)));

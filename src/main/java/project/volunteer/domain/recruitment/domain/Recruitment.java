@@ -235,10 +235,6 @@ public class Recruitment extends BaseTimeEntity {
         this.writer = user;
     }
 
-    public void setIsPublished(Boolean isPublished) {
-        this.isPublished = isPublished;
-    }
-
     public void setTimetable(Timetable timetable) {
         this.timetable = timetable;
     }
