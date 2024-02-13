@@ -10,9 +10,9 @@ import project.volunteer.domain.sehedule.domain.Schedule;
 public interface ScheduleQueryUseCase {
     List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay, LocalDate endDay);
 
-    ScheduleDetailSearchResult searchScheduleDetail(Long scheduleNo);
+    ScheduleDetailSearchResult searchScheduleDetail(Long userNo, Long scheduleNo);
 
-    ScheduleDetailSearchResult searchClosestScheduleDetail(Long recruitmentNo, LocalDate now);
+    ScheduleDetailSearchResult searchClosestScheduleDetail(Long userNo, Long recruitmentNo);
 
     // 삭제 되지 않고, 모집 중인 일정
     Schedule findScheduleInProgress(Long scheduleNo);

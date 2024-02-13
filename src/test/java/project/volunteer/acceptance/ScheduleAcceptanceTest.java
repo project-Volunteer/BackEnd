@@ -28,6 +28,8 @@ import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
@@ -49,7 +51,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 1000, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
@@ -73,7 +75,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 1000, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
@@ -97,7 +99,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 50, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
@@ -121,7 +123,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -150,7 +152,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -179,7 +181,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 50, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -204,11 +206,13 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
     @DisplayName("일정 수정 시 일정 모집 인원은 현재 일정 참여자 수보다 적을 수 없다.")
     @Test
     void editScheduleLessScheduleParticipant() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-09T10:00:00Z"));
+
         final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 50, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
@@ -244,7 +248,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -272,7 +276,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .extract()
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
-                () -> assertThat(response.hasData()).isTrue(),
+                () -> assertThat(response.getHasData()).isTrue(),
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo3)
         );
     }
@@ -284,7 +288,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -320,7 +324,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -345,7 +349,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -382,7 +386,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -405,7 +409,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -447,7 +451,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -491,7 +495,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -535,7 +539,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -581,7 +585,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -629,7 +633,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -686,7 +690,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -732,7 +736,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -783,7 +787,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(

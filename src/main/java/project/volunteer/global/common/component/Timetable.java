@@ -49,5 +49,12 @@ public class Timetable {
                 .build();
     }
 
+    public boolean isDoneByStartDate(LocalDate now) {
+        return startDay.isBefore(now);
+    }
+
+    public boolean isDoneByEndDate(LocalDate now) {
+        return endDay.isBefore(now);
+    }
 
 }

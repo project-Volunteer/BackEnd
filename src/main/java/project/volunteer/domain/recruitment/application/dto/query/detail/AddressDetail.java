@@ -1,18 +1,15 @@
 package project.volunteer.domain.recruitment.application.dto.query.detail;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
 
 @Getter
-@Setter
 @NoArgsConstructor
-@ToString
+@AllArgsConstructor
 public class AddressDetail {
-
     private String sido;
     private String sigungu;
     private String details;

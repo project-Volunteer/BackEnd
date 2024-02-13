@@ -89,7 +89,7 @@ public class ScheduleController {
             @PathVariable("scheduleNo") Long scheduleNo) {
 
         ScheduleDetailSearchResult result = scheduleQueryFacade.findScheduleDetail(SecurityUtil.getLoginUserNo(),
-                scheduleNo);
+                recruitmentNo, scheduleNo);
         return ResponseEntity.ok(result);
     }
 }

@@ -288,6 +288,7 @@ public class ScheduleControllerTest extends DocumentTest {
     @DisplayName("일정 상세 조회에 성공하다.")
     public void detailSchedule() throws Exception {
         // given && when
+        given(clock.instant()).willReturn(Instant.parse("2024-02-09T10:00:00Z"));
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}",
                                 recruitment.getRecruitmentNo(), schedule1.getScheduleNo())

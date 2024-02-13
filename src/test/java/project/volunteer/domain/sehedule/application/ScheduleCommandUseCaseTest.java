@@ -9,6 +9,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import project.volunteer.domain.user.domain.Gender;
+import project.volunteer.domain.user.domain.Role;
+import project.volunteer.domain.user.domain.User;
 import project.volunteer.support.ServiceTest;
 import project.volunteer.domain.recruitment.application.dto.command.RepeatPeriodCreateCommand;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
@@ -28,6 +31,8 @@ import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 
 public class ScheduleCommandUseCaseTest extends ServiceTest {
+    private final User writer = new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                    "http://", true, true, true, Role.USER, "kakao", "1234", null);
     private final Address address = new Address("111", "11", "test", "test");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
@@ -49,10 +54,12 @@ public class ScheduleCommandUseCaseTest extends ServiceTest {
             .likeCount(0)
             .isPublished(true)
             .isDeleted(IsDeleted.N)
+            .writer(writer)
             .build();
 
     @BeforeEach
     void setUp() {
+        userRepository.save(writer);
         recruitmentRepository.save(recruitment);
     }
 

@@ -33,16 +33,16 @@ public enum StateResult implements CodeCommonType {
 
     public static StateResult getRecruitmentState(Optional<ParticipantState> state, boolean isDone,
                                                   boolean isFull) {
-        if (isDone) {
-            return StateResult.DONE;
-        }
-
         if (state.isPresent() && state.get().equals(ParticipantState.JOIN_REQUEST)) {
             return StateResult.PENDING;
         }
 
         if (state.isPresent() && state.get().equals(ParticipantState.JOIN_APPROVAL)) {
             return StateResult.APPROVED;
+        }
+
+        if (isDone) {
+            return StateResult.DONE;
         }
 
         if (isFull) {
@@ -62,16 +62,16 @@ public enum StateResult implements CodeCommonType {
             return StateResult.COMPLETE_APPROVED;
         }
 
-        if (isDone) {
-            return StateResult.DONE;
-        }
-
         if (state.isPresent() && state.get().equals(ParticipantState.PARTICIPATING)) {
             return StateResult.PARTICIPATING;
         }
 
         if (state.isPresent() && state.get().equals(ParticipantState.PARTICIPATION_CANCEL)) {
             return StateResult.CANCELLING;
+        }
+
+        if (isDone) {
+            return StateResult.DONE;
         }
 
         if (isFull) {

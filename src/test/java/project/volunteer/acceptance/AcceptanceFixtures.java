@@ -7,12 +7,16 @@ import io.restassured.response.Response;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelledParticipantListResponse;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
@@ -23,7 +27,6 @@ import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponse;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleUpsertResponse;
-import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.global.common.component.HourFormat;
 
 public class AcceptanceFixtures {
@@ -33,10 +36,14 @@ public class AcceptanceFixtures {
                                  VolunteeringCategory volunteeringCategory, String organization,
                                  String sido, String sigungu, String details, String fullName, Float latitude,
                                  Float longitude, Boolean isIssued, VolunteerType volunteerType,
-                                 Integer volunteerNum, VolunteeringType volunteeringType, String startDay,
-                                 String endDay, HourFormat hourFormat, String startTime, Integer progressTime,
-                                 String period, String week, List<String> days, String title, String content,
+                                 Integer maxParticipationNum, VolunteeringType volunteeringType, String startDate,
+                                 String endDate, HourFormat hourFormat, String startTime, Integer progressTime,
+                                 Period period, Week week, List<Day> days, String title, String content,
                                  Boolean isPublished, Boolean isStaticImage, File file) {
+
+        List<String> dayOfWeeks = days.stream()
+                .map(Day::getId)
+                .collect(Collectors.toList());
 
         Integer recruitmentNo = (Integer) given().log().all()
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -46,9 +53,9 @@ public class AcceptanceFixtures {
                 .formParam("organizationName", organization)
                 .formParam("isIssued", isIssued)
                 .formParam("volunteerType", volunteerType.getId())
-                .formParam("volunteerNum", volunteerNum)
-                .formParam("startDay", startDay)
-                .formParam("endDay", endDay)
+                .formParam("maxParticipationNum", maxParticipationNum)
+                .formParam("startDate", startDate)
+                .formParam("endDate", endDate)
                 .formParam("hourFormat", hourFormat.getId())
                 .formParam("startTime", startTime)
                 .formParam("progressTime", progressTime)
@@ -62,9 +69,9 @@ public class AcceptanceFixtures {
                 .formParam("address.latitude", latitude)
                 .formParam("address.longitude", longitude)
                 .formParam("volunteeringType", volunteeringType.getId())
-                .formParam("period", period)
-                .formParam("week", week)
-                .formParam("days", days)
+                .formParam("period", period.getId())
+                .formParam("week", week.getId())
+                .formParam("dayOfWeeks", dayOfWeeks)
                 .formParam("picture.isStaticImage", isStaticImage)
                 .when().post("/recruitment")
                 .then().log().all()

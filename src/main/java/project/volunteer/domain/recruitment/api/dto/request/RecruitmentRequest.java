@@ -63,10 +63,13 @@ public class RecruitmentRequest {
     @Range(min = 1, max = 24)
     private Integer progressTime;
 
+    @NotEmpty
     private String period;
 
+    @NotEmpty
     private String week;
 
+    @NotNull
     private List<String> dayOfWeeks;
 
     @NotNull
@@ -82,11 +85,11 @@ public class RecruitmentRequest {
 
     @Valid
     @NotNull
-    private AddressRequest addressRequest;
+    private AddressRequest address;
 
     @Valid
     @NotNull
-    private PictureRequest pictureRequest;
+    private PictureRequest picture;
 
     public RecruitmentCreateCommand toCommand() {
         return new RecruitmentCreateCommand(
@@ -95,12 +98,12 @@ public class RecruitmentRequest {
                 VolunteeringType.of(volunteeringType),
                 LegacyCodeEnumValueConverterUtils.ofLegacyCode(VolunteerType.class, volunteerType),
                 maxParticipationNum, isIssued, organizationName, isPublished,
-                new Address(addressRequest.getSido(), addressRequest.getSigungu(), addressRequest.getDetails(),
-                        addressRequest.getFullName()),
-                new Coordinate(addressRequest.getLatitude(), addressRequest.getLongitude()),
+                new Address(address.getSido(), address.getSigungu(), address.getDetails(),
+                        address.getFullName()),
+                new Coordinate(address.getLatitude(), address.getLongitude()),
                 Timetable.of(startDate, endDate, hourFormat, startTime, progressTime),
                 RepeatPeriodCreateCommand.of(period, week, dayOfWeeks),
-                pictureRequest.getIsStaticImage(), pictureRequest.getUploadImage());
+                picture.getIsStaticImage(), picture.getUploadImage());
     }
 
 }
