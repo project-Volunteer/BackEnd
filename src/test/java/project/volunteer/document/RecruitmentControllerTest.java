@@ -144,7 +144,7 @@ public class RecruitmentControllerTest extends DocumentTest {
     public void deleteRecruitment() throws Exception {
         //given & when
         ResultActions result = mockMvc.perform(
-                delete("/recruitment/{recruitmentNo}", recruitment.getRecruitmentNo())
+                delete("/recruitment/{recruitmentNo}", recruitment1.getRecruitmentNo())
                         .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
         );
 
@@ -168,7 +168,7 @@ public class RecruitmentControllerTest extends DocumentTest {
     public void findRecruitmentDetail() throws Exception {
         //given & then
         ResultActions result = mockMvc.perform(
-                get("/recruitment/{no}", recruitment.getRecruitmentNo())
+                get("/recruitment/{no}", recruitment1.getRecruitmentNo())
                         .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
         );
 
@@ -251,10 +251,86 @@ public class RecruitmentControllerTest extends DocumentTest {
                                                 .optional().description("Code Day 참고바람. 비정기일 경우 빈배열"),
 
                                         fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN)
-                                                .description("정적/동적 이미지 구분"),
+                                                .description("정적/업로드 이미지 구분"),
                                         fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING)
                                                 .optional().description("업로드 이미지 URL, isStaticImage True 일 경우 NULL")
                                 )
+                        )
+                );
+    }
+
+    @Test
+    public void findListRecruitment() throws Exception {
+        //given
+        final MultiValueMap<String, String> query = new LinkedMultiValueMap<>();
+        query.add("page", "0");
+        query.add("volunteering_category", "001");
+        query.add("volunteering_category", "002");
+        query.add("sido", "11");
+        query.add("sigungu", "1111");
+        query.add("volunteering_type", VolunteeringType.REG.getId());
+        query.add("volunteer_type", VolunteerType.TEENAGER.getId());
+        query.add("is_issued", "true");
+
+        //when
+        ResultActions result = mockMvc.perform(get("/recruitment")
+                .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
+                .queryParams(query)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
+                                ),
+                                requestParameters(
+                                        parameterWithName("page").optional().description("페이지 번호"),
+                                        parameterWithName("volunteering_category").optional()
+                                                .description("Code VolunteeringCategory 참고바람(다중 선택 가능)"),
+                                        parameterWithName("sido").optional().description("시/도 코드"),
+                                        parameterWithName("sigungu").optional().description("시/군/구 코드"),
+                                        parameterWithName("fullName").optional().description("전체 주소 이름"),
+                                        parameterWithName("volunteering_type").optional()
+                                                .description("Code VolunteeringType 참고바람."),
+                                        parameterWithName("volunteer_type").optional()
+                                                .description("Code VolunteerType 참고바람."),
+                                        parameterWithName("is_issued").optional().description("봉사 시간 인증 가능 여부")
+                                ),
+                                responseFields(
+                                        fieldWithPath("isLast").type(JsonFieldType.BOOLEAN)
+                                                .description("마지막 봉사 모집글 유무"),
+                                        fieldWithPath("lastId").type(JsonFieldType.NUMBER)
+                                                .description("응답 봉사 모집글 리스트 중 마지막 모집글 고유키 PK"),
+                                        fieldWithPath("recruitmentList").type(JsonFieldType.ARRAY)
+                                                .description("봉사 모집글 리스트")
+                                ).andWithPrefix("recruitmentList.[].",
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING)
+                                                .description("Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN)
+                                                .description("정적/업로드 이미지 구분"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING).optional()
+                                                .description("업로드 이미지 URL, isStaticImage True 일 경우 NULL"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("봉사 모집글 제목"),
+                                        fieldWithPath("sido").type(JsonFieldType.STRING).description("시/구 코드"),
+                                        fieldWithPath("sigungu").type(JsonFieldType.STRING).description("시/군/구 코드"),
+                                        fieldWithPath("fullName").type(JsonFieldType.STRING).description("전체 주소 이름"),
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING).attributes(getDateFormat())
+                                                .description("봉사 모집 시작 날짜"),
+                                        fieldWithPath("endDate").type(JsonFieldType.STRING).attributes(getDateFormat())
+                                                .description("봉사 모집 종료 날짜"),
+                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING)
+                                                .description("Code VolunteeringType 참고바람"),
+                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN)
+                                                .description("봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("maxParticipationNum").type(JsonFieldType.NUMBER)
+                                                .description("봉사 모집 인원"),
+                                        fieldWithPath("currentParticipationNum").type(JsonFieldType.NUMBER)
+                                                .description("현재 봉사 모집글 참여(승인된) 인원"),
+                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING)
+                                                .description("Code VolunteerType 참고바람."))
                         )
                 );
     }
