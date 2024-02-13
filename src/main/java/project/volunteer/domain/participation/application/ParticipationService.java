@@ -21,7 +21,7 @@ public interface ParticipationService {
     public void approvalParticipant(Recruitment recruitment, List<Long> recruitmentParticipationNos);
 
     //참여자 강제 탈퇴(Only 방장)
-    public void deportParticipant(Recruitment recruitment, User user);
+    public void deportParticipant(Recruitment recruitment, Long recruitmentParticipationNo);
 
     public AllParticipantDetails findAllParticipantDto(Long recruitmentNo);
 

@@ -40,7 +40,7 @@ public class ParticipationController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/kick")
     public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto, @PathVariable("recruitmentNo")Long no){
-        participationFacade.deportParticipantVolunteerTeam(dto.getUserNo(), no);
+        participationFacade.deportParticipantVolunteerTeam(dto.getRecruitmentParticipationNo(), no);
         return ResponseEntity.ok().build();
     }
 

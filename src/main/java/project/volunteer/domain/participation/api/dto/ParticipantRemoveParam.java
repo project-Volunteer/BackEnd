@@ -14,5 +14,5 @@ import javax.validation.constraints.NotNull;
 public class ParticipantRemoveParam {
 
     @NotNull
-    private Long userNo;
+    private Long recruitmentParticipationNo;
 }

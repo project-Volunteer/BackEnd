@@ -45,12 +45,12 @@ public class ParticipationFacade {
     }
 
     @Transactional
-    public void deportParticipantVolunteerTeam(Long userNo, Long recruitmentNo){
-        User user = userService.findUser(userNo);
+    public void deportParticipantVolunteerTeam(Long recruitmentParticipationNo, Long recruitmentNo){
+//        User user = userService.findUser(recruitmentParticipationNo);
 
         Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
 
-        participationService.deportParticipant(recruitment, user);
+        participationService.deportParticipant(recruitment, recruitmentParticipationNo);
     }
 
 }

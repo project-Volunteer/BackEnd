@@ -32,7 +32,8 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     @Query("SELECT p FROM Participant p WHERE p.participantNo in :nos")
     List<Participant> findByParticipantNoIn(@Param("nos") List<Long> participationNos);
 
-
+    @Query("SELECT p FROM Participant p WHERE p.participantNo=:no AND p.state=:state")
+    Optional<Participant> findBy(@Param("no") Long recruitmentParticipationNo, @Param("state") ParticipantState state);
 
 
 

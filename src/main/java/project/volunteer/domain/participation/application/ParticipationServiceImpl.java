@@ -93,12 +93,15 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void deportParticipant(Recruitment recruitment, User user) {
-        Participant findState = participantRepository.findByRecruitmentAndParticipantAndState(recruitment, user, ParticipantState.JOIN_APPROVAL)
+    public void deportParticipant(Recruitment recruitment, Long recruitmentParticipationNo) {
+//        Participant findState = participantRepository.findByRecruitmentAndParticipantAndState(recruitment, user, ParticipantState.JOIN_APPROVAL)
+//                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
+//                        String.format("UserNo = [%d], RecruitmentNo = [%d]", user.getUserNo(), recruitment.getRecruitmentNo())));
+        Participant participant = participantRepository.findBy(recruitmentParticipationNo, ParticipantState.JOIN_APPROVAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("UserNo = [%d], RecruitmentNo = [%d]", user.getUserNo(), recruitment.getRecruitmentNo())));
+                        String.format("ParticipationNo = [%d]", recruitmentParticipationNo)));
 
-        findState.updateState(ParticipantState.DEPORT);
+        participant.updateState(ParticipantState.DEPORT);
 
         //봉사 모집글 팀원인원 감소
         recruitment.decreaseTeamMember();
