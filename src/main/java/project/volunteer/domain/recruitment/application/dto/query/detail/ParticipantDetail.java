@@ -6,7 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParticipantDetail {
-    private Long userNo;
+    private Long recruitmentParticipationNo;
     private String nickName;
     private String imageUrl;
 

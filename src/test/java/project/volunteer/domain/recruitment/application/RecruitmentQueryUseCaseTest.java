@@ -76,9 +76,9 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
                 () -> assertThat(result.getAuthor().getImageUrl()).isEqualTo(writer.getPicture()),
                 () -> assertThat(result.getRepeatPeriod().getPeriod()).isEqualTo(Period.WEEK.getId()),
                 () -> assertThat(result.getRepeatPeriod().getWeek()).isEqualTo(Week.NONE.getId()),
-                () -> assertThat(result.getRepeatPeriod().getDays()).hasSize(2)
+                () -> assertThat(result.getRepeatPeriod().getDayOfWeeks()).hasSize(2)
                         .containsExactlyInAnyOrder(Day.MON.getId(), Day.TUES.getId()),
-                () -> assertThat(result.getApprovalParticipant()).hasSize(1)
+                () -> assertThat(result.getApprovedParticipant()).hasSize(1)
                         .extracting("userNo", "nickName", "imageUrl")
                         .containsExactlyInAnyOrder(tuple(user2.getUserNo(), user2.getNickName(), userUploadImagePath2)),
                 () -> assertThat(result.getRequiredParticipant()).hasSize(1)

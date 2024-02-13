@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -16,6 +15,6 @@ import java.util.List;
 public class ParticipantAddParam {
 
     @NotEmpty
-    private List<Long> userNos;
+    private List<Long> recruitmentParticipationNos;
 
 }

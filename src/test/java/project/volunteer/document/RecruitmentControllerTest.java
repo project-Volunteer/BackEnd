@@ -3,6 +3,7 @@ package project.volunteer.document;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -138,7 +139,7 @@ public class RecruitmentControllerTest extends DocumentTest {
                 );
     }
 
-    @DisplayName("정기 모집글 삭제에 성공하다.")
+    @DisplayName("봉사 모집글 삭제에 성공하다.")
     @Test
     public void deleteRecruitment() throws Exception {
         //given & when
@@ -157,6 +158,102 @@ public class RecruitmentControllerTest extends DocumentTest {
                                 ),
                                 pathParameters(
                                         parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
+                                )
+                        )
+                );
+    }
+
+    @DisplayName("봉사 상세 조회에 성공하다.")
+    @Test
+    public void findRecruitmentDetail() throws Exception {
+        //given & then
+        ResultActions result = mockMvc.perform(
+                get("/recruitment/{no}", recruitment.getRecruitmentNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).optional().description("JWT Access Token")
+                                ),
+                                responseFields(
+                                        fieldWithPath("no").type(JsonFieldType.NUMBER)
+                                                .description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("volunteeringCategory").type(JsonFieldType.STRING)
+                                                .description("Code VolunteeringCategory 참고바람"),
+                                        fieldWithPath("organizationName").type(JsonFieldType.STRING)
+                                                .description("기관 이름"),
+                                        fieldWithPath("isIssued").type(JsonFieldType.BOOLEAN)
+                                                .description("봉사 시간 인증 가능 여부"),
+                                        fieldWithPath("volunteeringType").type(JsonFieldType.STRING)
+                                                .description("Code VolunteerType 참고바람."),
+                                        fieldWithPath("maxVolunteerNum").type(JsonFieldType.NUMBER)
+                                                .description("봉사 모집 인원"),
+                                        fieldWithPath("volunteerType").type(JsonFieldType.STRING)
+                                                .description("Code VolunteerType 참고바람."),
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING)
+                                                .attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("endDate").type(JsonFieldType.STRING)
+                                                .attributes(getDateFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("startTime").type(JsonFieldType.STRING)
+                                                .attributes(getTimeFormat()).description("봉사 모집글 고유키 PK"),
+                                        fieldWithPath("hourFormat").type(JsonFieldType.STRING)
+                                                .description("Code HourFormat 참고바람."),
+                                        fieldWithPath("progressTime").type(JsonFieldType.NUMBER)
+                                                .description("정기 봉사 일정 진행 시간"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING)
+                                                .description("봉사 모집글 제목"),
+                                        fieldWithPath("content").type(JsonFieldType.STRING)
+                                                .description("봉사 모집글 본문"),
+
+                                        fieldWithPath("address.sido").type(JsonFieldType.STRING)
+                                                .description("시/구 코드"),
+                                        fieldWithPath("address.sigungu").type(JsonFieldType.STRING)
+                                                .description("시/군/구 코드"),
+                                        fieldWithPath("address.details").type(JsonFieldType.STRING)
+                                                .description("상세주소"),
+                                        fieldWithPath("address.fullName").type(JsonFieldType.STRING)
+                                                .description("전체 주소 이름"),
+                                        fieldWithPath("address.latitude").type(JsonFieldType.NUMBER)
+                                                .description("위도"),
+                                        fieldWithPath("address.longitude").type(JsonFieldType.NUMBER)
+                                                .description("경도"),
+
+                                        fieldWithPath("approvedParticipant[].recruitmentParticipationNo").type(
+                                                        JsonFieldType.NUMBER)
+                                                .description("봉사 참가 승인된 참가자 고유키 PK"),
+                                        fieldWithPath("approvedParticipant[].nickName").type(JsonFieldType.STRING)
+                                                .description("봉사 참가 승인된 참가자 닉네임"),
+                                        fieldWithPath("approvedParticipant[].imageUrl").type(JsonFieldType.STRING)
+                                                .description("봉사 참가 승인된 참가자 이미지 URL"),
+
+                                        fieldWithPath("requiredParticipant[].recruitmentParticipationNo").type(
+                                                        JsonFieldType.NUMBER)
+                                                .description("봉사 참가 미 승인된 참가자 고유키 PK"),
+                                        fieldWithPath("requiredParticipant[].nickName").type(JsonFieldType.STRING)
+                                                .description("봉사 참가 미승인된 참가자 닉네임"),
+                                        fieldWithPath("requiredParticipant[].imageUrl").type(JsonFieldType.STRING)
+                                                .description("봉사 참가 미승인된 참가자 이미지 URL"),
+
+                                        fieldWithPath("author.nickName").type(JsonFieldType.STRING)
+                                                .description("봉사 모집글 작성자 닉네임"),
+                                        fieldWithPath("author.imageUrl").type(JsonFieldType.STRING)
+                                                .description("봉사 모집글 이미지 URL"),
+
+                                        fieldWithPath("repeatPeriod.period").type(JsonFieldType.STRING)
+                                                .optional().description("Code Period 참고바람. 비정기일 경우 NONE"),
+                                        fieldWithPath("repeatPeriod.week").type(JsonFieldType.STRING)
+                                                .optional().description("Code Week 참고바람. 비정기 혹은 Period가 매주일 경우 NONE"),
+                                        fieldWithPath("repeatPeriod.dayOfWeeks").type(JsonFieldType.ARRAY)
+                                                .optional().description("Code Day 참고바람. 비정기일 경우 빈배열"),
+
+                                        fieldWithPath("picture.isStaticImage").type(JsonFieldType.BOOLEAN)
+                                                .description("정적/동적 이미지 구분"),
+                                        fieldWithPath("picture.uploadImage").type(JsonFieldType.STRING)
+                                                .optional().description("업로드 이미지 URL, isStaticImage True 일 경우 NULL")
                                 )
                         )
                 );

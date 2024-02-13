@@ -10,13 +10,14 @@ import project.volunteer.global.common.component.ParticipantState;
 @NoArgsConstructor
 public class RecruitmentParticipantDetail {
     private ParticipantState state;
-    private Long userNo;
+    private Long recruitmentParticipationNo;
     private String nickName;
     private String imageUrl;
 
-    public RecruitmentParticipantDetail(ParticipantState state, Long userNo, String nickName, String imageUrl){
+    public RecruitmentParticipantDetail(ParticipantState state, Long recruitmentParticipationNo, String nickName,
+                                        String imageUrl) {
         this.state = state;
-        this.userNo = userNo;
+        this.recruitmentParticipationNo = recruitmentParticipationNo;
         this.nickName = nickName;
         this.imageUrl = imageUrl;
     }

@@ -33,7 +33,7 @@ public class ParticipationController {
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/approval")
     public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto, @PathVariable("recruitmentNo")Long no){
-        participationFacade.approvalParticipantVolunteerTeam(dto.getUserNos(), no);
+        participationFacade.approvalParticipantVolunteerTeam(dto.getRecruitmentParticipationNos(), no);
         return ResponseEntity.ok().build();
     }
 

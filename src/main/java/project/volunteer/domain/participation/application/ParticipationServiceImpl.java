@@ -67,16 +67,17 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void approvalParticipant(Recruitment recruitment, List<Long> userNo) {
+    public void approvalParticipant(Recruitment recruitment, List<Long> recruitmentParticipationNos) {
         //팀원 승인 가능 인원 검증
         Integer remainNum = recruitment.getAvailableTeamMemberCount();
-        if(remainNum < userNo.size()){
+        if(remainNum < recruitmentParticipationNos.size()){
             throw new BusinessException(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY, new Integer[]{remainNum},
                     String.format("RecruitmentNo = [%d], Available participant num = [%d], " +
-                            "Approval participants num = [%d]", recruitment.getRecruitmentNo(), remainNum, userNo.size()));
+                            "Approval participants num = [%d]", recruitment.getRecruitmentNo(), remainNum, recruitmentParticipationNos.size()));
         }
 
-        List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitment.getRecruitmentNo(), userNo);
+//        List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitment.getRecruitmentNo(), userNo);
+        List<Participant> findParticipants = participantRepository.findByParticipantNoIn(recruitmentParticipationNos);
         for(Participant p : findParticipants){
             if(!p.isEqualState(ParticipantState.JOIN_REQUEST)){
                 throw new BusinessException(ErrorCode.INVALID_STATE,
@@ -115,9 +116,9 @@ public class ParticipationServiceImpl implements ParticipationService{
         participants.stream()
                 .forEach(p -> {
                     if(p.getState().equals(ParticipantState.JOIN_REQUEST)){
-                        requiredList.add(new ParticipantDetail(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                        requiredList.add(new ParticipantDetail(p.getRecruitmentParticipationNo(), p.getNickName(), p.getImageUrl()));
                     }else{
-                        approvedList.add(new ParticipantDetail(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                        approvedList.add(new ParticipantDetail(p.getRecruitmentParticipationNo(), p.getNickName(), p.getImageUrl()));
                     }
                 });
 

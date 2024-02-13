@@ -15,7 +15,7 @@ import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 public class RepeatPeriodDetail {
     private String period;
     private String week;
-    private List<String> days;
+    private List<String> dayOfWeeks;
 
     public static RepeatPeriodDetail from(List<RepeatPeriod> repeatPeriods) {
         String period = repeatPeriods.get(0).getPeriod().getId();

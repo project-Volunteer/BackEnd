@@ -36,7 +36,7 @@ public class RecruitmentDetailSearchResult {
 
     private RepeatPeriodDetail repeatPeriod;
 
-    private List<ParticipantDetail> approvalParticipant;
+    private List<ParticipantDetail> approvedParticipant;
     private List<ParticipantDetail> requiredParticipant;
 
     public static RecruitmentDetailSearchResult of(RecruitmentAndUserDetail recruitmentAndUserDetail,
@@ -49,13 +49,13 @@ public class RecruitmentDetailSearchResult {
         WriterDetail writerDetail = new WriterDetail(recruitmentAndUserDetail.getUserNickName(),
                 recruitmentAndUserDetail.getUserImagePath());
 
-        List<ParticipantDetail> approvalParticipant = participantDetails.stream()
+        List<ParticipantDetail> approvedParticipant = participantDetails.stream()
                 .filter(participantDetail -> participantDetail.getState().equals(ParticipantState.JOIN_APPROVAL))
-                .map(participantDetail -> new ParticipantDetail(participantDetail.getUserNo(), participantDetail.getNickName(), participantDetail.getImageUrl()))
+                .map(participantDetail -> new ParticipantDetail(participantDetail.getRecruitmentParticipationNo(), participantDetail.getNickName(), participantDetail.getImageUrl()))
                 .collect(Collectors.toList());
         List<ParticipantDetail> requiredParticipant = participantDetails.stream()
                 .filter(participantDetail -> participantDetail.getState().equals(ParticipantState.JOIN_REQUEST))
-                .map(participantDetail -> new ParticipantDetail(participantDetail.getUserNo(), participantDetail.getNickName(), participantDetail.getImageUrl()))
+                .map(participantDetail -> new ParticipantDetail(participantDetail.getRecruitmentParticipationNo(), participantDetail.getNickName(), participantDetail.getImageUrl()))
                 .collect(Collectors.toList());
 
         return new RecruitmentDetailSearchResult(
@@ -77,7 +77,7 @@ public class RecruitmentDetailSearchResult {
                 pictureDetail,
                 writerDetail,
                 repeatPeriodDetail,
-                approvalParticipant,
+                approvedParticipant,
                 requiredParticipant
         );
     }

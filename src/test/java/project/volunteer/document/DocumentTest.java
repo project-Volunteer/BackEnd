@@ -17,13 +17,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.document.restdocs.config.RestDocsConfiguration;
+import project.volunteer.domain.image.dao.ImageRepository;
+import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.RepeatPeriod;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.repository.RepeatPeriodRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -35,6 +43,7 @@ import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.jwt.util.JwtProvider;
 
@@ -67,17 +76,24 @@ public abstract class DocumentTest {
     protected RecruitmentRepository recruitmentRepository;
 
     @Autowired
+    protected RepeatPeriodRepository repeatPeriodRepository;
+
+    @Autowired
     protected ScheduleRepository scheduleRepository;
 
     @Autowired
     protected ParticipantRepository participantRepository;
+
+    @Autowired
+    protected ImageRepository imageRepository;
 
 
     protected String AUTHORIZATION_HEADER = "accessToken";
     protected String recruitmentOwnerAccessToken;
     protected String recruitmentTeamAccessToken;
     protected User ownerUser;
-    protected User teamUser;
+    protected User teamUser1;
+    protected User teamUser2;
     protected Recruitment recruitment;
     protected Schedule schedule1;
     protected Schedule schedule2;
@@ -88,7 +104,7 @@ public abstract class DocumentTest {
     void setUp() {
         saveBaseData();
         recruitmentOwnerAccessToken = jwtProvider.createAccessToken(ownerUser.getId());
-        recruitmentTeamAccessToken = jwtProvider.createAccessToken(teamUser.getId());
+        recruitmentTeamAccessToken = jwtProvider.createAccessToken(teamUser1.getId());
     }
 
     private void saveBaseData() {
@@ -104,6 +120,12 @@ public abstract class DocumentTest {
                         new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
                                 LocalTime.now(), 10),
                         0, 0, true, IsDeleted.N, ownerUser));
+        repeatPeriodRepository.save(new RepeatPeriod(Period.WEEK, Week.NONE, Day.MON, recruitment, IsDeleted.N));
+        repeatPeriodRepository.save(new RepeatPeriod(Period.WEEK, Week.NONE, Day.TUES, recruitment, IsDeleted.N));
+        Storage storage = new Storage("http://www.s3...", "test", "test", "png");
+        Image image = new Image(RealWorkCode.RECRUITMENT, recruitment.getRecruitmentNo());
+        image.setStorage(storage);
+        imageRepository.save(image);
 
         schedule1 = scheduleRepository.save(
                 new Schedule(new Timetable(LocalDate.of(2024, 2, 10), LocalDate.of(2024, 2, 10), HourFormat.AM,
@@ -129,10 +151,15 @@ public abstract class DocumentTest {
                         100, IsDeleted.N, 0, recruitment)
         );
 
-        teamUser = userRepository.save(
+        teamUser1 = userRepository.save(
                 new User("soeun1234", "password", "soeun", "test@email.com", Gender.M, LocalDate.of(2001, 6, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        participantRepository.save(new Participant(recruitment, teamUser, ParticipantState.JOIN_APPROVAL));
+        participantRepository.save(new Participant(recruitment, teamUser1, ParticipantState.JOIN_APPROVAL));
+
+        teamUser2 = userRepository.save(
+                new User("chang1234", "password", "chang", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
+        participantRepository.save(new Participant(recruitment, teamUser2, ParticipantState.JOIN_REQUEST));
 
     }
 

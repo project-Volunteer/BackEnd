@@ -38,10 +38,10 @@ public class ParticipationFacade {
     }
 
     @Transactional
-    public void approvalParticipantVolunteerTeam(List<Long> userNos, Long recruitmentNo){
+    public void approvalParticipantVolunteerTeam(List<Long> recruitmentParticipationNos, Long recruitmentNo){
         Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
 
-        participationService.approvalParticipant(recruitment, userNos);
+        participationService.approvalParticipant(recruitment, recruitmentParticipationNos);
     }
 
     @Transactional

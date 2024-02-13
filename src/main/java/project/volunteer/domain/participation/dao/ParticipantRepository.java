@@ -17,7 +17,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     List<Participant> findByRecruitment_RecruitmentNo(Long recruitmentNo);
     @Query("select new project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail" +
-            "(p.state, u.userNo, u.nickName, coalesce(s.imagePath, u.picture)) " +
+            "(p.state, p.participantNo, u.nickName, coalesce(s.imagePath, u.picture)) " +
             "from Participant p " +
             "join p.participant as u " +
             "left join Image i " +
@@ -28,6 +28,14 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             "where p.recruitment.recruitmentNo=:no " +
             "and p.state in :states ")
     List<RecruitmentParticipantDetail> findParticipantsDetailBy(@Param("no") Long recruitmentNo, @Param("states") List<ParticipantState> states);
+
+    @Query("SELECT p FROM Participant p WHERE p.participantNo in :nos")
+    List<Participant> findByParticipantNoIn(@Param("nos") List<Long> participationNos);
+
+
+
+
+
 
     @Query("SELECT p.state FROM Participant p "
             + "WHERE p.recruitment.recruitmentNo=:recruitmentNo AND p.participant.userNo=:userNo")

@@ -123,17 +123,17 @@ include::{snippets}/recruitment-query-controller-test/find-count-recruitment/res
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/request-headers.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/response-fields.adoc[]
 
 
 === 봉사 모집글 클라이언트 상태 조회

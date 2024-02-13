@@ -18,7 +18,7 @@ public interface ParticipationService {
     //팀 탈퇴(미정)
 
     //참가 승인(Only 방장)
-    public void approvalParticipant(Recruitment recruitment, List<Long> userNo);
+    public void approvalParticipant(Recruitment recruitment, List<Long> recruitmentParticipationNos);
 
     //참여자 강제 탈퇴(Only 방장)
     public void deportParticipant(Recruitment recruitment, User user);
