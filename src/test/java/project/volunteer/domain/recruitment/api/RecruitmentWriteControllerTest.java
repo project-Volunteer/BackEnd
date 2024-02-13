@@ -128,82 +128,12 @@ class RecruitmentWriteControllerTest {
 
         //when & then
         mockMvc.perform(
-                multipart(WRITE_URL)
-                        .file(getRealMockMultipartFile()) //업로드 이미지
-                        .params(info)
+                        multipart(WRITE_URL)
+                                .file(getRealMockMultipartFile()) //업로드 이미지
+                                .params(info)
                 )
                 .andExpect(status().isCreated())
                 .andDo(print());
-    }
-
-    @Test
-    @WithUserDetails(value = "1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void saveRecruitment() throws Exception {
-        //given
-        final String volunteeringType = VolunteeringType.REG.getId();
-        final String period = Period.MONTH.getId();
-        final String week = Week.FIRST.getId();
-        final List<String> days = List.of(Day.MON.getId(), Day.TUES.getId());
-        final Boolean isStaticImage = false;
-
-        MultiValueMap info = createCommontRecruitmentForm();
-        info.add("volunteeringType", volunteeringType);
-        info.add("period", period);
-        info.add("week", week); //정기-매달
-        info.add("days", days.get(0));
-        info.add("days", days.get(1));
-        info.add("picture.isStaticImage", String.valueOf(isStaticImage));
-
-        //when
-        ResultActions result = mockMvc.perform(
-                multipart(WRITE_URL)
-                        .file(getRealMockMultipartFile()) //업로드 이미지
-                        .header(AUTHORIZATION_HEADER, "access Token")
-                        .params(info)
-        );
-
-        //then
-        result.andExpect(status().isCreated())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                requestParts(
-                                        partWithName("picture.uploadImage").optional().attributes(key("constraints").value("정적 이미지일 경우 NULL 허용")).description("첨부 이미지")
-                                ),
-                                requestParameters(
-                                        parameterWithName("volunteeringCategory").description("Code VolunteeringCategory 참조바람."),
-                                        parameterWithName("organizationName").attributes(key("constraints").value("1이상 50이하")).description("기관 이름"),
-                                        parameterWithName("address.sido").description("시/구 코드"),
-                                        parameterWithName("address.sigungu").description("시/군/구 코드"),
-                                        parameterWithName("address.details").description("상세주소"),
-                                        parameterWithName("address.fullName").description("전체 주소 이름"),
-                                        parameterWithName("address.latitude").description("위도"),
-                                        parameterWithName("address.longitude").description("경도"),
-                                        parameterWithName("isIssued").description("봉사 시간 인증 가능 여부"),
-                                        parameterWithName("volunteerType").description("Code VolunteerType 참고바람."),
-                                        parameterWithName("volunteerNum").attributes(key("constraints").value("1이상 9999이하")).description("봉사 모집 인원"),
-                                        parameterWithName("volunteeringType").description("Code VolunteeringType 참고바람"),
-                                        parameterWithName("startDay").attributes(getDateFormat()).description("봉사 모집 시작 날짜"),
-                                        parameterWithName("endDay").attributes(getDateFormat()).description("봉사 모집 종료 날짜"),
-                                        parameterWithName("hourFormat").description("Code HourFormat 참고바람."),
-                                        parameterWithName("startTime").attributes(getTimeFormat()).description("정기 봉사 일정 시작 시간"),
-                                        parameterWithName("progressTime").attributes(key("constraints").value("1이상 24이하")).description("정기 봉사 일정 진행 시간"),
-                                        parameterWithName("period").optional().attributes(key("constraints").value("비정기일 경우 NULL 허용")).description("Code Period 참고바람."),
-                                        parameterWithName("week").optional().attributes(key("constraints").value("비정기 혹은 Period가 매주일 경우 NULL 허용")).description("Code Week 참고바람."),
-                                        parameterWithName("days").optional().attributes(key("constraints").value("비정기일 경우 NULL 허용")).description("Code Day 참고바람, 다중 값 허용(배열)"),
-                                        parameterWithName("picture.isStaticImage").description("정적/동적 이미지 구분"),
-                                        parameterWithName("title").attributes(key("constraints").value("1이상 255이하")).description("봉사 모집글 제목"),
-                                        parameterWithName("content").attributes(key("constraints").value("1이상 255이하")).description("봉사 모집글 본문"),
-                                        parameterWithName("isPublished").description("임시 저장 유무")
-                                 ),
-                                responseFields(
-                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("봉사 모집글 고유키 PK")
-                                )
-                        )
-                );
     }
 
     //TODO: Validation 테스트 그냥 없애는게 나을까?

@@ -33,8 +33,8 @@ public class RecruitmentController {
     private final RecruitmentQueryUseCase recruitmentQueryService;
 
     @PostMapping(value = "/recruitment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Map<String, Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest form) {
-        Long recruitmentNo = recruitmentFacade.registerRecruitment(SecurityUtil.getLoginUserNo(), form);
+    public ResponseEntity<Map<String, Object>> recruitmentAdd(@ModelAttribute @Valid RecruitmentRequest request) {
+        Long recruitmentNo = recruitmentFacade.registerRecruitment(SecurityUtil.getLoginUserNo(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(getSingleResponseDto("no", recruitmentNo));
     }
