@@ -61,7 +61,7 @@ public class RecruitmentQueryDSLRepositoryImpl implements RecruitmentQueryDSLRep
                 .leftJoin(userImage.storage, userImageStorage)
                 .where(recruitment.recruitmentNo.eq(recruitmentNo),
                         recruitment.isDeleted.eq(IsDeleted.N))
-                .fetchFirst();
+                .fetchOne();
 
         if (Objects.isNull(result)) {
             throw new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
