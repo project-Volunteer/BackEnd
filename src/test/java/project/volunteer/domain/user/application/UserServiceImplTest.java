@@ -180,8 +180,8 @@ public class UserServiceImplTest {
 				.title(title).content(content).volunteeringCategory(category1).volunteeringType(volunteeringType1)
 				.volunteerType(volunteerType1).maxParticipationNum(volunteerNum1).isIssued(isIssued1).organizationName(organizationName)
 				.address(address1).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.currentVolunteerNum(0).viewCount(0).likeCount(0).isDeleted(IsDeleted.N).writer(saveUser).writer(saveUser)
 				.build();
-		create1.setWriter(saveUser);
 		recruitmentRepository.save(create1);
 		Long no1 = create1.getRecruitmentNo();
 
@@ -189,8 +189,8 @@ public class UserServiceImplTest {
 				.title(title).content(content).volunteeringCategory(category2).volunteeringType(volunteeringType2)
 				.volunteerType(volunteerType2).maxParticipationNum(volunteerNum2).isIssued(isIssued2).organizationName(organizationName)
 				.address(address2).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.currentVolunteerNum(0).viewCount(0).likeCount(0).isDeleted(IsDeleted.N).writer(saveUser)
 				.build();
-		create2.setWriter(saveUser);
 		recruitmentRepository.save(create2);
 		Long no2 = create2.getRecruitmentNo();
 
@@ -198,8 +198,8 @@ public class UserServiceImplTest {
 				.title(title).content(content).volunteeringCategory(category3).volunteeringType(volunteeringType1)
 				.volunteerType(volunteerType3).maxParticipationNum(volunteerNum3).isIssued(isIssued1).organizationName(organizationName)
 				.address(address3).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.currentVolunteerNum(0).viewCount(0).likeCount(0).isDeleted(IsDeleted.N).writer(userNo2)
 				.build();
-		create3.setWriter(userNo2);
 		recruitmentRepository.save(create3);
 		Long no3 = create3.getRecruitmentNo();
 
@@ -207,8 +207,8 @@ public class UserServiceImplTest {
 				.title(title).content(content).volunteeringCategory(category4).volunteeringType(volunteeringType2)
 				.volunteerType(volunteerType1).maxParticipationNum(volunteerNum4).isIssued(isIssued2).organizationName(organizationName)
 				.address(address4).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.currentVolunteerNum(0).viewCount(0).likeCount(0).isDeleted(IsDeleted.N).writer(userNo3)
 				.build();
-		create4.setWriter(userNo3);
 		recruitmentRepository.save(create4);
 		Long no4 = create4.getRecruitmentNo();
 		
