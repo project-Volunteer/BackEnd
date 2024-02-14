@@ -34,7 +34,7 @@ class ScheduleTest {
             .volunteeringCategory(VolunteeringCategory.EDUCATION)
             .volunteerType(VolunteerType.ADULT)
             .volunteeringType(VolunteeringType.IRREG)
-            .maxParticipationNum(999)
+            .maxParticipationNum(9999)
             .currentVolunteerNum(0)
             .isIssued(true)
             .organizationName("organization")
