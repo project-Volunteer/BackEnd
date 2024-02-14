@@ -62,6 +62,7 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
@@ -163,10 +164,10 @@ public class LogboardWriteControllerTest {
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
-				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).currentVolunteerNum(0).isIssued(isIssued).organizationName(organizationName)
+				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished).viewCount(0).likeCount(0)
+				.isDeleted(IsDeleted.N).writer(saveUser)
 				.build();
-		create.setWriter(saveUser);
 		recruitmentRepository.save(create);
 		Long no = create.getRecruitmentNo();
 
