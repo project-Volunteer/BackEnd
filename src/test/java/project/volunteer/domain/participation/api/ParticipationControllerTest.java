@@ -258,7 +258,7 @@ class ParticipationControllerTest {
                                         parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
                                 ),
                                 requestFields(
-                                        fieldWithPath("userNos").type(JsonFieldType.ARRAY).description("유저 고유키 PK")
+                                        fieldWithPath("recruitmentParticipationNos").type(JsonFieldType.ARRAY).description("봉사 모집글 참여자 고유키 PK")
                                 )
                         )
                 );
@@ -332,8 +332,8 @@ class ParticipationControllerTest {
     public void kickVolunteeringTeam() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
-        ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
+        final Participant participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getParticipantNo());
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
@@ -354,7 +354,7 @@ class ParticipationControllerTest {
                                         parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
                                 ),
                                 requestFields(
-                                        fieldWithPath("userNo").type(JsonFieldType.NUMBER).description("유저 고유키 PK")
+                                        fieldWithPath("recruitmentParticipationNo").type(JsonFieldType.NUMBER).description("봉사 모집글 참여자 고유키 PK")
                                 )
                         )
                 );
@@ -366,8 +366,8 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀원강제탈퇴_실패_잘못된상태() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-        ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
+        final Participant participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getParticipantNo());
 
         //then & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
