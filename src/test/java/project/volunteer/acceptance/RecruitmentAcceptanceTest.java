@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
 import project.volunteer.domain.recruitment.api.dto.response.StatusResponse;
+import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
@@ -393,6 +394,49 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
                         .extracting("no")
                         .containsExactly(recruitmentNo2, recruitmentNo1)
         );
+    }
+
+    @DisplayName("003 카테고리에 속하면서 어른만 참여할 수 있는 봉사 모집글 목록 개수를 조회힌다.")
+    @Test
+    void findRecruitmentCountFilterVolunteerTypeAndCategory() {
+        final Long recruitmentNo1 = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.RESIDENTIAL_ENV, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F,
+                true,
+                VolunteerType.ADULT, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "unicef 정기 봉사 모집", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+        final Long recruitmentNo2 = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "매일 함께하는 unicef", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+        final Long recruitmentNo3 = 봉사_게시물_등록(soeunToken,
+                VolunteeringCategory.RESIDENTIAL_ENV, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "환영합니다.", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+        final Long recruitmentNo4 = 봉사_게시물_등록(soeunToken,
+                VolunteeringCategory.RESIDENTIAL_ENV, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.TEENAGER, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "환영합니다.", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        RecruitmentCountResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, changHoeunToken)
+                .queryParam("page", 0)
+                .queryParam("volunteering_category", List.of(VolunteeringCategory.RESIDENTIAL_ENV.getId()))
+                .queryParam("volunteer_type", VolunteerType.ADULT.getId())
+                .when().get("/recruitment/count")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(RecruitmentCountResult.class);
+        assertThat(response.getTotalCnt()).isEqualTo(2);
     }
 
 }
