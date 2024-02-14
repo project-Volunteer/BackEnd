@@ -33,10 +33,19 @@ public class OrganizationComponent {
     //봉사 모집글 방장 검증 메서드
     public void validRecruitmentOwner(HttpServletRequest request, Long loginUserNo){
         Recruitment findRecruitment = getRecruitment(request);
-        //DDD 설계 살려서
         if(!findRecruitment.isOwner(loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(), loginUserNo));
+        }
+    }
+
+    public void checkRecruitmentOwner(Long recruitmentNo, Long loginUserNo) {
+        Recruitment recruitment = recruitmentRepository.findNotDeletedRecruitment(recruitmentNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("Recruitment No = [%d]", recruitmentNo)));
+        if(!recruitment.isOwner(loginUserNo)){
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
         }
     }
 

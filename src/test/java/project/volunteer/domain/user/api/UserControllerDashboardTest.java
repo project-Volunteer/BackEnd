@@ -597,7 +597,7 @@ public class UserControllerDashboardTest {
                 , 10
                 , true
                 , "recruitment organizationName "+num
-                , true
+                , published
                 , Address.createAddress("Rido"+num,"Rigungu"+num,"detail"+num, "fullName"+num)
                 , Coordinate.createCoordinate(Float.valueOf(num+num+num+num), Float.valueOf(num+num+num))
                 , new Timetable(LocalDate.now(), LocalDate.now().plusMonths(1), HourFormat.AM, LocalTime.now(), progressTime)

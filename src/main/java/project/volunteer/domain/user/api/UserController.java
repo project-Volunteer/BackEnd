@@ -25,6 +25,7 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
+import project.volunteer.domain.recruitment.application.RecruitmentFacade;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryService;
 import project.volunteer.domain.user.api.dto.request.LogboardListRequestParam;
 import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;
@@ -33,6 +34,7 @@ import project.volunteer.domain.user.dao.queryDto.UserQueryDtoRepository;
 import project.volunteer.domain.user.dao.queryDto.dto.UserHistoryQuery;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
+import project.volunteer.global.common.component.OrganizationComponent;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.domain.user.api.dto.request.UserAlarmRequestParam;
 import project.volunteer.domain.user.api.dto.request.UserInfoRequestParam;
@@ -47,10 +49,10 @@ public class UserController {
 	private final UserDtoService userDtoService;
 	private final ImageService imageService;
 	private final RecruitmentCommandUseCase recruitmentCommandUseCase;
-	private final RecruitmentQueryService recruitmentQueryService;
 	private final LogboardService logboardService;
     private final ImageRepository imageRepository;
 	private final UserQueryDtoRepository userQueryDtoRepository;
+	private final OrganizationComponent organizationComponent;
 
 	@DeleteMapping("/logout")
 	public HttpEntity logOut(HttpServletRequest request, HttpServletResponse response) {
@@ -129,11 +131,11 @@ public class UserController {
 		return ResponseEntity.ok(userDtoService.findLoboardTempDtos(SecurityUtil.getLoginUserNo()));
 	}
 
-	@OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
 	@DeleteMapping ("/user/recruitment/temp")
 	public ResponseEntity myRecruitmentTempDelete(@RequestBody @Valid RecruitmentListRequestParam dto) {
 		Long userNo = SecurityUtil.getLoginUserNo();
 		for(Long recruitmentNo : dto.getRecruitmentList()){
+			organizationComponent.checkRecruitmentOwner(recruitmentNo, userNo);
 			recruitmentCommandUseCase.deleteRecruitment(recruitmentNo);
 		}
 		return ResponseEntity.ok().build();
