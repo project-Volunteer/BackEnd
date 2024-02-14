@@ -148,10 +148,10 @@ public class LogboardServiceImplTestForEdit {
 
 		Recruitment createRecruitment = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
-				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).currentVolunteerNum(0).isIssued(isIssued).organizationName(organizationName)
+				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished).viewCount(0).likeCount(0)
+				.isDeleted(IsDeleted.N).writer(saveUser)
 				.build();
-		createRecruitment.setWriter(saveUser);
 		recruitmentRepository.save(createRecruitment);
 		Long no = createRecruitment.getRecruitmentNo();
 

@@ -49,6 +49,7 @@ import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.HourFormat;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
@@ -140,10 +141,10 @@ public class LogboardServiceImplTestForSave {
 
 		Recruitment createRecruitment = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
-				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).currentVolunteerNum(0).isIssued(isIssued).organizationName(organizationName)
+				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished).viewCount(0).likeCount(0)
+				.isDeleted(IsDeleted.N).writer(saveUser)
 				.build();
-		createRecruitment.setWriter(saveUser);
 		recruitmentRepository.save(createRecruitment);
 		Long no = createRecruitment.getRecruitmentNo();
 
