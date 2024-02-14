@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
@@ -30,10 +29,10 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
     private final Clock clock;
 
     @Override
-    public List<ScheduleCalendarSearchResult> searchScheduleCalender(final Recruitment recruitment,
+    public List<ScheduleCalendarSearchResult> searchScheduleCalender(final Long recruitmentNo,
                                                                      final LocalDate startDay,
                                                                      final LocalDate endDay) {
-        return scheduleRepository.findScheduleDateBy(recruitment, startDay, endDay);
+        return scheduleRepository.findScheduleDateBy(recruitmentNo, startDay, endDay);
     }
 
     @Override

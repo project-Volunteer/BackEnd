@@ -2,13 +2,12 @@ package project.volunteer.domain.sehedule.application;
 
 import java.time.LocalDate;
 import java.util.List;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
 public interface ScheduleQueryUseCase {
-    List<ScheduleCalendarSearchResult> searchScheduleCalender(Recruitment recruitment, LocalDate startDay, LocalDate endDay);
+    List<ScheduleCalendarSearchResult> searchScheduleCalender(Long recruitmentNo, LocalDate startDay, LocalDate endDay);
 
     ScheduleDetailSearchResult searchScheduleDetail(Long userNo, Long scheduleNo);
 

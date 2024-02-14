@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
-import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.domain.sehedule.repository.dao.ScheduleDetail;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.error.exception.BusinessException;
@@ -23,13 +21,13 @@ public class ScheduleQueryDSLRepositoryImpl implements ScheduleQueryDSLRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ScheduleCalendarSearchResult> findScheduleDateBy(Recruitment recruitment, LocalDate toDate,
+    public List<ScheduleCalendarSearchResult> findScheduleDateBy(Long recruitmentNo, LocalDate toDate,
                                                                  LocalDate fromDate) {
         return queryFactory.select(Projections.constructor(ScheduleCalendarSearchResult.class, schedule.scheduleNo,
                         schedule.scheduleTimeTable.startDay))
                 .from(schedule)
                 .where(schedule.isDeleted.eq(IsDeleted.N),
-                        schedule.recruitment.eq(recruitment),
+                        schedule.recruitment.recruitmentNo.eq(recruitmentNo),
                         schedule.scheduleTimeTable.startDay.between(toDate, fromDate))
                 .orderBy(schedule.scheduleTimeTable.startDay.asc())
                 .fetch();

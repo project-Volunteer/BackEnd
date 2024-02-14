@@ -83,7 +83,7 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
 
         //when
         final List<ScheduleCalendarSearchResult> result = scheduleQueryUseCase.searchScheduleCalender(
-                recruitment, toDate, fromDate);
+                recruitment.getRecruitmentNo(), toDate, fromDate);
 
         //then
         assertThat(result).hasSize(3)

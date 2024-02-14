@@ -64,7 +64,7 @@ class ScheduleRepositoryTest extends RepositoryTest {
 
         //when
         List<ScheduleCalendarSearchResult> scheduleCalendar = scheduleRepository.findScheduleDateBy(
-                recruitment, toDate, fromDate);
+                recruitment.getRecruitmentNo(), toDate, fromDate);
 
         //then
         assertThat(scheduleCalendar).hasSize(2)

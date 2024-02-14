@@ -20,7 +20,7 @@ public class ScheduleQueryFacade {
     public List<ScheduleCalendarSearchResult> findScheduleCalendar(Long recruitmentNo, LocalDate startDay,
                                                                    LocalDate endDay) {
         Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
-        return scheduleQueryService.searchScheduleCalender(recruitment, startDay, endDay);
+        return scheduleQueryService.searchScheduleCalender(recruitment.getRecruitmentNo(), startDay, endDay);
     }
 
     public ScheduleDetailSearchResult findScheduleDetail(Long userNo, Long recruitmentNo, Long scheduleNo) {
