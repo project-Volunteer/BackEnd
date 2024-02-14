@@ -60,8 +60,10 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         User user2 = createAndSaveUser("user2", "http://user2...");
         createAndSaveUploadImage(RealWorkCode.USER, user1.getUserNo(), userUploadImagePath1);
         createAndSaveUploadImage(RealWorkCode.USER, user2.getUserNo(), userUploadImagePath2);
-        participantRepository.save(new Participant(recruitment, user1, ParticipantState.JOIN_REQUEST));
-        participantRepository.save(new Participant(recruitment, user2, ParticipantState.JOIN_APPROVAL));
+        Participant participant1 = participantRepository.save(
+                new Participant(recruitment, user1, ParticipantState.JOIN_REQUEST));
+        Participant participant2 = participantRepository.save(
+                new Participant(recruitment, user2, ParticipantState.JOIN_APPROVAL));
 
         //when
         RecruitmentDetailSearchResult result = recruitmentQueryUseCase.searchRecruitmentDetail(
@@ -79,11 +81,11 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
                 () -> assertThat(result.getRepeatPeriod().getDayOfWeeks()).hasSize(2)
                         .containsExactlyInAnyOrder(Day.MON.getId(), Day.TUES.getId()),
                 () -> assertThat(result.getApprovedParticipant()).hasSize(1)
-                        .extracting("userNo", "nickName", "imageUrl")
-                        .containsExactlyInAnyOrder(tuple(user2.getUserNo(), user2.getNickName(), userUploadImagePath2)),
+                        .extracting("recruitmentParticipationNo", "nickName", "imageUrl")
+                        .containsExactlyInAnyOrder(tuple(participant2.getParticipantNo(), user2.getNickName(), userUploadImagePath2)),
                 () -> assertThat(result.getRequiredParticipant()).hasSize(1)
-                        .extracting("userNo", "nickName", "imageUrl")
-                        .containsExactlyInAnyOrder(tuple(user1.getUserNo(), user1.getNickName(), userUploadImagePath1))
+                        .extracting("recruitmentParticipationNo", "nickName", "imageUrl")
+                        .containsExactlyInAnyOrder(tuple(participant1.getParticipantNo(), user1.getNickName(), userUploadImagePath1))
         );
     }
 
@@ -151,7 +153,8 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         participantRepository.save(new Participant(recruitment, user, ParticipantState.JOIN_APPROVAL));
 
         //when
-        StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(), recruitment.getRecruitmentNo());
+        StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(),
+                recruitment.getRecruitmentNo());
 
         //then
         assertThat(stateResponse).isEqualByComparingTo(StateResult.APPROVED);
