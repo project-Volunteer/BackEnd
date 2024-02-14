@@ -354,4 +354,45 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatus()).isEqualTo(StateResult.DONE.getId());
     }
 
+    @DisplayName("특정 keyward가 title에 포함된 봉사 모집글 목록을 필터링한다.")
+    @Test
+    void findRecruitmentFilterKeyWard() {
+        final Long recruitmentNo1 = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.ADMINSTRATION_ASSISTANCE, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F,
+                true,
+                VolunteerType.ADULT, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "unicef 정기 봉사 모집", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+        final Long recruitmentNo2 = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "매일 함께하는 unicef", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+        final Long recruitmentNo3 = 봉사_게시물_등록(soeunToken,
+                VolunteeringCategory.CULTURAL_EVENT, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 100, VolunteeringType.REG, "01-01-2024", "02-10-2024", HourFormat.AM, "10:00",
+                10,
+                Period.WEEK, Week.NONE, List.of(Day.MON, Day.FRI), "환영합니다.", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        RecruitmentListSearchResult response = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION_HEADER, changHoeunToken)
+                .queryParam("page", 0)
+                .queryParam("keyword", "unicef")
+                .when().get("/recruitment/keyward")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(RecruitmentListSearchResult.class);
+        assertAll(
+                () -> assertThat(response.getIsLast()).isTrue(),
+                () -> assertThat(response.getRecruitmentList()).hasSize(2)
+                        .extracting("no")
+                        .containsExactly(recruitmentNo2, recruitmentNo1)
+        );
+    }
+
 }
