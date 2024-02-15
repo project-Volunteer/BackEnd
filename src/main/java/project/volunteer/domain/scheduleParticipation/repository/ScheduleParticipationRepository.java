@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.scheduleParticipation.repository.dto.CompletedScheduleDetail;
 import project.volunteer.domain.scheduleParticipation.repository.dto.ParticipantDetails;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;

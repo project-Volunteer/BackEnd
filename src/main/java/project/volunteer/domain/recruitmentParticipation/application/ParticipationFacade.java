@@ -1,9 +1,9 @@
-package project.volunteer.domain.participation.mapper;
+package project.volunteer.domain.recruitmentParticipation.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.application.ParticipationService;
+import project.volunteer.domain.recruitmentParticipation.application.ParticipationService;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryService;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.application.UserService;

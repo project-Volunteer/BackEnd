@@ -4,7 +4,7 @@ import java.util.List;
 
 import static project.volunteer.domain.image.domain.QImage.image;
 import static project.volunteer.domain.image.domain.QStorage.storage;
-import static project.volunteer.domain.participation.domain.QParticipant.participant1;
+import static project.volunteer.domain.recruitmentParticipation.domain.QParticipant.participant1;
 import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
 import static project.volunteer.domain.scheduleParticipation.domain.QScheduleParticipation.scheduleParticipation;
 

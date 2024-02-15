@@ -3,7 +3,7 @@ package project.volunteer.domain.scheduleParticipation.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.domain.Schedule;

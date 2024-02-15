@@ -1,4 +1,4 @@
-package project.volunteer.domain.participation.domain;
+package project.volunteer.domain.recruitmentParticipation.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.domain.participation.converter.StateConverter;
+import project.volunteer.domain.recruitmentParticipation.converter.StateConverter;
 
 import javax.persistence.*;
 @Getter

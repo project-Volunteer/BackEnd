@@ -17,7 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddParam;
 import project.volunteer.domain.recruitment.api.dto.response.StatusResponse;
 import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;

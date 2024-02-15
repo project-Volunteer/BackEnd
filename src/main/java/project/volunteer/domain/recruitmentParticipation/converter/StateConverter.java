@@ -1,4 +1,4 @@
-package project.volunteer.domain.participation.converter;
+package project.volunteer.domain.recruitmentParticipation.converter;
 
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.converter.AbstractEnumAttributeConverter;

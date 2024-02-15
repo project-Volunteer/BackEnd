@@ -1,11 +1,11 @@
-package project.volunteer.domain.participation.dao;
+package project.volunteer.domain.recruitmentParticipation.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
-import project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail;
+import project.volunteer.domain.recruitmentParticipation.repository.dto.UserRecruitmentDetails;
+import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 
     List<Participant> findByRecruitment_RecruitmentNo(Long recruitmentNo);
-    @Query("select new project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail" +
+    @Query("select new project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail" +
             "(p.state, p.participantNo, u.nickName, coalesce(s.imagePath, u.picture)) " +
             "from Participant p " +
             "join p.participant as u " +
@@ -72,7 +72,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
            "where p.participant.userNo=:loginUserNo")
     List<Participant> findJoinStatusByTeamUserno(@Param("loginUserNo") Long loginUserNo);
 
-    @Query("select new project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails" +
+    @Query("select new project.volunteer.domain.recruitmentParticipation.repository.dto.UserRecruitmentDetails" +
                 "(p.recruitment.recruitmentNo" +
                 ", s.imagePath" +
                 ", p.recruitment.timetable.startDay" +

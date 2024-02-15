@@ -1,4 +1,4 @@
-package project.volunteer.domain.participation.api;
+package project.volunteer.domain.recruitmentParticipation.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,10 +19,10 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
-import project.volunteer.domain.participation.api.dto.request.ParticipantRemoveParam;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveParam;
+import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;

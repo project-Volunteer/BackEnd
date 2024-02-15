@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.application.ConfirmationService;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.notice.application.NoticeService;
-import project.volunteer.domain.participation.application.ParticipationService;
+import project.volunteer.domain.recruitmentParticipation.application.ParticipationService;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;

@@ -1,14 +1,14 @@
-package project.volunteer.domain.participation.application;
+package project.volunteer.domain.recruitmentParticipation.application;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
+import project.volunteer.domain.recruitmentParticipation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitment.application.dto.query.detail.ParticipantDetail;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail;
+import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;

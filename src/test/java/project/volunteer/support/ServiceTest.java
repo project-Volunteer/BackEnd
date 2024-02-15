@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;

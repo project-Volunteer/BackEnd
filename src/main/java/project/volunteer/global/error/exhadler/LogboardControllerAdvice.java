@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import project.volunteer.domain.logboard.api.LogboardController;
-import project.volunteer.domain.participation.api.ParticipationController;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.global.error.response.BaseErrorResponse;

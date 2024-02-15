@@ -1,12 +1,12 @@
-package project.volunteer.domain.participation.api;
+package project.volunteer.domain.recruitmentParticipation.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
-import project.volunteer.domain.participation.api.dto.request.ParticipantRemoveParam;
-import project.volunteer.domain.participation.api.dto.response.JoinResponse;
-import project.volunteer.domain.participation.mapper.ParticipationFacade;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.response.JoinResponse;
+import project.volunteer.domain.recruitmentParticipation.application.ParticipationFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
 import project.volunteer.global.util.SecurityUtil;

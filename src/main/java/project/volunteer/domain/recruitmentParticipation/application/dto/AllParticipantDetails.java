@@ -1,4 +1,4 @@
-package project.volunteer.domain.participation.application.dto;
+package project.volunteer.domain.recruitmentParticipation.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

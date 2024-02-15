@@ -5,7 +5,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
