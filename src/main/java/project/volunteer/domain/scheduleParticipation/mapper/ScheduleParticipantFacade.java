@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitmentParticipation.application.ParticipationService;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
@@ -30,7 +30,7 @@ public class ScheduleParticipantFacade {
     public void participateVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
         Schedule schedule = scheduleQueryService.findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(scheduleNo);
 
-        Participant participation = participationService.findParticipation(recruitmentNo, userNo);
+        RecruitmentParticipation participation = participationService.findParticipation(recruitmentNo, userNo);
 
         scheduleParticipationService.participate(schedule, participation);
     }
@@ -39,7 +39,7 @@ public class ScheduleParticipantFacade {
     public void cancelParticipationVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
         Schedule schedule = scheduleQueryService.findScheduleInProgress(scheduleNo);
 
-        Participant participation = participationService.findParticipation(recruitmentNo, userNo);
+        RecruitmentParticipation participation = participationService.findParticipation(recruitmentNo, userNo);
 
         scheduleParticipationService.cancel(schedule, participation);
     }

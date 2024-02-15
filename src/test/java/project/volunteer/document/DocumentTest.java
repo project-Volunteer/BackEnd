@@ -21,7 +21,7 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.RepeatPeriod;
@@ -172,12 +172,12 @@ public abstract class DocumentTest {
         teamUser1 = userRepository.save(
                 new User("soeun1234", "password", "soeun", "test@email.com", Gender.M, LocalDate.of(2001, 6, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        participantRepository.save(new Participant(recruitment1, teamUser1, ParticipantState.JOIN_APPROVAL));
+        participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser1, ParticipantState.JOIN_APPROVAL));
 
         teamUser2 = userRepository.save(
                 new User("chang1234", "password", "chang", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        participantRepository.save(new Participant(recruitment1, teamUser2, ParticipantState.JOIN_REQUEST));
+        participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser2, ParticipantState.JOIN_REQUEST));
 
     }
 

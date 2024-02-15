@@ -49,7 +49,7 @@ import project.volunteer.domain.like.domain.Like;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -165,7 +165,7 @@ public class LogboardQueryControllerTest {
 
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
-		Participant participant1 = Participant.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
+		RecruitmentParticipation participant1 = RecruitmentParticipation.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
 		participantRepository.save(participant1);
 
 

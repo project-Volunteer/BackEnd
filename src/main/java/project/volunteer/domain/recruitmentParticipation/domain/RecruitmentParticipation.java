@@ -13,13 +13,13 @@ import project.volunteer.domain.recruitmentParticipation.converter.StateConverte
 import javax.persistence.*;
 @Getter
 @Entity
-@Table(name = "vlt_participant")
+@Table(name = "vlt_recruitment_participation")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Participant extends BaseTimeEntity {
+public class RecruitmentParticipation extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "participantno")
-    private Long participantNo;
+    @Column(name = "recruitment_participation_no")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitmentno")
@@ -27,23 +27,23 @@ public class Participant extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno")
-    private User participant;
+    private User user;
 
     @Convert(converter = StateConverter.class)
     @Column(length = 3, nullable = false)
     private ParticipantState state;
 
     @Builder
-    public Participant(Recruitment recruitment, User participant, ParticipantState state){
+    public RecruitmentParticipation(Recruitment recruitment, User participant, ParticipantState state){
         this.recruitment = recruitment;
-        this.participant = participant;
+        this.user = participant;
         this.state = state;
     }
 
-    public static Participant createParticipant(Recruitment recruitment, User participant, ParticipantState state){
-        Participant createParticipant = new Participant();
+    public static RecruitmentParticipation createParticipant(Recruitment recruitment, User participant, ParticipantState state){
+        RecruitmentParticipation createParticipant = new RecruitmentParticipation();
         createParticipant.recruitment = recruitment;
-        createParticipant.participant = participant;
+        createParticipant.user = participant;
         createParticipant.state = state;
         return createParticipant;
     }
@@ -54,7 +54,7 @@ public class Participant extends BaseTimeEntity {
 
     public void removeUserAndRecruitment(){
         this.recruitment = null;
-        this.participant = null;
+        this.user = null;
     }
     public void delete(){
         this.state = ParticipantState.DELETED;

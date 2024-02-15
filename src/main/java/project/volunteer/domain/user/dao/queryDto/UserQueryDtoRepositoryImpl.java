@@ -4,8 +4,8 @@ import java.util.List;
 
 import static project.volunteer.domain.image.domain.QImage.image;
 import static project.volunteer.domain.image.domain.QStorage.storage;
-import static project.volunteer.domain.recruitmentParticipation.domain.QParticipant.participant1;
 import static project.volunteer.domain.recruitment.domain.QRecruitment.recruitment;
+import static project.volunteer.domain.recruitmentParticipation.domain.QRecruitmentParticipation.recruitmentParticipation;
 import static project.volunteer.domain.scheduleParticipation.domain.QScheduleParticipation.scheduleParticipation;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -19,6 +19,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
+import project.volunteer.domain.recruitmentParticipation.domain.QRecruitmentParticipation;
 import project.volunteer.domain.user.dao.queryDto.dto.*;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.IsDeleted;
@@ -40,12 +41,12 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 								recruitment.volunteeringCategory, recruitment.volunteeringType, recruitment.isIssued,
 								recruitment.volunteerType))
 				.from(recruitment)
-				.innerJoin(participant1).on(participant1.recruitment.recruitmentNo.eq(recruitment.recruitmentNo))
+				.innerJoin(recruitmentParticipation).on(recruitmentParticipation.recruitment.recruitmentNo.eq(recruitment.recruitmentNo))
 				.leftJoin(image).on(recruitment.recruitmentNo.eq(image.no))
 				.leftJoin(image.storage, storage).on(image.realWorkCode.eq(RealWorkCode.RECRUITMENT)) 
 				.where(
-						participant1.state.eq(ParticipantState.JOIN_REQUEST),
-						participant1.participant.userNo.eq(userNo),
+						recruitmentParticipation.state.eq(ParticipantState.JOIN_REQUEST),
+						recruitmentParticipation.user.userNo.eq(userNo),
 						recruitment.isPublished.eq(Boolean.TRUE),
 						recruitment.isDeleted.eq(IsDeleted.N))
 				.fetch();
@@ -62,11 +63,11 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 							recruitment.volunteerType, recruitment.maxParticipationNum,
 							ExpressionUtils.as(
 								JPAExpressions
-									.select(participant1.count())
-									.from(participant1)
+									.select(recruitmentParticipation.count())
+									.from(recruitmentParticipation)
 									.where(
-											participant1.recruitment.eq(recruitment)
-											, participant1.state.eq(ParticipantState.JOIN_APPROVAL)
+											recruitmentParticipation.recruitment.eq(recruitment)
+											, recruitmentParticipation.state.eq(ParticipantState.JOIN_APPROVAL)
 								),
 								"currentVolunteerNum")
 				))
@@ -98,7 +99,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 				.where(
 						ltscheduleParticipationNo(lastId)
 						, scheduleParticipation.state.eq(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)
-						, scheduleParticipation.participant.participant.userNo.eq(loginUserNo)
+						, scheduleParticipation.participant.user.userNo.eq(loginUserNo)
 				)
 				.limit(pageable.getPageSize() + 1)
 				.orderBy(scheduleParticipation.scheduleParticipationNo.desc())

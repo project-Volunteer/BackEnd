@@ -46,7 +46,7 @@ import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -103,7 +103,7 @@ public class LogboardEditControllerTest {
 	
 	private static User saveUser;
 	private static Schedule createSchedule;
-	private static Participant createParticipant;
+	private static RecruitmentParticipation createParticipant;
 	private List<Long> deleteS3ImageNoList = new ArrayList<>();
 	
     private MockMultipartFile getMockMultipartFile() throws IOException {
@@ -163,7 +163,7 @@ public class LogboardEditControllerTest {
 
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
-		createParticipant = Participant.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
+		createParticipant = RecruitmentParticipation.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
 		participantRepository.save(createParticipant);
 		
 
@@ -573,7 +573,7 @@ public class LogboardEditControllerTest {
 	}
 	
 	
-	private ScheduleParticipation 일정_참여상태_추가(Participant participant, ParticipantState state){
+	private ScheduleParticipation 일정_참여상태_추가(RecruitmentParticipation participant, ParticipantState state){
 		ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(createSchedule, participant, state);
 		return scheduleParticipationRepository.save(sp);
 	}

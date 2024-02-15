@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitmentParticipation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitment.application.dto.query.detail.ParticipantDetail;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
 import project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
@@ -33,13 +33,13 @@ public class ParticipationServiceImpl implements ParticipationService{
                     String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitment.getRecruitmentNo(), recruitment.getMaxParticipationNum()));
         }
 
-        Optional<Participant> participant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
+        Optional<RecruitmentParticipation> participant = participantRepository.findByRecruitmentAndUser(recruitment, user);
 
         if(participant.isEmpty()) {
-            Participant newParticipant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
-            return participantRepository.save(newParticipant).getParticipantNo();
+            RecruitmentParticipation newParticipant = RecruitmentParticipation.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
+            return participantRepository.save(newParticipant).getId();
         } else {
-            Participant findParticipant = participant.get();
+            RecruitmentParticipation findParticipant = participant.get();
 
             if(findParticipant.isEqualState(ParticipantState.JOIN_REQUEST) || findParticipant.isEqualState(ParticipantState.JOIN_APPROVAL)){
                 throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
@@ -48,7 +48,7 @@ public class ParticipationServiceImpl implements ParticipationService{
             }
 
             findParticipant.updateState(ParticipantState.JOIN_REQUEST);
-            return findParticipant.getParticipantNo();
+            return findParticipant.getId();
         }
 
 
@@ -77,7 +77,7 @@ public class ParticipationServiceImpl implements ParticipationService{
     @Transactional
     @Override
     public void cancelParticipation(User user, Recruitment recruitment) {
-        Participant findState = participantRepository.findByRecruitmentAndParticipantAndState(recruitment, user, ParticipantState.JOIN_REQUEST)
+        RecruitmentParticipation findState = participantRepository.findByRecruitmentAndUserAndState(recruitment, user, ParticipantState.JOIN_REQUEST)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
                                 user.getUserNo(), recruitment.getRecruitmentNo(), ParticipantState.JOIN_REQUEST.name())));
@@ -97,12 +97,12 @@ public class ParticipationServiceImpl implements ParticipationService{
         }
 
 //        List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitment.getRecruitmentNo(), userNo);
-        List<Participant> findParticipants = participantRepository.findByParticipantNoIn(recruitmentParticipationNos);
-        for(Participant p : findParticipants){
+        List<RecruitmentParticipation> findParticipants = participantRepository.findByIdIn(recruitmentParticipationNos);
+        for(RecruitmentParticipation p : findParticipants){
             if(!p.isEqualState(ParticipantState.JOIN_REQUEST)){
                 throw new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
-                                p.getParticipant().getUserNo(), recruitment.getRecruitmentNo(), p.getState().name()));
+                                p.getUser().getUserNo(), recruitment.getRecruitmentNo(), p.getState().name()));
             }
             p.updateState(ParticipantState.JOIN_APPROVAL);
 
@@ -117,7 +117,7 @@ public class ParticipationServiceImpl implements ParticipationService{
 //        Participant findState = participantRepository.findByRecruitmentAndParticipantAndState(recruitment, user, ParticipantState.JOIN_APPROVAL)
 //                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
 //                        String.format("UserNo = [%d], RecruitmentNo = [%d]", user.getUserNo(), recruitment.getRecruitmentNo())));
-        Participant participant = participantRepository.findBy(recruitmentParticipationNo, ParticipantState.JOIN_APPROVAL)
+        RecruitmentParticipation participant = participantRepository.findBy(recruitmentParticipationNo, ParticipantState.JOIN_APPROVAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("ParticipationNo = [%d]", recruitmentParticipationNo)));
 
@@ -183,8 +183,8 @@ public class ParticipationServiceImpl implements ParticipationService{
 //    }
 
     @Override
-    public Participant findParticipation(Long recruitmentNo, Long userNo) {
-        return participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, userNo)
+    public RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo) {
+        return participantRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, userNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
                         String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitmentNo, userNo)));
     }

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
@@ -56,8 +56,8 @@ public class ParticipationServiceConcurrent {
                         },
                         () ->{
                             //신규 신청
-                            Participant findParticipant =
-                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
+                            RecruitmentParticipation findParticipant =
+                                    participantRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, loginUserNo)
                                             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
@@ -91,8 +91,8 @@ public class ParticipationServiceConcurrent {
                             },
                         () -> {
                             //신규 신청
-                            Participant findParticipant =
-                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
+                            RecruitmentParticipation findParticipant =
+                                    participantRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, loginUserNo)
                                             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
@@ -127,8 +127,8 @@ public class ParticipationServiceConcurrent {
                         },
                         () -> {
                             //신규 신청
-                            Participant findParticipant =
-                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
+                            RecruitmentParticipation findParticipant =
+                                    participantRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, loginUserNo)
                                             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 

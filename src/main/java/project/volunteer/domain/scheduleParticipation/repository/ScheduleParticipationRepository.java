@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.repository.dto.CompletedScheduleDetail;
 import project.volunteer.domain.scheduleParticipation.repository.dto.ParticipantDetails;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
@@ -19,18 +19,18 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
 
     @Query("select sp " +
             "from ScheduleParticipation sp " +
-            "join sp.participant p on p.participant.userNo=:userNo " +
+            "join sp.participant p on p.user.userNo=:userNo " +
             "and sp.schedule.scheduleNo=:scheduleNo")
     Optional<ScheduleParticipation> findByUserNoAndScheduleNo(@Param("userNo") Long userNo,
                                                               @Param("scheduleNo") Long scheduleNo);
 
     @Query("select sp.state " +
             "from ScheduleParticipation sp " +
-            "join sp.participant p on p.participant.userNo=:userNo " +
+            "join sp.participant p on p.user.userNo=:userNo " +
             "and sp.schedule.scheduleNo=:scheduleNo")
     Optional<ParticipantState> findStateBy(@Param("userNo") Long userNo, @Param("scheduleNo") Long scheduleNo);
 
-    Optional<ScheduleParticipation> findByScheduleAndParticipant(Schedule schedule, Participant participant);
+    Optional<ScheduleParticipation> findByScheduleAndParticipant(Schedule schedule, RecruitmentParticipation participant);
 
     //일정 참여 중인 인원 수 반환 쿼리
     @Query("select count(sp) " +
@@ -52,14 +52,14 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
 
     @Query("select sp " +
             "from ScheduleParticipation sp " +
-            "join sp.participant p on p.participant.userNo=:userNo " +
+            "join sp.participant p on p.user.userNo=:userNo " +
             "where sp.schedule.scheduleNo=:scheduleNo " +
             "and sp.state=:state ")
     Optional<ScheduleParticipation> findByUserNoAndScheduleNoAndState(@Param("userNo") Long userNo,
                                                                       @Param("scheduleNo") Long scheduleNo,
                                                                       @Param("state") ParticipantState state);
 
-    Optional<ScheduleParticipation> findByScheduleAndParticipantAndState(Schedule schedule, Participant participant,
+    Optional<ScheduleParticipation> findByScheduleAndParticipantAndState(Schedule schedule, RecruitmentParticipation participant,
                                                                          ParticipantState state);
 
     Optional<ScheduleParticipation> findByScheduleParticipationNoAndState(Long scheduleParticipationNo,
@@ -72,7 +72,7 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             +
             "from ScheduleParticipation sp " +
             "join sp.participant p " +
-            "join p.participant u " +
+            "join p.user u " +
             "left join Image i " +
             "on i.no=u.userNo " +
             "and i.realWorkCode=project.volunteer.global.common.component.RealWorkCode.USER " +
@@ -88,14 +88,14 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             ",sp.participant.recruitment.title " +
             ",sp.schedule.scheduleTimeTable.endDay) " +
             "from ScheduleParticipation sp " +
-            "where sp.participant.participant.userNo=:loginUserNo " +
+            "where sp.participant.user.userNo=:loginUserNo " +
             "and sp.state=:state")
     List<CompletedScheduleDetail> findCompletedSchedules(@Param("loginUserNo") Long loginUserNo,
                                                          @Param("state") ParticipantState state);
 
     @Query("select sp " +
             "from ScheduleParticipation sp " +
-            "where sp.participant.participant.userNo=:loginUserNo " +
+            "where sp.participant.user.userNo=:loginUserNo " +
             "and sp.state=:state")
     List<ScheduleParticipation> findScheduleListByUsernoAndStatus(@Param("loginUserNo") Long loginUserNo,
                                                                   @Param("state") ParticipantState state);

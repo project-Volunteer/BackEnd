@@ -10,7 +10,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerMapping;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
@@ -145,8 +145,8 @@ class OrganizationComponentTest {
                 true, true, true, Role.USER, "kakao", username, null);
         return userRepository.save(newUser);
     }
-    private Participant 팀_추가( User user, ParticipantState state){
-        Participant participant = Participant.createParticipant(saveRecruitment, user, state);
+    private RecruitmentParticipation 팀_추가(User user, ParticipantState state){
+        RecruitmentParticipation participant = RecruitmentParticipation.createParticipant(saveRecruitment, user, state);
         return participantRepository.save(participant);
     }
 }

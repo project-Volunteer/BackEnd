@@ -21,8 +21,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddParam;
 import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveParam;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -332,8 +332,8 @@ class ParticipationControllerTest {
     public void kickVolunteeringTeam() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        final Participant participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
-        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getParticipantNo());
+        final RecruitmentParticipation participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getId());
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
@@ -366,8 +366,8 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀원강제탈퇴_실패_잘못된상태() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        final Participant participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getParticipantNo());
+        final RecruitmentParticipation participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getId());
 
         //then & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
@@ -413,8 +413,8 @@ class ParticipationControllerTest {
                 true, true, true, Role.USER, "kakao", id, null);
         return userRepository.save(createUser);
     }
-    private Participant 참여자_상태_등록(User user, ParticipantState state){
-        Participant participant = Participant.createParticipant(saveRecruitment, user, state);
+    private RecruitmentParticipation 참여자_상태_등록(User user, ParticipantState state){
+        RecruitmentParticipation participant = RecruitmentParticipation.createParticipant(saveRecruitment, user, state);
         return participantRepository.save(participant);
     }
     private Recruitment 저장된_모집글_가져오기(){

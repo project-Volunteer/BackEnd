@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.logboard.application.LogboardService;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
@@ -169,28 +169,28 @@ public class UserControllerDashboardTest {
 			모집글 6, 7 - 사용자1이 승인 완료
 			모집글 1 - 사용자2가 승인 완료
 			모집글 2 - 사용자2가 참여 요청 */
-        Participant r1p1 = participantRepository.save(Participant.builder()
+        RecruitmentParticipation r1p1 = participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo1).get())
                 .build());
-        Participant r2p2 = participantRepository.save(Participant.builder()
+        RecruitmentParticipation r2p2 = participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo2).get())
                 .build());
-        Participant r4p3 = participantRepository.save(Participant.builder()
+        RecruitmentParticipation r4p3 = participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user1).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo4).get())
                 .build());
-        Participant r5p4 =  participantRepository.save(Participant.builder()
+        RecruitmentParticipation r5p4 =  participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user1).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo5).get())
                 .build());
-        Participant r6p5 = participantRepository.save(Participant.builder()
+        RecruitmentParticipation r6p5 = participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo6).get())
                 .build());
-        Participant r7p6 = participantRepository.save(Participant.builder()
+        RecruitmentParticipation r7p6 = participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user1).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo7).get())
                 .build());
-        Participant r1p7 = participantRepository.save(Participant.builder()
+        RecruitmentParticipation r1p7 = participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user2).state(ParticipantState.JOIN_APPROVAL).recruitment(recruitmentRepository.findById(rNo1).get())
                 .build());
-        Participant r2p8 = participantRepository.save(Participant.builder()
+        RecruitmentParticipation r2p8 = participantRepository.save(RecruitmentParticipation.builder()
                 .participant(user2).state(ParticipantState.JOIN_REQUEST).recruitment(recruitmentRepository.findById(rNo2).get())
                 .build());
 

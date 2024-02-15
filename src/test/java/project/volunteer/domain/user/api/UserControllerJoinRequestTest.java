@@ -44,7 +44,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
@@ -156,13 +156,13 @@ public class UserControllerJoinRequestTest {
 
 		// 참여자 저장
 		Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
-		Participant participant1 = Participant.builder().participant(saveUser).recruitment(recruitment1)
+		RecruitmentParticipation participant1 = RecruitmentParticipation.builder().participant(saveUser).recruitment(recruitment1)
 				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant1);
 
 		Recruitment recruitment2 = recruitmentRepository.findById(no2).get();
-		Participant participant2 = Participant.builder().participant(saveUser).recruitment(recruitment2)
+		RecruitmentParticipation participant2 = RecruitmentParticipation.builder().participant(saveUser).recruitment(recruitment2)
 				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant2);

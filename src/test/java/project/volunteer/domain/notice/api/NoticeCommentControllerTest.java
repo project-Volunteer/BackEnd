@@ -21,8 +21,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
-import project.volunteer.domain.recruitmentParticipation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -99,7 +99,7 @@ public class NoticeCommentControllerTest {
         User teamUser = User.createUser(teamAndReplyWriterName, "password", teamAndReplyWriterName, "email", Gender.M, LocalDate.now(), "picture",
                 true, true, true, Role.USER, "kakao", teamAndReplyWriterName, null);
         replyWriter = userRepository.save(teamUser);
-        Participant participant = Participant.createParticipant(saveRecruitment, replyWriter, ParticipantState.JOIN_APPROVAL);
+        RecruitmentParticipation participant = RecruitmentParticipation.createParticipant(saveRecruitment, replyWriter, ParticipantState.JOIN_APPROVAL);
         participantRepository.save(participant);
     }
 
