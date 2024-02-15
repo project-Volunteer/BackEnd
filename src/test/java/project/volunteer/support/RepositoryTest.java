@@ -5,7 +5,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
@@ -27,7 +27,7 @@ public abstract class RepositoryTest {
     protected RecruitmentRepository recruitmentRepository;
 
     @Autowired
-    protected ParticipantRepository participantRepository;
+    protected RecruitmentParticipationRepository participantRepository;
 
     @Autowired
     protected ScheduleParticipationRepository scheduleParticipationRepository;

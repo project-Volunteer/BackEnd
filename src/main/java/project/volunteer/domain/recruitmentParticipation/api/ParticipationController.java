@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddParam;
 import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveParam;
 import project.volunteer.domain.recruitmentParticipation.api.dto.response.JoinResponse;
-import project.volunteer.domain.recruitmentParticipation.application.ParticipationFacade;
+import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
 import project.volunteer.global.util.SecurityUtil;
@@ -17,11 +17,11 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class ParticipationController {
-    private final ParticipationFacade participationFacade;
+    private final RecruitmentParticipationFacade participationFacade;
 
     @PutMapping("/{recruitmentNo}/join")
     public ResponseEntity<JoinResponse> participationRequest(@PathVariable("recruitmentNo") Long no) {
-        Long recruitmentParticipationNo = participationFacade.participateVolunteerTeam(SecurityUtil.getLoginUserNo(),
+        Long recruitmentParticipationNo = participationFacade.joinRecruitmentTeam(SecurityUtil.getLoginUserNo(),
                 no);
         return ResponseEntity.ok(new JoinResponse(recruitmentParticipationNo));
     }

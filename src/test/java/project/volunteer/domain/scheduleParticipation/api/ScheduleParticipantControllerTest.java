@@ -25,7 +25,7 @@ import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -76,7 +76,8 @@ class ScheduleParticipantControllerTest {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired ParticipantRepository participantRepository;
+    @Autowired
+    RecruitmentParticipationRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
     @Autowired ScheduleParticipationService spService;
     @Autowired ImageService imageService;

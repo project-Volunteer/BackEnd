@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitmentParticipation.repository.dto.UserRecruitmentDetails;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -28,7 +28,7 @@ import project.volunteer.global.common.component.ParticipantState;
 @RequiredArgsConstructor
 public class UserDtoServiceImpl implements UserDtoService{
 	private final UserQueryDtoRepository userQueryDtoRepository;
-	private final ParticipantRepository participantRepository;
+	private final RecruitmentParticipationRepository participantRepository;
 	private final RecruitmentRepository recruitmentRepository;
 	private final LogboardRepository logboardRepository;
 	private final ScheduleParticipationRepository scheduleParticipationRepository;

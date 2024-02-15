@@ -91,49 +91,6 @@
 //        return participantRepository.save(participant);
 //    }
 //
-//    @Test
-//    public void 팀신청_최초_성공(){
-//        //given
-//        User saveUser = 사용자_등록("honggildong");
-//
-//        //when
-//        participationService.participate(saveUser, saveRecruitment);
-//        clear();
-//
-//        //then
-//        Participant findParticipant =
-//                participantRepository.findByRecruitmentAndParticipant(saveRecruitment, saveUser).get();
-//        assertThat(findParticipant.getState()).isEqualTo(ParticipantState.JOIN_REQUEST);
-//    }
-//
-//    @Test
-//    public void 팀신청_재신청_성공(){
-//        //given
-//        User saveUser = 사용자_등록("honggildong");
-//        Participant participant = 참여자_상태_등록(saveUser, ParticipantState.JOIN_CANCEL);
-//        clear();
-//
-//        //when
-//        participationService.participate(saveUser, saveRecruitment);
-//
-//        //then
-//        Participant findParticipant = participantRepository.findByRecruitmentAndParticipant(saveRecruitment, saveUser).get();
-//        assertThat(findParticipant.getState()).isEqualTo(ParticipantState.JOIN_REQUEST);
-//    }
-//
-//    @Test
-//    public void 팀신청_실패_중복신청(){
-//        //given
-//        User saveUser = 사용자_등록("honggildong");
-//        Participant participant = 참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
-//        clear();
-//
-//        //when && then
-//        Assertions.assertThatThrownBy(() -> participationService.participate(saveUser, saveRecruitment))
-//                .isInstanceOf(BusinessException.class)
-//                .hasMessageContaining("DUPLICATE_PARTICIPATION");
-//    }
-//
 //    //TODO: 봉사 모집글 service 테스트에 들어가야 할 테스트들
 ////    @Test
 ////    @Transactional
@@ -182,29 +139,6 @@
 ////                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_RECRUITMENT.name());
 ////    }
 //
-//    @Test
-//    public void 팀신청_실패_참여가능인원초과(){
-//        //given
-//        Recruitment findRecruitment = 저장된_모집글_가져오기();
-//        User saveUser1 = 사용자_등록("honggildong");
-//        User saveUser2 = 사용자_등록("kubonsik");
-//        User saveUser3 = 사용자_등록("kugildong");
-//        User saveUser4 = 사용자_등록("parkhasun");
-//        User saveUser5 = 사용자_등록("parkkusun");
-//        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
-//        findRecruitment.increaseTeamMember();
-//        참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
-//        findRecruitment.increaseTeamMember();
-//        참여자_상태_등록(saveUser3, ParticipantState.JOIN_APPROVAL);
-//        findRecruitment.increaseTeamMember();
-//        참여자_상태_등록(saveUser4, ParticipantState.JOIN_APPROVAL);
-//        findRecruitment.increaseTeamMember();
-//
-//        //when & then
-//        Assertions.assertThatThrownBy(() -> participationService.participate(saveUser5, findRecruitment))
-//                .isInstanceOf(BusinessException.class)
-//                .hasMessageContaining("INSUFFICIENT_CAPACITY");
-//    }
 //
 //    @Test
 //    public void 팀신청취소_성공(){

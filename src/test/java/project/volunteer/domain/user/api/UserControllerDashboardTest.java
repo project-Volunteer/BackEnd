@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.logboard.application.LogboardService;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
@@ -64,7 +64,8 @@ public class UserControllerDashboardTest {
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
     @Autowired UserRepository userRepository;
-    @Autowired ParticipantRepository participantRepository;
+    @Autowired
+    RecruitmentParticipationRepository participantRepository;
     @Autowired
     RecruitmentCommandUseCase recruitmentService;
     @Autowired RecruitmentRepository recruitmentRepository;

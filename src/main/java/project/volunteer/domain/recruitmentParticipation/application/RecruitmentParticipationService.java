@@ -7,10 +7,10 @@ import project.volunteer.domain.user.domain.User;
 
 import java.util.List;
 
-public interface ParticipationService {
+public interface RecruitmentParticipationService {
+    Long join(User user, Recruitment recruitment);
 
-    //팀 참가 신청
-    Long participate(User user, Recruitment recruitment);
+
 
     //팀 참가 취소
     public void cancelParticipation(User user, Recruitment recruitment);

@@ -3,7 +3,7 @@ package project.volunteer.domain.scheduleParticipation.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitmentParticipation.application.ParticipationService;
+import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationService;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ScheduleParticipantFacade {
     private final ScheduleCommandUseCase scheduleCommandService;
     private final ScheduleQueryUseCase scheduleQueryService;
-    private final ParticipationService participationService;
+    private final RecruitmentParticipationService participationService;
     private final ScheduleParticipationService scheduleParticipationService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
 

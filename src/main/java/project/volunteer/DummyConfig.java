@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.repository.RepeatPeriodRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
@@ -22,7 +22,7 @@ public class DummyConfig {
     private final RepeatPeriodRepository repeatPeriodRepository;
     private final ImageRepository imageRepository;
     private final StorageRepository storageRepository;
-    private final ParticipantRepository participantRepository;
+    private final RecruitmentParticipationRepository participantRepository;
     private final ScheduleRepository scheduleRepository;
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 

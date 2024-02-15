@@ -9,7 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerMapping;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -35,7 +35,8 @@ class OrganizationComponentTest {
     @Autowired OrganizationComponent organizationComponent;
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
-    @Autowired ParticipantRepository participantRepository;
+    @Autowired
+    RecruitmentParticipationRepository participantRepository;
 
     User writer;
     Recruitment saveRecruitment;

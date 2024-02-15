@@ -20,7 +20,7 @@ import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.Storage;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
@@ -82,7 +82,7 @@ public abstract class DocumentTest {
     protected ScheduleRepository scheduleRepository;
 
     @Autowired
-    protected ParticipantRepository participantRepository;
+    protected RecruitmentParticipationRepository participantRepository;
 
     @Autowired
     protected ImageRepository imageRepository;

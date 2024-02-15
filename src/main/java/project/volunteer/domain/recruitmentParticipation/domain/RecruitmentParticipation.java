@@ -11,13 +11,15 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.domain.recruitmentParticipation.converter.StateConverter;
 
 import javax.persistence.*;
+
 @Getter
 @Entity
 @Table(name = "vlt_recruitment_participation")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitmentParticipation extends BaseTimeEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recruitment_participation_no")
     private Long id;
 
@@ -34,13 +36,31 @@ public class RecruitmentParticipation extends BaseTimeEntity {
     private ParticipantState state;
 
     @Builder
-    public RecruitmentParticipation(Recruitment recruitment, User participant, ParticipantState state){
+    public RecruitmentParticipation(Recruitment recruitment, User participant, ParticipantState state) {
         this.recruitment = recruitment;
         this.user = participant;
         this.state = state;
     }
 
-    public static RecruitmentParticipation createParticipant(Recruitment recruitment, User participant, ParticipantState state){
+    public boolean canRejoin() {
+        return !state.equals(ParticipantState.JOIN_REQUEST) && !state.equals(ParticipantState.JOIN_APPROVAL);
+    }
+
+    public void changeState(ParticipantState state) {
+        this.state = state;
+    }
+
+
+
+
+
+
+
+
+
+
+    public static RecruitmentParticipation createParticipant(Recruitment recruitment, User participant,
+                                                             ParticipantState state) {
         RecruitmentParticipation createParticipant = new RecruitmentParticipation();
         createParticipant.recruitment = recruitment;
         createParticipant.user = participant;
@@ -48,15 +68,16 @@ public class RecruitmentParticipation extends BaseTimeEntity {
         return createParticipant;
     }
 
-    public Boolean isEqualState(ParticipantState state) {return this.state.equals(state);}
+    public Boolean isEqualState(ParticipantState state) {
+        return this.state.equals(state);
+    }
 
-    public void updateState(ParticipantState state) {this.state = state;}
-
-    public void removeUserAndRecruitment(){
+    public void removeUserAndRecruitment() {
         this.recruitment = null;
         this.user = null;
     }
-    public void delete(){
+
+    public void delete() {
         this.state = ParticipantState.DELETED;
     }
 }

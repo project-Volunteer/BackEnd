@@ -13,7 +13,10 @@ import project.volunteer.global.common.component.ParticipantState;
 import java.util.List;
 import java.util.Optional;
 
-public interface ParticipantRepository extends JpaRepository<RecruitmentParticipation, Long> {
+public interface RecruitmentParticipationRepository extends JpaRepository<RecruitmentParticipation, Long> {
+    Boolean existsByRecruitmentAndUser(Recruitment recruitment, User user);
+
+
 
     List<RecruitmentParticipation> findByRecruitment_RecruitmentNo(Long recruitmentNo);
     @Query("select new project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail" +

@@ -60,9 +60,9 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         User user2 = createAndSaveUser("user2", "http://user2...");
         createAndSaveUploadImage(RealWorkCode.USER, user1.getUserNo(), userUploadImagePath1);
         createAndSaveUploadImage(RealWorkCode.USER, user2.getUserNo(), userUploadImagePath2);
-        RecruitmentParticipation participant1 = participantRepository.save(
+        RecruitmentParticipation participant1 = recruitmentParticipationRepository.save(
                 new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_REQUEST));
-        RecruitmentParticipation participant2 = participantRepository.save(
+        RecruitmentParticipation participant2 = recruitmentParticipationRepository.save(
                 new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_APPROVAL));
 
         //when
@@ -150,7 +150,7 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         User user = userRepository.save(
                 new User("user", "user", "user", "user@email.com", Gender.M, LocalDate.now(),
                         "http://", true, true, true, Role.USER, "kakao", "4567", null));
-        participantRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+        recruitmentParticipationRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
 
         //when
         StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(),

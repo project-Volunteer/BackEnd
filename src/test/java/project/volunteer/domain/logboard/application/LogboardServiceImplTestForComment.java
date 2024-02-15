@@ -25,7 +25,7 @@ import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -68,7 +68,8 @@ public class LogboardServiceImplTestForComment {
 	@Autowired UserRepository userRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
-	@Autowired ParticipantRepository participantRepository;
+	@Autowired
+    RecruitmentParticipationRepository participantRepository;
 	@Autowired ScheduleRepository scheduleRepository;
 	@Autowired LogboardRepository logboardRepository;
 	@Autowired ReplyRepository replyRepository;

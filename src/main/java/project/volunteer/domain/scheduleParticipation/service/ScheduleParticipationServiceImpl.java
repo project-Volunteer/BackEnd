@@ -33,7 +33,7 @@ public class ScheduleParticipationServiceImpl implements ScheduleParticipationSe
                         sp -> {
                             //중복 신청 검증(일정 참여중, 일정 참여 취소 요청)
                             if(sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
-                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+                                throw new BusinessException(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION,
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", schedule.getScheduleNo(), participant.getUser().getUserNo(), sp.getState().name()));
                             }
 

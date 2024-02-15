@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -42,7 +42,8 @@ class ScheduleParticipationServiceImplTest {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired ParticipantRepository participantRepository;
+    @Autowired
+    RecruitmentParticipationRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
     @Autowired ScheduleParticipationService spService;
 

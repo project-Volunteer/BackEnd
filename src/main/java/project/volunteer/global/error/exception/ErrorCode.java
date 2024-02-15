@@ -39,8 +39,8 @@ public enum ErrorCode {
     S3_UPLOAD_IO_EX(HttpStatus.INTERNAL_SERVER_ERROR, "io.file.upload"),
 
     //모집글 팀원 관련
-    NOT_EXIST_PARTICIPATION(HttpStatus.BAD_REQUEST, "notExist.participation"),
-    DUPLICATE_PARTICIPATION(HttpStatus.BAD_REQUEST, "duplicate.participation"),
+    NOT_EXIST_RECRUITMENT_PARTICIPANT(HttpStatus.BAD_REQUEST, "notExist.recruitment.participant"),
+    DUPLICATE_RECRUITMENT_PARTICIPATION(HttpStatus.BAD_REQUEST, "duplicate.recruitment.participation"),
     INVALID_STATE(HttpStatus.BAD_REQUEST, "invalid.state"),
     INSUFFICIENT_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.capacity"),
     INSUFFICIENT_APPROVAL_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.approval.capacity"),

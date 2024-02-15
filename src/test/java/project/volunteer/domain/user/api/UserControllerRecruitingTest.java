@@ -44,7 +44,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
@@ -68,7 +68,8 @@ import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 @Import(RestDocsConfiguration.class)
 public class UserControllerRecruitingTest {
 	@Autowired UserRepository userRepository;
-	@Autowired ParticipantRepository participantRepository;
+	@Autowired
+    RecruitmentParticipationRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
 	@Autowired

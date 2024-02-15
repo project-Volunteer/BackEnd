@@ -295,7 +295,7 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
     }
 
     private void createAndSaveScheduleParticipation(User user, Schedule schedule, ParticipantState state) {
-        RecruitmentParticipation participant = participantRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+        RecruitmentParticipation participant = recruitmentParticipationRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
         scheduleParticipationRepository.save(new ScheduleParticipation(schedule, participant, state));
     }
 

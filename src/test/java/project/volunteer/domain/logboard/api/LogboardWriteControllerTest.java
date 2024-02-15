@@ -42,7 +42,7 @@ import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
-import project.volunteer.domain.recruitmentParticipation.repository.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -76,7 +76,8 @@ import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 public class LogboardWriteControllerTest {
 	@Autowired MockMvc mockMvc;
 	@Autowired UserRepository userRepository;
-	@Autowired ParticipantRepository participantRepository;
+	@Autowired
+	RecruitmentParticipationRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
 	@Autowired
