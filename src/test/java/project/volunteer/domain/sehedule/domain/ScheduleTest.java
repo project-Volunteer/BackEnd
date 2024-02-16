@@ -257,6 +257,7 @@ class ScheduleTest {
                 .volunteerType(VolunteerType.ADULT)
                 .volunteeringType(VolunteeringType.IRREG)
                 .maxParticipationNum(participationNum)
+                .currentVolunteerNum(0)
                 .isIssued(true)
                 .organizationName("test")
                 .address(address)

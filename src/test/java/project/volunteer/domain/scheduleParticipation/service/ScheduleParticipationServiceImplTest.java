@@ -156,7 +156,7 @@ class ScheduleParticipationServiceImplTest {
         //when & then
         assertThatThrownBy(() -> spService.participate(saveSchedule, newParticipant))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("DUPLICATE_PARTICIPATION");
+                .hasMessageContaining(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION.name());
     }
 
     @Test
