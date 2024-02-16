@@ -10,10 +10,12 @@ import java.util.List;
 public interface RecruitmentParticipationService {
     Long join(User user, Recruitment recruitment);
 
+    void cancelJoin(User user, Recruitment recruitment);
 
 
-    //팀 참가 취소
-    public void cancelParticipation(User user, Recruitment recruitment);
+
+
+
 
     //팀 탈퇴(미정)
 

@@ -28,7 +28,7 @@ public class ParticipationController {
 
     @PutMapping("/{recruitmentNo}/cancel")
     public ResponseEntity participationCancel(@PathVariable("recruitmentNo") Long no) {
-        participationFacade.cancelParticipationVolunteerTeam(SecurityUtil.getLoginUserNo(), no);
+        participationFacade.cancelJoinRecruitmentTeam(SecurityUtil.getLoginUserNo(), no);
         return ResponseEntity.ok().build();
     }
 

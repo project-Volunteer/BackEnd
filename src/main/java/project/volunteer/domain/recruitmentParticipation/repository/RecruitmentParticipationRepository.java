@@ -16,6 +16,14 @@ import java.util.Optional;
 public interface RecruitmentParticipationRepository extends JpaRepository<RecruitmentParticipation, Long> {
     Boolean existsByRecruitmentAndUser(Recruitment recruitment, User user);
 
+    Optional<RecruitmentParticipation> findByRecruitmentAndUser(Recruitment recruitment, User participant);
+
+    Optional<RecruitmentParticipation> findByRecruitmentAndUserAndState(Recruitment recruitment, User user, ParticipantState state);
+
+
+
+
+
 
 
     List<RecruitmentParticipation> findByRecruitment_RecruitmentNo(Long recruitmentNo);
@@ -38,24 +46,12 @@ public interface RecruitmentParticipationRepository extends JpaRepository<Recrui
     @Query("SELECT p FROM RecruitmentParticipation p WHERE p.id=:no AND p.state=:state")
     Optional<RecruitmentParticipation> findBy(@Param("no") Long recruitmentParticipationNo, @Param("state") ParticipantState state);
 
-
-
-
     @Query("SELECT p.state FROM RecruitmentParticipation p "
             + "WHERE p.recruitment.recruitmentNo=:recruitmentNo AND p.user.userNo=:userNo")
     Optional<ParticipantState> findStateBy(@Param("recruitmentNo") Long recruitmentNo, @Param("userNo") Long userNo);
-
-    Optional<RecruitmentParticipation> findByRecruitmentAndUser(Recruitment recruitment, User participant);
     Optional<RecruitmentParticipation> findByRecruitment_RecruitmentNoAndUser_UserNo(Long recruitmentNo, Long participantNo);
 
     List<RecruitmentParticipation> findByRecruitment_RecruitmentNoAndUser_UserNoIn(Long recruitmentNo, List<Long> userNos);
-
-    @Query("select p from RecruitmentParticipation p " +
-            "where p.recruitment = :recruitment " +
-            "and p.user = :user " +
-            "and p.state = :state")
-    Optional<RecruitmentParticipation> findByRecruitmentAndUserAndState(@Param("recruitment")Recruitment recruitment, @Param("user")User user,
-                                                                        @Param("state") ParticipantState state);
 
     /**
      * 봉사 모집글 팀원 확인 쿼리

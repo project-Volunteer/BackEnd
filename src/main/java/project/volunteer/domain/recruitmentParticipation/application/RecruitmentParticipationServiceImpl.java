@@ -57,6 +57,21 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
         }
     }
 
+    @Transactional
+    @Override
+    public void cancelJoin(final User user, final Recruitment recruitment) {
+        RecruitmentParticipation recruitmentParticipation = findRecruitmentParticipation(recruitment, user);
+        checkCancelPossible(recruitmentParticipation);
+        recruitmentParticipation.changeState(ParticipantState.JOIN_CANCEL);
+    }
+
+    private void checkCancelPossible(final RecruitmentParticipation recruitmentParticipation) {
+        if (!recruitmentParticipation.canCancel()) {
+            throw new BusinessException(ErrorCode.INVALID_STATE,
+                    String.format("state=[%s]", recruitmentParticipation.getState().getId()));
+        }
+    }
+
     private RecruitmentParticipation findRecruitmentParticipation(final Recruitment recruitment, final User user) {
         return recruitmentParticipationRepository.findByRecruitmentAndUser(recruitment, user)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT_PARTICIPANT));
@@ -70,19 +85,6 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
 
 
 
-    @Transactional
-    @Override
-    public void cancelParticipation(User user, Recruitment recruitment) {
-        RecruitmentParticipation findState = recruitmentParticipationRepository.findByRecruitmentAndUserAndState(
-                        recruitment, user,
-                        ParticipantState.JOIN_REQUEST)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
-                                user.getUserNo(), recruitment.getRecruitmentNo(),
-                                ParticipantState.JOIN_REQUEST.name())));
-
-        findState.changeState(ParticipantState.JOIN_CANCEL);
-    }
 
     @Transactional
     @Override

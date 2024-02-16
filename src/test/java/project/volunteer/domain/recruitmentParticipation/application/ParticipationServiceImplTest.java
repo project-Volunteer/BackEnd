@@ -139,35 +139,6 @@
 ////                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_RECRUITMENT.name());
 ////    }
 //
-//
-//    @Test
-//    public void 팀신청취소_성공(){
-//        //given
-//        User saveUser = 사용자_등록("honggildong");
-//        참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
-//
-//        //when
-//        participationService.cancelParticipation(saveUser, saveRecruitment);
-//        clear();
-//
-//        //then
-//        Participant participant = participantRepository.findByRecruitmentAndParticipant(saveRecruitment, saveUser).get();
-//        assertThat(participant.getState()).isEqualTo(ParticipantState.JOIN_CANCEL);
-//    }
-//
-//    @Test
-//    public void 팀신청취소_실패_잘못된상태(){
-//        //given
-//        User saveUser = 사용자_등록("honggildong");
-//        참여자_상태_등록(saveUser, ParticipantState.JOIN_APPROVAL);
-//        clear();
-//
-//        //when & then
-//        Assertions.assertThatThrownBy(() -> participationService.cancelParticipation(saveUser, saveRecruitment))
-//                .isInstanceOf(BusinessException.class)
-//                .hasMessageContaining("INVALID_STATE");
-//    }
-//
 //    @Test
 //    public void 팀신청승인_성공(){
 //        //given

@@ -84,7 +84,8 @@ class ParticipationServiceTest extends ServiceTest {
     void reJoin() {
         //given
         final Recruitment recruitment = createAndSaveRecruitment(100, 10);
-        recruitmentParticipationRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_CANCEL));
+        recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_CANCEL));
 
         //when
         Long recruitmentParticipationNo = recruitmentParticipationService.join(user, recruitment);
@@ -92,6 +93,38 @@ class ParticipationServiceTest extends ServiceTest {
         //then
         RecruitmentParticipation recruitmentParticipation = findRecruitmentParticipation(recruitmentParticipationNo);
         assertThat(recruitmentParticipation.getState()).isEqualByComparingTo(ParticipantState.JOIN_REQUEST);
+    }
+
+    @DisplayName("봉사 모집글 가입 신청 취소에 성공한다.")
+    @Test
+    void cancelJoin() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(100, 10);
+        recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_REQUEST));
+
+        //when
+        recruitmentParticipationService.cancelJoin(user, recruitment);
+
+        //then
+        RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.findByRecruitmentAndUser(
+                        recruitment, user)
+                .orElseThrow(() -> new IllegalArgumentException("봉사 모집글 신청 정보가 존재하지 않습니다."));
+        assertThat(recruitmentParticipation.getState()).isEqualByComparingTo(ParticipantState.JOIN_CANCEL);
+    }
+
+    @DisplayName("신청 취소 전 상태가 JOIN_REQUEST가 아닐 경우, 예외를 발생시킨다.")
+    @Test
+    void cancelJoinInvalidState() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(100, 10);
+        recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+
+        //when & then
+        assertThatThrownBy(() -> recruitmentParticipationService.cancelJoin(user, recruitment))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_STATE.name());
     }
 
     private Recruitment createAndSaveRecruitment(int maxParticipationNum, int currentParticipationNum) {

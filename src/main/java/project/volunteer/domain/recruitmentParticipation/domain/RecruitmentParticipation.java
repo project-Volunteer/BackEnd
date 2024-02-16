@@ -46,9 +46,14 @@ public class RecruitmentParticipation extends BaseTimeEntity {
         return !state.equals(ParticipantState.JOIN_REQUEST) && !state.equals(ParticipantState.JOIN_APPROVAL);
     }
 
+    public boolean canCancel() {
+        return state.equals(ParticipantState.JOIN_REQUEST);
+    }
+
     public void changeState(ParticipantState state) {
         this.state = state;
     }
+
 
 
 
