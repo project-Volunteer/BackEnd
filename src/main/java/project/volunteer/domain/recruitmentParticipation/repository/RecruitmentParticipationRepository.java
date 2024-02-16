@@ -20,12 +20,16 @@ public interface RecruitmentParticipationRepository extends JpaRepository<Recrui
 
     List<RecruitmentParticipation> findByIdIn(List<Long> ids);
 
-
-
-
-
-
     List<RecruitmentParticipation> findByRecruitment_RecruitmentNo(Long recruitmentNo);
+
+
+
+
+
+
+
+
+
     @Query("select new project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail" +
             "(p.state, p.id, u.nickName, coalesce(s.imagePath, u.picture)) " +
             "from RecruitmentParticipation p " +

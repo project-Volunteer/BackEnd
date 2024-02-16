@@ -97,6 +97,14 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
         return new RecruitmentParticipations(participations);
     }
 
+    @Override
+    @Transactional
+    public void deleteRecruitmentParticipations(Long recruitmentNo) {
+        recruitmentParticipationRepository.findByRecruitment_RecruitmentNo(recruitmentNo)
+                .forEach(RecruitmentParticipation::delete);
+    }
+
+
 
 
 
@@ -110,17 +118,6 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
         return recruitmentParticipationRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, userNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT_PARTICIPANT,
                         String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitmentNo, userNo)));
-    }
-
-    @Override
-    @Transactional
-    public void deleteParticipations(Long recruitmentNo) {
-        //연관관계 끊기
-        recruitmentParticipationRepository.findByRecruitment_RecruitmentNo(recruitmentNo)
-                .forEach(p -> {
-                    p.delete();
-                    p.removeUserAndRecruitment();
-                });
     }
 
 }

@@ -62,7 +62,10 @@ public class RecruitmentParticipation extends BaseTimeEntity {
         this.state = state;
     }
 
-
+    public void delete() {
+        this.recruitment = null;
+        this.user = null;
+    }
 
 
 
@@ -81,16 +84,4 @@ public class RecruitmentParticipation extends BaseTimeEntity {
         return createParticipant;
     }
 
-    public Boolean isEqualState(ParticipantState state) {
-        return this.state.equals(state);
-    }
-
-    public void removeUserAndRecruitment() {
-        this.recruitment = null;
-        this.user = null;
-    }
-
-    public void delete() {
-        this.state = ParticipantState.DELETED;
-    }
 }

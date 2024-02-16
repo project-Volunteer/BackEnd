@@ -16,7 +16,7 @@ public interface RecruitmentParticipationService {
     // 강제 탈퇴
     void deport(Recruitment recruitment, List<Long> recruitmentParticipationNos);
 
-
+    void deleteRecruitmentParticipations(Long recruitmentNo);
 
 
 
@@ -25,7 +25,5 @@ public interface RecruitmentParticipationService {
     //팀 탈퇴(미정)
 
     RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo);
-
-    void deleteParticipations(Long recruitmentNo);
 
 }
