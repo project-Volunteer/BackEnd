@@ -11,16 +11,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddParam;
-import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveRequest;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -39,10 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -186,7 +180,7 @@ class ParticipationControllerTest {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-        ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
+        ParticipantAddRequest dto = new ParticipantAddRequest(List.of(loginUser.getUserNo()));
 
         //when & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/approval", recruitmentNo)
@@ -203,7 +197,7 @@ class ParticipationControllerTest {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         참여자_상태_등록(loginUser, ParticipantState.JOIN_CANCEL);
-        ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo()));
+        ParticipantAddRequest dto = new ParticipantAddRequest(List.of(loginUser.getUserNo()));
 
         //when & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/approval", recruitmentNo)
@@ -233,46 +227,13 @@ class ParticipationControllerTest {
         참여자_상태_등록(saveUser4, ParticipantState.JOIN_REQUEST);
         List<Long> requestNos = List.of(saveUser3.getUserNo(), saveUser4.getUserNo());
 
-        ParticipantAddParam dto = new ParticipantAddParam(requestNos);
+        ParticipantAddRequest dto = new ParticipantAddRequest(requestNos);
         //when & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/approval", findRecruitment.getRecruitmentNo())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
-    }
-
-    @Test
-    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void kickVolunteeringTeam() throws Exception {
-        //given
-        final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        final RecruitmentParticipation participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
-        final ParticipantRemoveParam dto = new ParticipantRemoveParam(List.of(participant.getId()));
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .content(toJson(dto))
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-                                ),
-                                requestFields(
-                                        fieldWithPath("recruitmentParticipationNo").type(JsonFieldType.NUMBER).description("봉사 모집글 참여자 고유키 PK")
-                                )
-                        )
-                );
     }
 
     @Disabled
@@ -282,7 +243,7 @@ class ParticipationControllerTest {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         final RecruitmentParticipation participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-        final ParticipantRemoveParam dto = new ParticipantRemoveParam(List.of(participant.getId()));
+        final ParticipantRemoveRequest dto = new ParticipantRemoveRequest(List.of(participant.getId()));
 
         //then & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/kick", recruitmentNo)

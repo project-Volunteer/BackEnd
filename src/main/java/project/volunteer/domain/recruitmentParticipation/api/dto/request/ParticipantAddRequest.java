@@ -1,19 +1,20 @@
 package project.volunteer.domain.recruitmentParticipation.api.dto.request;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParticipantRemoveParam {
+public class ParticipantAddRequest {
 
-    @NotNull
+    @NotEmpty
     private List<Long> recruitmentParticipationNos;
+
 }

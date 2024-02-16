@@ -3,8 +3,8 @@ package project.volunteer.domain.recruitmentParticipation.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddParam;
-import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveRequest;
 import project.volunteer.domain.recruitmentParticipation.api.dto.response.JoinResponse;
 import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
@@ -27,24 +27,24 @@ public class ParticipationController {
     }
 
     @PutMapping("/{recruitmentNo}/cancel")
-    public ResponseEntity participationCancel(@PathVariable("recruitmentNo") Long no) {
+    public ResponseEntity<Void> participationCancel(@PathVariable("recruitmentNo") Long no) {
         participationFacade.cancelJoinRecruitmentTeam(SecurityUtil.getLoginUserNo(), no);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/approval")
-    public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto,
+    public ResponseEntity<Void> participantAdd(@RequestBody @Valid ParticipantAddRequest request,
                                          @PathVariable("recruitmentNo") Long no) {
-        participationFacade.approveJoinRecruitmentTeam(dto.getRecruitmentParticipationNos(), no);
+        participationFacade.approveJoinRecruitmentTeam(request.getRecruitmentParticipationNos(), no);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/kick")
-    public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto,
+    public ResponseEntity<Void> participantRemove(@RequestBody @Valid ParticipantRemoveRequest request,
                                             @PathVariable("recruitmentNo") Long no) {
-        participationFacade.deportRecruitmentTeam(dto.getRecruitmentParticipationNos(), no);
+        participationFacade.deportRecruitmentTeam(request.getRecruitmentParticipationNos(), no);
         return ResponseEntity.ok().build();
     }
 
