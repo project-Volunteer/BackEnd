@@ -92,13 +92,18 @@ public abstract class DocumentTest {
     protected String recruitmentOwnerAccessToken;
     protected String recruitmentTeamAccessToken1;
     protected String recruitmentTeamAccessToken2;
+    protected String recruitmentTeamAccessToken3;
     protected String loginUserAccessToken;
     protected User ownerUser;
     protected User teamUser1;
     protected User teamUser2;
+    protected User teamUser3;
     protected User user;
     protected Recruitment recruitment1;
     protected Recruitment recruitment2;
+    protected RecruitmentParticipation recruitmentParticipation1;
+    protected RecruitmentParticipation recruitmentParticipation2;
+    protected RecruitmentParticipation recruitmentParticipation3;
     protected Schedule schedule1;
     protected Schedule schedule2;
     protected Schedule schedule3;
@@ -110,6 +115,7 @@ public abstract class DocumentTest {
         recruitmentOwnerAccessToken = jwtProvider.createAccessToken(ownerUser.getId());
         recruitmentTeamAccessToken1 = jwtProvider.createAccessToken(teamUser1.getId());
         recruitmentTeamAccessToken2 = jwtProvider.createAccessToken(teamUser2.getId());
+        recruitmentTeamAccessToken3 = jwtProvider.createAccessToken(teamUser3.getId());
         loginUserAccessToken = jwtProvider.createAccessToken(user.getId());
     }
 
@@ -175,12 +181,17 @@ public abstract class DocumentTest {
         teamUser1 = userRepository.save(
                 new User("soeun1234", "password", "soeun", "test@email.com", Gender.M, LocalDate.of(2001, 6, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser1, ParticipantState.JOIN_APPROVAL));
+        recruitmentParticipation1 = participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser1, ParticipantState.JOIN_APPROVAL));
 
         teamUser2 = userRepository.save(
                 new User("chang1234", "password", "chang", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser2, ParticipantState.JOIN_REQUEST));
+        recruitmentParticipation2 = participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser2, ParticipantState.JOIN_REQUEST));
+
+        teamUser3 = userRepository.save(
+                new User("mong1234", "password", "mong", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
+        recruitmentParticipation3 = participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser3, ParticipantState.JOIN_REQUEST));
 
         user = userRepository.save(
                 new User("user1234", "password", "user", "test@email.com", Gender.M, LocalDate.of(2001, 6, 27),

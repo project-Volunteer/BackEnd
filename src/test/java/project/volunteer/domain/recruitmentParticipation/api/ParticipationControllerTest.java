@@ -179,41 +179,6 @@ class ParticipationControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @WithUserDetails(value = "pct_writer", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void joinApprovalVolunteeringTeam() throws Exception {
-        //given
-        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-        User saveUser = 사용자_등록("siKa", "sika", "sika@naver.com");
-        참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
-
-        ParticipantAddParam dto = new ParticipantAddParam(List.of(loginUser.getUserNo(), saveUser.getUserNo()));
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/approval", saveRecruitment.getRecruitmentNo())
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .content(toJson(dto))
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-                                ),
-                                requestFields(
-                                        fieldWithPath("recruitmentParticipationNos").type(JsonFieldType.ARRAY).description("봉사 모집글 참여자 고유키 PK")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @Test
     @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)

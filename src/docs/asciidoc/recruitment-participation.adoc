@@ -54,7 +54,7 @@ include::{snippets}/recruitment-participation-controller-test/cancel-join-recrui
 include::{snippets}/recruitment-participation-controller-test/cancel-join-recruitment-team/http-response.adoc[]
 
 
-=== 봉사 팀원 가입 신청 승인
+=== 봉사 모집글 팀원 가입 신청 승인
 ==== 발생 가능 예외
 |===
 |HTTP 상태코드|메시지
@@ -69,20 +69,20 @@ include::{snippets}/recruitment-participation-controller-test/cancel-join-recrui
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/participation-controller-test/join-approval-volunteering-team/http-request.adoc[]
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/participation-controller-test/join-approval-volunteering-team/request-headers.adoc[]
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/participation-controller-test/join-approval-volunteering-team/path-parameters.adoc[]
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/participation-controller-test/join-approval-volunteering-team/request-fields.adoc[]
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/participation-controller-test/join-approval-volunteering-team/http-response.adoc[]
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/http-response.adoc[]
 
 
 === 봉사 팀원 강제 탈퇴
