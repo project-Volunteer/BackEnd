@@ -20,6 +20,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveRequest;
 import project.volunteer.global.common.component.HourFormat;
 
 public class RecruitmentParticipationAcceptanceTest extends AcceptanceTest {
@@ -306,6 +307,87 @@ public class RecruitmentParticipationAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request2)
                 .when().put("/recruitment/{recruitmentNo}/approval", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+    }
+
+    @DisplayName("봉사 모집글 팀원 방출에 성공한다.")
+    @Test
+    void deport() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 2, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        final ParticipantAddRequest approvalRequest = new ParticipantAddRequest(List.of(recruitmentParticipationNo1));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, approvalRequest);
+
+        final ParticipantRemoveRequest deportRequest = new ParticipantRemoveRequest(List.of(recruitmentParticipationNo1));
+
+        given().log().all()
+                .header(AUTHORIZATION_HEADER, bonsikToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(deportRequest)
+                .when().put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    @DisplayName("봉사 모집글 방장이 아니면 팀원 방출을 할 수 없다.")
+    @Test
+    void deportNotOwner() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 2, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        final ParticipantAddRequest approvalRequest = new ParticipantAddRequest(List.of(recruitmentParticipationNo1));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, approvalRequest);
+
+        final ParticipantRemoveRequest deportRequest = new ParticipantRemoveRequest(List.of(recruitmentParticipationNo1));
+
+        given().log().all()
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(deportRequest)
+                .when().put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+                .extract();
+    }
+
+    @DisplayName("봉사 모집글 신청 승인된 팀원이 아니면 방출을 할 수 없다.")
+    @Test
+    void deportWithNotApprovalJoin() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 2, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        final ParticipantRemoveRequest deportRequest = new ParticipantRemoveRequest(List.of(recruitmentParticipationNo1));
+
+        given().log().all()
+                .header(AUTHORIZATION_HEADER, bonsikToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(deportRequest)
+                .when().put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .extract();
