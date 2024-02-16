@@ -3,19 +3,15 @@ package project.volunteer.domain.recruitmentParticipation.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitmentParticipation.application.dto.AllParticipantDetails;
-import project.volunteer.domain.recruitment.application.dto.query.detail.ParticipantDetail;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipations;
 import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
-import project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -109,63 +105,6 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
 
 
 
-
-
-
-    @Override
-    public AllParticipantDetails findAllParticipantDto(Long recruitmentNo) {
-        List<ParticipantDetail> approvedList = new ArrayList<>();
-        List<ParticipantDetail> requiredList = new ArrayList<>();
-
-        //최적화한 쿼리(쿼리 1번)
-        List<RecruitmentParticipantDetail> participants = recruitmentParticipationRepository.findParticipantsDetailBy(
-                recruitmentNo,
-                List.of(ParticipantState.JOIN_REQUEST, ParticipantState.JOIN_APPROVAL));
-
-        participants.stream()
-                .forEach(p -> {
-                    if (p.getState().equals(ParticipantState.JOIN_REQUEST)) {
-                        requiredList.add(new ParticipantDetail(p.getRecruitmentParticipationNo(), p.getNickName(),
-                                p.getImageUrl()));
-                    } else {
-                        approvedList.add(new ParticipantDetail(p.getRecruitmentParticipationNo(), p.getNickName(),
-                                p.getImageUrl()));
-                    }
-                });
-
-        return new AllParticipantDetails(approvedList, requiredList);
-    }
-
-    /**
-     * L1 : 봉사 모집 기간 마감 L2 : 팀 신청, 팀 신청 승인 L3 : 팀 신청 인원 마감 L4 : 팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴)
-     */
-//    @Override
-//    public String findParticipationState(Recruitment recruitment, User user) {
-//        Optional<Participant> findParticipant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
-//
-//        //봉사 모집 기간 만료
-//        if(recruitment.isDone()){
-//            return StateResponse.DONE.getId();
-//        }
-//
-//        //팀 신청
-//        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
-//            return StateResponse.PENDING.getId();
-//        }
-//
-//        //팀 신청 승인
-//        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
-//            return StateResponse.APPROVED.getId();
-//        }
-//
-//        //팀 신청 인원 마감
-//        if(recruitment.isFull()){
-//            return StateResponse.FULL.getId();
-//        }
-//
-//        //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
-//        return StateResponse.AVAILABLE.getId();
-//    }
     @Override
     public RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo) {
         return recruitmentParticipationRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, userNo)

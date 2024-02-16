@@ -1,6 +1,5 @@
 package project.volunteer.domain.recruitmentParticipation.application;
 
-import project.volunteer.domain.recruitmentParticipation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
@@ -25,11 +24,8 @@ public interface RecruitmentParticipationService {
 
     //팀 탈퇴(미정)
 
-    public AllParticipantDetails findAllParticipantDto(Long recruitmentNo);
+    RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo);
 
-//    String findParticipationState(Recruitment recruitment, User user);
+    void deleteParticipations(Long recruitmentNo);
 
-    public RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo);
-
-    public void deleteParticipations(Long recruitmentNo);
 }
