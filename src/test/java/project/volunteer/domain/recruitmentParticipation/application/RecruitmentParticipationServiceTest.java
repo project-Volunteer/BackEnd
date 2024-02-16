@@ -28,7 +28,7 @@ import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.support.ServiceTest;
 
-class ParticipationServiceTest extends ServiceTest {
+class RecruitmentParticipationServiceTest extends ServiceTest {
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
     private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
