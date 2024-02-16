@@ -22,13 +22,9 @@ public interface RecruitmentParticipationRepository extends JpaRepository<Recrui
 
     List<RecruitmentParticipation> findByRecruitment_RecruitmentNo(Long recruitmentNo);
 
-
-
-
-
-
-
-
+    @Query("SELECT p.state FROM RecruitmentParticipation p "
+            + "WHERE p.recruitment.recruitmentNo=:recruitmentNo AND p.user.userNo=:userNo")
+    Optional<ParticipantState> findStateBy(@Param("recruitmentNo") Long recruitmentNo, @Param("userNo") Long userNo);
 
     @Query("select new project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail" +
             "(p.state, p.id, u.nickName, coalesce(s.imagePath, u.picture)) " +
@@ -43,14 +39,21 @@ public interface RecruitmentParticipationRepository extends JpaRepository<Recrui
             "and p.state in :states ")
     List<RecruitmentParticipantDetail> findParticipantsDetailBy(@Param("no") Long recruitmentNo, @Param("states") List<ParticipantState> states);
 
-    @Query("SELECT p FROM RecruitmentParticipation p WHERE p.id=:no AND p.state=:state")
-    Optional<RecruitmentParticipation> findBy(@Param("no") Long recruitmentParticipationNo, @Param("state") ParticipantState state);
 
-    @Query("SELECT p.state FROM RecruitmentParticipation p "
-            + "WHERE p.recruitment.recruitmentNo=:recruitmentNo AND p.user.userNo=:userNo")
-    Optional<ParticipantState> findStateBy(@Param("recruitmentNo") Long recruitmentNo, @Param("userNo") Long userNo);
+
+
+
+
+
+
+
+
+
+
+
+
+
     Optional<RecruitmentParticipation> findByRecruitment_RecruitmentNoAndUser_UserNo(Long recruitmentNo, Long participantNo);
-
 
     /**
      * 봉사 모집글 팀원 확인 쿼리
