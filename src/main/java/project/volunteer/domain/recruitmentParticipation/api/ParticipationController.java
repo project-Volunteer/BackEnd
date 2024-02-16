@@ -36,7 +36,7 @@ public class ParticipationController {
     @PutMapping("/{recruitmentNo}/approval")
     public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto,
                                          @PathVariable("recruitmentNo") Long no) {
-        participationFacade.approvalParticipantVolunteerTeam(dto.getRecruitmentParticipationNos(), no);
+        participationFacade.approveJoinRecruitmentTeam(dto.getRecruitmentParticipationNos(), no);
         return ResponseEntity.ok().build();
     }
 

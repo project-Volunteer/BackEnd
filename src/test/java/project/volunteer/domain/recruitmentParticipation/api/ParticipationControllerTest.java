@@ -175,11 +175,11 @@ class ParticipationControllerTest {
         User saveUser2 = 사용자_등록("bon","bon","bon@naver.com");
         User saveUser3 = 사용자_등록("siK", "sik", "sik@naver.com");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
+        findRecruitment.increaseParticipationNum(1);
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
+        findRecruitment.increaseParticipationNum(1);
         참여자_상태_등록(saveUser3, ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
+        findRecruitment.increaseParticipationNum(1);
 
 
         //when & then
@@ -311,9 +311,9 @@ class ParticipationControllerTest {
         User saveUser3 = 사용자_등록("siK", "sik", "sik@naver.com");
         User saveUser4 = 사용자_등록("bog", "bog", "bog@naver.com");
         참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
+        findRecruitment.increaseParticipationNum(1);
         참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
-        findRecruitment.increaseTeamMember();
+        findRecruitment.increaseParticipationNum(1);
 
         참여자_상태_등록(saveUser3, ParticipantState.JOIN_REQUEST);
         참여자_상태_등록(saveUser4, ParticipantState.JOIN_REQUEST);

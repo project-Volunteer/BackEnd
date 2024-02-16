@@ -32,20 +32,18 @@ public class RecruitmentParticipationFacade {
         participationService.cancelJoin(user, recruitment);
     }
 
-
-
-
-
-
-
-
-
     @Transactional
-    public void approvalParticipantVolunteerTeam(List<Long> recruitmentParticipationNos, Long recruitmentNo){
+    public void approveJoinRecruitmentTeam(List<Long> recruitmentParticipationNos, Long recruitmentNo){
         Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
-
-        participationService.approvalParticipant(recruitment, recruitmentParticipationNos);
+        participationService.approveJoin(recruitment, recruitmentParticipationNos);
     }
+
+
+
+
+
+
+
 
     @Transactional
     public void deportParticipantVolunteerTeam(Long recruitmentParticipationNo, Long recruitmentNo){

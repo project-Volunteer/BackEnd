@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitmentParticipation.application.dto.AllParticipantDetails;
 import project.volunteer.domain.recruitment.application.dto.query.detail.ParticipantDetail;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipations;
 import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -77,42 +78,30 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT_PARTICIPANT));
     }
 
-
-
-
-
-
-
-
-
-
     @Transactional
     @Override
-    public void approvalParticipant(Recruitment recruitment, List<Long> recruitmentParticipationNos) {
-        //팀원 승인 가능 인원 검증
-        Integer remainNum = recruitment.getAvailableTeamMemberCount();
-        if (remainNum < recruitmentParticipationNos.size()) {
-            throw new BusinessException(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY, new Integer[]{remainNum},
-                    String.format("RecruitmentNo = [%d], Available participant num = [%d], " +
-                                    "Approval participants num = [%d]", recruitment.getRecruitmentNo(), remainNum,
-                            recruitmentParticipationNos.size()));
-        }
+    public void approveJoin(Recruitment recruitment, List<Long> recruitmentParticipationNos) {
+        RecruitmentParticipations recruitmentParticipations = findRecruitmentParticipations(recruitmentParticipationNos);
+        recruitmentParticipations.approve();
 
-//        List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitment.getRecruitmentNo(), userNo);
-        List<RecruitmentParticipation> findParticipants = recruitmentParticipationRepository.findByIdIn(
-                recruitmentParticipationNos);
-        for (RecruitmentParticipation p : findParticipants) {
-            if (!p.isEqualState(ParticipantState.JOIN_REQUEST)) {
-                throw new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
-                                p.getUser().getUserNo(), recruitment.getRecruitmentNo(), p.getState().name()));
-            }
-            p.changeState(ParticipantState.JOIN_APPROVAL);
-
-            //봉사 모집글 팀원인원 증가
-            recruitment.increaseTeamMember();
-        }
+        recruitment.increaseParticipationNum(recruitmentParticipationNos.size());
     }
+
+    private RecruitmentParticipations findRecruitmentParticipations(List<Long> ids) {
+        List<RecruitmentParticipation> participations = recruitmentParticipationRepository.findByIdIn(ids);
+        return new RecruitmentParticipations(participations);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Transactional
     @Override

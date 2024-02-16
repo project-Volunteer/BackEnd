@@ -2,9 +2,11 @@ package project.volunteer.domain.recruitmentParticipation.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,12 +33,18 @@ class ParticipationServiceTest extends ServiceTest {
             10);
     private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
-    private final User user = new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+    private final User user1 = new User("test1", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+            "http://...", true, true, true, Role.USER, "kakao", "1234", null);
+    private final User user2 = new User("test2", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+            "http://...", true, true, true, Role.USER, "kakao", "1234", null);
+    private final User user3 = new User("test3", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
             "http://...", true, true, true, Role.USER, "kakao", "1234", null);
 
     @BeforeEach
     void setUp() {
-        userRepository.save(user);
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
     }
 
     @DisplayName("봉사 모집글 첫 가입 신청에 성공한다.")
@@ -46,7 +54,7 @@ class ParticipationServiceTest extends ServiceTest {
         final Recruitment recruitment = createAndSaveRecruitment(100, 10);
 
         //when
-        Long recruitmentParticipationNo = recruitmentParticipationService.join(user, recruitment);
+        Long recruitmentParticipationNo = recruitmentParticipationService.join(user1, recruitment);
 
         //then
         RecruitmentParticipation recruitmentParticipation = findRecruitmentParticipation(recruitmentParticipationNo);
@@ -59,10 +67,10 @@ class ParticipationServiceTest extends ServiceTest {
         //given
         final Recruitment recruitment = createAndSaveRecruitment(100, 10);
         recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_APPROVAL));
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.join(user, recruitment))
+        assertThatThrownBy(() -> recruitmentParticipationService.join(user1, recruitment))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION.name());
     }
@@ -74,7 +82,7 @@ class ParticipationServiceTest extends ServiceTest {
         final Recruitment recruitment = createAndSaveRecruitment(100, 100);
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.join(user, recruitment))
+        assertThatThrownBy(() -> recruitmentParticipationService.join(user1, recruitment))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INSUFFICIENT_CAPACITY.name());
     }
@@ -85,10 +93,10 @@ class ParticipationServiceTest extends ServiceTest {
         //given
         final Recruitment recruitment = createAndSaveRecruitment(100, 10);
         recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_CANCEL));
+                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_CANCEL));
 
         //when
-        Long recruitmentParticipationNo = recruitmentParticipationService.join(user, recruitment);
+        Long recruitmentParticipationNo = recruitmentParticipationService.join(user1, recruitment);
 
         //then
         RecruitmentParticipation recruitmentParticipation = findRecruitmentParticipation(recruitmentParticipationNo);
@@ -101,14 +109,14 @@ class ParticipationServiceTest extends ServiceTest {
         //given
         final Recruitment recruitment = createAndSaveRecruitment(100, 10);
         recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_REQUEST));
+                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_REQUEST));
 
         //when
-        recruitmentParticipationService.cancelJoin(user, recruitment);
+        recruitmentParticipationService.cancelJoin(user1, recruitment);
 
         //then
         RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.findByRecruitmentAndUser(
-                        recruitment, user)
+                        recruitment, user1)
                 .orElseThrow(() -> new IllegalArgumentException("봉사 모집글 신청 정보가 존재하지 않습니다."));
         assertThat(recruitmentParticipation.getState()).isEqualByComparingTo(ParticipantState.JOIN_CANCEL);
     }
@@ -119,12 +127,89 @@ class ParticipationServiceTest extends ServiceTest {
         //given
         final Recruitment recruitment = createAndSaveRecruitment(100, 10);
         recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_APPROVAL));
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.cancelJoin(user, recruitment))
+        assertThatThrownBy(() -> recruitmentParticipationService.cancelJoin(user1, recruitment))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_STATE.name());
+    }
+
+    @DisplayName("봉사 모집글 참여 승인에 성공한다.")
+    @Test
+    void approveJoin() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(10, 0);
+        final List<Long> ids = List.of(
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_REQUEST))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_REQUEST))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user3, ParticipantState.JOIN_REQUEST))
+                        .getId()
+        );
+
+        //when
+        recruitmentParticipationService.approveJoin(recruitment, ids);
+
+        //then
+        List<RecruitmentParticipation> participations = recruitmentParticipationRepository.findByIdIn(ids);
+        assertAll(
+                () -> assertThat(participations).hasSize(3)
+                        .extracting("state")
+                        .containsExactlyInAnyOrder(ParticipantState.JOIN_APPROVAL, ParticipantState.JOIN_APPROVAL,
+                                ParticipantState.JOIN_APPROVAL),
+                () -> assertThat(recruitment.getCurrentVolunteerNum()).isEqualTo(3)
+        );
+    }
+
+    @DisplayName("신청 승인 전 상태가 JOIN_REQUEST가 아닐 경우, 예외를 발생시킨다.")
+    @Test
+    void approveJoinInvalidState() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(10, 0);
+        final List<Long> ids = List.of(
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_REQUEST))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_CANCEL))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user3, ParticipantState.JOIN_REQUEST))
+                        .getId()
+        );
+
+        //when & then
+        assertThatThrownBy(() -> recruitmentParticipationService.approveJoin(recruitment, ids))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_STATE.name());
+    }
+
+    @DisplayName("봉사 모집글 승인 가능 인원을 초과할 경우, 예외를 발생시킨다.")
+    @Test
+    void approveJoinExceedRecruitmentParticipationNum() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(10, 8);
+        final List<Long> ids = List.of(
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_REQUEST))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_REQUEST))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user3, ParticipantState.JOIN_REQUEST))
+                        .getId()
+        );
+
+        //when & then
+        assertThatThrownBy(() -> recruitmentParticipationService.approveJoin(recruitment, ids))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY.name());
     }
 
     private Recruitment createAndSaveRecruitment(int maxParticipationNum, int currentParticipationNum) {

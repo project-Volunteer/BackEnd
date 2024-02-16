@@ -185,49 +185,6 @@
 //    }
 //
 //    @Test
-//    public void 팀신청승인_실패_잘못된상태(){
-//        //given
-//        User saveUser1 = 사용자_등록("honggildong");
-//        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
-//        List<Long> requestNos = List.of(saveUser1.getUserNo());
-//        clear();
-//
-//        //when & then
-//        Assertions.assertThatThrownBy(
-//                        () -> participationService.approvalParticipant(saveRecruitment,requestNos))
-//                .isInstanceOf(BusinessException.class)
-//                .hasMessageContaining("INVALID_STATE");
-//    }
-//
-//    @Test
-//    public void 팀신청승인_실패_승인가능인원초과(){
-//        //given
-//        Recruitment findRecruitment = 저장된_모집글_가져오기();
-//
-//        //남은 승인 가능한 인원 1명
-//        User saveUser1 = 사용자_등록("honggildong");
-//        User saveUser2 = 사용자_등록("kubonsik");
-//        User saveUser3 = 사용자_등록("kugildong");
-//        User saveUser4 = 사용자_등록("kuhaesun");
-//        User saveUser5 = 사용자_등록("parkkuseo");
-//        참여자_상태_등록(saveUser1, ParticipantState.JOIN_APPROVAL);
-//        findRecruitment.increaseTeamMember();
-//        참여자_상태_등록(saveUser2, ParticipantState.JOIN_APPROVAL);
-//        findRecruitment.increaseTeamMember();
-//        참여자_상태_등록(saveUser3, ParticipantState.JOIN_APPROVAL);
-//        findRecruitment.increaseTeamMember();
-//
-//        참여자_상태_등록(saveUser4, ParticipantState.JOIN_REQUEST);
-//        참여자_상태_등록(saveUser5, ParticipantState.JOIN_REQUEST);
-//        List<Long> requestNos = List.of(saveUser4.getUserNo(), saveUser5.getUserNo());
-//
-//        //when & then
-//        Assertions.assertThatThrownBy(() -> participationService.approvalParticipant(findRecruitment, requestNos))
-//                .isInstanceOf(BusinessException.class)
-//                .hasMessageContaining("INSUFFICIENT_APPROVAL_CAPACITY");
-//    }
-//
-//    @Test
 //    public void 팀원강제탈퇴_성공(){
 //        //given
 //        Recruitment recruitment = 저장된_모집글_가져오기();

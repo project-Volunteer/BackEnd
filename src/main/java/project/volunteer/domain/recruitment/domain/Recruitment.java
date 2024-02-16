@@ -103,7 +103,7 @@ public class Recruitment extends BaseTimeEntity {
                        Coordinate coordinate, Timetable timetable, Integer viewCount, Integer likeCount,
                        Boolean isPublished, IsDeleted isDeleted, User writer) {
         validateOrganizationNameSize(organizationName);
-        validateParticipationNum(maxParticipationNum);
+        validateMaxParticipationNum(maxParticipationNum);
         validateTitleSize(title);
         validateContentSize(content);
 
@@ -191,6 +191,11 @@ public class Recruitment extends BaseTimeEntity {
         return this.maxParticipationNum < participationNum;
     }
 
+    public void increaseParticipationNum(int addParticipationNum) {
+        validateRemainingParticipationCapacity(addParticipationNum);
+        this.currentVolunteerNum += addParticipationNum;
+    }
+
     /**
      * 검증 메서드
      **/
@@ -201,7 +206,7 @@ public class Recruitment extends BaseTimeEntity {
         }
     }
 
-    private void validateParticipationNum(final int participationNum) {
+    private void validateMaxParticipationNum(final int participationNum) {
         if (MIN_PARTICIPATION_NUM > participationNum || MAX_PARTICIPATION_NUM < participationNum) {
             throw new BusinessException(ErrorCode.INVALID_PARTICIPATION_NUM,
                     String.format("[%d]~[%d]", MIN_PARTICIPATION_NUM, MAX_PARTICIPATION_NUM));
@@ -222,6 +227,13 @@ public class Recruitment extends BaseTimeEntity {
         }
     }
 
+    private void validateRemainingParticipationCapacity(int addParticipationNum) {
+        int remainParticipationCapacity = this.maxParticipationNum - this.currentVolunteerNum;
+        if (remainParticipationCapacity < addParticipationNum) {
+            throw new BusinessException(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY,
+                    new Integer[]{remainParticipationCapacity});
+        }
+    }
 
 
 
@@ -239,16 +251,8 @@ public class Recruitment extends BaseTimeEntity {
         this.timetable = timetable;
     }
 
-    public void increaseTeamMember() {
-        this.currentVolunteerNum++;
-    }
-
     public void decreaseTeamMember() {
         this.currentVolunteerNum--;
-    }
-
-    public Integer getAvailableTeamMemberCount() {
-        return this.maxParticipationNum - this.currentVolunteerNum;
     }
 
 }
