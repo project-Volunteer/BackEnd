@@ -13,6 +13,8 @@ endif::[]
 
 include::recruitment.adoc[]
 
+include::recruitment-management.adoc[]
+
 include::schedule.adoc[]
 
 include::schedule-management.adoc[]

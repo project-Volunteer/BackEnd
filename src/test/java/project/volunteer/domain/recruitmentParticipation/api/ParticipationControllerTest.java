@@ -90,30 +90,6 @@ class ParticipationControllerTest {
         saveRecruitment = recruitmentRepository.save(createRecruitment);
     }
 
-
-    @Test
-    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void joinRequestVolunteeringTeam() throws Exception {
-        //given & when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/join", saveRecruitment.getRecruitmentNo())
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @Test
     @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)

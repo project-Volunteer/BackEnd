@@ -92,9 +92,11 @@ public abstract class DocumentTest {
     protected String recruitmentOwnerAccessToken;
     protected String recruitmentTeamAccessToken1;
     protected String recruitmentTeamAccessToken2;
+    protected String loginUserAccessToken;
     protected User ownerUser;
     protected User teamUser1;
     protected User teamUser2;
+    protected User user;
     protected Recruitment recruitment1;
     protected Recruitment recruitment2;
     protected Schedule schedule1;
@@ -108,6 +110,7 @@ public abstract class DocumentTest {
         recruitmentOwnerAccessToken = jwtProvider.createAccessToken(ownerUser.getId());
         recruitmentTeamAccessToken1 = jwtProvider.createAccessToken(teamUser1.getId());
         recruitmentTeamAccessToken2 = jwtProvider.createAccessToken(teamUser2.getId());
+        loginUserAccessToken = jwtProvider.createAccessToken(user.getId());
     }
 
     private void saveBaseData() {
@@ -178,6 +181,10 @@ public abstract class DocumentTest {
                 new User("chang1234", "password", "chang", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
         participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser2, ParticipantState.JOIN_REQUEST));
+
+        user = userRepository.save(
+                new User("user1234", "password", "user", "test@email.com", Gender.M, LocalDate.of(2001, 6, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
 
     }
 

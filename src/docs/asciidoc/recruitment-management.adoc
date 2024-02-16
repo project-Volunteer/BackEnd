@@ -1,7 +1,7 @@
-[[Recruitment-Management-API]]
-== Recruitment Management API
+[[Recruitment-Participation-API]]
+== Recruitment Participation API
 
-=== 봉사 팀원 가입 신청
+=== 봉사 모집글 팀원 가입 신청
 ==== 발생 가능 예외
 |===
 |HTTP 상태코드|메시지
@@ -15,17 +15,17 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/participation-controller-test/join-request-volunteering-team/http-request.adoc[]
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/participation-controller-test/join-request-volunteering-team/request-headers.adoc[]
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/participation-controller-test/join-request-volunteering-team/path-parameters.adoc[]
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/participation-controller-test/join-request-volunteering-team/http-response.adoc[]
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/http-response.adoc[]
 
 
 === 봉사 팀원 가입 취소
