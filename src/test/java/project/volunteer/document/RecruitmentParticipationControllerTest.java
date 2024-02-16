@@ -39,4 +39,29 @@ public class RecruitmentParticipationControllerTest extends DocumentTest {
                 );
     }
 
+    @DisplayName("봉사 모집글 참여 신청 취소에 성공하다.")
+    @Test
+    public void cancelJoinRecruitmentTeam() throws Exception {
+        //given & when
+        ResultActions result = mockMvc.perform(
+                put("/recruitment/{recruitmentNo}/cancel", recruitment1.getRecruitmentNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken2)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
+                                )
+                        )
+                );
+    }
+
 }

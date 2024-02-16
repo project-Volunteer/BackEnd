@@ -165,33 +165,6 @@ class ParticipationControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void joinCancellationVolunteeringTeam() throws Exception {
-        //given
-        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/cancel", saveRecruitment.getRecruitmentNo())
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @Test
     @WithUserDetails(value = "pct_login", setupBefore = TestExecutionEvent.TEST_EXECUTION)
