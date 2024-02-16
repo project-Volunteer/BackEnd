@@ -37,9 +37,12 @@ public class AcceptanceTest {
 
     protected String bonsikToken;
     protected String soeunToken;
-    protected Long soeunNo;
     protected String changHoeunToken;
+    protected String bongbongToken;
+    protected Long soeunNo;
     protected Long changHoeunNo;
+    protected Long bongbongNo;
+
     protected final String AUTHORIZATION_HEADER = "accessToken";
 
     @BeforeEach
@@ -65,6 +68,12 @@ public class AcceptanceTest {
                 new UserSignupRequest("changHoeun", "http://www...", "test@email.com", "1999-07-27",
                         1, true, true, true, true, "kakao", providerId3));
         changHoeunToken = jwtProvider.createAccessToken("kakao_" + providerId3);
+
+        final String providerId4 = "888";
+        bongbongNo = userSignupService.addUser(
+                new UserSignupRequest("bongbong", "http://www...", "test@email.com", "1999-07-27",
+                        1, true, true, true, true, "kakao", providerId4));
+        bongbongToken = jwtProvider.createAccessToken("kakao_" + providerId4);
     }
 
     protected void 봉사_일정_참여완료_미승인_스케줄링() {
