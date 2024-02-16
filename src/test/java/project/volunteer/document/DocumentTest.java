@@ -126,7 +126,7 @@ public abstract class DocumentTest {
 
         recruitment1 = recruitmentRepository.save(
                 new Recruitment("title1", "content", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
-                        VolunteerType.TEENAGER, 9999,0,true, "unicef",
+                        VolunteerType.TEENAGER, 9999,1,true, "unicef",
                         new Address("11", "1111", "test", "test"),
                         new Coordinate(1.2F, 2.2F),
                         new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,

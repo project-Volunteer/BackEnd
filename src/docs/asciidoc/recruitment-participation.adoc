@@ -85,7 +85,7 @@ include::{snippets}/recruitment-participation-controller-test/approve-join-recru
 include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/http-response.adoc[]
 
 
-=== 봉사 팀원 강제 탈퇴
+=== 봉사 모집글 팀원 강제 방출
 ==== 발생 가능 예외
 |===
 |HTTP 상태코드|메시지
@@ -99,17 +99,17 @@ include::{snippets}/recruitment-participation-controller-test/approve-join-recru
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/participation-controller-test/kick-volunteering-team/http-request.adoc[]
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/participation-controller-test/kick-volunteering-team/request-headers.adoc[]
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/participation-controller-test/kick-volunteering-team/path-parameters.adoc[]
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/participation-controller-test/kick-volunteering-team/request-fields.adoc[]
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/participation-controller-test/kick-volunteering-team/http-response.adoc[]
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/http-response.adoc[]
