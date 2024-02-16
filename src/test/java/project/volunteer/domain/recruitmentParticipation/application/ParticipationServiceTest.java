@@ -209,7 +209,61 @@ class ParticipationServiceTest extends ServiceTest {
         //when & then
         assertThatThrownBy(() -> recruitmentParticipationService.approveJoin(recruitment, ids))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY.name());
+                .hasMessage(ErrorCode.INVALID_CURRENT_PARTICIPATION_NUM.name());
+    }
+
+    @DisplayName("봉사 모집글 팀원 방출에 성공한다.")
+    @Test
+    void deport() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(10, 4);
+        final List<Long> ids = List.of(
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_APPROVAL))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_APPROVAL))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user3, ParticipantState.JOIN_APPROVAL))
+                        .getId()
+        );
+
+        //when
+        recruitmentParticipationService.deport(recruitment, ids);
+
+        //then
+        List<RecruitmentParticipation> participations = recruitmentParticipationRepository.findByIdIn(ids);
+        assertAll(
+                () -> assertThat(participations).hasSize(3)
+                        .extracting("state")
+                        .containsExactlyInAnyOrder(ParticipantState.DEPORT, ParticipantState.DEPORT,
+                                ParticipantState.DEPORT),
+                () -> assertThat(recruitment.getCurrentVolunteerNum()).isEqualTo(1)
+        );
+    }
+
+    @DisplayName("팀원 방출 전 상태가 JOIN_APPROVAL 아닐 경우, 예외를 발생시킨다.")
+    @Test
+    void deportInvalidState() {
+        //given
+        final Recruitment recruitment = createAndSaveRecruitment(10, 0);
+        final List<Long> ids = List.of(
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_APPROVAL))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_REQUEST))
+                        .getId(),
+                recruitmentParticipationRepository.save(
+                                new RecruitmentParticipation(recruitment, user3, ParticipantState.JOIN_APPROVAL))
+                        .getId()
+        );
+
+        //when & then
+        assertThatThrownBy(() -> recruitmentParticipationService.deport(recruitment, ids))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_STATE.name());
     }
 
     private Recruitment createAndSaveRecruitment(int maxParticipationNum, int currentParticipationNum) {

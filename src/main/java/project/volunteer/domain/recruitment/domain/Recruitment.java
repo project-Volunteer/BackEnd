@@ -29,6 +29,7 @@ public class Recruitment extends BaseTimeEntity {
     private static final int MAX_ORGANIZATION_NAME_SIZE = 50;
     private static final int MAX_PARTICIPATION_NUM = 9999;
     private static final int MIN_PARTICIPATION_NUM = 1;
+    private static final int MIN_CURRENT_PARTICIPATION_NUM = 0;
     private static final int MAX_TITLE_SIZE = 255;
     private static final int MAX_CONTENT_SIZE = 255;
 
@@ -104,6 +105,7 @@ public class Recruitment extends BaseTimeEntity {
                        Boolean isPublished, IsDeleted isDeleted, User writer) {
         validateOrganizationNameSize(organizationName);
         validateMaxParticipationNum(maxParticipationNum);
+        validateCurrentParticipationNum(currentVolunteerNum, maxParticipationNum);
         validateTitleSize(title);
         validateContentSize(content);
 
@@ -192,8 +194,13 @@ public class Recruitment extends BaseTimeEntity {
     }
 
     public void increaseParticipationNum(int addParticipationNum) {
-        validateRemainingParticipationCapacity(addParticipationNum);
         this.currentVolunteerNum += addParticipationNum;
+        validateCurrentParticipationNum(currentVolunteerNum, maxParticipationNum);
+    }
+
+    public void decreaseParticipationNum(int subParticipationNum) {
+        this.currentVolunteerNum -= subParticipationNum;
+        validateCurrentParticipationNum(currentVolunteerNum, maxParticipationNum);
     }
 
     /**
@@ -227,13 +234,14 @@ public class Recruitment extends BaseTimeEntity {
         }
     }
 
-    private void validateRemainingParticipationCapacity(int addParticipationNum) {
-        int remainParticipationCapacity = this.maxParticipationNum - this.currentVolunteerNum;
-        if (remainParticipationCapacity < addParticipationNum) {
-            throw new BusinessException(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY,
-                    new Integer[]{remainParticipationCapacity});
+    private void validateCurrentParticipationNum(int currentVolunteerNum, int maxParticipationNum) {
+        if (MIN_CURRENT_PARTICIPATION_NUM > currentVolunteerNum || maxParticipationNum < currentVolunteerNum) {
+            throw new BusinessException(ErrorCode.INVALID_CURRENT_PARTICIPATION_NUM,
+                    String.format("[%d]~[%d]", MIN_CURRENT_PARTICIPATION_NUM, maxParticipationNum));
         }
     }
+
+
 
 
 
@@ -249,10 +257,6 @@ public class Recruitment extends BaseTimeEntity {
 
     public void setTimetable(Timetable timetable) {
         this.timetable = timetable;
-    }
-
-    public void decreaseTeamMember() {
-        this.currentVolunteerNum--;
     }
 
 }

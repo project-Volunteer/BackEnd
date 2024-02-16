@@ -44,7 +44,7 @@ public class ParticipationController {
     @PutMapping("/{recruitmentNo}/kick")
     public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto,
                                             @PathVariable("recruitmentNo") Long no) {
-        participationFacade.deportParticipantVolunteerTeam(dto.getRecruitmentParticipationNo(), no);
+        participationFacade.deportRecruitmentTeam(dto.getRecruitmentParticipationNos(), no);
         return ResponseEntity.ok().build();
     }
 

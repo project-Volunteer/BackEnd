@@ -84,7 +84,16 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
         RecruitmentParticipations recruitmentParticipations = findRecruitmentParticipations(recruitmentParticipationNos);
         recruitmentParticipations.approve();
 
-        recruitment.increaseParticipationNum(recruitmentParticipationNos.size());
+        recruitment.increaseParticipationNum(recruitmentParticipations.getSize());
+    }
+
+    @Transactional
+    @Override
+    public void deport(Recruitment recruitment, List<Long> recruitmentParticipationNos) {
+        RecruitmentParticipations recruitmentParticipations = findRecruitmentParticipations(recruitmentParticipationNos);
+        recruitmentParticipations.deport();
+
+        recruitment.decreaseParticipationNum(recruitmentParticipations.getSize());
     }
 
     private RecruitmentParticipations findRecruitmentParticipations(List<Long> ids) {
@@ -102,23 +111,6 @@ public class RecruitmentParticipationServiceImpl implements RecruitmentParticipa
 
 
 
-
-    @Transactional
-    @Override
-    public void deportParticipant(Recruitment recruitment, Long recruitmentParticipationNo) {
-//        Participant findState = participantRepository.findByRecruitmentAndParticipantAndState(recruitment, user, ParticipantState.JOIN_APPROVAL)
-//                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-//                        String.format("UserNo = [%d], RecruitmentNo = [%d]", user.getUserNo(), recruitment.getRecruitmentNo())));
-        RecruitmentParticipation participant = recruitmentParticipationRepository.findBy(recruitmentParticipationNo,
-                        ParticipantState.JOIN_APPROVAL)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("ParticipationNo = [%d]", recruitmentParticipationNo)));
-
-        participant.changeState(ParticipantState.DEPORT);
-
-        //봉사 모집글 팀원인원 감소
-        recruitment.decreaseTeamMember();
-    }
 
     @Override
     public AllParticipantDetails findAllParticipantDto(Long recruitmentNo) {

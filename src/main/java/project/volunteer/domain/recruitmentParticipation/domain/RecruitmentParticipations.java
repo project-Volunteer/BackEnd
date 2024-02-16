@@ -31,4 +31,22 @@ public class RecruitmentParticipations {
         }
     }
 
+    public void deport() {
+        validateDeportPossible();
+        participants.forEach(participant -> participant.changeState(ParticipantState.DEPORT));
+    }
+
+    private void validateDeportPossible() {
+        for(RecruitmentParticipation participant : participants) {
+            if(!participant.canDeport()) {
+                throw new BusinessException(ErrorCode.INVALID_STATE,
+                        String.format("state=[%s]", participant.getState().getId()));
+            }
+        }
+    }
+
+    public int getSize() {
+        return participants.size();
+    }
+
 }

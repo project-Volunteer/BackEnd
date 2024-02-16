@@ -14,14 +14,16 @@ public interface RecruitmentParticipationService {
 
     void approveJoin(Recruitment recruitment, List<Long> recruitmentParticipationNos);
 
+    // 강제 탈퇴
+    void deport(Recruitment recruitment, List<Long> recruitmentParticipationNos);
+
+
+
 
 
 
 
     //팀 탈퇴(미정)
-
-    //참여자 강제 탈퇴(Only 방장)
-    public void deportParticipant(Recruitment recruitment, Long recruitmentParticipationNo);
 
     public AllParticipantDetails findAllParticipantDto(Long recruitmentNo);
 

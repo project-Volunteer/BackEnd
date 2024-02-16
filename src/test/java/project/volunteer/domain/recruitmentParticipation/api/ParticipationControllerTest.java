@@ -334,7 +334,7 @@ class ParticipationControllerTest {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         final RecruitmentParticipation participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
-        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getId());
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(List.of(participant.getId()));
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
@@ -368,7 +368,7 @@ class ParticipationControllerTest {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
         final RecruitmentParticipation participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getId());
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(List.of(participant.getId()));
 
         //then & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/kick", recruitmentNo)

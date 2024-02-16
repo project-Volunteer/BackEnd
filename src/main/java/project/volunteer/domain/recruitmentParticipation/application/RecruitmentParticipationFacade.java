@@ -38,20 +38,10 @@ public class RecruitmentParticipationFacade {
         participationService.approveJoin(recruitment, recruitmentParticipationNos);
     }
 
-
-
-
-
-
-
-
     @Transactional
-    public void deportParticipantVolunteerTeam(Long recruitmentParticipationNo, Long recruitmentNo){
-//        User user = userService.findUser(recruitmentParticipationNo);
-
+    public void deportRecruitmentTeam(List<Long> recruitmentParticipationNos, Long recruitmentNo){
         Recruitment recruitment = recruitmentQueryService.findActivatedRecruitment(recruitmentNo);
-
-        participationService.deportParticipant(recruitment, recruitmentParticipationNo);
+        participationService.deport(recruitment, recruitmentParticipationNos);
     }
 
 }

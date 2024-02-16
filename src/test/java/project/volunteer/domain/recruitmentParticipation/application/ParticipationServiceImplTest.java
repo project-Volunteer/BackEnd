@@ -184,37 +184,6 @@
 //                .hasMessageContaining("FORBIDDEN_RECRUITMENT");
 //    }
 //
-//    @Test
-//    public void 팀원강제탈퇴_성공(){
-//        //given
-//        Recruitment recruitment = 저장된_모집글_가져오기();
-//        User saveUser = 사용자_등록("honggildong");
-//        참여자_상태_등록(saveUser, ParticipantState.JOIN_APPROVAL);
-//        recruitment.increaseTeamMember();
-//
-//        //when
-//        participationService.deportParticipant(recruitment,saveUser);
-//        clear();
-//
-//        //then
-//        Recruitment findRecruitment = recruitmentRepository.findById(recruitment.getRecruitmentNo()).get();
-//        Participant participant = participantRepository.findByRecruitmentAndParticipant(findRecruitment, saveUser).get();
-//        assertThat(participant.getState()).isEqualTo(ParticipantState.DEPORT);
-//        assertThat(findRecruitment.getCurrentVolunteerNum()).isEqualTo(0);
-//    }
-//
-//    @Test
-//    public void 팀원강제탈퇴_실패_잘못된상태(){
-//        //given
-//        User saveUser = 사용자_등록("honggildong");
-//        참여자_상태_등록(saveUser, ParticipantState.JOIN_REQUEST);
-//
-//        //when & then
-//        Assertions.assertThatThrownBy(() ->
-//                        participationService.deportParticipant(saveRecruitment, saveUser))
-//                .isInstanceOf(BusinessException.class)
-//                .hasMessageContaining("INVALID_STATE");
-//    }
 //
 //    //TODO: 퍼사드 메서드 테스트 코드로 이동해야 할 테스트
 ////    @DisplayName("봉사 모집글 신청자/승인자 각 인원이 3명이 된다.")

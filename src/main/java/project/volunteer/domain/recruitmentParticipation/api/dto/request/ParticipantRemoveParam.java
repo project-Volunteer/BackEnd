@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitmentParticipation.api.dto.request;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,5 @@ import javax.validation.constraints.NotNull;
 public class ParticipantRemoveParam {
 
     @NotNull
-    private Long recruitmentParticipationNo;
+    private List<Long> recruitmentParticipationNos;
 }
