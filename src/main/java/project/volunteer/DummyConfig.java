@@ -8,8 +8,8 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.domain.user.dao.UserRepository;
 
@@ -27,7 +27,7 @@ public class DummyConfig {
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Bean
-//    @Profile("prod")
+    @Profile("prod")
     public DummyDataInit dummyDataInit(){
         return new DummyDataInit(userRepository, recruitmentRepository, repeatPeriodRepository, imageRepository, storageRepository,participantRepository,
                 scheduleRepository, scheduleParticipationRepository);

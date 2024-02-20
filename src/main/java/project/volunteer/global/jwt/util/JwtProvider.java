@@ -89,9 +89,10 @@ public class JwtProvider {
 		// 2. DB 에 사용자가 있는지 확인 -> 탈퇴했을 경우를 위해서
 		String userId = claims.get("userId").toString();
 		Optional<User> findUser = userRepository.findById(userId);
-		if (findUser.isEmpty())
+		if (findUser.isEmpty()) {
+			System.out.println("*********************");
 			return null;
-
+		}
 		UserDetails userDetails = new PrincipalDetails(findUser.get());
 		// 추후에 권한 검사를 하기 때문에 credentials는 굳이 필요없음
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());

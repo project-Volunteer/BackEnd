@@ -12,14 +12,21 @@ import project.volunteer.global.common.component.Timetable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 @Getter
 @Entity
 @Table(name = "vlt_schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule extends BaseTimeEntity {
+    private static final int MAX_ORGANIZATION_NAME_SIZE = 50;
+    private static final int MAX_CONTENT_SIZE = 50;
+    private static final int MAX_PARTICIPATION_NUM = 9999;
+    private static final int MIN_PARTICIPATION_NUM = 1;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "scheduleno")
     private Long scheduleNo;
 
@@ -40,70 +47,131 @@ public class Schedule extends BaseTimeEntity {
 
     @Column(name = "current_volunteer_num", nullable = false)
     private Integer currentVolunteerNum;
-    //낙관적 락 사용
-//    @Version
-//    private Integer version;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "is_deleted", length = 1, nullable = false)
     private IsDeleted isDeleted;
 
-    /**
-     *  Auditing - 생성인, 수정인 추가 필요
-     */
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitmentno")
     private Recruitment recruitment;
 
+    /**
+     * 생성 메서드
+     **/
     @Builder
-    public Schedule(Timetable timetable, String content,String organizationName,  Address address, int volunteerNum) {
+    public Schedule(Timetable timetable, String content, String organizationName, Address address,
+                    int participationNum,
+                    IsDeleted isDeleted, int currentVolunteerNum, Recruitment recruitment) {
+        validateContentSize(content);
+        validateOrganizationNameSize(organizationName);
+        validateParticipationNum(participationNum, recruitment);
+
         this.scheduleTimeTable = timetable;
         this.content = content;
         this.organizationName = organizationName;
         this.address = address;
-        this.volunteerNum = volunteerNum;
-
-        this.isDeleted = IsDeleted.N;
-        this.currentVolunteerNum = 0;
-    }
-
-    public static Schedule createSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
-        Schedule schedule = new Schedule();
-        schedule.scheduleTimeTable = timetable;
-        schedule.content = content;
-        schedule.organizationName = organizationName;
-        schedule.address = address;
-        schedule.volunteerNum = volunteerNum;
-
-        schedule.isDeleted = IsDeleted.N;
-        schedule.currentVolunteerNum = 0;
-        return schedule;
-    }
-
-    public void changeSchedule(Timetable timetable, String content, String organizationName, Address address, int volunteerNum){
-        this.scheduleTimeTable = timetable;
-        this.content = content;
-        this.organizationName = organizationName;
-        this.address = address;
-        this.volunteerNum = volunteerNum;
-    }
-
-    public void delete(){
-        this.isDeleted = IsDeleted.Y;
-    }
-    public void setRecruitment(Recruitment recruitment) {
+        this.volunteerNum = participationNum;
+        this.isDeleted = isDeleted;
+        this.currentVolunteerNum = currentVolunteerNum;
         this.recruitment = recruitment;
     }
-    public void removeRecruitment(){this.recruitment = null;}
-    public void changeScheduleTime(Timetable timetable){
-        this.scheduleTimeTable = timetable;
+
+    public static Schedule create(Recruitment recruitment, Timetable timetable, String content, String organizationName,
+                                  Address address, int participationNum) {
+        return Schedule.builder()
+                .timetable(timetable)
+                .content(content)
+                .organizationName(organizationName)
+                .address(address)
+                .participationNum(participationNum)
+                .isDeleted(IsDeleted.N)
+                .currentVolunteerNum(0)
+                .recruitment(recruitment)
+                .build();
     }
 
-    public void increaseParticipant(){this.currentVolunteerNum++;}
-    public void decreaseParticipant(){this.currentVolunteerNum--;}
+    /**
+     * 변경 메서드
+     */
+    public void change(Recruitment recruitment, Timetable timetable, String content, String organizationName,
+                       Address address,
+                       int participationNum) {
+        validateContentSize(content);
+        validateOrganizationNameSize(organizationName);
+        validateParticipationNum(participationNum, recruitment);
+        validateCurrentParticipationNum(participationNum);
 
-    public Boolean isFullParticipant(){return this.currentVolunteerNum==this.volunteerNum;}
-    public Boolean isAvailableDate(){return this.scheduleTimeTable.getStartDay().isAfter(LocalDate.now());}
+        this.scheduleTimeTable = timetable;
+        this.content = content;
+        this.organizationName = organizationName;
+        this.address = address;
+        this.volunteerNum = participationNum;
+    }
+
+    public void delete() {
+        this.isDeleted = IsDeleted.Y;
+    }
+
+    public void increaseParticipant() {
+        this.currentVolunteerNum++;
+    }
+
+    public void decreaseParticipant() {
+        this.currentVolunteerNum--;
+    }
+
+    public Boolean isFullParticipant() {
+        return this.currentVolunteerNum == this.volunteerNum;
+    }
+
+    public Boolean isAvailableDate() {
+        return this.scheduleTimeTable.getStartDay().isAfter(LocalDate.now());
+    }
+
+
+    /**
+     * 검증 메서드
+     **/
+    private void validateOrganizationNameSize(final String organizationName) {
+        if (organizationName.isBlank() || MAX_ORGANIZATION_NAME_SIZE < organizationName.length()) {
+            throw new BusinessException(ErrorCode.INVALID_ORGANIZATION_NAME_SIZE,
+                    String.format("[%d]~[%d]", 1, MAX_ORGANIZATION_NAME_SIZE));
+        }
+    }
+
+    private void validateContentSize(final String content) {
+        if (MAX_CONTENT_SIZE < content.length()) {
+            throw new BusinessException(ErrorCode.INVALID_CONTENT_SIZE,
+                    String.format("[%d]~[%d]", 0, MAX_CONTENT_SIZE));
+        }
+    }
+
+    private void validateParticipationNum(final int participationNum, final Recruitment recruitment) {
+        if (MIN_PARTICIPATION_NUM > participationNum || MAX_PARTICIPATION_NUM < participationNum) {
+            throw new BusinessException(ErrorCode.INVALID_PARTICIPATION_NUM,
+                    String.format("[%d]~[%d]", MIN_PARTICIPATION_NUM, MAX_PARTICIPATION_NUM));
+        }
+
+        if (recruitment.isLessParticipationNumThan(participationNum)) {
+            throw new BusinessException(ErrorCode.EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM,
+                    String.format("Recruitment = [%d], Schedule = [%d]", recruitment.getVolunteerNum(),
+                            participationNum));
+        }
+    }
+
+    private void validateCurrentParticipationNum(final int participationNum) {
+        if (currentVolunteerNum > participationNum) {
+            throw new BusinessException(ErrorCode.LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT,
+                    String.format("currentParticipationNum = [%d], requestParticipationNum = [%d]", currentVolunteerNum,
+                            participationNum));
+        }
+    }
+
+    public void checkDoneDate(LocalDate currentDate) {
+        if (scheduleTimeTable.getStartDay().isBefore(currentDate)) {
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE);
+        }
+    }
 
 }

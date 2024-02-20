@@ -78,19 +78,19 @@ class RecruitmentQueryDtoRepositoryImplTest {
         for(int i=0;i<5;i++){
             Recruitment create1 = Recruitment.builder()
                     .title(title1) .content(content) .volunteeringCategory(category1) .volunteeringType(volunteeringType1) .volunteerType(volunteerType1)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1).coordinate(coordinate)
+                    .participationNum(volunteerNum) .isIssued(isIssued1) .organizationName(organizationName) .address(address1).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create1);
 
             Recruitment create2 = Recruitment.builder()
                     .title(title2) .content(content) .volunteeringCategory(category2) .volunteeringType(volunteeringType2) .volunteerType(volunteerType2)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2).coordinate(coordinate)
+                    .participationNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address2).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create2);
 
             Recruitment create3 = Recruitment.builder()
                     .title(title3) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                    .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
+                    .participationNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                     .timetable(timetable) .isPublished(isPublished).build();
             recruitmentRepository.save(create3);
         }
@@ -98,14 +98,14 @@ class RecruitmentQueryDtoRepositoryImplTest {
         //임시 저장글(1개)
         Recruitment create4 = Recruitment.builder()
                 .title(title1) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
+                .participationNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                 .timetable(timetable) .isPublished(Boolean.FALSE).build();
         recruitmentRepository.save(create4);
 
         //삭제 게시물(1개)
         Recruitment create5 = Recruitment.builder()
                 .title(title1) .content(content) .volunteeringCategory(category3) .volunteeringType(volunteeringType2) .volunteerType(volunteerType3)
-                .volunteerNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
+                .participationNum(volunteerNum) .isIssued(isIssued2) .organizationName(organizationName) .address(address3).coordinate(coordinate)
                 .timetable(timetable) .isPublished(isPublished).build();
         create5.setDeleted();
         recruitmentRepository.save(create5);

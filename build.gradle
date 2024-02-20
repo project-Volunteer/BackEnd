@@ -63,9 +63,18 @@ dependencies {
 	//jackson
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 
+	// h2
+	runtimeOnly 'com.h2database:h2'
+
 	//테스트에서 lombok 사용
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// mockito
+	testImplementation 'org.mockito:mockito-inline'
+
+	// assured
+	testImplementation 'io.rest-assured:rest-assured:3.3.0'
 
 	// build/generated-snippets 에 생기는 .adoc 조각들을 프로젝트 내의 .adoc 파일을 읽어들 일 수 있도록 연동해준다.
 	// 이로 인해, .adoc 파일에서 operation 같은 매크로르 사용하여 스니펫 조작들을 연동할 수 있다.

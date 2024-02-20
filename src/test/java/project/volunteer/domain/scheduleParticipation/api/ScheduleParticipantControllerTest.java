@@ -32,10 +32,10 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -43,10 +43,9 @@ import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.*;
-import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.infra.s3.FileService;
 import project.volunteer.global.test.WithMockCustomUser;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -108,13 +107,13 @@ class ScheduleParticipantControllerTest {
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         //일정 저장
-        Schedule createSchedule = Schedule.createSchedule(
+        Schedule createSchedule = Schedule.create(
+                saveRecruitment,
                 Timetable.createTimetable(
                         LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1),
                         HourFormat.AM, LocalTime.now(), 3),
                 "content", "organization",
                 Address.createAddress("11", "1111", "details", "fullName"), 3);
-        createSchedule.setRecruitment(saveRecruitment);
         saveSchedule = scheduleRepository.save(createSchedule);
 
         //로그인 유저 저장
@@ -372,11 +371,13 @@ class ScheduleParticipantControllerTest {
         //given
         User test1 = 사용자_등록("test1", "test1", "test1@naver.com");
         Participant participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
-        일정_참여상태_추가(saveSchedule, participant1, ParticipantState.PARTICIPATION_CANCEL);
+        ScheduleParticipation scheduleParticipation1 = 일정_참여상태_추가(saveSchedule, participant1,
+                ParticipantState.PARTICIPATION_CANCEL);
 
         User test2 = 사용자_등록("test2", "test2", "test2@naver.com");
         Participant participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
-        일정_참여상태_추가(saveSchedule, participant2, ParticipantState.PARTICIPATION_CANCEL);
+        ScheduleParticipation scheduleParticipation2 =
+                일정_참여상태_추가(saveSchedule, participant2, ParticipantState.PARTICIPATION_CANCEL);
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling",
@@ -386,11 +387,11 @@ class ScheduleParticipantControllerTest {
 
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.cancelling[0].no").value(test1.getUserNo()))
+                .andExpect(jsonPath("$.cancelling[0].scheduleParticipationNo").value(scheduleParticipation1.getScheduleParticipationNo()))
                 .andExpect(jsonPath("$.cancelling[0].nickname").value(test1.getNickName()))
                 .andExpect(jsonPath("$.cancelling[0].email").value(test1.getEmail()))
                 .andExpect(jsonPath("$.cancelling[0].profile").value(test1.getPicture()))
-                .andExpect(jsonPath("$.cancelling[1].no").value(test2.getUserNo()))
+                .andExpect(jsonPath("$.cancelling[1].scheduleParticipationNo").value(scheduleParticipation2.getScheduleParticipationNo()))
                 .andExpect(jsonPath("$.cancelling[1].nickname").value(test2.getNickName()))
                 .andExpect(jsonPath("$.cancelling[1].email").value(test2.getEmail()))
                 .andExpect(jsonPath("$.cancelling[1].profile").value(test2.getPicture()))
@@ -405,7 +406,7 @@ class ScheduleParticipantControllerTest {
                                         parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
                                 ),
                                 responseFields(
-                                        fieldWithPath("cancelling[].no").type(JsonFieldType.NUMBER).description("취소 요청자 고유키 PK"),
+                                        fieldWithPath("cancelling[].scheduleParticipationNo").type(JsonFieldType.NUMBER).description("취소 요청자 고유키 PK"),
                                         fieldWithPath("cancelling[].nickname").type(JsonFieldType.STRING).description("취소 요청자 닉네임"),
                                         fieldWithPath("cancelling[].email").type(JsonFieldType.STRING).description("취소 요청자 이메일"),
                                         fieldWithPath("cancelling[].profile").type(JsonFieldType.STRING).description("취소 요청자 프로필 URL")
@@ -457,7 +458,7 @@ class ScheduleParticipantControllerTest {
                                         parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
                                 ),
                                 responseFields(
-                                        fieldWithPath("done[].no").type(JsonFieldType.NUMBER).description("참가 완료자 고유키 PK"),
+                                        fieldWithPath("done[].scheduleParticipationNo").type(JsonFieldType.NUMBER).description("참가 완료자 고유키 PK"),
                                         fieldWithPath("done[].nickname").type(JsonFieldType.STRING).description("참가 완료자 닉네임"),
                                         fieldWithPath("done[].email").type(JsonFieldType.STRING).description("참가 완료자 이메일"),
                                         fieldWithPath("done[].profile").type(JsonFieldType.STRING).description("참가 완료자 프로필 URL"),

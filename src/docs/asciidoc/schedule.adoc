@@ -1,9 +1,9 @@
 [[Schedlue-API]]
 == Schedule API
 
-=== 봉사 일정 조회
-- *현재 날짜 이후* 이면서 *모집 중인 가장 가까운 봉사 스케줄을* 반환합니다.
-- 봉사 스케줄이 없을 시 *NULL* 를 반환합니다.
+=== 가장 가까운 봉사 일정 상세 조회
+- *현재 날짜 이후* 이면서 *모집 중인 가장 가까운 봉사 일정을* 반환합니다.
+- 일정이 없을 시 *hasData컬럼* 값이 *false* 입니다.
 
 ==== 발생 가능 예외
 |===
@@ -16,20 +16,20 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/http-request.adoc[]
+include::{snippets}/schedule-controller-test/detail-closest-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/detail-closest-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/detail-closest-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/http-response.adoc[]
+include::{snippets}/schedule-controller-test/detail-closest-schedule/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-query-controller-test/find-main-schedule/response-fields.adoc[]
+include::{snippets}/schedule-controller-test/detail-closest-schedule/response-fields.adoc[]
 
 
 === 봉사 일정 등록
@@ -46,20 +46,20 @@ include::{snippets}/schedule-query-controller-test/find-main-schedule/response-f
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-write-controller-test/save-schedule/http-request.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-write-controller-test/save-schedule/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-write-controller-test/save-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/schedule-write-controller-test/save-schedule/request-fields.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-write-controller-test/save-schedule/http-response.adoc[]
+include::{snippets}/schedule-controller-test/save-schedule/http-response.adoc[]
 
 
 === 봉사 일정 수정
@@ -78,20 +78,20 @@ include::{snippets}/schedule-write-controller-test/save-schedule/http-response.a
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-edit-controller-test/edit-schedule/http-request.adoc[]
+include::{snippets}/schedule-controller-test/edit-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-edit-controller-test/edit-schedule/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/edit-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-edit-controller-test/edit-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/edit-schedule/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/schedule-edit-controller-test/edit-schedule/request-fields.adoc[]
+include::{snippets}/schedule-controller-test/edit-schedule/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-edit-controller-test/edit-schedule/http-response.adoc[]
+include::{snippets}/schedule-controller-test/edit-schedule/http-response.adoc[]
 
 
 === 봉사 일정 삭제
@@ -107,20 +107,20 @@ include::{snippets}/schedule-edit-controller-test/edit-schedule/http-response.ad
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-edit-controller-test/delete-schedule/http-request.adoc[]
+include::{snippets}/schedule-controller-test/delete-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-edit-controller-test/delete-schedule/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/delete-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-edit-controller-test/delete-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/delete-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-edit-controller-test/delete-schedule/http-response.adoc[]
+include::{snippets}/schedule-controller-test/delete-schedule/http-response.adoc[]
 
 
-=== 봉사 일정 리스트 캘린더 조회
+=== 캘린더 봉사 일정 리스트 조회
 ==== 발생 가능 예외
 |===
 |HTTP 상태코드|메시지
@@ -132,26 +132,26 @@ include::{snippets}/schedule-edit-controller-test/delete-schedule/http-response.
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/http-request.adoc[]
+include::{snippets}/schedule-controller-test/calendar-schedule-list/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/calendar-schedule-list/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/calendar-schedule-list/path-parameters.adoc[]
 
 *Request Parameters*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/request-parameters.adoc[]
+include::{snippets}/schedule-controller-test/calendar-schedule-list/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/http-response.adoc[]
+include::{snippets}/schedule-controller-test/calendar-schedule-list/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-query-controller-test/find-list-calendar/response-fields.adoc[]
+include::{snippets}/schedule-controller-test/calendar-schedule-list/response-fields.adoc[]
 
 
-=== 봉사 일정 상세 캘린더 조회
+=== 봉사 일정 상세 조회
 ==== 발생 가능 예외
 |===
 |HTTP 상태코드|메시지
@@ -164,20 +164,20 @@ include::{snippets}/schedule-query-controller-test/find-list-calendar/response-f
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-query-controller-test/find-details-calendar/http-request.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-query-controller-test/find-details-calendar/request-headers.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-query-controller-test/find-details-calendar/path-parameters.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-query-controller-test/find-details-calendar/http-response.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-query-controller-test/find-details-calendar/response-fields.adoc[]
+include::{snippets}/schedule-controller-test/detail-schedule/response-fields.adoc[]
 
 
 

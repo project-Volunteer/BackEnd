@@ -13,9 +13,9 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.dao.RepeatPeriodRepository;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.image.dao.StorageRepository;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -181,14 +181,12 @@ public class DummyDataInit {
         participantRepository.save(dummyParticipant9);
 
         //스케줄 더미데이터 세팅
-        Schedule dummySchedule1 = Schedule.createSchedule(Timetable.createTimetable(
+        Schedule dummySchedule1 = Schedule.create(dummyRecruitment1, Timetable.createTimetable(
                         LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(2), HourFormat.AM, LocalTime.now(), 5),
                 "content1", "organization1", Address.createAddress("11", "11010", "details1", "fullName1"), 10);
-        dummySchedule1.setRecruitment(dummyRecruitment1);
-        Schedule dummySchedule2 = Schedule.createSchedule(Timetable.createTimetable(
+        Schedule dummySchedule2 = Schedule.create(dummyRecruitment1, Timetable.createTimetable(
                         LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 5),
                 "content2", "organization1", Address.createAddress("11", "11010", "details1", "fullName2"), 10);
-        dummySchedule2.setRecruitment(dummyRecruitment1);
         scheduleRepository.save(dummySchedule1);
         scheduleRepository.save(dummySchedule2);
 

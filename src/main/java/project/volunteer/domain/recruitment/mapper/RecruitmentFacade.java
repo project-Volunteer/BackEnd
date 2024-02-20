@@ -16,12 +16,12 @@ import project.volunteer.domain.recruitment.application.RecruitmentService;
 import project.volunteer.domain.recruitment.application.RepeatPeriodService;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentDetails;
 import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
-import project.volunteer.domain.recruitment.application.dto.RepeatPeriodParam;
+import project.volunteer.domain.recruitment.application.dto.RepeatPeriodCommand;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
-import project.volunteer.domain.sehedule.application.ScheduleService;
-import project.volunteer.domain.sehedule.application.dto.ScheduleParamReg;
+import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
+import project.volunteer.domain.sehedule.application.dto.command.RegularScheduleCreateCommand;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.RealWorkCode;
@@ -36,7 +36,7 @@ public class RecruitmentFacade {
     private final RecruitmentService recruitmentService;
     private final RecruitmentDtoService recruitmentDtoService;
     private final RepeatPeriodService repeatPeriodService;
-    private final ScheduleService scheduleService;
+    private final ScheduleCommandUseCase scheduleService;
     private final ImageService imageService;
     private final ParticipationService participationService;
     private final ScheduleParticipationService scheduleParticipationService;
@@ -50,13 +50,13 @@ public class RecruitmentFacade {
         Recruitment recruitment = recruitmentService.addRecruitment(findUser, RecruitmentParam.ToRecruitmentParam(form));
         //정기일 경우
         if(form.getVolunteeringType().toUpperCase().equals(VolunteeringType.REG.name())){
-            RepeatPeriodParam periodParam = new RepeatPeriodParam(form.getPeriod(), form.getWeek(), form.getDays());
+            RepeatPeriodCommand periodParam = new RepeatPeriodCommand(form.getPeriod(), form.getWeek(), form.getDays());
             //반복 주기 저장
             repeatPeriodService.addRepeatPeriod(recruitment, periodParam);
 
             //스케줄 자동 할당
-            scheduleService.addRegSchedule(recruitment,
-                    new ScheduleParamReg(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
+            scheduleService.addRegularSchedule(recruitment,
+                    RegularScheduleCreateCommand.of(form.getStartDay(), form.getEndDay(), form.getHourFormat(), form.getStartTime(), form.getProgressTime(),
                             form.getOrganizationName(), form.getAddress().getSido(), form.getAddress().getSigungu(), form.getAddress().getDetails(),
                             form.getAddress().getFullName(), form.getContent(), form.getVolunteerNum(), periodParam));
         }

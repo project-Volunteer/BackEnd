@@ -12,8 +12,6 @@ import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.domain.recruitment.converter.CategoryConverter;
 import project.volunteer.domain.recruitment.converter.VolunteerTypeConverter;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -89,22 +87,23 @@ public class Recruitment extends BaseTimeEntity {
 
     @Builder
     public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
-                       VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
+                       VolunteerType volunteerType, Integer participationNum, Boolean isIssued,
                        String organizationName, Address address, Coordinate coordinate,
-                       Timetable timetable, Boolean isPublished) {
+                       Timetable timetable, Boolean isPublished, User writer) {
 
         this.title = title;
         this.content = content;
         this.volunteeringCategory = volunteeringCategory;
         this.volunteeringType = volunteeringType;
         this.volunteerType = volunteerType;
-        this.volunteerNum = volunteerNum;
+        this.volunteerNum = participationNum;
         this.isIssued = isIssued;
         this.organizationName = organizationName;
         this.address = address;
         this.coordinate = coordinate;
         this.VolunteeringTimeTable = timetable;
         this.isPublished = isPublished;
+        this.writer = writer;
 
         this.likeCount = 0;
         this.viewCount = 0;
@@ -167,4 +166,11 @@ public class Recruitment extends BaseTimeEntity {
     }
 
     public Boolean isDoneDate(){return this.VolunteeringTimeTable.getEndDay().isBefore(LocalDate.now());}
+
+
+    // 비교 메서드
+    public boolean isLessParticipationNumThan(final int participationNum) {
+        return this.volunteerNum < participationNum;
+    }
+
 }

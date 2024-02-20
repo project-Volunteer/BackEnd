@@ -34,6 +34,12 @@ public class ScheduleParticipation extends BaseEntity {
     @Column(length = 3, nullable = false)
     private ParticipantState state;
 
+    public ScheduleParticipation(Schedule schedule, Participant participant, ParticipantState state) {
+        this.schedule = schedule;
+        this.participant = participant;
+        this.state = state;
+    }
+
     public static ScheduleParticipation createScheduleParticipation(Schedule schedule, Participant participant, ParticipantState state){
         ScheduleParticipation createScheduleParticipation = new ScheduleParticipation();
         createScheduleParticipation.schedule = schedule;

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
@@ -142,7 +142,7 @@ public class ParticipationServiceConcurrent {
 
     private Schedule isActiveScheduleWithoutLock(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
-        Schedule findSchedule = scheduleRepository.findValidSchedule(scheduleNo)
+        Schedule findSchedule = scheduleRepository.findNotDeletedSchedule(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
 
@@ -156,7 +156,7 @@ public class ParticipationServiceConcurrent {
     }
     private Schedule isActiveScheduleWithOPTIMSTICLock(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
-        Schedule findSchedule = scheduleRepository.findValidScheduleWithOPTIMSTICLock(scheduleNo)
+        Schedule findSchedule = scheduleRepository.findNotDeletedScheduleByOPTIMSTIC_LOCK(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
 
@@ -170,7 +170,7 @@ public class ParticipationServiceConcurrent {
     }
     private Schedule isActiveScheduleWithPERSSIMITIC_WRITE_Lock(Long scheduleNo){
         //일정 조회(삭제되지 않은지만 검증)
-        Schedule findSchedule = scheduleRepository.findValidScheduleWithPESSIMISTIC_WRITE_Lock(scheduleNo)
+        Schedule findSchedule = scheduleRepository.findNotDeletedScheduleByPERSSIMITIC_LOCK(scheduleNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
                         String.format("Schedule to participant = [%d]", scheduleNo)));
 

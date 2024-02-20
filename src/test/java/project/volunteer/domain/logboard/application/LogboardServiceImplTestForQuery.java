@@ -39,7 +39,7 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.application.UserDtoService;
@@ -138,7 +138,7 @@ public class LogboardServiceImplTestForQuery {
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).volunteerNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);
@@ -153,8 +153,7 @@ public class LogboardServiceImplTestForQuery {
 
 		// 스케줄 저장
 		Schedule createSchedule =
-				Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		createSchedule.setRecruitment(recruitment);
+				Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(createSchedule);
 		
         // 봉사 로그 저장(한 모집글에 20개)

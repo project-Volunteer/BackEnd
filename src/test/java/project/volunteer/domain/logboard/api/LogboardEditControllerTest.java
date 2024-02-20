@@ -53,9 +53,9 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.application.UserDtoService;
@@ -71,7 +71,7 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -152,7 +152,7 @@ public class LogboardEditControllerTest {
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).volunteerNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);
@@ -166,8 +166,7 @@ public class LogboardEditControllerTest {
 		
 
 		// 스케줄 저장
-		createSchedule = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		createSchedule.setRecruitment(recruitment);
+		createSchedule = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(createSchedule);
 		
 		clear();

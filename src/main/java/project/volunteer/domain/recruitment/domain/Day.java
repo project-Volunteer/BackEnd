@@ -33,6 +33,7 @@ public enum Day implements CodeCommonType {
     public String getDesc() {
         return this.viewName;
     }
+
     public Integer getValue(){
         return this.value;
     }

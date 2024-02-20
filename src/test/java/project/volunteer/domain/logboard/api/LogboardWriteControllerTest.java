@@ -2,7 +2,6 @@ package project.volunteer.domain.logboard.api;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -29,7 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,9 +49,9 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.application.UserDtoService;
 import project.volunteer.domain.user.application.UserService;
@@ -67,7 +65,7 @@ import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -164,7 +162,7 @@ public class LogboardWriteControllerTest {
 
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).volunteerNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);
@@ -181,24 +179,19 @@ public class LogboardWriteControllerTest {
 		participantRepository.save(participant2);
 
 		// 스케줄 저장
-		schedule1 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		schedule1.setRecruitment(recruitment);
+		schedule1 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule1);
 
-		schedule2 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		schedule2.setRecruitment(recruitment);
+		schedule2 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule2);
 
-		schedule3 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		schedule3.setRecruitment(recruitment);
+		schedule3 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule3);
 
-		schedule4 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		schedule4.setRecruitment(recruitment);
+		schedule4 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule4);
 
-		schedule5 = Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		schedule5.setRecruitment(recruitment);
+		schedule5 = Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(schedule5);
 
 		// 방장 스케줄 참여

@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import project.volunteer.domain.image.application.ImageService;
-import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
@@ -35,7 +34,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.reply.application.ReplyService;
 import project.volunteer.domain.reply.dao.ReplyRepository;
 import project.volunteer.domain.reply.domain.Reply;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.application.UserDtoService;
 import project.volunteer.domain.user.application.UserService;
@@ -133,7 +132,7 @@ public class LogboardServiceImplTestForComment {
 		
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).volunteerNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);
@@ -148,8 +147,7 @@ public class LogboardServiceImplTestForComment {
 
 		// 스케줄 저장
 		Schedule createSchedule =
-				Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		createSchedule.setRecruitment(recruitment);
+				Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(createSchedule);
 		
 		// 봉사 로그 저장(한 모집글에 2개)

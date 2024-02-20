@@ -57,7 +57,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.reply.dao.ReplyRepository;
 import project.volunteer.domain.reply.domain.Reply;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.application.UserDtoService;
 import project.volunteer.domain.user.application.UserService;
@@ -72,7 +72,7 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
-import project.volunteer.restdocs.document.config.RestDocsConfiguration;
+import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -164,7 +164,7 @@ public class LogboardCommentControllerTest {
 		
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).volunteerNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
+				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
 				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
 				.build();
 		create.setWriter(saveUser);
@@ -180,8 +180,7 @@ public class LogboardCommentControllerTest {
 
 		// 스케줄 저장
 		Schedule createSchedule =
-				Schedule.createSchedule(timetable, content, organizationName, address, volunteerNum);
-		createSchedule.setRecruitment(recruitment);
+				Schedule.create(recruitment, timetable, content, organizationName, address, volunteerNum);
 		scheduleRepository.save(createSchedule);
 		
 		// 봉사 로그 저장(한 모집글에 2개)

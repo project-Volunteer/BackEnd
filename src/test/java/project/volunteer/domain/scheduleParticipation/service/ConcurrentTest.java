@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.test.annotation.Rollback;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
@@ -16,9 +15,9 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.scheduleParticipation.dao.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.sehedule.dao.ScheduleRepository;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
@@ -67,13 +66,13 @@ public class ConcurrentTest {
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         //일정 저장
-        Schedule createSchedule = Schedule.createSchedule(
+        Schedule createSchedule = Schedule.create(
+                saveRecruitment,
                 Timetable.createTimetable(
                         LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1),
                         HourFormat.AM, LocalTime.now(), 3),
                 "content", "organization",
                 Address.createAddress("11", "1111", "details", "fullName"), 1);
-        createSchedule.setRecruitment(saveRecruitment);
         saveSchedule = scheduleRepository.save(createSchedule);
     }
 
