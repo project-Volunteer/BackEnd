@@ -10,7 +10,6 @@ import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipat
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
-import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
@@ -20,15 +19,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ScheduleParticipantFacade {
-    private final ScheduleCommandUseCase scheduleCommandService;
-    private final ScheduleQueryUseCase scheduleQueryService;
+    private final ScheduleQueryUseCase scheduleQueryUsecase;
     private final ParticipationService participationService;
     private final ScheduleParticipationService scheduleParticipationService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
 
     @Transactional
     public void participateVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(scheduleNo);
+        Schedule schedule = scheduleQueryUsecase.findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(scheduleNo);
 
         Participant participation = participationService.findParticipation(recruitmentNo, userNo);
 
@@ -37,7 +35,7 @@ public class ScheduleParticipantFacade {
 
     @Transactional
     public void cancelParticipationVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findScheduleInProgress(scheduleNo);
+        Schedule schedule = scheduleQueryUsecase.findScheduleInProgress(scheduleNo);
 
         Participant participation = participationService.findParticipation(recruitmentNo, userNo);
 
@@ -46,32 +44,32 @@ public class ScheduleParticipantFacade {
 
     @Transactional
     public void approvalCancellationVolunteerPostSchedule(Long scheduleNo, Long scheduleParticipantNo){
-        Schedule schedule = scheduleQueryService.findScheduleInProgress(scheduleNo);
+        Schedule schedule = scheduleQueryUsecase.findScheduleInProgress(scheduleNo);
 
         scheduleParticipationService.approvalCancellation(schedule, scheduleParticipantNo);
     }
 
     @Transactional
     public void approvalCompletionVolunteerPostSchedule(Long scheduleNo, List<Long> scheduleParticipantNos){
-        scheduleQueryService.findActivitedSchedule(scheduleNo);
+        scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
 
         scheduleParticipationService.approvalCompletion(scheduleParticipantNos);
     }
 
     public List<ParticipatingParticipantList> findParticipatingParticipantsSchedule(Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findActivitedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
 
         return scheduleParticipationDtoService.findParticipatingParticipants(schedule);
     }
 
     public List<CancelledParticipantList> findCancelledParticipantsSchedule(Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findActivitedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
 
         return scheduleParticipationDtoService.findCancelledParticipants(schedule);
     }
 
     public List<CompletedParticipantList> findCompletedParticipantsSchedule(Long scheduleNo){
-        Schedule schedule = scheduleQueryService.findActivitedSchedule(scheduleNo);
+        Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
 
         return scheduleParticipationDtoService.findCompletedParticipants(schedule);
     }
