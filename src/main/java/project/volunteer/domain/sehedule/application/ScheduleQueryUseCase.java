@@ -19,7 +19,7 @@ public interface ScheduleQueryUseCase {
     // 삭제 되지 않은 일정
     Schedule findActivitedSchedule(Long scheduleNo);
 
-    // 삭제 되지 않은 일정(비관적 락 사용)
+    // 삭제 되지 않고, 모집 중인 일정(비관적 락 사용)
     Schedule findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(Long scheduleNo);
 
 }

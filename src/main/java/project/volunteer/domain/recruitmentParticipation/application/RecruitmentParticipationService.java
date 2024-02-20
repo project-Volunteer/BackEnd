@@ -104,15 +104,6 @@ public class RecruitmentParticipationService implements RecruitmentParticipation
                 .forEach(RecruitmentParticipation::delete);
     }
 
-
-
-
-
-
-
-
-
-
     @Override
     public RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo) {
         return recruitmentParticipationRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, userNo)
