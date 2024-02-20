@@ -10,7 +10,7 @@ import project.volunteer.global.common.component.ParticipantState;
 
 import java.util.List;
 
-public interface ScheduleParticipationDtoService {
+public interface ScheduleParticipationQueryUseCase {
 
     //봉사 일정 참여 상태 조회
     Optional<ParticipantState> searchState(Long scheduleNo, Long userNo);

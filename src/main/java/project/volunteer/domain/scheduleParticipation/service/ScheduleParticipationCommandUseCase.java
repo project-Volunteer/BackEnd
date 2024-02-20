@@ -5,7 +5,7 @@ import project.volunteer.domain.sehedule.domain.Schedule;
 
 import java.util.List;
 
-public interface ScheduleParticipationService {
+public interface ScheduleParticipationCommandUseCase {
 
     public void participate(Schedule schedule, RecruitmentParticipation participant);
 

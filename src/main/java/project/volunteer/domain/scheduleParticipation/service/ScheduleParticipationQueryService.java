@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipationDtoService{
+public class ScheduleParticipationQueryService implements ScheduleParticipationQueryUseCase {
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override

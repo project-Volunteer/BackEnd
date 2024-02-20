@@ -50,7 +50,8 @@ class ScheduleParticipationDtoServiceImplTest {
     RecruitmentParticipationRepository participantRepository;
     @Autowired
     ScheduleParticipationRepository scheduleParticipationRepository;
-    @Autowired ScheduleParticipationDtoService spDtoService;
+    @Autowired
+    ScheduleParticipationQueryUseCase spDtoService;
 
     private User writer;
     private Recruitment saveRecruitment;

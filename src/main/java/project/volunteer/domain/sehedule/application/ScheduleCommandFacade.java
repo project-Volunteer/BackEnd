@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
 import project.volunteer.domain.recruitment.domain.Recruitment;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandUseCase;
 import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertCommand;
 
 @Service
@@ -14,7 +14,7 @@ import project.volunteer.domain.sehedule.application.dto.command.ScheduleUpsertC
 public class ScheduleCommandFacade {
     private final RecruitmentQueryUseCase recruitmentQueryUseCase;
     private final ScheduleCommandUseCase scheduleCommandService;
-    private final ScheduleParticipationService scheduleParticipationService;
+    private final ScheduleParticipationCommandUseCase scheduleParticipationService;
 
     public Long registerSchedule(Long recruitmentNo, ScheduleUpsertCommand command) {
         Recruitment recruitment = recruitmentQueryUseCase.findActivatedRecruitment(recruitmentNo);

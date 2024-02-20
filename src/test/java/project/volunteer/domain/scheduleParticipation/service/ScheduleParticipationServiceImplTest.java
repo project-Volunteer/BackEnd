@@ -45,7 +45,8 @@ class ScheduleParticipationServiceImplTest {
     @Autowired
     RecruitmentParticipationRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
-    @Autowired ScheduleParticipationService spService;
+    @Autowired
+    ScheduleParticipationCommandUseCase spService;
 
     private User writer;
     private Recruitment saveRecruitment;

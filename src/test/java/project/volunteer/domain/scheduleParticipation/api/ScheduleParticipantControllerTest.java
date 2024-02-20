@@ -34,7 +34,7 @@ import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandUseCase;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.image.domain.Storage;
@@ -79,7 +79,8 @@ class ScheduleParticipantControllerTest {
     @Autowired
     RecruitmentParticipationRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
-    @Autowired ScheduleParticipationService spService;
+    @Autowired
+    ScheduleParticipationCommandUseCase spService;
     @Autowired ImageService imageService;
     @Autowired ImageRepository imageRepository;
     @Autowired FileService fileService;

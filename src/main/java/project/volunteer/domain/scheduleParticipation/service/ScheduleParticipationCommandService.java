@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ScheduleParticipationServiceImpl implements ScheduleParticipationService {
+public class ScheduleParticipationCommandService implements ScheduleParticipationCommandUseCase {
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override

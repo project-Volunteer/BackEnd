@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationUseCase;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationQueryUseCase;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandUseCase;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
@@ -21,8 +21,8 @@ import java.util.List;
 public class ScheduleParticipantFacade {
     private final ScheduleQueryUseCase scheduleQueryUsecase;
     private final RecruitmentParticipationUseCase recruitmentParticipationUseCase;
-    private final ScheduleParticipationService scheduleParticipationService;
-    private final ScheduleParticipationDtoService scheduleParticipationDtoService;
+    private final ScheduleParticipationCommandUseCase scheduleParticipationService;
+    private final ScheduleParticipationQueryUseCase scheduleParticipationDtoService;
 
     @Transactional
     public void participateVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){

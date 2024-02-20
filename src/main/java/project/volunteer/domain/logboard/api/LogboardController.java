@@ -45,7 +45,7 @@ import project.volunteer.domain.logboard.application.dto.LogboardEditDetail;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.dao.dto.LogboardListQuery;
 import project.volunteer.domain.reply.application.ReplyService;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationQueryUseCase;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.global.Interceptor.OrganizationAuth;
@@ -62,7 +62,7 @@ public class LogboardController {
 	private final FileService fileService;
 	private final ImageRepository imageRepository;
 	private final LogboardRepository logboardRepository;
-	private final ScheduleParticipationDtoService spDtoService ;
+	private final ScheduleParticipationQueryUseCase spDtoService ;
 	private final ReplyService replyService;
 	private final ReplyRepository replyRepository;
 	private final UserService userService;
