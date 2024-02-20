@@ -3,7 +3,7 @@ package project.volunteer.domain.scheduleParticipation.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationService;
+import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationUseCase;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationDtoService;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
@@ -20,7 +20,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleParticipantFacade {
     private final ScheduleQueryUseCase scheduleQueryUsecase;
-    private final RecruitmentParticipationService recruitmentParticipationService;
+    private final RecruitmentParticipationUseCase recruitmentParticipationUseCase;
     private final ScheduleParticipationService scheduleParticipationService;
     private final ScheduleParticipationDtoService scheduleParticipationDtoService;
 
@@ -28,7 +28,7 @@ public class ScheduleParticipantFacade {
     public void participateVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findScheduleInProgressWithPERSSIMITIC_WRITE_LOCK(scheduleNo);
 
-        RecruitmentParticipation recruitmentParticipation = recruitmentParticipationService.findParticipation(recruitmentNo, userNo);
+        RecruitmentParticipation recruitmentParticipation = recruitmentParticipationUseCase.findParticipation(recruitmentNo, userNo);
 
         scheduleParticipationService.participate(schedule, recruitmentParticipation);
     }
@@ -37,7 +37,7 @@ public class ScheduleParticipantFacade {
     public void cancelParticipationVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findScheduleInProgress(scheduleNo);
 
-        RecruitmentParticipation recruitmentParticipation = recruitmentParticipationService.findParticipation(recruitmentNo, userNo);
+        RecruitmentParticipation recruitmentParticipation = recruitmentParticipationUseCase.findParticipation(recruitmentNo, userNo);
 
         scheduleParticipationService.cancel(schedule, recruitmentParticipation);
     }

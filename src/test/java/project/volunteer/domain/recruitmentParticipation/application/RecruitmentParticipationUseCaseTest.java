@@ -28,7 +28,7 @@ import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.support.ServiceTest;
 
-class RecruitmentParticipationServiceTest extends ServiceTest {
+class RecruitmentParticipationUseCaseTest extends ServiceTest {
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
     private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
@@ -54,7 +54,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
         final Recruitment recruitment = createAndSaveRecruitment(100, 10);
 
         //when
-        Long recruitmentParticipationNo = recruitmentParticipationService.join(user1, recruitment);
+        Long recruitmentParticipationNo = recruitmentParticipationUseCase.join(user1, recruitment);
 
         //then
         RecruitmentParticipation recruitmentParticipation = findRecruitmentParticipation(recruitmentParticipationNo);
@@ -70,7 +70,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
                 new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_APPROVAL));
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.join(user1, recruitment))
+        assertThatThrownBy(() -> recruitmentParticipationUseCase.join(user1, recruitment))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION.name());
     }
@@ -82,7 +82,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
         final Recruitment recruitment = createAndSaveRecruitment(100, 100);
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.join(user1, recruitment))
+        assertThatThrownBy(() -> recruitmentParticipationUseCase.join(user1, recruitment))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INSUFFICIENT_CAPACITY.name());
     }
@@ -96,7 +96,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
                 new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_CANCEL));
 
         //when
-        Long recruitmentParticipationNo = recruitmentParticipationService.join(user1, recruitment);
+        Long recruitmentParticipationNo = recruitmentParticipationUseCase.join(user1, recruitment);
 
         //then
         RecruitmentParticipation recruitmentParticipation = findRecruitmentParticipation(recruitmentParticipationNo);
@@ -112,7 +112,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
                 new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_REQUEST));
 
         //when
-        recruitmentParticipationService.cancelJoin(user1, recruitment);
+        recruitmentParticipationUseCase.cancelJoin(user1, recruitment);
 
         //then
         RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.findByRecruitmentAndUser(
@@ -130,7 +130,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
                 new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_APPROVAL));
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.cancelJoin(user1, recruitment))
+        assertThatThrownBy(() -> recruitmentParticipationUseCase.cancelJoin(user1, recruitment))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_STATE.name());
     }
@@ -153,7 +153,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
         );
 
         //when
-        recruitmentParticipationService.approveJoin(recruitment, ids);
+        recruitmentParticipationUseCase.approveJoin(recruitment, ids);
 
         //then
         List<RecruitmentParticipation> participations = recruitmentParticipationRepository.findByIdIn(ids);
@@ -184,7 +184,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
         );
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.approveJoin(recruitment, ids))
+        assertThatThrownBy(() -> recruitmentParticipationUseCase.approveJoin(recruitment, ids))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_STATE.name());
     }
@@ -207,7 +207,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
         );
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.approveJoin(recruitment, ids))
+        assertThatThrownBy(() -> recruitmentParticipationUseCase.approveJoin(recruitment, ids))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_CURRENT_PARTICIPATION_NUM.name());
     }
@@ -230,7 +230,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
         );
 
         //when
-        recruitmentParticipationService.deport(recruitment, ids);
+        recruitmentParticipationUseCase.deport(recruitment, ids);
 
         //then
         List<RecruitmentParticipation> participations = recruitmentParticipationRepository.findByIdIn(ids);
@@ -261,7 +261,7 @@ class RecruitmentParticipationServiceTest extends ServiceTest {
         );
 
         //when & then
-        assertThatThrownBy(() -> recruitmentParticipationService.deport(recruitment, ids))
+        assertThatThrownBy(() -> recruitmentParticipationUseCase.deport(recruitment, ids))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_STATE.name());
     }

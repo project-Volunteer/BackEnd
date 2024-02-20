@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.dao.ImageRepository;
-import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationService;
+import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationUseCase;
 import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.RecruitmentQueryUseCase;
@@ -56,7 +56,7 @@ public abstract class ServiceTest {
     protected ScheduleQueryUseCase scheduleQueryUseCase;
 
     @Autowired
-    protected RecruitmentParticipationService recruitmentParticipationService;
+    protected RecruitmentParticipationUseCase recruitmentParticipationUseCase;
 
 
     @SpyBean

@@ -16,32 +16,32 @@ import java.util.List;
 public class RecruitmentParticipationFacade {
     private final UserService userService;
     private final RecruitmentQueryUseCase recruitmentQueryUseCase;
-    private final RecruitmentParticipationService participationService;
+    private final RecruitmentParticipationUseCase recruitmentParticipationUseCase;
 
     @Transactional
     public Long joinRecruitmentTeam(Long userNo, Long recruitmentNo){
         User user = userService.findUser(userNo);
         Recruitment recruitment = recruitmentQueryUseCase.findRecruitmentInProgress(recruitmentNo);
-        return participationService.join(user, recruitment);
+        return recruitmentParticipationUseCase.join(user, recruitment);
     }
 
     @Transactional
     public void cancelJoinRecruitmentTeam(Long userNo, Long recruitmentNo){
         User user = userService.findUser(userNo);
         Recruitment recruitment = recruitmentQueryUseCase.findRecruitmentInProgress(recruitmentNo);
-        participationService.cancelJoin(user, recruitment);
+        recruitmentParticipationUseCase.cancelJoin(user, recruitment);
     }
 
     @Transactional
     public void approveJoinRecruitmentTeam(List<Long> recruitmentParticipationNos, Long recruitmentNo){
         Recruitment recruitment = recruitmentQueryUseCase.findActivatedRecruitment(recruitmentNo);
-        participationService.approveJoin(recruitment, recruitmentParticipationNos);
+        recruitmentParticipationUseCase.approveJoin(recruitment, recruitmentParticipationNos);
     }
 
     @Transactional
     public void deportRecruitmentTeam(List<Long> recruitmentParticipationNos, Long recruitmentNo){
         Recruitment recruitment = recruitmentQueryUseCase.findActivatedRecruitment(recruitmentNo);
-        participationService.deport(recruitment, recruitmentParticipationNos);
+        recruitmentParticipationUseCase.deport(recruitment, recruitmentParticipationNos);
     }
 
 }
