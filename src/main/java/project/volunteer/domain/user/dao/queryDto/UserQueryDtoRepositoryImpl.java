@@ -86,11 +86,11 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 		List<UserHistoryQuery> results =
 			jpaQueryFactory
 				.select(new QUserHistoryQuery(
-					scheduleParticipation.scheduleParticipationNo, storage.imagePath,
-					scheduleParticipation.schedule.scheduleTimeTable.endDay, scheduleParticipation.participant.recruitment.title,
+					scheduleParticipation.id, storage.imagePath,
+					scheduleParticipation.schedule.scheduleTimeTable.endDay, scheduleParticipation.recruitmentParticipation.recruitment.title,
 					scheduleParticipation.schedule.address.sido, scheduleParticipation.schedule.address.sigungu,
-					scheduleParticipation.participant.recruitment.volunteeringCategory, scheduleParticipation.participant.recruitment.volunteeringType,
-					scheduleParticipation.participant.recruitment.isIssued, scheduleParticipation.participant.recruitment.volunteerType,
+					scheduleParticipation.recruitmentParticipation.recruitment.volunteeringCategory, scheduleParticipation.recruitmentParticipation.recruitment.volunteeringType,
+					scheduleParticipation.recruitmentParticipation.recruitment.isIssued, scheduleParticipation.recruitmentParticipation.recruitment.volunteerType,
 					scheduleParticipation.schedule.scheduleTimeTable.progressTime
 				))
 				.from(scheduleParticipation)
@@ -99,10 +99,10 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 				.where(
 						ltscheduleParticipationNo(lastId)
 						, scheduleParticipation.state.eq(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)
-						, scheduleParticipation.participant.user.userNo.eq(loginUserNo)
+						, scheduleParticipation.recruitmentParticipation.user.userNo.eq(loginUserNo)
 				)
 				.limit(pageable.getPageSize() + 1)
-				.orderBy(scheduleParticipation.scheduleParticipationNo.desc())
+				.orderBy(scheduleParticipation.id.desc())
 				.fetch();
 		return checkEndPage(pageable, results);
 	}
@@ -110,7 +110,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 	// no-offset 방식 처리하는 메서드
 	private BooleanExpression ltscheduleParticipationNo(Long scheduleParticipationNo) {
 		return (scheduleParticipationNo != null)
-				?scheduleParticipation.scheduleParticipationNo.lt(scheduleParticipationNo)
+				?scheduleParticipation.id.lt(scheduleParticipationNo)
 				:null;
 	}
 

@@ -52,7 +52,7 @@ public class ParticipationServiceConcurrent {
                             }
 
                             //재신청
-                            sp.updateState(ParticipantState.PARTICIPATING);
+                            sp.changeState(ParticipantState.PARTICIPATING);
                         },
                         () ->{
                             //신규 신청
@@ -73,7 +73,7 @@ public class ParticipationServiceConcurrent {
         //일정 검증(존재 여부, 모집 기간)
         Schedule findSchedule = isActiveScheduleWithOPTIMSTICLock(scheduleNo);
 
-        if(findSchedule.isFullParticipant()) {
+        if(findSchedule.isFull()) {
             throw new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
                     String.format("ScheduleNo = [%d], Active participant num = [%d]", findSchedule.getScheduleNo(), findSchedule.getCurrentVolunteerNum()));
         }
@@ -87,7 +87,7 @@ public class ParticipationServiceConcurrent {
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", findSchedule.getScheduleNo(), loginUserNo, sp.getState().name()));
                             }
                             //재신청
-                            sp.updateState(ParticipantState.PARTICIPATING);
+                            sp.changeState(ParticipantState.PARTICIPATING);
                             },
                         () -> {
                             //신규 신청
@@ -101,7 +101,7 @@ public class ParticipationServiceConcurrent {
                             scheduleParticipationRepository.save(createSP);
                         });
 
-        findSchedule.increaseParticipant();
+        findSchedule.increaseParticipationNum(1);
     }
 
     @Transactional
@@ -109,7 +109,7 @@ public class ParticipationServiceConcurrent {
         //일정 검증(존재 여부, 모집 기간)
         Schedule findSchedule = isActiveScheduleWithPERSSIMITIC_WRITE_Lock(scheduleNo);
 
-        if(findSchedule.isFullParticipant()){
+        if(findSchedule.isFull()){
             throw new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
                     String.format("ScheduleNo = [%d], Active participant num = [%d]", findSchedule.getScheduleNo(), findSchedule.getCurrentVolunteerNum()));
         }
@@ -123,7 +123,7 @@ public class ParticipationServiceConcurrent {
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", findSchedule.getScheduleNo(), loginUserNo, sp.getState().name()));
                             }
                             //재신청
-                            sp.updateState(ParticipantState.PARTICIPATING);
+                            sp.changeState(ParticipantState.PARTICIPATING);
                         },
                         () -> {
                             //신규 신청
@@ -137,7 +137,7 @@ public class ParticipationServiceConcurrent {
                             scheduleParticipationRepository.save(createSP);
                         });
 
-        findSchedule.increaseParticipant();
+        findSchedule.increaseParticipationNum(1);
     }
 
     private Schedule isActiveScheduleWithoutLock(Long scheduleNo){

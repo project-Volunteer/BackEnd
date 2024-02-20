@@ -215,7 +215,7 @@ class ScheduleParticipantControllerTest {
         //given
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
+        CancelApproval dto = new CancelApproval(newSp.getId());
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling",
@@ -253,7 +253,7 @@ class ScheduleParticipantControllerTest {
         //given
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
+        CancelApproval dto = new CancelApproval(newSp.getId());
 
         //when & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
@@ -290,7 +290,7 @@ class ScheduleParticipantControllerTest {
         //given
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
-        CompleteApproval dto = new CompleteApproval(List.of(newSp.getScheduleParticipationNo()));
+        CompleteApproval dto = new CompleteApproval(List.of(newSp.getId()));
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/complete",
@@ -391,11 +391,11 @@ class ScheduleParticipantControllerTest {
 
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.cancelling[0].scheduleParticipationNo").value(scheduleParticipation1.getScheduleParticipationNo()))
+                .andExpect(jsonPath("$.cancelling[0].scheduleParticipationNo").value(scheduleParticipation1.getId()))
                 .andExpect(jsonPath("$.cancelling[0].nickname").value(test1.getNickName()))
                 .andExpect(jsonPath("$.cancelling[0].email").value(test1.getEmail()))
                 .andExpect(jsonPath("$.cancelling[0].profile").value(test1.getPicture()))
-                .andExpect(jsonPath("$.cancelling[1].scheduleParticipationNo").value(scheduleParticipation2.getScheduleParticipationNo()))
+                .andExpect(jsonPath("$.cancelling[1].scheduleParticipationNo").value(scheduleParticipation2.getId()))
                 .andExpect(jsonPath("$.cancelling[1].nickname").value(test2.getNickName()))
                 .andExpect(jsonPath("$.cancelling[1].email").value(test2.getEmail()))
                 .andExpect(jsonPath("$.cancelling[1].profile").value(test2.getPicture()))

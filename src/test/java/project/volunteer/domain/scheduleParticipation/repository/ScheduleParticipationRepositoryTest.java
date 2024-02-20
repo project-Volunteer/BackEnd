@@ -120,7 +120,7 @@ class ScheduleParticipationRepositoryTest extends RepositoryTest {
     private Long createAndSaveScheduleParticipation(Schedule schedule, RecruitmentParticipation participant) {
         ScheduleParticipation scheduleParticipation = new ScheduleParticipation(schedule, participant,
                 ParticipantState.PARTICIPATING);
-        return scheduleParticipationRepository.save(scheduleParticipation).getScheduleParticipationNo();
+        return scheduleParticipationRepository.save(scheduleParticipation).getId();
     }
 
     private ScheduleParticipation findBy(Long scheduleParticipationNo) {

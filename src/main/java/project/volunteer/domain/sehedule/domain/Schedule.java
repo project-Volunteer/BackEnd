@@ -24,6 +24,7 @@ public class Schedule extends BaseTimeEntity {
     private static final int MAX_CONTENT_SIZE = 50;
     private static final int MAX_PARTICIPATION_NUM = 9999;
     private static final int MIN_PARTICIPATION_NUM = 1;
+    private static final int MIN_CURRENT_PARTICIPATION_NUM = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,6 +67,7 @@ public class Schedule extends BaseTimeEntity {
         validateContentSize(content);
         validateOrganizationNameSize(organizationName);
         validateParticipationNum(participationNum, recruitment);
+        validateCurrentParticipationNum(participationNum, currentVolunteerNum);
 
         this.scheduleTimeTable = timetable;
         this.content = content;
@@ -100,7 +102,7 @@ public class Schedule extends BaseTimeEntity {
         validateContentSize(content);
         validateOrganizationNameSize(organizationName);
         validateParticipationNum(participationNum, recruitment);
-        validateCurrentParticipationNum(participationNum);
+        validateCurrentParticipationNum(participationNum, this.currentVolunteerNum);
 
         this.scheduleTimeTable = timetable;
         this.content = content;
@@ -113,22 +115,22 @@ public class Schedule extends BaseTimeEntity {
         this.isDeleted = IsDeleted.Y;
     }
 
-    public void increaseParticipant() {
-        this.currentVolunteerNum++;
+    public void increaseParticipationNum(int addParticipationNum) {
+        this.currentVolunteerNum += addParticipationNum;
+        validateCurrentParticipationNum(this.volunteerNum, this.currentVolunteerNum);
     }
 
     public void decreaseParticipant() {
         this.currentVolunteerNum--;
     }
 
-    public Boolean isFullParticipant() {
-        return this.currentVolunteerNum == this.volunteerNum;
+    public Boolean isFull() {
+        return this.currentVolunteerNum.equals(this.volunteerNum);
     }
 
     public Boolean isAvailableDate() {
         return this.scheduleTimeTable.getStartDay().isAfter(LocalDate.now());
     }
-
 
     /**
      * 검증 메서드
@@ -160,11 +162,10 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-    private void validateCurrentParticipationNum(final int participationNum) {
-        if (currentVolunteerNum > participationNum) {
-            throw new BusinessException(ErrorCode.LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT,
-                    String.format("currentParticipationNum = [%d], requestParticipationNum = [%d]", currentVolunteerNum,
-                            participationNum));
+    private void validateCurrentParticipationNum(final int participationNum, final int currentParticipationNum) {
+        if (MIN_CURRENT_PARTICIPATION_NUM > currentParticipationNum || currentParticipationNum > participationNum) {
+            throw new BusinessException(ErrorCode.INVALID_CURRENT_PARTICIPATION_NUM,
+                    String.format("[%d]~[%d]", MIN_CURRENT_PARTICIPATION_NUM, participationNum));
         }
     }
 
@@ -172,6 +173,21 @@ public class Schedule extends BaseTimeEntity {
         if (scheduleTimeTable.getStartDay().isBefore(currentDate)) {
             throw new BusinessException(ErrorCode.EXPIRED_PERIOD_SCHEDULE);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Schedule{" +
+                "scheduleNo=" + scheduleNo +
+                ", scheduleTimeTable=" + scheduleTimeTable +
+                ", organizationName='" + organizationName + '\'' +
+                ", address=" + address +
+                ", content='" + content + '\'' +
+                ", volunteerNum=" + volunteerNum +
+                ", currentVolunteerNum=" + currentVolunteerNum +
+                ", isDeleted=" + isDeleted +
+                ", recruitmentNo=" + recruitment.getRecruitmentNo() +
+                '}';
     }
 
 }

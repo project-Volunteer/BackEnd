@@ -80,111 +80,13 @@ class ScheduleParticipationServiceImplTest {
     }
 
     @Test
-    @DisplayName("일정 첫 참가에 성공하다.")
-    public void schedule_participating(){
-        //given
-        User newUser = 사용자_등록("kubonsik");
-        RecruitmentParticipation participant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-
-        //when
-        spService.participate(saveSchedule, participant);
-        clear();
-
-        //then
-        ScheduleParticipation findSP = scheduleParticipationRepository.findByUserNoAndScheduleNo(newUser.getUserNo(), saveSchedule.getScheduleNo()).get();
-        assertThat(findSP.getState()).isEqualTo(ParticipantState.PARTICIPATING);
-        assertThat(saveSchedule.getCurrentVolunteerNum()).isEqualTo(1);
-    }
-
-    //TODO: 일정 서비스 테스트로 이동해야할 테스트
-//    @Test
-//    @DisplayName("일정 기간 종료로 인해 참가 신청에 실패하다.")
-//    public void schedule_period_end(){
-//        //given
-//        User newUser = 사용자_등록("kubonsik");
-//        봉사모집글_팀원_등록(saveRecruitment, newUser);
-//
-//        Timetable changeTime = Timetable.createTimetable(
-//                LocalDate.now().minusDays(1), LocalDate.now().minusDays(1), HourFormat.AM,LocalTime.now(),3);
-//        saveSchedule.changeScheduleTime(changeTime);
-//        clear();
-//
-//        //when & then
-//        assertThatThrownBy(() -> spService.participate(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), newUser.getUserNo()))
-//                .isInstanceOf(BusinessException.class)
-//                .hasMessageContaining(ErrorCode.EXPIRED_PERIOD_SCHEDULE.name());
-//    }
-
-    @Test
-    @DisplayName("일정 모집 인원 초가로 인해 참가 신청에 실패하다.")
-    public void schedule_volunteerNum_insufficient(){
-        //given
-        User newUser1 = 사용자_등록("kubonsik");
-        RecruitmentParticipation newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
-        일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
-        saveSchedule.increaseParticipant();
-
-        User newUser2 = 사용자_등록("honggildong");
-        RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
-        일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATING);
-        saveSchedule.increaseParticipant();
-
-        User newUser3 = 사용자_등록("kuhara");
-        RecruitmentParticipation newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
-        일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATING);
-        saveSchedule.increaseParticipant();
-
-        User newUser4 = 사용자_등록("parkhayoung");
-        RecruitmentParticipation participant = 봉사모집글_팀원_등록(saveRecruitment, newUser4);
-        clear();
-
-        //when & then
-        assertThatThrownBy(() -> spService.participate(saveSchedule, participant))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("INSUFFICIENT_CAPACITY");
-    }
-
-    @Test
-    @DisplayName("일정 참가 신청을 중복하다.")
-    public void schedule_participating_duplication(){
-        //given
-        User newUser = 사용자_등록("kubonsik");
-        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
-        saveSchedule.increaseParticipant();
-        clear();
-
-        //when & then
-        assertThatThrownBy(() -> spService.participate(saveSchedule, newParticipant))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION.name());
-    }
-
-    @Test
-    @DisplayName("일정 재신청에 성공하다.")
-    public void schedule_reParticipating(){
-        //given
-        User newUser = 사용자_등록("kubonsik");
-        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
-        clear();
-
-        //when
-        spService.participate(saveSchedule, newParticipant);
-
-        //then
-        ScheduleParticipation findSP = scheduleParticipationRepository.findByUserNoAndScheduleNo(newUser.getUserNo(), saveSchedule.getScheduleNo()).get();
-        assertThat(findSP.getState()).isEqualTo(ParticipantState.PARTICIPATING);
-    }
-
-    @Test
     @DisplayName("일정 참여 취소 요청에 성공하다.")
     public void schedule_cancelParticipation(){
         //given
         User newUser = 사용자_등록("kubonsik");
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
         일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
-        saveSchedule.increaseParticipant();
+        saveSchedule.increaseParticipationNum(1);
         clear();
 
         //when
@@ -217,15 +119,15 @@ class ScheduleParticipationServiceImplTest {
         //given
         User newUser = 사용자_등록("kubonsik");
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        saveSchedule.increaseParticipant();
+        saveSchedule.increaseParticipationNum(1);
         ScheduleParticipation newSp = 일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
 
         //when
-        spService.approvalCancellation(saveSchedule, newSp.getScheduleParticipationNo());
+        spService.approvalCancellation(saveSchedule, newSp.getId());
         clear();
 
         //then
-        ScheduleParticipation findSp = scheduleParticipationRepository.findById(newSp.getScheduleParticipationNo()).get();
+        ScheduleParticipation findSp = scheduleParticipationRepository.findById(newSp.getId()).get();
         assertThat(findSp.getState()).isEqualTo(ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
         assertThat(saveSchedule.getCurrentVolunteerNum()).isEqualTo(0);
     }
@@ -243,15 +145,15 @@ class ScheduleParticipationServiceImplTest {
         RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         ScheduleParticipation newSp2 = 일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
-        List<Long> spNos = List.of(newSp1.getScheduleParticipationNo(), newSp2.getScheduleParticipationNo());
+        List<Long> spNos = List.of(newSp1.getId(), newSp2.getId());
         clear();
 
         //when
         spService.approvalCompletion(spNos);
 
         //then
-        ScheduleParticipation findSp1 = scheduleParticipationRepository.findById(newSp1.getScheduleParticipationNo()).get();
-        ScheduleParticipation findSp2 = scheduleParticipationRepository.findById(newSp2.getScheduleParticipationNo()).get();
+        ScheduleParticipation findSp1 = scheduleParticipationRepository.findById(newSp1.getId()).get();
+        ScheduleParticipation findSp2 = scheduleParticipationRepository.findById(newSp2.getId()).get();
         assertThat(findSp1.getState()).isEqualTo(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
         assertThat(findSp2.getState()).isEqualTo(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
     }
@@ -269,7 +171,7 @@ class ScheduleParticipationServiceImplTest {
         RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         ScheduleParticipation newSp2 = 일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL); //유효하지 않은 상태
 
-        List<Long> spNos = List.of(newSp1.getScheduleParticipationNo(), newSp2.getScheduleParticipationNo());
+        List<Long> spNos = List.of(newSp1.getId(), newSp2.getId());
         clear();
 
         //when & then

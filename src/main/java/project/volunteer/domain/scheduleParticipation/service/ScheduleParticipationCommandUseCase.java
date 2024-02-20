@@ -7,7 +7,11 @@ import java.util.List;
 
 public interface ScheduleParticipationCommandUseCase {
 
-    public void participate(Schedule schedule, RecruitmentParticipation participant);
+    Long participate(Schedule schedule, RecruitmentParticipation participant);
+
+
+
+
 
     public void cancel(Schedule schedule, RecruitmentParticipation participant);
 

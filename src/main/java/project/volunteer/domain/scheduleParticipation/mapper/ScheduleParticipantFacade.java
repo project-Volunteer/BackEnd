@@ -33,6 +33,13 @@ public class ScheduleParticipantFacade {
         scheduleParticipationService.participate(schedule, recruitmentParticipation);
     }
 
+
+
+
+
+
+
+
     @Transactional
     public void cancelParticipationVolunteerPostSchedule(Long userNo, Long recruitmentNo, Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findScheduleInProgress(scheduleNo);

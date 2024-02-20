@@ -14,82 +14,105 @@ import project.volunteer.global.error.exception.ErrorCode;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class ScheduleParticipationCommandService implements ScheduleParticipationCommandUseCase {
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
-    @Transactional
-    public void participate(Schedule schedule, RecruitmentParticipation participant) {
-        //모집 인원 검증
-        if(schedule.isFullParticipant()){
-            throw new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
-                    String.format("ScheduleNo = [%d], Active participant num = [%d]", schedule.getScheduleNo(), schedule.getCurrentVolunteerNum()));
+    public Long participate(final Schedule schedule, final RecruitmentParticipation recruitmentParticipation) {
+        checkIsFull(schedule);
+
+        if (!scheduleParticipationRepository.existsByScheduleAndRecruitmentParticipation(schedule,
+                recruitmentParticipation)) {
+            ScheduleParticipation newScheduleParticipation = new ScheduleParticipation(schedule,
+                    recruitmentParticipation, ParticipantState.PARTICIPATING);
+            schedule.increaseParticipationNum(1);
+            return scheduleParticipationRepository.save(newScheduleParticipation).getId();
         }
 
-        scheduleParticipationRepository.findByScheduleAndParticipant(schedule, participant)
-                .ifPresentOrElse(
-                        sp -> {
-                            //중복 신청 검증(일정 참여중, 일정 참여 취소 요청)
-                            if(sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
-                                throw new BusinessException(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION,
-                                        String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", schedule.getScheduleNo(), participant.getUser().getUserNo(), sp.getState().name()));
-                            }
-
-                            //재신청
-                            sp.updateState(ParticipantState.PARTICIPATING);
-                        },
-                        () ->{
-                            //신규 신청
-                            ScheduleParticipation createSP =
-                                    ScheduleParticipation.createScheduleParticipation(schedule, participant, ParticipantState.PARTICIPATING);
-                            scheduleParticipationRepository.save(createSP);
-                        }
-                );
-        //일정 참여 인원수 증가
-        schedule.increaseParticipant();
+        ScheduleParticipation scheduleParticipation = findScheduleParticipation(schedule, recruitmentParticipation);
+        checkDuplicationParticipation(scheduleParticipation);
+        scheduleParticipation.changeState(ParticipantState.PARTICIPATING);
+        schedule.increaseParticipationNum(1);
+        return scheduleParticipation.getId();
     }
 
+    private void checkIsFull(final Schedule schedule) {
+        if (schedule.isFull()) {
+            throw new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY, schedule.toString());
+        }
+    }
+
+    private void checkDuplicationParticipation(final ScheduleParticipation scheduleParticipation) {
+        if (!scheduleParticipation.canReParticipation()) {
+            throw new BusinessException(ErrorCode.DUPLICATE_SCHEDULE_PARTICIPATION, scheduleParticipation.toString());
+        }
+    }
+
+    private ScheduleParticipation findScheduleParticipation(final Schedule schedule,
+                                                            final RecruitmentParticipation recruitmentParticipation) {
+        return scheduleParticipationRepository.findByScheduleAndRecruitmentParticipation(schedule,
+                        recruitmentParticipation)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE_PARTICIPATION));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Override
-    @Transactional
     public void cancel(Schedule schedule, RecruitmentParticipation participant) {
         //일정 참여 중 상태인지 검증
-        ScheduleParticipation findSp =   scheduleParticipationRepository.findByScheduleAndParticipantAndState(schedule, participant, ParticipantState.PARTICIPATING)
+        ScheduleParticipation findSp = scheduleParticipationRepository.findByScheduleAndRecruitmentParticipationAndState(
+                        schedule,
+                        participant, ParticipantState.PARTICIPATING)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("UserNo = [%d], ScheduleNo = [%d]", participant.getUser().getUserNo(), schedule.getScheduleNo())));
+                        String.format("UserNo = [%d], ScheduleNo = [%d]", participant.getUser().getUserNo(),
+                                schedule.getScheduleNo())));
 
         //일정 신청 취소 요청
-        findSp.updateState(ParticipantState.PARTICIPATION_CANCEL);
+        findSp.changeState(ParticipantState.PARTICIPATION_CANCEL);
     }
 
     @Override
-    @Transactional
     public void approvalCancellation(Schedule schedule, Long spNo) {
         //일정 취소 요청 상태인지 검증
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByScheduleParticipationNoAndState(spNo, ParticipantState.PARTICIPATION_CANCEL)
+        ScheduleParticipation findSp = scheduleParticipationRepository.findByIdAndState(spNo,
+                        ParticipantState.PARTICIPATION_CANCEL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
                         String.format("ScheduleParticipationNo = [%d]", spNo)));
 
         //일정 취소 요청 승인
-        findSp.updateState(ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
+        findSp.changeState(ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
 
         //일정 참가자 수 감소
         schedule.decreaseParticipant();
     }
 
     @Override
-    @Transactional
     public void approvalCompletion(List<Long> spNo) {
-        scheduleParticipationRepository.findByScheduleParticipationNoIn(spNo).stream()
+        scheduleParticipationRepository.findByIdIn(spNo).stream()
                 .forEach(sp -> {
                     //일정 참여 완료 미승인 상태가 아닌 경우
-                    if(!sp.isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)){
+                    if (!sp.isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)) {
                         throw new BusinessException(ErrorCode.INVALID_STATE,
-                                String.format("ScheduleParticipationNo = [%d], State = [%s]", sp.getScheduleParticipationNo(), sp.getState().name()));
+                                String.format("ScheduleParticipationNo = [%d], State = [%s]",
+                                        sp.getId(), sp.getState().name()));
                     }
                     //일정 참여 완료 승인
-                    sp.updateState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+                    sp.changeState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
                 });
     }
 

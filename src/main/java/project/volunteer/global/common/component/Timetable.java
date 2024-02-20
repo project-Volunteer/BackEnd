@@ -57,4 +57,15 @@ public class Timetable {
         return endDay.isBefore(now);
     }
 
+    @Override
+    public String toString() {
+        return "Timetable{" +
+                "startDay=" + startDay +
+                ", endDay=" + endDay +
+                ", hourFormat=" + hourFormat +
+                ", startTime=" + startTime +
+                ", progressTime=" + progressTime +
+                '}';
+    }
+
 }
