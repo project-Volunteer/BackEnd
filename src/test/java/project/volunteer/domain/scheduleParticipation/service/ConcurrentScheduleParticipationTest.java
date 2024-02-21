@@ -16,10 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -49,7 +46,6 @@ import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.support.DatabaseCleaner;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @ActiveProfiles("test")
 public class ConcurrentScheduleParticipationTest {
@@ -70,9 +66,6 @@ public class ConcurrentScheduleParticipationTest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
-    private final Address address = new Address("1111", "111", "삼성 아파트", "대구광역시 북구 삼성 아파트");
-    private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
-
     @AfterEach
     void tearDown() {
         databaseCleaner.execute();
@@ -80,7 +73,6 @@ public class ConcurrentScheduleParticipationTest {
 
     @DisplayName("여러 회원이 동시에 일정 참여를 시도해도 참여 가능 인원 임계값을 넘지 못한다.")
     @Test
-    @Order(1)
     void participateWithConcurrent() throws InterruptedException {
         // given
         int numberOfThreads = 5;
@@ -95,16 +87,21 @@ public class ConcurrentScheduleParticipationTest {
 
         Recruitment recruitment = recruitmentRepository.save(
                 new Recruitment("title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.IRREG,
-                        VolunteerType.ADULT, 999, 0, true, "organization", address, coordinate,
-                        new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 2, 10), HourFormat.AM,
-                                LocalTime.now(), 10),
+                        VolunteerType.ADULT, 999, 0, true, "organization",
+                        Address.builder().sido("1111").sigungu("11").details("삼성 아파트").fullName("대구광역시 북구 삼성 아파트").build(),
+                        Coordinate.builder().longitude(3.2F).latitude(3.2F).build(),
+                        Timetable.builder().startDay(LocalDate.of(2024, 1, 10)).endDay(LocalDate.of(2024, 2, 10))
+                                .hourFormat(HourFormat.AM).startTime(LocalTime.now()).progressTime(10).build(),
                         0, 0, true, IsDeleted.N, writer)
         );
 
         Schedule schedule = scheduleRepository.save(
-                new Schedule(new Timetable(
-                        LocalDate.of(2024, 2, 1), LocalDate.of(2024, 2, 10), HourFormat.AM, LocalTime.now(), 10),
-                        "test", "unicef", address, 2, IsDeleted.N, 0, recruitment)
+                new Schedule(
+                        Timetable.builder().startDay(LocalDate.of(2024, 2, 1)).endDay(LocalDate.of(2024, 2, 10))
+                                .hourFormat(HourFormat.AM).startTime(LocalTime.now()).progressTime(10).build(),
+                        "test", "unicef",
+                        Address.builder().sido("1111").sigungu("11").details("삼성 아파트").fullName("대구광역시 북구 삼성 아파트").build(),
+                        2, IsDeleted.N, 0, recruitment)
         );
 
         List<User> users = createAndSaveUser(numberOfThreads);
@@ -142,26 +139,9 @@ public class ConcurrentScheduleParticipationTest {
         );
     }
 
-    @DisplayName("명시적으로 DB를 초기화 한다.")
-    @Test
-    @Order(2)
-    void validateRollback() {
-        long userCount = userRepository.count();
-        long recruitmentCount = recruitmentRepository.count();
-        long scheduleCount = scheduleRepository.count();
-        long scheduleParticipationCount = scheduleParticipationRepository.count();
-
-        assertAll(
-                () -> assertThat(userCount).isEqualTo(0),
-                () -> assertThat(recruitmentCount).isEqualTo(0),
-                () -> assertThat(scheduleCount).isEqualTo(0),
-                () -> assertThat(scheduleParticipationCount).isEqualTo(0)
-        );
-    }
-
-    private List<User> createAndSaveUser(int num) {
+    private List<User> createAndSaveUser(int size) {
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < size; i++) {
             User user = userRepository.save(
                     new User("test" + i, "test" + i, "test", "test@email.com", Gender.M, LocalDate.now(),
                             "http://...", true, true, true, Role.USER, "kakao", "1234", null)
