@@ -16,7 +16,7 @@ public class DatabaseCleaner {
     private static final String TRUNCATE_TABLE_FORMAT = "TRUNCATE TABLE %s";
     private List<String> tableNames;
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     @PostConstruct
     public void findAllTable() {
@@ -27,9 +27,6 @@ public class DatabaseCleaner {
                 .map(javaType -> javaType.getAnnotation(Table.class))
                 .map(Table::name)
                 .collect(Collectors.toList());
-
-        System.out.println("*********");
-        System.out.println(tableNames.toString());
     }
 
     @Transactional
