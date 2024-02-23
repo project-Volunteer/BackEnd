@@ -11,13 +11,14 @@ public interface ScheduleParticipationCommandUseCase {
 
     void cancelParticipation(Schedule schedule, RecruitmentParticipation participant);
 
+    void approvalCancellation(Schedule schedule, List<Long> scheduleParticipationNo);
 
 
 
 
 
 
-    public void approvalCancellation(Schedule schedule, Long spNo);
+
 
     public void approvalCompletion(List<Long> spNo);
 

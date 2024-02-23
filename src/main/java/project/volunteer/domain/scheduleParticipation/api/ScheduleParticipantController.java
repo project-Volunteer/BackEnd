@@ -40,7 +40,7 @@ public class ScheduleParticipantController {
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancelling")
     public ResponseEntity scheduleCancelApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
                                                  @RequestBody @Valid CancelApproval dto){
-        scheduleParticipationCommandFacade.approvalCancellationVolunteerPostSchedule(scheduleNo, dto.getNo());
+        scheduleParticipationCommandFacade.approvalCancellationSchedule(scheduleNo, dto.getNo());
         return ResponseEntity.ok().build();
     }
 

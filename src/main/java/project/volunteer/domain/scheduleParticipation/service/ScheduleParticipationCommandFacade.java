@@ -30,17 +30,17 @@ public class ScheduleParticipationCommandFacade {
         scheduleParticipationService.cancelParticipation(schedule, recruitmentParticipation);
     }
 
-
-
-
-
-
-
-    public void approvalCancellationVolunteerPostSchedule(Long scheduleNo, Long scheduleParticipantNo){
+    public void approvalCancellationSchedule(Long scheduleNo, List<Long> scheduleParticipantNo){
         Schedule schedule = scheduleQueryUsecase.findScheduleInProgress(scheduleNo);
 
         scheduleParticipationService.approvalCancellation(schedule, scheduleParticipantNo);
     }
+
+
+
+
+
+
 
     public void approvalCompletionVolunteerPostSchedule(Long scheduleNo, List<Long> scheduleParticipantNos){
         scheduleQueryUsecase.findActivitedSchedule(scheduleNo);

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,9 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final User writer = new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
             "http://...", true, true, true, Role.USER, "kakao", "1234", null);
-    private final User user = new User("test1", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+    private final User firstUser = new User("test1", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+            "http://...", true, true, true, Role.USER, "kakao", "1234", null);
+    private final User secondUser = new User("test2", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
             "http://...", true, true, true, Role.USER, "kakao", "1234", null);
     private final Recruitment recruitment = Recruitment.builder()
             .title("title")
@@ -61,7 +64,8 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     @BeforeEach
     void setUp() {
         userRepository.save(writer);
-        userRepository.save(user);
+        userRepository.save(firstUser);
+        userRepository.save(secondUser);
         recruitmentRepository.save(recruitment);
     }
 
@@ -70,7 +74,7 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     void participate() {
         //given
         final RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
         final Schedule schedule = scheduleRepository.save(
                 new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 0, recruitment));
 
@@ -90,7 +94,7 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     void participateFullSchedule() {
         //given
         final RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
         final Schedule schedule = scheduleRepository.save(
                 new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 10, recruitment));
 
@@ -105,7 +109,7 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     void duplicationParticipate() {
         //given
         final RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
         final Schedule schedule = scheduleRepository.save(
                 new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 0, recruitment));
 
@@ -123,7 +127,7 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     void reParticipate() {
         //given
         final RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
         final Schedule schedule = scheduleRepository.save(
                 new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 0, recruitment));
 
@@ -147,7 +151,7 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     void cancelParticipation() {
         //given
         final RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
         final Schedule schedule = scheduleRepository.save(
                 new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 0, recruitment));
         final ScheduleParticipation scheduleParticipation = scheduleParticipationRepository.save(
@@ -166,7 +170,7 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
     void cancelParticipationInvalidState() {
         //given
         final RecruitmentParticipation recruitmentParticipation = recruitmentParticipationRepository.save(
-                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
         final Schedule schedule = scheduleRepository.save(
                 new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 0, recruitment));
         scheduleParticipationRepository.save(
@@ -177,6 +181,67 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
                 () -> scheduleParticipationCommandUseCase.cancelParticipation(schedule, recruitmentParticipation))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_STATE.name());
+    }
+
+    @DisplayName("취소를 승인하고, 일정 참여 인원을 줄인다.")
+    @Test
+    void approveCancellation() {
+        //given
+        final RecruitmentParticipation recruitmentParticipation1 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
+        final RecruitmentParticipation recruitmentParticipation2 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, secondUser, ParticipantState.JOIN_APPROVAL));
+
+        final Schedule schedule = scheduleRepository.save(
+                new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 3, recruitment));
+
+        final List<Long> scheduleParticipationIds = List.of(
+                scheduleParticipationRepository.save(
+                                new ScheduleParticipation(schedule, recruitmentParticipation1, ParticipantState.PARTICIPATION_CANCEL))
+                        .getId(),
+                scheduleParticipationRepository.save(
+                                new ScheduleParticipation(schedule, recruitmentParticipation2, ParticipantState.PARTICIPATION_CANCEL))
+                        .getId());
+
+        //when
+        scheduleParticipationCommandUseCase.approvalCancellation(schedule, scheduleParticipationIds);
+
+        //then
+        List<ScheduleParticipation> scheduleParticipants = scheduleParticipationRepository.findAll();
+        assertAll(
+                () -> assertThat(schedule.getCurrentVolunteerNum()).isEqualTo(1),
+                () -> assertThat(scheduleParticipants).hasSize(2)
+                        .extracting("state")
+                        .containsExactlyInAnyOrder(ParticipantState.PARTICIPATION_CANCEL_APPROVAL,
+                                ParticipantState.PARTICIPATION_CANCEL_APPROVAL)
+        );
+    }
+
+    @DisplayName("취소 승인전 상태가 PARTICIPATION_CANCEL이 아닐 경우, 예외를 발생시킨다.")
+    @Test
+    void approveCancellationWithInvalidState() {
+        //given
+        final RecruitmentParticipation recruitmentParticipation1 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
+        final RecruitmentParticipation recruitmentParticipation2 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, secondUser, ParticipantState.JOIN_APPROVAL));
+
+        final Schedule schedule = scheduleRepository.save(
+                new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 3, recruitment));
+
+        final List<Long> scheduleParticipationIds = List.of(
+                scheduleParticipationRepository.save(
+                                new ScheduleParticipation(schedule, recruitmentParticipation1, ParticipantState.PARTICIPATING))
+                        .getId(),
+                scheduleParticipationRepository.save(
+                                new ScheduleParticipation(schedule, recruitmentParticipation2, ParticipantState.PARTICIPATING))
+                        .getId());
+
+        //when
+        assertThatThrownBy(() -> scheduleParticipationCommandUseCase.approvalCancellation(schedule, scheduleParticipationIds))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_STATE.name());
+
     }
 
     private ScheduleParticipation findScheduleParticipation(Long id) {

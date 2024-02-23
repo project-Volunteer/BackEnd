@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
+import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipations;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.domain.Schedule;
@@ -70,34 +71,29 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE_PARTICIPATION));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
-    public void approvalCancellation(Schedule schedule, Long spNo) {
-        //일정 취소 요청 상태인지 검증
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByIdAndState(spNo,
-                        ParticipantState.PARTICIPATION_CANCEL)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("ScheduleParticipationNo = [%d]", spNo)));
+    public void approvalCancellation(Schedule schedule, List<Long> scheduleParticipationNo) {
+        ScheduleParticipations scheduleParticipations = findScheduleParticipations(scheduleParticipationNo);
+        scheduleParticipations.approvalCancellations();
 
-        //일정 취소 요청 승인
-        findSp.changeState(ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
-
-        //일정 참가자 수 감소
-        schedule.decreaseParticipant();
+        schedule.decreaseParticipationNum(scheduleParticipations.getSize());
     }
+
+    private ScheduleParticipations findScheduleParticipations(List<Long> ids) {
+        List<ScheduleParticipation> scheduleParticipations = scheduleParticipationRepository.findByIdIn(ids);
+
+        if(ids.size() != scheduleParticipations.size()) {
+            throw new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE_PARTICIPATION);
+        }
+        return new ScheduleParticipations(scheduleParticipations);
+    }
+
+
+
+
+
+
+
 
     @Override
     public void approvalCompletion(List<Long> spNo) {

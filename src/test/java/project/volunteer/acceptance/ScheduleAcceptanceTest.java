@@ -760,7 +760,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 봉사_일정_취소요청_조회(bonsikToken, recruitmentNo, scheduleNo2);
 
         final CancelApproval cancelApprovalRequest = new CancelApproval(
-                cancelledParticipants.get(0).getScheduleParticipationNo());
+                cancelledParticipants.stream()
+                        .map(CancelledParticipantList::getScheduleParticipationNo)
+                        .collect(Collectors.toList()));
         봉사_일정_참여_취소승인(bonsikToken, recruitmentNo, scheduleNo2, cancelApprovalRequest);
 
         final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);

@@ -120,8 +120,9 @@ public class Schedule extends BaseTimeEntity {
         validateCurrentParticipationNum(this.volunteerNum, this.currentVolunteerNum);
     }
 
-    public void decreaseParticipant() {
-        this.currentVolunteerNum--;
+    public void decreaseParticipationNum(int subParticipationNum) {
+        this.currentVolunteerNum -= subParticipationNum;
+        validateCurrentParticipationNum(this.volunteerNum, this.currentVolunteerNum);
     }
 
     public Boolean isFull() {

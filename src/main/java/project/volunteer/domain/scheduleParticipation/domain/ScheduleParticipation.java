@@ -48,6 +48,10 @@ public class ScheduleParticipation extends BaseEntity {
         return state.equals(ParticipantState.PARTICIPATING);
     }
 
+    public Boolean canApproveCancellation() {
+        return state.equals(ParticipantState.PARTICIPATION_CANCEL);
+    }
+
     public void changeState(ParticipantState state) {
         this.state = state;
     }

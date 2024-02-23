@@ -215,7 +215,7 @@ class ScheduleParticipantControllerTest {
         //given
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        CancelApproval dto = new CancelApproval(newSp.getId());
+        CancelApproval dto = new CancelApproval(List.of(newSp.getId()));
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling",
@@ -253,7 +253,7 @@ class ScheduleParticipantControllerTest {
         //given
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        CancelApproval dto = new CancelApproval(newSp.getId());
+        CancelApproval dto = new CancelApproval(List.of(newSp.getId()));
 
         //when & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())

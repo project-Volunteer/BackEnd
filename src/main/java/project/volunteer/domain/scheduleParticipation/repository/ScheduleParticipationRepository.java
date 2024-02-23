@@ -21,6 +21,9 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
 
     Optional<ScheduleParticipation> findByScheduleAndRecruitmentParticipation(Schedule schedule, RecruitmentParticipation participant);
 
+    List<ScheduleParticipation> findByIdIn(List<Long> ids);
+
+
 
 
 
@@ -71,8 +74,6 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
 
     Optional<ScheduleParticipation> findByIdAndState(Long scheduleParticipationNo,
                                                      ParticipantState state);
-
-    List<ScheduleParticipation> findByIdIn(List<Long> spNos);
 
     //N+1 문제를 막기 위해서 Projection + Join 방식 사용
     @Query("select new project.volunteer.domain.scheduleParticipation.repository.dto.ParticipantDetails(sp.id,u.nickName,u.email,coalesce(s.imagePath,u.picture),sp.state) "
