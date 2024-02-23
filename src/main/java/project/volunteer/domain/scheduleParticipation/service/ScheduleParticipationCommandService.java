@@ -50,6 +50,19 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
         }
     }
 
+    @Override
+    public void cancelParticipation(final Schedule schedule, final RecruitmentParticipation recruitmentParticipation) {
+        ScheduleParticipation scheduleParticipation = findScheduleParticipation(schedule, recruitmentParticipation);
+        checkCancellationPossible(scheduleParticipation);
+        scheduleParticipation.changeState(ParticipantState.PARTICIPATION_CANCEL);
+    }
+
+    private void checkCancellationPossible(final ScheduleParticipation scheduleParticipation) {
+        if(!scheduleParticipation.canCancel()) {
+            throw new BusinessException(ErrorCode.INVALID_STATE, scheduleParticipation.toString());
+        }
+    }
+
     private ScheduleParticipation findScheduleParticipation(final Schedule schedule,
                                                             final RecruitmentParticipation recruitmentParticipation) {
         return scheduleParticipationRepository.findByScheduleAndRecruitmentParticipation(schedule,
@@ -70,21 +83,6 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
 
 
 
-
-
-    @Override
-    public void cancel(Schedule schedule, RecruitmentParticipation participant) {
-        //일정 참여 중 상태인지 검증
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByScheduleAndRecruitmentParticipationAndState(
-                        schedule,
-                        participant, ParticipantState.PARTICIPATING)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("UserNo = [%d], ScheduleNo = [%d]", participant.getUser().getUserNo(),
-                                schedule.getScheduleNo())));
-
-        //일정 신청 취소 요청
-        findSp.changeState(ParticipantState.PARTICIPATION_CANCEL);
-    }
 
     @Override
     public void approvalCancellation(Schedule schedule, Long spNo) {

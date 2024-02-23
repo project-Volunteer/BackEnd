@@ -9,11 +9,13 @@ public interface ScheduleParticipationCommandUseCase {
 
     Long participate(Schedule schedule, RecruitmentParticipation participant);
 
+    void cancelParticipation(Schedule schedule, RecruitmentParticipation participant);
 
 
 
 
-    public void cancel(Schedule schedule, RecruitmentParticipation participant);
+
+
 
     public void approvalCancellation(Schedule schedule, Long spNo);
 

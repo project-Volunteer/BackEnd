@@ -32,7 +32,7 @@ public class ScheduleParticipantController {
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancel")
     public ResponseEntity scheduleCancelRequest(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
-        scheduleParticipationCommandFacade.cancelParticipationVolunteerPostSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
+        scheduleParticipationCommandFacade.cancelParticipationSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
     }
 

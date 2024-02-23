@@ -80,40 +80,6 @@ class ScheduleParticipationServiceImplTest {
     }
 
     @Test
-    @DisplayName("일정 참여 취소 요청에 성공하다.")
-    public void schedule_cancelParticipation(){
-        //given
-        User newUser = 사용자_등록("kubonsik");
-        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATING);
-        saveSchedule.increaseParticipationNum(1);
-        clear();
-
-        //when
-        spService.cancel(saveSchedule, newParticipant);
-
-        //then
-        ScheduleParticipation findSp = scheduleParticipationRepository.findByUserNoAndScheduleNo(newUser.getUserNo(), saveSchedule.getScheduleNo()).get();
-        assertThat(findSp.getState()).isEqualTo(ParticipantState.PARTICIPATION_CANCEL);
-    }
-
-    @Test
-    @Transactional
-    @DisplayName("유효한 상태가 아니므로 일정 참여 취소 요청에 실패하다.")
-    public void schedule_cancelParticipation_invalid_state(){
-        //given
-        User newUser = 사용자_등록("kubonsik");
-        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, newUser);
-        일정_참여자_상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL); //적절하지 않은 상태
-        clear();
-
-        //when & then
-        assertThatThrownBy(() ->  spService.cancel(saveSchedule, newParticipant))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("INVALID_STATE");
-    }
-
-    @Test
     @DisplayName("일정 참여 취소 요청 승인에 성공하다.")
     public void schedule_cancelApprove(){
         //given
