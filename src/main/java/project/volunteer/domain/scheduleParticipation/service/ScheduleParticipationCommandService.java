@@ -74,7 +74,7 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
     }
 
     @Override
-    public void approvalCancellation(Schedule schedule, List<Long> scheduleParticipationNos) {
+    public void approvalCancellation(final Schedule schedule, final List<Long> scheduleParticipationNos) {
         ScheduleParticipations scheduleParticipations = findScheduleParticipations(scheduleParticipationNos);
         scheduleParticipations.approveCancellations();
 
@@ -82,12 +82,12 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
     }
 
     @Override
-    public void approvalParticipationCompletion(List<Long> scheduleParticipationNos) {
+    public void approvalParticipationCompletion(final List<Long> scheduleParticipationNos) {
         ScheduleParticipations scheduleParticipations = findScheduleParticipations(scheduleParticipationNos);
         scheduleParticipations.approveCompletionist();
     }
 
-    private ScheduleParticipations findScheduleParticipations(List<Long> ids) {
+    private ScheduleParticipations findScheduleParticipations(final List<Long> ids) {
         List<ScheduleParticipation> scheduleParticipations = scheduleParticipationRepository.findByIdIn(ids);
 
         if (ids.size() != scheduleParticipations.size()) {
@@ -97,12 +97,12 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
     }
 
     @Override
-    public void deleteAllScheduleParticipationBySchedule(Long scheduleNo) {
+    public void deleteAllScheduleParticipationBySchedule(final Long scheduleNo) {
         scheduleParticipationRepository.bulkUpdateDetachByScheduleNo(scheduleNo);
     }
 
     @Override
-    public void deleteAllScheduleParticipationByRecruitment(Long recruitmentNo) {
+    public void deleteAllScheduleParticipationByRecruitment(final Long recruitmentNo) {
         List<Long> scheduleNos = scheduleRepository.findScheduleNosByRecruitmentNo(recruitmentNo);
         scheduleParticipationRepository.bulkUpdateDetachByScheduleNos(scheduleNos);
     }
