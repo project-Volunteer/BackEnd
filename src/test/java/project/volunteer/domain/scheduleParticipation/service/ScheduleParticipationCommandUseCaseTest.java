@@ -197,10 +197,12 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
 
         final List<Long> scheduleParticipationIds = List.of(
                 scheduleParticipationRepository.save(
-                                new ScheduleParticipation(schedule, recruitmentParticipation1, ParticipantState.PARTICIPATION_CANCEL))
+                                new ScheduleParticipation(schedule, recruitmentParticipation1,
+                                        ParticipantState.PARTICIPATION_CANCEL))
                         .getId(),
                 scheduleParticipationRepository.save(
-                                new ScheduleParticipation(schedule, recruitmentParticipation2, ParticipantState.PARTICIPATION_CANCEL))
+                                new ScheduleParticipation(schedule, recruitmentParticipation2,
+                                        ParticipantState.PARTICIPATION_CANCEL))
                         .getId());
 
         //when
@@ -238,10 +240,68 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
                         .getId());
 
         //when
-        assertThatThrownBy(() -> scheduleParticipationCommandUseCase.approvalCancellation(schedule, scheduleParticipationIds))
+        assertThatThrownBy(
+                () -> scheduleParticipationCommandUseCase.approvalCancellation(schedule, scheduleParticipationIds))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INVALID_STATE.name());
 
+    }
+
+    @DisplayName("일정 참여 완료 미승인된 사용자를 승인한다.")
+    @Test
+    void approveParticipationCompletion() {
+        //given
+        final RecruitmentParticipation recruitmentParticipation1 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
+        final RecruitmentParticipation recruitmentParticipation2 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, secondUser, ParticipantState.JOIN_APPROVAL));
+
+        final Schedule schedule = scheduleRepository.save(
+                new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 3, recruitment));
+
+        final List<Long> scheduleParticipationIds = List.of(
+                scheduleParticipationRepository.save(
+                                new ScheduleParticipation(schedule, recruitmentParticipation1,
+                                        ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED))
+                        .getId(),
+                scheduleParticipationRepository.save(
+                                new ScheduleParticipation(schedule, recruitmentParticipation2,
+                                        ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED))
+                        .getId());
+
+        //when
+        scheduleParticipationCommandUseCase.approvalParticipationCompletion(scheduleParticipationIds);
+
+        //then
+        List<ScheduleParticipation> scheduleParticipants = scheduleParticipationRepository.findAll();
+        assertThat(scheduleParticipants).hasSize(2)
+                .extracting("state")
+                .containsExactlyInAnyOrder(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL,
+                        ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+    }
+
+    @DisplayName("일정 참여 완료 승인전 상태가 PARTICIPATION_COMPLETE_UNAPPROVED 이 아닐경우, 예외를 발생시킨다.")
+    @Test
+    void approveParticipationCompletionWithInvalidState() {
+        //given
+        final RecruitmentParticipation recruitmentParticipation1 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
+
+        final Schedule schedule = scheduleRepository.save(
+                new Schedule(timetable, "test", "unicef", address, 10, IsDeleted.N, 3, recruitment));
+
+        final List<Long> scheduleParticipationIds = List.of(
+                scheduleParticipationRepository.save(
+                                new ScheduleParticipation(schedule, recruitmentParticipation1,
+                                        ParticipantState.PARTICIPATING))
+                        .getId()
+        );
+
+        //when & then
+        assertThatThrownBy(
+                () -> scheduleParticipationCommandUseCase.approvalParticipationCompletion(scheduleParticipationIds))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_STATE.name());
     }
 
     private ScheduleParticipation findScheduleParticipation(Long id) {

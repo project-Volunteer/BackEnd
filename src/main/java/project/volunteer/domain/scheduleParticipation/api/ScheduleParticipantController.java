@@ -49,7 +49,7 @@ public class ScheduleParticipantController {
     public ResponseEntity scheduleCompleteApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
                                                    @RequestBody @Valid CompleteApproval dto){
 
-        scheduleParticipationCommandFacade.approvalCompletionVolunteerPostSchedule(scheduleNo, dto.getCompletedList());
+        scheduleParticipationCommandFacade.approvalParticipationCompletionSchedule(scheduleNo, dto.getCompletedList());
         return ResponseEntity.ok().build();
     }
 

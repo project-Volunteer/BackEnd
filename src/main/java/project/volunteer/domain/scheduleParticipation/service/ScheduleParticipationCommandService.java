@@ -72,11 +72,17 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
     }
 
     @Override
-    public void approvalCancellation(Schedule schedule, List<Long> scheduleParticipationNo) {
-        ScheduleParticipations scheduleParticipations = findScheduleParticipations(scheduleParticipationNo);
-        scheduleParticipations.approvalCancellations();
+    public void approvalCancellation(Schedule schedule, List<Long> scheduleParticipationNos) {
+        ScheduleParticipations scheduleParticipations = findScheduleParticipations(scheduleParticipationNos);
+        scheduleParticipations.approveCancellations();
 
         schedule.decreaseParticipationNum(scheduleParticipations.getSize());
+    }
+
+    @Override
+    public void approvalParticipationCompletion(List<Long> scheduleParticipationNos) {
+        ScheduleParticipations scheduleParticipations = findScheduleParticipations(scheduleParticipationNos);
+        scheduleParticipations.approveCompletionist();
     }
 
     private ScheduleParticipations findScheduleParticipations(List<Long> ids) {
@@ -95,20 +101,7 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
 
 
 
-    @Override
-    public void approvalCompletion(List<Long> spNo) {
-        scheduleParticipationRepository.findByIdIn(spNo).stream()
-                .forEach(sp -> {
-                    //일정 참여 완료 미승인 상태가 아닌 경우
-                    if (!sp.isEqualState(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)) {
-                        throw new BusinessException(ErrorCode.INVALID_STATE,
-                                String.format("ScheduleParticipationNo = [%d], State = [%s]",
-                                        sp.getId(), sp.getState().name()));
-                    }
-                    //일정 참여 완료 승인
-                    sp.changeState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
-                });
-    }
+
 
     @Override
     public void deleteScheduleParticipation(Long scheduleNo) {

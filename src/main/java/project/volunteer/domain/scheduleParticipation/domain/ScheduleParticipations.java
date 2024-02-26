@@ -21,7 +21,7 @@ public class ScheduleParticipations {
         return scheduleParticipants.size();
     }
 
-    public void approvalCancellations() {
+    public void approveCancellations() {
         validateApprovalCancellationPossible();
         scheduleParticipants.forEach(
                 scheduleParticipant -> scheduleParticipant.changeState(ParticipantState.PARTICIPATION_CANCEL_APPROVAL));
@@ -30,6 +30,20 @@ public class ScheduleParticipations {
     private void validateApprovalCancellationPossible() {
         for (ScheduleParticipation scheduleParticipation : scheduleParticipants) {
             if (!scheduleParticipation.canApproveCancellation()) {
+                throw new BusinessException(ErrorCode.INVALID_STATE, scheduleParticipation.toString());
+            }
+        }
+    }
+
+    public void approveCompletionist() {
+        validateApprovalParticipationCompletionPossible();
+        scheduleParticipants.forEach(scheduleParticipant -> scheduleParticipant.changeState(
+                ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+    }
+
+    private void validateApprovalParticipationCompletionPossible() {
+        for (ScheduleParticipation scheduleParticipation : scheduleParticipants) {
+            if (!scheduleParticipation.canApproveParticipationCompletion()) {
                 throw new BusinessException(ErrorCode.INVALID_STATE, scheduleParticipation.toString());
             }
         }
