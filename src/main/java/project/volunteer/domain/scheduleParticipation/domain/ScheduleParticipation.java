@@ -13,13 +13,13 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-@Table(name = "vlt_schedule_participant")
+@Table(name = "vlt_schedule_participation")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScheduleParticipation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schedule_participant_no")
+    @Column(name = "schedule_participation_no")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -79,6 +79,8 @@ public class ScheduleParticipation extends BaseEntity {
 
 
 
+
+
     public static ScheduleParticipation createScheduleParticipation(Schedule schedule, RecruitmentParticipation recruitmentParticipation, ParticipantState state){
         ScheduleParticipation createScheduleParticipation = new ScheduleParticipation();
         createScheduleParticipation.schedule = schedule;
@@ -86,15 +88,5 @@ public class ScheduleParticipation extends BaseEntity {
         createScheduleParticipation.state = state;
         return createScheduleParticipation;
     }
-
-    public void delete(){
-        this.state = ParticipantState.DELETED;
-    }
-    public void removeScheduleAndParticipant(){
-        this.schedule = null;
-        this.recruitmentParticipation = null;
-    }
-
-    public Boolean isEqualState(ParticipantState state) {return this.state.equals(state);}
 
 }

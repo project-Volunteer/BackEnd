@@ -1,6 +1,7 @@
 package project.volunteer.domain.scheduleParticipation.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,11 +18,32 @@ import java.util.Optional;
 public interface ScheduleParticipationRepository extends JpaRepository<ScheduleParticipation, Long>,
         ScheduleParticipationQueryDSLRepository {
 
-    Boolean existsByScheduleAndRecruitmentParticipation(Schedule schedule, RecruitmentParticipation recruitmentParticipation);
+    Boolean existsByScheduleAndRecruitmentParticipation(Schedule schedule,
+                                                        RecruitmentParticipation recruitmentParticipation);
 
-    Optional<ScheduleParticipation> findByScheduleAndRecruitmentParticipation(Schedule schedule, RecruitmentParticipation participant);
+    Optional<ScheduleParticipation> findByScheduleAndRecruitmentParticipation(Schedule schedule,
+                                                                              RecruitmentParticipation participant);
 
     List<ScheduleParticipation> findByIdIn(List<Long> ids);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ScheduleParticipation sp "
+            + "SET sp.schedule = null, sp.recruitmentParticipation = null "
+            + "WHERE sp.schedule.scheduleNo = :scheduleNo")
+    void bulkUpdateDetachByScheduleNo(@Param("scheduleNo") Long scheduleNo);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ScheduleParticipation sp "
+            + "SET sp.schedule = null, sp.recruitmentParticipation = null "
+            + "WHERE sp.schedule.scheduleNo in :scheduleNo")
+    void bulkUpdateDetachByScheduleNos(@Param("scheduleNo") List<Long> scheduleNos);
+
+
+
+
+
+
+
 
 
 
@@ -44,22 +66,6 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
             "and sp.schedule.scheduleNo=:scheduleNo")
     Optional<ParticipantState> findStateBy(@Param("userNo") Long userNo, @Param("scheduleNo") Long scheduleNo);
 
-    //일정 참여 중인 인원 수 반환 쿼리
-    @Query("select count(sp) " +
-            "from ScheduleParticipation sp " +
-            "where sp.schedule.scheduleNo=:scheduleNo " +
-            "and sp.state=project.volunteer.global.common.component.ParticipantState.PARTICIPATING")
-    Integer countActiveParticipant(@Param("scheduleNo") Long scheduleNo);
-
-    List<ScheduleParticipation> findBySchedule_ScheduleNo(Long scheduleNo);
-
-    @Query("select sp " +
-            "from ScheduleParticipation sp " +
-            "join sp.schedule s " +
-            "join s.recruitment r " +
-            "where r.recruitmentNo =:recruitmentNo")
-    List<ScheduleParticipation> findByRecruitmentNo(@Param("recruitmentNo") Long recruitmentNo);
-
     @Query("select sp " +
             "from ScheduleParticipation sp " +
             "join sp.recruitmentParticipation p on p.user.userNo=:userNo " +
@@ -68,12 +74,6 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
     Optional<ScheduleParticipation> findByUserNoAndScheduleNoAndState(@Param("userNo") Long userNo,
                                                                       @Param("scheduleNo") Long scheduleNo,
                                                                       @Param("state") ParticipantState state);
-
-    Optional<ScheduleParticipation> findByScheduleAndRecruitmentParticipationAndState(Schedule schedule, RecruitmentParticipation participant,
-                                                                                      ParticipantState state);
-
-    Optional<ScheduleParticipation> findByIdAndState(Long scheduleParticipationNo,
-                                                     ParticipantState state);
 
     //N+1 문제를 막기 위해서 Projection + Join 방식 사용
     @Query("select new project.volunteer.domain.scheduleParticipation.repository.dto.ParticipantDetails(sp.id,u.nickName,u.email,coalesce(s.imagePath,u.picture),sp.state) "

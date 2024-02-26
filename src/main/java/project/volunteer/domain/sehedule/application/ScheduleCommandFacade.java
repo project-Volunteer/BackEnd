@@ -31,7 +31,7 @@ public class ScheduleCommandFacade {
     public void deleteSchedule(Long scheduleNo) {
         scheduleCommandService.deleteSchedule(scheduleNo);
 
-        scheduleParticipationService.deleteScheduleParticipation(scheduleNo);
+        scheduleParticipationService.deleteAllScheduleParticipationBySchedule(scheduleNo);
     }
 
 }

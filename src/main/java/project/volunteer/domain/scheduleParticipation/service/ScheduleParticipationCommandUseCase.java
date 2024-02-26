@@ -15,13 +15,8 @@ public interface ScheduleParticipationCommandUseCase {
 
     void approvalParticipationCompletion(List<Long> scheduleParticipationNos);
 
+    void deleteAllScheduleParticipationBySchedule(Long scheduleNo);
 
+    void deleteAllScheduleParticipationByRecruitment(Long recruitmentNo);
 
-
-
-
-
-    public void deleteScheduleParticipation(Long scheduleNo);
-
-    public void deleteAllScheduleParticipation(Long recruitmentNo);
 }

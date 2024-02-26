@@ -8,6 +8,7 @@ import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipati
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleParticipationCommandService implements ScheduleParticipationCommandUseCase {
     private final ScheduleParticipationRepository scheduleParticipationRepository;
+    private final ScheduleRepository scheduleRepository;
 
     @Override
     public Long participate(final Schedule schedule, final RecruitmentParticipation recruitmentParticipation) {
@@ -59,7 +61,7 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
     }
 
     private void checkCancellationPossible(final ScheduleParticipation scheduleParticipation) {
-        if(!scheduleParticipation.canCancel()) {
+        if (!scheduleParticipation.canCancel()) {
             throw new BusinessException(ErrorCode.INVALID_STATE, scheduleParticipation.toString());
         }
     }
@@ -88,36 +90,21 @@ public class ScheduleParticipationCommandService implements ScheduleParticipatio
     private ScheduleParticipations findScheduleParticipations(List<Long> ids) {
         List<ScheduleParticipation> scheduleParticipations = scheduleParticipationRepository.findByIdIn(ids);
 
-        if(ids.size() != scheduleParticipations.size()) {
+        if (ids.size() != scheduleParticipations.size()) {
             throw new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE_PARTICIPATION);
         }
         return new ScheduleParticipations(scheduleParticipations);
     }
 
-
-
-
-
-
-
-
-
-
     @Override
-    public void deleteScheduleParticipation(Long scheduleNo) {
-        scheduleParticipationRepository.findBySchedule_ScheduleNo(scheduleNo)
-                .forEach(sp -> {
-                    sp.delete();
-                    sp.removeScheduleAndParticipant();
-                });
+    public void deleteAllScheduleParticipationBySchedule(Long scheduleNo) {
+        scheduleParticipationRepository.bulkUpdateDetachByScheduleNo(scheduleNo);
     }
 
     @Override
-    public void deleteAllScheduleParticipation(Long recruitmentNo) {
-        scheduleParticipationRepository.findByRecruitmentNo(recruitmentNo)
-                .forEach(sp -> {
-                    sp.delete();
-                    sp.removeScheduleAndParticipant();
-                });
+    public void deleteAllScheduleParticipationByRecruitment(Long recruitmentNo) {
+        List<Long> scheduleNos = scheduleRepository.findScheduleNosByRecruitmentNo(recruitmentNo);
+        scheduleParticipationRepository.bulkUpdateDetachByScheduleNos(scheduleNos);
     }
+
 }

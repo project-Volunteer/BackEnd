@@ -48,6 +48,7 @@ public class RecruitmentFacade {
 
         recruitmentParticipationUseCase.deleteRecruitmentParticipations(recruitmentNo);
 
+        scheduleParticipationService.deleteAllScheduleParticipationByRecruitment(recruitmentNo);
 
 
 
@@ -60,9 +61,6 @@ public class RecruitmentFacade {
 
         //공지사항 확인 리스트 삭제
         confirmationService.deleteAllConfirmation(RealWorkCode.NOTICE, noticeNoList);
-
-        //일정 참여자 삭제
-        scheduleParticipationService.deleteAllScheduleParticipation(recruitmentNo);
     }
 
     public StateResult findState(Long recruitmentNo, Long userNo){

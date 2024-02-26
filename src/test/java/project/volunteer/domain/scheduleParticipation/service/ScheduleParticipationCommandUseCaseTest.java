@@ -304,6 +304,36 @@ class ScheduleParticipationCommandUseCaseTest extends ServiceTest {
                 .hasMessage(ErrorCode.INVALID_STATE.name());
     }
 
+    @DisplayName("특정 봉사 모집글에 속한 모든 일정의 참여 정보를 삭제한다.")
+    @Test
+    void deleteAllScheduleParticipation() {
+        final RecruitmentParticipation recruitmentParticipation1 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, firstUser, ParticipantState.JOIN_APPROVAL));
+        final RecruitmentParticipation recruitmentParticipation2 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, secondUser, ParticipantState.JOIN_APPROVAL));
+
+        final Schedule schedule1 = scheduleRepository.save(
+                new Schedule(timetable, "test1", "unicef", address, 10, IsDeleted.N, 3, recruitment));
+        final Schedule schedule2 = scheduleRepository.save(
+                new Schedule(timetable, "test2", "unicef", address, 10, IsDeleted.N, 3, recruitment));
+
+        scheduleParticipationRepository.save(
+                new ScheduleParticipation(schedule1, recruitmentParticipation1, ParticipantState.PARTICIPATING));
+        scheduleParticipationRepository.save(
+                new ScheduleParticipation(schedule2, recruitmentParticipation2, ParticipantState.PARTICIPATION_CANCEL));
+
+        //when
+        scheduleParticipationCommandUseCase.deleteAllScheduleParticipationByRecruitment(recruitment.getRecruitmentNo());
+
+        //then
+        List<ScheduleParticipation> scheduleParticipations = scheduleParticipationRepository.findAll();
+        assertThat(scheduleParticipations).hasSize(2)
+                .allSatisfy(scheduleParticipation -> {
+                    assertThat(scheduleParticipation.getSchedule()).isNull();
+                    assertThat(scheduleParticipation.getRecruitmentParticipation()).isNull();
+                });
+    }
+
     private ScheduleParticipation findScheduleParticipation(Long id) {
         return scheduleParticipationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("일정 참여 정보가 존재하지 않습니다."));
