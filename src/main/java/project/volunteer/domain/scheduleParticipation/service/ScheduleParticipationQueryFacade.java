@@ -17,11 +17,16 @@ public class ScheduleParticipationQueryFacade {
     private final ScheduleQueryUseCase scheduleQueryUsecase;
     private final ScheduleParticipationQueryUseCase scheduleParticipationDtoService;
 
-    public List<ParticipatingParticipantList> findParticipatingParticipantsSchedule(Long scheduleNo){
+    public List<ParticipatingParticipantList> findScheduleParticipatingList(final Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
-
-        return scheduleParticipationDtoService.findParticipatingParticipants(schedule);
+        return scheduleParticipationDtoService.searchParticipatingList(schedule.getScheduleNo());
     }
+
+
+
+
+
+
 
     public List<CancelledParticipantList> findCancelledParticipantsSchedule(Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);

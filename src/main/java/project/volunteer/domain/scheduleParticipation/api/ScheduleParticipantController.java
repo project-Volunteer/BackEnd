@@ -57,7 +57,7 @@ public class ScheduleParticipantController {
     @GetMapping("/{recruitmentNo}/schedule/{scheduleNo}/participating")
     public ResponseEntity<ParticipatingParticipantListResponse> scheduleParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
 
-        List<ParticipatingParticipantList> participating = scheduleParticipationQueryFacade.findParticipatingParticipantsSchedule(scheduleNo);
+        List<ParticipatingParticipantList> participating = scheduleParticipationQueryFacade.findScheduleParticipatingList(scheduleNo);
         return ResponseEntity.ok(new ParticipatingParticipantListResponse(participating));
     }
 

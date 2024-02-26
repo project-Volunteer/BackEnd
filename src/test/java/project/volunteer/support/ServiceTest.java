@@ -16,6 +16,7 @@ import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.repository.RepeatPeriodRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandUseCase;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationQueryUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
@@ -61,6 +62,9 @@ public abstract class ServiceTest {
 
     @Autowired
     protected ScheduleParticipationCommandUseCase scheduleParticipationCommandUseCase;
+
+    @Autowired
+    protected ScheduleParticipationQueryUseCase scheduleParticipationQueryUseCase;
 
 
     @SpyBean

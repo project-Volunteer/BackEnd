@@ -85,33 +85,6 @@ class ScheduleParticipationDtoServiceImplTest {
     }
 
     @Test
-    @DisplayName("일정 참여 중 리스트 조회 시 3명의 참여자가 조회된다.")
-    public void schedule_participant_list(){
-        //given
-        User newUser1 = 사용자_등록("rnqhstlr");
-        RecruitmentParticipation newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
-        일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
-
-        User newUser2 = 사용자_등록("didthdms");
-        RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
-        일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATING);
-
-        User newUser3 = 사용자_등록("didghfhr");
-        RecruitmentParticipation newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
-        일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATING);
-        clear();
-
-        //when
-        List<ParticipatingParticipantList> findParticipants = spDtoService.findParticipatingParticipants(saveSchedule);
-
-        //then
-        assertThat(findParticipants.size()).isEqualTo(3);
-        for(ParticipatingParticipantList p : findParticipants){
-            assertThat(p.getProfile()).isEqualTo("picture");
-        }
-    }
-
-    @Test
     @DisplayName("일정 취소 요청 리스트 조회 시 2명의 취소 요청자가 조회된다.")
     public void schedule_cancel_participant_list(){
         //given

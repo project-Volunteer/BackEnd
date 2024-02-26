@@ -14,7 +14,6 @@ import project.volunteer.global.common.dto.StateResult;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,16 +23,21 @@ public class ScheduleParticipationQueryService implements ScheduleParticipationQ
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
-    public Optional<ParticipantState> searchState(Long scheduleNo, Long userNo) {
-        return scheduleParticipationRepository.findStateBy(userNo, scheduleNo);
-    }
-
-    @Override
-    public List<ParticipatingParticipantList> findParticipatingParticipants(Schedule schedule) {
-        return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(), List.of(ParticipantState.PARTICIPATING)).stream()
-                .map(p -> new ParticipatingParticipantList(p.getNickname(), p.getEmail(), p.getProfile()))
+    public List<ParticipatingParticipantList> searchParticipatingList(final Long scheduleNo) {
+        final List<ParticipantState> states = List.of(ParticipantState.PARTICIPATING);
+        return scheduleParticipationRepository.findScheduleParticipationDetailBy(scheduleNo, states)
+                .stream()
+                .map(ParticipatingParticipantList::from)
                 .collect(Collectors.toList());
     }
+
+
+
+
+
+
+
+
 
     @Override
     public List<CancelledParticipantList> findCancelledParticipants(Schedule schedule) {
@@ -52,7 +56,7 @@ public class ScheduleParticipationQueryService implements ScheduleParticipationQ
                 })
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     public List<ParsingCompleteSchedule> findCompleteScheduleList(Long loginUserNo, ParticipantState state) {
     	return scheduleParticipationRepository.findCompletedSchedules(loginUserNo, state).stream()
