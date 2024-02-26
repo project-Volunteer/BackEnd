@@ -17,8 +17,7 @@ public enum ParticipantState implements CodeCommonType {
     PARTICIPATION_COMPLETE_UNAPPROVED("s4", "일정 참여 완료 미승인"),
     PARTICIPATION_COMPLETE_APPROVAL("s5", "일정 참가 완료 승인"),
 
-    DELETED("e1", "삭제")
-    ,;
+    ;
 
     private String code;
     private String desc;
