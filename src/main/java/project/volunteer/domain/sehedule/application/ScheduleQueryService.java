@@ -37,7 +37,9 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
 
     @Override
     public ScheduleDetailSearchResult searchScheduleDetail(final Long userNo, final Long scheduleNo) {
-        final ScheduleDetail scheduleDetail = scheduleRepository.findScheduleDetailBy(scheduleNo);
+        final ScheduleDetail scheduleDetail = scheduleRepository.findScheduleDetailBy(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
+                        String.format("ScheduleNo=[%d]", scheduleNo)));
         final Optional<ParticipantState> state = scheduleParticipationRepository.findStateBy(userNo, scheduleNo);
         final StateResult stateResult = StateResult.getScheduleState(state,
                 scheduleDetail.isDone(LocalDate.now(clock)),
@@ -52,8 +54,10 @@ public class ScheduleQueryService implements ScheduleQueryUseCase {
             return ScheduleDetailSearchResult.createEmpty();
         }
 
-        final ScheduleDetail scheduleDetail = scheduleRepository.findNearestScheduleDetailBy(recruitmentNo, LocalDate.now(clock));
-        final Optional<ParticipantState> state = scheduleParticipationRepository.findStateBy(userNo, scheduleDetail.getNo());
+        final ScheduleDetail scheduleDetail = scheduleRepository.findNearestScheduleDetailBy(recruitmentNo,
+                LocalDate.now(clock));
+        final Optional<ParticipantState> state = scheduleParticipationRepository.findStateBy(userNo,
+                scheduleDetail.getNo());
         final StateResult stateResult = StateResult.getScheduleState(state,
                 scheduleDetail.isDone(LocalDate.now(clock)),
                 scheduleDetail.isFull());
