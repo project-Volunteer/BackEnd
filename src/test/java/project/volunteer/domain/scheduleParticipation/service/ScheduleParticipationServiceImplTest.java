@@ -8,11 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
@@ -57,17 +57,19 @@ class ScheduleParticipationServiceImplTest {
         writer = userRepository.save(writerUser);
 
         //모집글 저장
-        Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
-                VolunteerType.TEENAGER, 3, true, "organization",
-                Address.createAddress("11", "1111","details", "fullName"), Coordinate.createCoordinate(3.2F, 3.2F),
-                Timetable.createTimetable(LocalDate.now(), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3), true);
-        createRecruitment.setWriter(writer);
+        Recruitment createRecruitment = new Recruitment( "title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
+                VolunteerType.ADULT, 9999,0,true, "unicef",
+                new Address("111", "11", "test", "test"),
+                new Coordinate(1.2F, 2.2F),
+                new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
+                        LocalTime.now(), 10),
+                0, 0, true, IsDeleted.N, writerUser);
         saveRecruitment = recruitmentRepository.save(createRecruitment);
 
         //일정 저장
         Schedule createSchedule = Schedule.create(
                 saveRecruitment,
-                Timetable.createTimetable(
+                new Timetable(
                         LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1),
                         HourFormat.AM, LocalTime.now(), 3),
                 "content", "organization",

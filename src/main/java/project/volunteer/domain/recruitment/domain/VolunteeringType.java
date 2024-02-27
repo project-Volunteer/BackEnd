@@ -1,5 +1,6 @@
 package project.volunteer.domain.recruitment.domain;
 
+import org.springframework.util.StringUtils;
 import project.volunteer.global.common.converter.CodeCommonType;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
@@ -20,6 +21,9 @@ public enum VolunteeringType implements CodeCommonType {
     }
 
     public static VolunteeringType of(String value) {
+        if(!StringUtils.hasText(value)){
+            return null;
+        }
 
         return Arrays.stream(VolunteeringType.values())
                 .filter(v -> v.getId().equals(value.toUpperCase()))

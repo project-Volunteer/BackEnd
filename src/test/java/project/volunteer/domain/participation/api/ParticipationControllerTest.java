@@ -19,15 +19,15 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
-import project.volunteer.domain.participation.api.dto.ParticipantRemoveParam;
+import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.participation.api.dto.request.ParticipantRemoveParam;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -79,11 +79,13 @@ class ParticipationControllerTest {
         writer = userRepository.save(writerUser);
 
         //모집글 저장
-        Recruitment createRecruitment = Recruitment.createRecruitment("title", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.IRREG,
-                VolunteerType.TEENAGER, 3, true, "organization",
-                Address.createAddress("11", "1111","details", "fullName"), Coordinate.createCoordinate(3.2F, 3.2F),
-                Timetable.createTimetable(LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(3), HourFormat.AM, LocalTime.now(), 3), true);
-        createRecruitment.setWriter(writer);
+        Recruitment createRecruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION, VolunteeringType.REG,
+                VolunteerType.ADULT, 9999,0,true, "unicef",
+                new Address("111", "11", "test", "test"),
+                new Coordinate(1.2F, 2.2F),
+                new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
+                        LocalTime.now(), 10),
+                0, 0, true, IsDeleted.N, writerUser);
         saveRecruitment = recruitmentRepository.save(createRecruitment);
     }
 
@@ -137,7 +139,7 @@ class ParticipationControllerTest {
                 .startDay(LocalDate.of(2023, 5, 13))
                 .endDay(LocalDate.of(2023, 5, 14)) //봉사 활동 종료
                 .build();
-        recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get().setVolunteeringTimeTable(newTime);
+        recruitmentRepository.findById(saveRecruitment.getRecruitmentNo()).get().setTimetable(newTime);
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
 
         //when & then
@@ -256,7 +258,7 @@ class ParticipationControllerTest {
                                         parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
                                 ),
                                 requestFields(
-                                        fieldWithPath("userNos").type(JsonFieldType.ARRAY).description("유저 고유키 PK")
+                                        fieldWithPath("recruitmentParticipationNos").type(JsonFieldType.ARRAY).description("봉사 모집글 참여자 고유키 PK")
                                 )
                         )
                 );
@@ -330,8 +332,8 @@ class ParticipationControllerTest {
     public void kickVolunteeringTeam() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
-        ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
+        final Participant participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_APPROVAL);
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getParticipantNo());
 
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/kick", recruitmentNo)
@@ -352,7 +354,7 @@ class ParticipationControllerTest {
                                         parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK")
                                 ),
                                 requestFields(
-                                        fieldWithPath("userNo").type(JsonFieldType.NUMBER).description("유저 고유키 PK")
+                                        fieldWithPath("recruitmentParticipationNo").type(JsonFieldType.NUMBER).description("봉사 모집글 참여자 고유키 PK")
                                 )
                         )
                 );
@@ -364,8 +366,8 @@ class ParticipationControllerTest {
     public void 봉사모집글_팀원강제탈퇴_실패_잘못된상태() throws Exception {
         //given
         final Long recruitmentNo = saveRecruitment.getRecruitmentNo();
-        참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
-        ParticipantRemoveParam dto = new ParticipantRemoveParam(loginUser.getUserNo());
+        final Participant participant = 참여자_상태_등록(loginUser, ParticipantState.JOIN_REQUEST);
+        final ParticipantRemoveParam dto = new ParticipantRemoveParam(participant.getParticipantNo());
 
         //then & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/kick", recruitmentNo)

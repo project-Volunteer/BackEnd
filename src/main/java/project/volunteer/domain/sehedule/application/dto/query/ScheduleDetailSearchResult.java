@@ -1,23 +1,21 @@
 package project.volunteer.domain.sehedule.application.dto.query;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.domain.sehedule.repository.dao.ScheduleDetail;
+import project.volunteer.global.common.dto.StateResult;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ScheduleDetailSearchResult {
     private Long no;
-    private AddressResult address;
-    private LocalDate startDate;
-    private LocalTime startTime;
-    private HourFormat hourFormat;
+    private AddressDetail address;
+    private String startDate;
+    private String startTime;
+    private String hourFormat;
     private int progressTime;
     private int volunteerNum;
     private String content;
@@ -25,87 +23,26 @@ public class ScheduleDetailSearchResult {
     private String state;
     private Boolean hasData;
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class AddressResult {
-        private String sido;
-        private String sigungu;
-        private String details;
-        private String fullName;
-    }
-
-    public ScheduleDetailSearchResult(Long no, String sido, String sigungu, String detail, String fullName,
-                                      LocalDate startDate, LocalTime startTime,
-                                      HourFormat hourFormat, int progressTime, int volunteerNum, String content,
-                                      int activeVolunteerNum) {
-        this.no = no;
-        this.address = new AddressResult(sido, sigungu, detail, fullName);
-        this.startDate = startDate;
-        this.startTime = startTime;
-        this.hourFormat = hourFormat;
-        this.progressTime = progressTime;
-        this.volunteerNum = volunteerNum;
-        this.content = content;
-        this.activeVolunteerNum = activeVolunteerNum;
-        this.hasData = true;
+    public static ScheduleDetailSearchResult of(ScheduleDetail scheduleDetail, StateResult state) {
+        return new ScheduleDetailSearchResult(
+                scheduleDetail.getNo(),
+                AddressDetail.from(scheduleDetail.getAddress()),
+                scheduleDetail.getTimetable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                scheduleDetail.getTimetable().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+                scheduleDetail.getTimetable().getHourFormat().getId(),
+                scheduleDetail.getTimetable().getProgressTime(),
+                scheduleDetail.getMaxParticipationNum(),
+                scheduleDetail.getContent(),
+                scheduleDetail.getCurrentParticipationNum(),
+                state.getId(),
+                true
+        );
     }
 
     public static ScheduleDetailSearchResult createEmpty() {
         ScheduleDetailSearchResult result = new ScheduleDetailSearchResult();
         result.hasData = false;
         return result;
-    }
-
-    public Boolean hasData() {
-        return this.hasData;
-    }
-
-    public void setResponseState(Optional<ParticipantState> state, LocalDate now) {
-        this.state = getResponseState(state, now);
-    }
-
-    private String getResponseState(Optional<ParticipantState> state, LocalDate now) {
-        //일정 참가 완료 미승인
-        if (state.isPresent() && state.get().equals(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)) {
-            return StateResponse.COMPLETE_UNAPPROVED.getId();
-        }
-
-        //일정 참가 완료 승인
-        if (state.isPresent() && state.get().equals(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)) {
-            return StateResponse.COMPLETE_APPROVED.getId();
-        }
-
-        //일정 참여 기간 만료
-        if (isDone(now)) {
-            return StateResponse.DONE.getId();
-        }
-
-        //참여 중
-        if (state.isPresent() && state.get().equals(ParticipantState.PARTICIPATING)) {
-            return StateResponse.PARTICIPATING.getId();
-        }
-
-        //취소 요청
-        if (state.isPresent() && state.get().equals(ParticipantState.PARTICIPATION_CANCEL)) {
-            return StateResponse.CANCELLING.getId();
-        }
-
-        //인원 초과
-        if (isFull()) {
-            return StateResponse.FULL.getId();
-        }
-
-        //신청 가능
-        return StateResponse.AVAILABLE.getId();
-    }
-
-    private boolean isFull() {
-        return volunteerNum == activeVolunteerNum;
-    }
-
-    private boolean isDone(LocalDate now) {
-        return startDate.isBefore(now);
     }
 
 }

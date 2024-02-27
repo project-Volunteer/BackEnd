@@ -6,11 +6,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
-import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
+import project.volunteer.domain.sehedule.repository.dao.ScheduleDetail;
 import project.volunteer.global.common.component.IsDeleted;
 
 @Repository
@@ -19,40 +19,36 @@ public class ScheduleQueryDSLRepositoryImpl implements ScheduleQueryDSLRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ScheduleCalendarSearchResult> findScheduleDateBy(Recruitment recruitment, LocalDate toDate,
+    public List<ScheduleCalendarSearchResult> findScheduleDateBy(Long recruitmentNo, LocalDate toDate,
                                                                  LocalDate fromDate) {
         return queryFactory.select(Projections.constructor(ScheduleCalendarSearchResult.class, schedule.scheduleNo,
                         schedule.scheduleTimeTable.startDay))
                 .from(schedule)
                 .where(schedule.isDeleted.eq(IsDeleted.N),
-                        schedule.recruitment.eq(recruitment),
+                        schedule.recruitment.recruitmentNo.eq(recruitmentNo),
                         schedule.scheduleTimeTable.startDay.between(toDate, fromDate))
                 .orderBy(schedule.scheduleTimeTable.startDay.asc())
                 .fetch();
     }
 
     @Override
-    public ScheduleDetailSearchResult findScheduleDetailBy(Long scheduleNo) {
-        return queryFactory.select(
-                        Projections.constructor(ScheduleDetailSearchResult.class, schedule.scheduleNo, schedule.address.sido,
-                                schedule.address.sigungu, schedule.address.details, schedule.address.fullName,
-                                schedule.scheduleTimeTable.startDay, schedule.scheduleTimeTable.startTime,
-                                schedule.scheduleTimeTable.hourFormat, schedule.scheduleTimeTable.progressTime,
-                                schedule.volunteerNum, schedule.content, schedule.currentVolunteerNum))
+    public Optional<ScheduleDetail> findScheduleDetailBy(Long scheduleNo) {
+        return Optional.ofNullable(queryFactory
+                .select(Projections.constructor(ScheduleDetail.class, schedule.scheduleNo, schedule.content,
+                        schedule.volunteerNum, schedule.currentVolunteerNum, schedule.address,
+                        schedule.scheduleTimeTable))
                 .from(schedule)
                 .where(schedule.isDeleted.eq(IsDeleted.N),
                         schedule.scheduleNo.eq(scheduleNo))
-                .fetchOne();
+                .fetchOne());
     }
 
     @Override
-    public ScheduleDetailSearchResult findNearestScheduleDetailBy(Long recruitmentNo, LocalDate currentDate) {
+    public ScheduleDetail findNearestScheduleDetailBy(Long recruitmentNo, LocalDate currentDate) {
         return queryFactory.select(
-                        Projections.constructor(ScheduleDetailSearchResult.class, schedule.scheduleNo, schedule.address.sido,
-                                schedule.address.sigungu, schedule.address.details, schedule.address.fullName,
-                                schedule.scheduleTimeTable.startDay, schedule.scheduleTimeTable.startTime,
-                                schedule.scheduleTimeTable.hourFormat, schedule.scheduleTimeTable.progressTime,
-                                schedule.volunteerNum, schedule.content, schedule.currentVolunteerNum))
+                        Projections.constructor(ScheduleDetail.class, schedule.scheduleNo, schedule.content,
+                                schedule.volunteerNum, schedule.currentVolunteerNum, schedule.address,
+                                schedule.scheduleTimeTable))
                 .from(schedule)
                 .where(schedule.isDeleted.eq(IsDeleted.N),
                         schedule.recruitment.recruitmentNo.eq(recruitmentNo),

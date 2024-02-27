@@ -1,23 +1,22 @@
 package project.volunteer.domain.participation.application;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.participation.application.dto.AllParticipantDetails;
-import project.volunteer.domain.participation.application.dto.ParticipantDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.ParticipantDetail;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.dao.dto.ParticipantStateDetails;
+import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
 import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.dto.StateResponse;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,33 +26,52 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void participate(User user, Recruitment recruitment) {
+    public Long participate(User user, Recruitment recruitment) {
         //참여 가능 인원이 꽉 찬경우
-        if(recruitment.isFullTeamMember()){
+        if(recruitment.isFull()){
             throw  new BusinessException(ErrorCode.INSUFFICIENT_CAPACITY,
-                    String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitment.getRecruitmentNo(), recruitment.getVolunteerNum()));
+                    String.format("RecruitmentNo = [%d], Recruiting participant num = [%d]", recruitment.getRecruitmentNo(), recruitment.getMaxParticipationNum()));
         }
 
-        //재신청 or 신규 신청
-        participantRepository.findByRecruitmentAndParticipant(recruitment, user)
-                .ifPresentOrElse(
-                        p -> {
-                            //중복 신청인 경우
-                            if(p.isEqualState(ParticipantState.JOIN_REQUEST) || p.isEqualState(ParticipantState.JOIN_APPROVAL)){
-                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
-                                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
-                                                user.getUserNo(), recruitment.getRecruitmentNo(), p.getState().name()));
-                            }
+        Optional<Participant> participant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
 
-                            //재신청에 해당(재신청 가능 상태 리스트: 팀 신청 취소, 팀 탈퇴, 팀 강제탈퇴)
-                            p.updateState(ParticipantState.JOIN_REQUEST);
-                        },
-                        () -> {
-                            //첫 신청인 경우
-                            Participant newParticipant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
-                            participantRepository.save(newParticipant);
-                        }
-                );
+        if(participant.isEmpty()) {
+            Participant newParticipant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
+            return participantRepository.save(newParticipant).getParticipantNo();
+        } else {
+            Participant findParticipant = participant.get();
+
+            if(findParticipant.isEqualState(ParticipantState.JOIN_REQUEST) || findParticipant.isEqualState(ParticipantState.JOIN_APPROVAL)){
+                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
+                                user.getUserNo(), recruitment.getRecruitmentNo(), findParticipant.getState().name()));
+            }
+
+            findParticipant.updateState(ParticipantState.JOIN_REQUEST);
+            return findParticipant.getParticipantNo();
+        }
+
+
+        //재신청 or 신규 신청
+//                .ifPresentOrElse(
+//                        p -> {
+//                            //중복 신청인 경우
+//                            if(p.isEqualState(ParticipantState.JOIN_REQUEST) || p.isEqualState(ParticipantState.JOIN_APPROVAL)){
+//                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+//                                        String.format("UserNo = [%d], RecruitmentNo = [%d], State = [%s]",
+//                                                user.getUserNo(), recruitment.getRecruitmentNo(), p.getState().name()));
+//                            }
+//
+//                            //재신청에 해당(재신청 가능 상태 리스트: 팀 신청 취소, 팀 탈퇴, 팀 강제탈퇴)
+//                            p.updateState(ParticipantState.JOIN_REQUEST);
+//                        },
+//                        () -> {
+//                            //첫 신청인 경우
+//                            Participant newParticipant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_REQUEST);
+//                            participantRepository.save(newParticipant);
+//                        }
+//                );
+
     }
 
     @Transactional
@@ -69,16 +87,17 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void approvalParticipant(Recruitment recruitment, List<Long> userNo) {
+    public void approvalParticipant(Recruitment recruitment, List<Long> recruitmentParticipationNos) {
         //팀원 승인 가능 인원 검증
         Integer remainNum = recruitment.getAvailableTeamMemberCount();
-        if(remainNum < userNo.size()){
+        if(remainNum < recruitmentParticipationNos.size()){
             throw new BusinessException(ErrorCode.INSUFFICIENT_APPROVAL_CAPACITY, new Integer[]{remainNum},
                     String.format("RecruitmentNo = [%d], Available participant num = [%d], " +
-                            "Approval participants num = [%d]", recruitment.getRecruitmentNo(), remainNum, userNo.size()));
+                            "Approval participants num = [%d]", recruitment.getRecruitmentNo(), remainNum, recruitmentParticipationNos.size()));
         }
 
-        List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitment.getRecruitmentNo(), userNo);
+//        List<Participant> findParticipants = participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNoIn(recruitment.getRecruitmentNo(), userNo);
+        List<Participant> findParticipants = participantRepository.findByParticipantNoIn(recruitmentParticipationNos);
         for(Participant p : findParticipants){
             if(!p.isEqualState(ParticipantState.JOIN_REQUEST)){
                 throw new BusinessException(ErrorCode.INVALID_STATE,
@@ -94,12 +113,15 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Transactional
     @Override
-    public void deportParticipant(Recruitment recruitment, User user) {
-        Participant findState = participantRepository.findByRecruitmentAndParticipantAndState(recruitment, user, ParticipantState.JOIN_APPROVAL)
+    public void deportParticipant(Recruitment recruitment, Long recruitmentParticipationNo) {
+//        Participant findState = participantRepository.findByRecruitmentAndParticipantAndState(recruitment, user, ParticipantState.JOIN_APPROVAL)
+//                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
+//                        String.format("UserNo = [%d], RecruitmentNo = [%d]", user.getUserNo(), recruitment.getRecruitmentNo())));
+        Participant participant = participantRepository.findBy(recruitmentParticipationNo, ParticipantState.JOIN_APPROVAL)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_STATE,
-                        String.format("UserNo = [%d], RecruitmentNo = [%d]", user.getUserNo(), recruitment.getRecruitmentNo())));
+                        String.format("ParticipationNo = [%d]", recruitmentParticipationNo)));
 
-        findState.updateState(ParticipantState.DEPORT);
+        participant.updateState(ParticipantState.DEPORT);
 
         //봉사 모집글 팀원인원 감소
         recruitment.decreaseTeamMember();
@@ -107,19 +129,19 @@ public class ParticipationServiceImpl implements ParticipationService{
 
     @Override
     public AllParticipantDetails findAllParticipantDto(Long recruitmentNo) {
-        List<ParticipantDetails> approvedList = new ArrayList<>();
-        List<ParticipantDetails> requiredList = new ArrayList<>();
+        List<ParticipantDetail> approvedList = new ArrayList<>();
+        List<ParticipantDetail> requiredList = new ArrayList<>();
 
         //최적화한 쿼리(쿼리 1번)
-        List<ParticipantStateDetails> participants = participantRepository.findParticipantsByOptimization(recruitmentNo,
+        List<RecruitmentParticipantDetail> participants = participantRepository.findParticipantsDetailBy(recruitmentNo,
                 List.of(ParticipantState.JOIN_REQUEST, ParticipantState.JOIN_APPROVAL));
 
         participants.stream()
                 .forEach(p -> {
                     if(p.getState().equals(ParticipantState.JOIN_REQUEST)){
-                        requiredList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                        requiredList.add(new ParticipantDetail(p.getRecruitmentParticipationNo(), p.getNickName(), p.getImageUrl()));
                     }else{
-                        approvedList.add(new ParticipantDetails(p.getUserNo(), p.getNickName(), p.getImageUrl()));
+                        approvedList.add(new ParticipantDetail(p.getRecruitmentParticipationNo(), p.getNickName(), p.getImageUrl()));
                     }
                 });
 
@@ -132,33 +154,33 @@ public class ParticipationServiceImpl implements ParticipationService{
      * L3 : 팀 신청 인원 마감
      * L4 : 팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴)
      */
-    @Override
-    public String findParticipationState(Recruitment recruitment, User user) {
-        Optional<Participant> findParticipant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
-
-        //봉사 모집 기간 만료
-        if(recruitment.isDoneDate()){
-            return StateResponse.DONE.getId();
-        }
-
-        //팀 신청
-        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
-            return StateResponse.PENDING.getId();
-        }
-
-        //팀 신청 승인
-        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
-            return StateResponse.APPROVED.getId();
-        }
-
-        //팀 신청 인원 마감
-        if(recruitment.isFullTeamMember()){
-            return StateResponse.FULL.getId();
-        }
-
-        //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
-        return StateResponse.AVAILABLE.getId();
-    }
+//    @Override
+//    public String findParticipationState(Recruitment recruitment, User user) {
+//        Optional<Participant> findParticipant = participantRepository.findByRecruitmentAndParticipant(recruitment, user);
+//
+//        //봉사 모집 기간 만료
+//        if(recruitment.isDone()){
+//            return StateResponse.DONE.getId();
+//        }
+//
+//        //팀 신청
+//        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_REQUEST)){
+//            return StateResponse.PENDING.getId();
+//        }
+//
+//        //팀 신청 승인
+//        if(findParticipant.isPresent() && findParticipant.get().isEqualState(ParticipantState.JOIN_APPROVAL)){
+//            return StateResponse.APPROVED.getId();
+//        }
+//
+//        //팀 신청 인원 마감
+//        if(recruitment.isFull()){
+//            return StateResponse.FULL.getId();
+//        }
+//
+//        //팀 신청 가능(팀 신청 취소, 팀 탈퇴, 팀 강제 탈퇴, 신규 팀 신청)
+//        return StateResponse.AVAILABLE.getId();
+//    }
 
     @Override
     public Participant findParticipation(Long recruitmentNo, Long userNo) {

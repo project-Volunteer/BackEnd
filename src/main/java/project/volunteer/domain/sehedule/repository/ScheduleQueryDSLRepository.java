@@ -2,16 +2,16 @@ package project.volunteer.domain.sehedule.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import project.volunteer.domain.recruitment.domain.Recruitment;
+import java.util.Optional;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
-import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
+import project.volunteer.domain.sehedule.repository.dao.ScheduleDetail;
 
 public interface ScheduleQueryDSLRepository {
-    List<ScheduleCalendarSearchResult> findScheduleDateBy(Recruitment recruitment, LocalDate toDate, LocalDate fromDate);
+    List<ScheduleCalendarSearchResult> findScheduleDateBy(Long recruitmentNo, LocalDate toDate, LocalDate fromDate);
 
-    ScheduleDetailSearchResult findScheduleDetailBy(Long scheduleNo);
+    Optional<ScheduleDetail> findScheduleDetailBy(Long scheduleNo);
 
-    ScheduleDetailSearchResult findNearestScheduleDetailBy(Long recruitmentNo, LocalDate currentDate);
+    ScheduleDetail findNearestScheduleDetailBy(Long recruitmentNo, LocalDate currentDate);
 
     Boolean existNearestSchedule(Long recruitmentNo, LocalDate currentDate);
 

@@ -2,7 +2,7 @@ package project.volunteer.domain.user.api.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.volunteer.domain.recruitment.dto.PictureDetails;
+import project.volunteer.domain.recruitment.application.dto.query.detail.PictureDetail;
 import project.volunteer.domain.user.dao.queryDto.dto.UserHistoryQuery;
 
 import java.time.format.DateTimeFormatter;
@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 public class HistoriesList {
     private Long no;
-    private PictureDetails picture;
+    private PictureDetail picture;
     private String title;
     private String date;
     private String sido;
@@ -26,9 +26,9 @@ public class HistoriesList {
         HistoriesList historiesList = new HistoriesList();
         historiesList.no = userHistorydto.getNo();
         if(userHistorydto.getUploadImage()==null){
-            historiesList.picture = new PictureDetails(true, null);
+            historiesList.picture = new PictureDetail(true, null);
         }else{
-            historiesList.picture = new PictureDetails(false, userHistorydto.getUploadImage());
+            historiesList.picture = new PictureDetail(false, userHistorydto.getUploadImage());
         }
         historiesList.title = userHistorydto.getTitle();
         historiesList.date = userHistorydto.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));

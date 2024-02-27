@@ -10,7 +10,7 @@ import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParti
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -47,7 +47,7 @@ public class ScheduleParticipationDtoServiceImpl implements ScheduleParticipatio
         return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(),
                 List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)).stream()
                 .map(sp -> {
-                    StateResponse state = sp.isEqualParticipantState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)?(StateResponse.COMPLETE_APPROVED):(StateResponse.COMPLETE_UNAPPROVED);
+                    StateResult state = sp.isEqualParticipantState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)?(StateResult.COMPLETE_APPROVED):(StateResult.COMPLETE_UNAPPROVED);
                     return new CompletedParticipantList(sp.getScheduleParticipationNo(), sp.getNickname(), sp.getEmail(), sp.getProfile(), state.getId());
                 })
                 .collect(Collectors.toList());

@@ -31,8 +31,24 @@ class ScheduleParticipationRepositoryTest extends RepositoryTest {
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
-    private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
-            VolunteeringType.REG, VolunteerType.ADULT, 999, true, "unicef", address, coordinate, timetable, true, null);
+    private final Recruitment recruitment = Recruitment.builder()
+            .title("title")
+            .content("content")
+            .volunteeringCategory(VolunteeringCategory.EDUCATION)
+            .volunteerType(VolunteerType.ADULT)
+            .volunteeringType(VolunteeringType.IRREG)
+            .maxParticipationNum(999)
+            .currentVolunteerNum(0)
+            .isIssued(true)
+            .organizationName("organization")
+            .address(address)
+            .coordinate(coordinate)
+            .timetable(timetable)
+            .viewCount(0)
+            .likeCount(0)
+            .isPublished(true)
+            .isDeleted(IsDeleted.N)
+            .build();
     private final User user1 = new User("test1", "test1", "test1", "test1@test.com", Gender.M, LocalDate.now(), "test",
             true, true, true, Role.USER, "test", "test", null);
     private final User user2 = new User("test2", "test2", "test2", "test2@test.com", Gender.M, LocalDate.now(), "test",

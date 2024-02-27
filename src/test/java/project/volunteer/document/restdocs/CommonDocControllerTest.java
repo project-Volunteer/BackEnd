@@ -11,12 +11,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.recruitment.domain.Day;
-import project.volunteer.domain.recruitment.domain.Period;
-import project.volunteer.domain.recruitment.domain.Week;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.converter.CodeCommonType;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 import project.volunteer.document.restdocs.util.CustomResponseFieldsSnippet;
 
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class CommonDocControllerTest {
                         ),
                         customResponseFields("custom-response", beneathPath("data.clientState").withSubsectionId("clientState"),
                                 attributes(key("title").value("클라이언트 신청 상태")),
-                                enumConvertFieldDescriptor(StateResponse.values())
+                                enumConvertFieldDescriptor(StateResult.values())
                         ),
                         customResponseFields("custom-response", beneathPath("data.volunteeringCategory").withSubsectionId("volunteeringCategory"),
                                 attributes(key("title").value("봉사 유형 카테고리")),

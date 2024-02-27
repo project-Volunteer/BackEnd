@@ -12,23 +12,23 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-write-controller-test/save-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/save-recruitment/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-write-controller-test/save-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/save-recruitment/request-headers.adoc[]
 
 *Request parts*
-include::{snippets}/recruitment-write-controller-test/save-recruitment/request-parts.adoc[]
+include::{snippets}/recruitment-controller-test/save-recruitment/request-parts.adoc[]
 
 *Request Parameters*
-include::{snippets}/recruitment-write-controller-test/save-recruitment/request-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/save-recruitment/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-write-controller-test/save-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/save-recruitment/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-write-controller-test/save-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/save-recruitment/response-fields.adoc[]
 
 
 === 봉사 모집글 리스트 조회
@@ -43,20 +43,20 @@ include::{snippets}/recruitment-write-controller-test/save-recruitment/response-
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-list-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-list-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/request-headers.adoc[]
 
 *Request Parameters*
-include::{snippets}/recruitment-query-controller-test/find-list-recruitment/request-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-list-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-list-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-list/response-fields.adoc[]
 
 
 === 봉사 모집글 리스트 키워드 조회
@@ -72,20 +72,20 @@ include::{snippets}/recruitment-query-controller-test/find-list-recruitment/resp
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/request-headers.adoc[]
 
 *Request Parameters*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/request-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-keyword-recruitment-list/response-fields.adoc[]
 
 
 === 봉사 모집글 카운트 조회
@@ -97,20 +97,20 @@ include::{snippets}/recruitment-query-controller-test/find-keyword-list-recruitm
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-count-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-count/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-count-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-count/request-headers.adoc[]
 
 *Request Parameters*
-include::{snippets}/recruitment-query-controller-test/find-count-recruitment/request-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-count/request-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-count-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-count/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-count-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-count/response-fields.adoc[]
 
 
 === 봉사 모집글 상세조회
@@ -123,17 +123,17 @@ include::{snippets}/recruitment-query-controller-test/find-count-recruitment/res
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/request-headers.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-details-recruitment/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-recruitment-detail/response-fields.adoc[]
 
 
 === 봉사 모집글 클라이언트 상태 조회
@@ -149,20 +149,20 @@ include::{snippets}/recruitment-query-controller-test/find-details-recruitment/r
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/http-request.adoc[]
 
 *Request Path*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/path-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/path-parameters.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/request-headers.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/recruitment-query-controller-test/find-participant-state/response-fields.adoc[]
+include::{snippets}/recruitment-controller-test/find-participant-state/response-fields.adoc[]
 
 
 === 봉사 모집글 삭제
@@ -177,15 +177,15 @@ include::{snippets}/recruitment-query-controller-test/find-participant-state/res
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/recruitment-edit-controller-test/delete-recruitment/http-request.adoc[]
+include::{snippets}/recruitment-controller-test/delete-recruitment/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/recruitment-edit-controller-test/delete-recruitment/request-headers.adoc[]
+include::{snippets}/recruitment-controller-test/delete-recruitment/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/recruitment-edit-controller-test/delete-recruitment/path-parameters.adoc[]
+include::{snippets}/recruitment-controller-test/delete-recruitment/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/recruitment-edit-controller-test/delete-recruitment/http-response.adoc[]
+include::{snippets}/recruitment-controller-test/delete-recruitment/http-response.adoc[]
 

@@ -20,13 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.image.dao.ImageRepository;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
 import project.volunteer.domain.participation.domain.Participant;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -57,7 +58,8 @@ import project.volunteer.global.infra.s3.FileService;
 public class LogboardServiceImplTestForComment {
 	@Autowired UserService userService;
 	@Autowired UserDtoService userDtoService;
-	@Autowired RecruitmentService recruitmentService;
+	@Autowired
+	RecruitmentCommandUseCase recruitmentService;
 	@Autowired FileService fileService;
 	@Autowired ImageService imageService;
 	@Autowired LogboardService logboardService;
@@ -132,10 +134,10 @@ public class LogboardServiceImplTestForComment {
 		
 		Recruitment create = Recruitment.builder()
 				.title(title).content(content).volunteeringCategory(category).volunteeringType(volunteeringType)
-				.volunteerType(volunteerType).participationNum(volunteerNum).isIssued(isIssued).organizationName(organizationName)
-				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished)
+				.volunteerType(volunteerType).maxParticipationNum(volunteerNum).currentVolunteerNum(0).isIssued(isIssued).organizationName(organizationName)
+				.address(address).coordinate(coordinate).timetable(timetable).isPublished(isPublished).viewCount(0).likeCount(0)
+				.isDeleted(IsDeleted.N).writer(saveUser)
 				.build();
-		create.setWriter(saveUser);
 		recruitmentRepository.save(create);
 		Long no = create.getRecruitmentNo();
 

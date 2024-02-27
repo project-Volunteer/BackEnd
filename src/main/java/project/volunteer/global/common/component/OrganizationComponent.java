@@ -1,27 +1,23 @@
 package project.volunteer.global.common.component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerMapping;
 import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.reply.domain.Reply;
-import project.volunteer.domain.user.api.dto.request.RecruitmentListRequestParam;
 import project.volunteer.global.common.validate.ReplyValidate;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
+@Transactional(readOnly = true)
 //TODO: 리팩토링 필요.
 //TODO: 서비스 레이어를 재사용하는 게 좋지 않을까?
 public class OrganizationComponent {
@@ -37,10 +33,19 @@ public class OrganizationComponent {
     //봉사 모집글 방장 검증 메서드
     public void validRecruitmentOwner(HttpServletRequest request, Long loginUserNo){
         Recruitment findRecruitment = getRecruitment(request);
-        //DDD 설계 살려서
-        if(!findRecruitment.isRecruitmentOwner(loginUserNo)){
+        if(!findRecruitment.isOwner(loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", findRecruitment.getRecruitmentNo(), loginUserNo));
+        }
+    }
+
+    public void checkRecruitmentOwner(Long recruitmentNo, Long loginUserNo) {
+        Recruitment recruitment = recruitmentRepository.findNotDeletedRecruitment(recruitmentNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("Recruitment No = [%d]", recruitmentNo)));
+        if(!recruitment.isOwner(loginUserNo)){
+            throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT,
+                    String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
         }
     }
 
@@ -66,13 +71,13 @@ public class OrganizationComponent {
 
         //기본 Spring OSIV 모드 트랜잭션 읽기 모드 사용(수정 변경 불가, 단순 읽기만, 영속 상태)
         //삭제만 되지 않은 봉사 모집글 검색(임시 봉사 모집글을 위해서)
-        return recruitmentRepository.findValidRecruitment(recruitmentNo)
+        return recruitmentRepository.findNotDeletedRecruitment(recruitmentNo)
                 .orElseThrow(() ->  new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
     }
     private void isRecruitmentTeam(Recruitment recruitment, Long loginUserNo){
         //기본 Spring OSIV 모드 트랜잭션 읽기 모드 사용(수정 변경 불가, 단순 읽기만, 영속 상태)
         //팀원 or 방장
-        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo) && !recruitment.isRecruitmentOwner(loginUserNo)){
+        if(!participantRepository.existRecruitmentTeamMember(recruitment.getRecruitmentNo(), loginUserNo) && !recruitment.isOwner(loginUserNo)){
             throw new BusinessException(ErrorCode.FORBIDDEN_RECRUITMENT_TEAM,
                     String.format("RecruitmentNo = [%d], UserNo = [%d]", recruitment.getRecruitmentNo(), loginUserNo));
         }

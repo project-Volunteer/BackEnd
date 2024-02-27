@@ -25,7 +25,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 
 public class ScheduleControllerTest extends DocumentTest {
 
@@ -40,7 +40,7 @@ public class ScheduleControllerTest extends DocumentTest {
         //when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/recruitment/{recruitmentNo}/schedule",
-                                recruitment.getRecruitmentNo())
+                                recruitment1.getRecruitmentNo())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
                         .content(toJson(request))
@@ -101,7 +101,7 @@ public class ScheduleControllerTest extends DocumentTest {
         //when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}",
-                                recruitment.getRecruitmentNo(), schedule1.getScheduleNo())
+                                recruitment1.getRecruitmentNo(), schedule1.getScheduleNo())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
                         .content(toJson(request))
@@ -163,7 +163,7 @@ public class ScheduleControllerTest extends DocumentTest {
         //given & when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.delete("/recruitment/{recruitmentNo}/schedule/{scheduleNo}",
-                                recruitment.getRecruitmentNo(), schedule1.getScheduleNo())
+                                recruitment1.getRecruitmentNo(), schedule1.getScheduleNo())
                         .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken)
         );
 
@@ -192,14 +192,14 @@ public class ScheduleControllerTest extends DocumentTest {
         // when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/schedule",
-                                recruitment.getRecruitmentNo())
-                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+                                recruitment1.getRecruitmentNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken1)
         );
 
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResult.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
                         restDocs.document(
@@ -250,8 +250,8 @@ public class ScheduleControllerTest extends DocumentTest {
         // when
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar",
-                                recruitment.getRecruitmentNo())
-                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+                                recruitment1.getRecruitmentNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken1)
                         .queryParam("year", searchYear)
                         .queryParam("mon", searchMonth)
         );
@@ -288,16 +288,17 @@ public class ScheduleControllerTest extends DocumentTest {
     @DisplayName("일정 상세 조회에 성공하다.")
     public void detailSchedule() throws Exception {
         // given && when
+        given(clock.instant()).willReturn(Instant.parse("2024-02-09T10:00:00Z"));
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/recruitment/{recruitmentNo}/calendar/{scheduleNo}",
-                                recruitment.getRecruitmentNo(), schedule1.getScheduleNo())
-                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken)
+                                recruitment1.getRecruitmentNo(), schedule1.getScheduleNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken1)
         );
 
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("activeVolunteerNum").value(0))
-                .andExpect(jsonPath("state").value(StateResponse.AVAILABLE.name()))
+                .andExpect(jsonPath("state").value(StateResult.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
                         restDocs.document(

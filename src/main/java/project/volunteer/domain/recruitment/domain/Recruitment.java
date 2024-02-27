@@ -1,9 +1,12 @@
 package project.volunteer.domain.recruitment.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.RepeatPeriod;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.auditing.BaseTimeEntity;
 import project.volunteer.global.common.component.Address;
@@ -15,14 +18,22 @@ import project.volunteer.domain.recruitment.converter.VolunteerTypeConverter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 
 @Getter
 @Entity
 @Table(name = "vlt_recruitment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Recruitment extends BaseTimeEntity {
+    private static final int MAX_ORGANIZATION_NAME_SIZE = 50;
+    private static final int MAX_PARTICIPATION_NUM = 9999;
+    private static final int MIN_PARTICIPATION_NUM = 1;
+    private static final int MAX_TITLE_SIZE = 255;
+    private static final int MAX_CONTENT_SIZE = 255;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recruitmentno")
     private Long recruitmentNo;
 
@@ -44,8 +55,8 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "volunteer_type", length = 2, nullable = false)
     private VolunteerType volunteerType;
 
-    @Column(name = "volunteer_num", nullable = false)
-    private Integer volunteerNum;
+    @Column(name = "max_particiaption_num", nullable = false)
+    private Integer maxParticipationNum;
 
     @Column(name = "current_volunteer_num", nullable = false)
     private Integer currentVolunteerNum;
@@ -63,7 +74,7 @@ public class Recruitment extends BaseTimeEntity {
     private Coordinate coordinate;
 
     @Embedded
-    private Timetable VolunteeringTimeTable;
+    private Timetable timetable;
 
     @Column(name = "view_count", nullable = false)
     private Integer viewCount;
@@ -78,99 +89,166 @@ public class Recruitment extends BaseTimeEntity {
     @Column(name = "is_deleted", length = 1, nullable = false)
     private IsDeleted isDeleted;
 
-    /**
-     * Auditing - 작성자, 수정인 추가 필요
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno")
     private User writer;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "recruitment", cascade = CascadeType.ALL)
+    private List<RepeatPeriod> repeatPeriods = new ArrayList<>();
+
     @Builder
-    public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
-                       VolunteerType volunteerType, Integer participationNum, Boolean isIssued,
-                       String organizationName, Address address, Coordinate coordinate,
-                       Timetable timetable, Boolean isPublished, User writer) {
+    public Recruitment(String title, String content, VolunteeringCategory volunteeringCategory,
+                       VolunteeringType volunteeringType, VolunteerType volunteerType, Integer maxParticipationNum,
+                       Integer currentVolunteerNum, Boolean isIssued, String organizationName, Address address,
+                       Coordinate coordinate, Timetable timetable, Integer viewCount, Integer likeCount,
+                       Boolean isPublished, IsDeleted isDeleted, User writer) {
+        validateOrganizationNameSize(organizationName);
+        validateParticipationNum(maxParticipationNum);
+        validateTitleSize(title);
+        validateContentSize(content);
 
         this.title = title;
         this.content = content;
         this.volunteeringCategory = volunteeringCategory;
         this.volunteeringType = volunteeringType;
         this.volunteerType = volunteerType;
-        this.volunteerNum = participationNum;
+        this.maxParticipationNum = maxParticipationNum;
+        this.currentVolunteerNum = currentVolunteerNum;
         this.isIssued = isIssued;
         this.organizationName = organizationName;
         this.address = address;
         this.coordinate = coordinate;
-        this.VolunteeringTimeTable = timetable;
+        this.timetable = timetable;
+        this.viewCount = viewCount;
+        this.likeCount = likeCount;
         this.isPublished = isPublished;
+        this.isDeleted = isDeleted;
         this.writer = writer;
-
-        this.likeCount = 0;
-        this.viewCount = 0;
-        this.isDeleted = IsDeleted.N;
-        this.currentVolunteerNum = 0;
     }
 
-    public static Recruitment createRecruitment(String title, String content, VolunteeringCategory volunteeringCategory, VolunteeringType volunteeringType,
-                                                VolunteerType volunteerType, Integer volunteerNum, Boolean isIssued,
-                                                String organizationName, Address address, Coordinate coordinate,
-                                                Timetable timetable, Boolean isPublished){
-        Recruitment createRecruitment = new Recruitment();
-        createRecruitment.title = title;
-        createRecruitment.content = content;
-        createRecruitment.volunteeringCategory = volunteeringCategory;
-        createRecruitment.volunteeringType = volunteeringType;
-        createRecruitment.volunteerType = volunteerType;
-        createRecruitment.volunteerNum = volunteerNum;
-        createRecruitment.isIssued = isIssued;
-        createRecruitment.organizationName = organizationName;
-        createRecruitment.address = address;
-        createRecruitment.coordinate = coordinate;
-        createRecruitment.VolunteeringTimeTable = timetable;
-        createRecruitment.isPublished = isPublished;
-
-        createRecruitment.likeCount = 0;
-        createRecruitment.viewCount = 0;
-        createRecruitment.isDeleted = IsDeleted.N;
-        createRecruitment.currentVolunteerNum = 0;
-        return createRecruitment;
+    public static Recruitment create(String title, String content, VolunteeringCategory volunteeringCategory,
+                                     VolunteeringType volunteeringType,
+                                     VolunteerType volunteerType, Integer maxParticipationNum, Boolean isIssued,
+                                     String organizationName, Address address, Coordinate coordinate,
+                                     Timetable timetable, Boolean isPublished, User writer) {
+        return Recruitment.builder()
+                .title(title)
+                .content(content)
+                .volunteeringCategory(volunteeringCategory)
+                .volunteeringType(volunteeringType)
+                .volunteerType(volunteerType)
+                .isIssued(isIssued)
+                .maxParticipationNum(maxParticipationNum)
+                .isIssued(isIssued)
+                .organizationName(organizationName)
+                .address(address)
+                .coordinate(coordinate)
+                .timetable(timetable)
+                .isPublished(isPublished)
+                .writer(writer)
+                .isDeleted(IsDeleted.N)
+                .likeCount(0)
+                .viewCount(0)
+                .currentVolunteerNum(0)
+                .build();
     }
 
-    public void setWriter(User user){
+    public void setRepeatPeriods(List<RepeatPeriod> repeatPeriods) {
+        repeatPeriods.forEach(repeatPeriod -> repeatPeriod.assignRecruitment(this));
+        this.repeatPeriods = repeatPeriods;
+    }
+
+    public void delete() {
+        this.isDeleted = IsDeleted.Y;
+        this.writer = null;
+        this.repeatPeriods.forEach(RepeatPeriod::delete);
+    }
+
+    public Boolean isRegularRecruitment() {
+        return volunteeringType.equals(VolunteeringType.REG);
+    }
+
+    public void checkDoneDate(LocalDate now) {
+        if (isDone(now)) {
+            throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT);
+        }
+    }
+
+    public Boolean isOwner(Long userNo) {
+        return this.writer.getUserNo()
+                .equals(userNo);
+    }
+
+    public Boolean isDone(LocalDate now) {
+        return this.timetable.isDoneByEndDate(now);
+    }
+
+    public Boolean isFull() {
+        return maxParticipationNum.equals(currentVolunteerNum);
+    }
+
+    public boolean isLessParticipationNumThan(final int participationNum) {
+        return this.maxParticipationNum < participationNum;
+    }
+
+    /**
+     * 검증 메서드
+     **/
+    private void validateOrganizationNameSize(final String organizationName) {
+        if (organizationName.isBlank() || MAX_ORGANIZATION_NAME_SIZE < organizationName.length()) {
+            throw new BusinessException(ErrorCode.INVALID_ORGANIZATION_NAME_SIZE,
+                    String.format("[%d]~[%d]", 1, MAX_ORGANIZATION_NAME_SIZE));
+        }
+    }
+
+    private void validateParticipationNum(final int participationNum) {
+        if (MIN_PARTICIPATION_NUM > participationNum || MAX_PARTICIPATION_NUM < participationNum) {
+            throw new BusinessException(ErrorCode.INVALID_PARTICIPATION_NUM,
+                    String.format("[%d]~[%d]", MIN_PARTICIPATION_NUM, MAX_PARTICIPATION_NUM));
+        }
+    }
+
+    private void validateTitleSize(final String title) {
+        if (title.isBlank() || MAX_TITLE_SIZE < title.length()) {
+            throw new BusinessException(ErrorCode.INVALID_TITLE_SIZE,
+                    String.format("[%d]~[%d]", 1, MAX_TITLE_SIZE));
+        }
+    }
+
+    private void validateContentSize(final String content) {
+        if (content.isBlank() || MAX_CONTENT_SIZE < content.length()) {
+            throw new BusinessException(ErrorCode.INVALID_CONTENT_SIZE,
+                    String.format("[%d]~[%d]", 1, MAX_CONTENT_SIZE));
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    public void setWriter(User user) {
         this.writer = user;
     }
 
-    public void setDeleted(){this.isDeleted=IsDeleted.Y;}
-    public void removeUser(){this.writer = null;}
-
-    public void setIsPublished(Boolean isPublished){this.isPublished=isPublished;}
-
-    public void setVolunteeringTimeTable(Timetable timetable){
-        this.VolunteeringTimeTable = timetable;
+    public void setTimetable(Timetable timetable) {
+        this.timetable = timetable;
     }
 
-    public Boolean isRecruitmentOwner(Long userNo){
-        if(this.getWriter().getUserNo().equals(userNo)) {
-           return true;
-        }
-        return false;
+    public void increaseTeamMember() {
+        this.currentVolunteerNum++;
     }
 
-    public void increaseTeamMember(){this.currentVolunteerNum++;}
-    public void decreaseTeamMember(){this.currentVolunteerNum--;}
-
-    public Boolean isFullTeamMember(){return this.currentVolunteerNum == this.volunteerNum;}
-
-    public Integer getAvailableTeamMemberCount(){
-        return this.volunteerNum - this.currentVolunteerNum;
+    public void decreaseTeamMember() {
+        this.currentVolunteerNum--;
     }
 
-    public Boolean isDoneDate(){return this.VolunteeringTimeTable.getEndDay().isBefore(LocalDate.now());}
-
-
-    // 비교 메서드
-    public boolean isLessParticipationNumThan(final int participationNum) {
-        return this.volunteerNum < participationNum;
+    public Integer getAvailableTeamMemberCount() {
+        return this.maxParticipationNum - this.currentVolunteerNum;
     }
 
 }

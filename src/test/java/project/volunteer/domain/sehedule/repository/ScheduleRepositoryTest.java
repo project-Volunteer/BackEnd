@@ -27,8 +27,24 @@ class ScheduleRepositoryTest extends RepositoryTest {
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
-    private final Recruitment recruitment = new Recruitment("title", "content", VolunteeringCategory.EDUCATION,
-            VolunteeringType.REG, VolunteerType.ADULT, 999, true, "unicef", address, coordinate, timetable, true, null);
+    private final Recruitment recruitment = Recruitment.builder()
+            .title("title")
+            .content("content")
+            .volunteeringCategory(VolunteeringCategory.EDUCATION)
+            .volunteerType(VolunteerType.ADULT)
+            .volunteeringType(VolunteeringType.IRREG)
+            .maxParticipationNum(999)
+            .currentVolunteerNum(0)
+            .isIssued(true)
+            .organizationName("organization")
+            .address(address)
+            .coordinate(coordinate)
+            .timetable(timetable)
+            .viewCount(0)
+            .likeCount(0)
+            .isPublished(true)
+            .isDeleted(IsDeleted.N)
+            .build();
 
     @BeforeEach
     void setUp() {
@@ -48,7 +64,7 @@ class ScheduleRepositoryTest extends RepositoryTest {
 
         //when
         List<ScheduleCalendarSearchResult> scheduleCalendar = scheduleRepository.findScheduleDateBy(
-                recruitment, toDate, fromDate);
+                recruitment.getRecruitmentNo(), toDate, fromDate);
 
         //then
         assertThat(scheduleCalendar).hasSize(2)

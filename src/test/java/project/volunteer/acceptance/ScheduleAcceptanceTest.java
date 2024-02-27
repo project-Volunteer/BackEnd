@@ -24,10 +24,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
+import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
@@ -38,7 +40,7 @@ import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearch
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.global.common.component.HourFormat;
-import project.volunteer.global.common.dto.StateResponse;
+import project.volunteer.global.common.dto.StateResult;
 
 public class ScheduleAcceptanceTest extends AcceptanceTest {
 
@@ -49,7 +51,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 1000, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
@@ -73,7 +75,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 1000, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
@@ -97,7 +99,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 50, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest request = new ScheduleUpsertRequest(
@@ -121,7 +123,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -150,7 +152,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -179,7 +181,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 50, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -204,17 +206,19 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
     @DisplayName("일정 수정 시 일정 모집 인원은 현재 일정 참여자 수보다 적을 수 없다.")
     @Test
     void editScheduleLessScheduleParticipant() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-09T10:00:00Z"));
+
         final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 50, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
-        봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
+        Long participantNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo2 = 봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo, changHoeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo1, participantNo2)));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
                 new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
@@ -244,7 +248,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -272,7 +276,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .extract()
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
-                () -> assertThat(response.hasData()).isTrue(),
+                () -> assertThat(response.getHasData()).isTrue(),
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo3)
         );
     }
@@ -284,7 +288,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -320,7 +324,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -345,7 +349,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -382,7 +386,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
@@ -405,7 +409,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -417,9 +421,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
 
         final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
         final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
@@ -436,7 +440,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.AVAILABLE.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.AVAILABLE.getId())
         );
     }
 
@@ -447,7 +451,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -459,9 +463,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
 
         final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
         final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
@@ -478,7 +482,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.DONE.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.DONE.getId())
         );
     }
 
@@ -491,7 +495,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -503,9 +507,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -522,7 +526,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.PARTICIPATING.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.PARTICIPATING.getId())
         );
     }
 
@@ -535,7 +539,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -547,10 +551,10 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
-        봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
+        Long participantNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo2 = 봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo, changHoeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo1, participantNo2)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -568,7 +572,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.FULL.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.FULL.getId())
         );
     }
 
@@ -581,7 +585,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -593,9 +597,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -616,7 +620,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.COMPLETE_UNAPPROVED.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.COMPLETE_UNAPPROVED.getId())
         );
     }
 
@@ -629,7 +633,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -641,9 +645,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -673,7 +677,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.COMPLETE_APPROVED.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.COMPLETE_APPROVED.getId())
         );
     }
 
@@ -686,7 +690,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -698,9 +702,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -719,7 +723,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.CANCELLING.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.CANCELLING.getId())
         );
     }
 
@@ -732,7 +736,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(
@@ -744,9 +748,9 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest1);
         final Long scheduleNo2 = 봉사_일정_등록(bonsikToken, recruitmentNo, insertRequest2);
 
-        봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(soeunNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -772,7 +776,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 .as(ScheduleDetailSearchResult.class);
         assertAll(
                 () -> assertThat(response.getNo()).isEqualTo(scheduleNo2),
-                () -> assertThat(response.getState()).isEqualTo(StateResponse.AVAILABLE.getId())
+                () -> assertThat(response.getState()).isEqualTo(StateResult.AVAILABLE.getId())
         );
     }
 
@@ -783,7 +787,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
-                null, null, List.of(), "title", "content", true, false,
+                Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
 
         final ScheduleUpsertRequest insertRequest1 = new ScheduleUpsertRequest(

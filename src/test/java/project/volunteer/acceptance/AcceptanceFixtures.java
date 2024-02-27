@@ -5,14 +5,19 @@ import static io.restassured.RestAssured.given;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import project.volunteer.domain.participation.api.dto.ParticipantAddParam;
+import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.participation.api.dto.response.JoinResponse;
+import project.volunteer.domain.recruitment.api.dto.response.RecruitmentSaveResponse;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
+import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelledParticipantListResponse;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
@@ -23,7 +28,6 @@ import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponse;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleUpsertResponse;
-import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.global.common.component.HourFormat;
 
 public class AcceptanceFixtures {
@@ -33,12 +37,16 @@ public class AcceptanceFixtures {
                                  VolunteeringCategory volunteeringCategory, String organization,
                                  String sido, String sigungu, String details, String fullName, Float latitude,
                                  Float longitude, Boolean isIssued, VolunteerType volunteerType,
-                                 Integer volunteerNum, VolunteeringType volunteeringType, String startDay,
-                                 String endDay, HourFormat hourFormat, String startTime, Integer progressTime,
-                                 String period, String week, List<String> days, String title, String content,
+                                 Integer maxParticipationNum, VolunteeringType volunteeringType, String startDate,
+                                 String endDate, HourFormat hourFormat, String startTime, Integer progressTime,
+                                 Period period, Week week, List<Day> days, String title, String content,
                                  Boolean isPublished, Boolean isStaticImage, File file) {
 
-        Integer recruitmentNo = (Integer) given().log().all()
+        List<String> dayOfWeeks = days.stream()
+                .map(Day::getId)
+                .collect(Collectors.toList());
+
+        return given().log().all()
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header(AUTHORIZATION_HEADER, token)
                 .multiPart("picture.uploadImage", file)
@@ -46,9 +54,9 @@ public class AcceptanceFixtures {
                 .formParam("organizationName", organization)
                 .formParam("isIssued", isIssued)
                 .formParam("volunteerType", volunteerType.getId())
-                .formParam("volunteerNum", volunteerNum)
-                .formParam("startDay", startDay)
-                .formParam("endDay", endDay)
+                .formParam("maxParticipationNum", maxParticipationNum)
+                .formParam("startDate", startDate)
+                .formParam("endDate", endDate)
                 .formParam("hourFormat", hourFormat.getId())
                 .formParam("startTime", startTime)
                 .formParam("progressTime", progressTime)
@@ -62,27 +70,27 @@ public class AcceptanceFixtures {
                 .formParam("address.latitude", latitude)
                 .formParam("address.longitude", longitude)
                 .formParam("volunteeringType", volunteeringType.getId())
-                .formParam("period", period)
-                .formParam("week", week)
-                .formParam("days", days)
+                .formParam("period", period.getId())
+                .formParam("week", week.getId())
+                .formParam("dayOfWeeks", dayOfWeeks)
                 .formParam("picture.isStaticImage", isStaticImage)
                 .when().post("/recruitment")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
-                .as(HashMap.class)
-                .get("no");
-
-        return Long.valueOf(recruitmentNo);
+                .as(RecruitmentSaveResponse.class)
+                .getNo();
     }
 
-    public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_요청(String token, Long recruitmentNo) {
+    public static Long 봉사_게시물_팀원_가입_요청(String token, Long recruitmentNo) {
         return given().log().all()
                 .header(AUTHORIZATION_HEADER, token)
                 .when().put("/recruitment/{recruitmentNo}/join", recruitmentNo)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .extract();
+                .extract()
+                .as(JoinResponse.class)
+                .getRecruitmentParticipationNo();
     }
 
     public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_승인(String token, Long recruitmentNo,
@@ -92,6 +100,15 @@ public class AcceptanceFixtures {
                 .header(AUTHORIZATION_HEADER, token)
                 .body(request)
                 .when().put("/recruitment/{recruitmentNo}/approval", recruitmentNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_취소(String token, Long recruitmentNo) {
+        return given().log().all()
+                .header(AUTHORIZATION_HEADER, token)
+                .when().put("/recruitment/{recruitmentNo}/cancel", recruitmentNo)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();

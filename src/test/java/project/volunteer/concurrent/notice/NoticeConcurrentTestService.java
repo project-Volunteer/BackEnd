@@ -1,5 +1,6 @@
 package project.volunteer.concurrent.notice;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,10 +8,11 @@ import project.volunteer.domain.confirmation.dao.ConfirmationRepository;
 import project.volunteer.domain.confirmation.domain.Confirmation;
 import project.volunteer.domain.notice.dao.NoticeRepository;
 import project.volunteer.domain.notice.domain.Notice;
-import project.volunteer.domain.recruitment.dao.RecruitmentRepository;
+import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.user.dao.UserRepository;
 import project.volunteer.domain.user.domain.User;
+import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
@@ -95,11 +97,11 @@ public class NoticeConcurrentTestService {
 
     private Recruitment validateAndGetRecruitment(Long recruitmentNo){
         //모집글 검증(출판 and 삭제 x)
-        Recruitment findRecruitment = recruitmentRepository.findPublishedByRecruitmentNo(recruitmentNo)
+        Recruitment findRecruitment = recruitmentRepository.findRecruitmentBy(recruitmentNo, IsDeleted.N, true)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT, String.format("Recruitment No = [%d]", recruitmentNo)));
 
         //모집글 공지사항 작성 가능 일자 검증
-        if(findRecruitment.isDoneDate()){
+        if(findRecruitment.isDone(LocalDate.now())){
             throw new BusinessException(ErrorCode.EXPIRED_PERIOD_RECRUITMENT, String.format("RecruitmentNo = [%d]", recruitmentNo));
         }
         return findRecruitment;

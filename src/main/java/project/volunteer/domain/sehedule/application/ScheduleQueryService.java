@@ -3,15 +3,19 @@ package project.volunteer.domain.sehedule.application;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.recruitment.domain.Recruitment;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleDetailSearchResult;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
+import project.volunteer.domain.sehedule.repository.dao.ScheduleDetail;
+import project.volunteer.global.common.component.ParticipantState;
+import project.volunteer.global.common.dto.StateResult;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 
@@ -21,27 +25,44 @@ import project.volunteer.global.error.exception.ErrorCode;
 @RequiredArgsConstructor
 public class ScheduleQueryService implements ScheduleQueryUseCase {
     private final ScheduleRepository scheduleRepository;
+    private final ScheduleParticipationRepository scheduleParticipationRepository;
     private final Clock clock;
 
     @Override
-    public List<ScheduleCalendarSearchResult> searchScheduleCalender(final Recruitment recruitment,
+    public List<ScheduleCalendarSearchResult> searchScheduleCalender(final Long recruitmentNo,
                                                                      final LocalDate startDay,
                                                                      final LocalDate endDay) {
-        return scheduleRepository.findScheduleDateBy(recruitment, startDay, endDay);
+        return scheduleRepository.findScheduleDateBy(recruitmentNo, startDay, endDay);
     }
 
     @Override
-    public ScheduleDetailSearchResult searchScheduleDetail(final Long scheduleNo) {
-        validAndGetNotDeletedSchedule(scheduleNo);
-        return scheduleRepository.findScheduleDetailBy(scheduleNo);
+    public ScheduleDetailSearchResult searchScheduleDetail(final Long userNo, final Long scheduleNo) {
+        final ScheduleDetail scheduleDetail = scheduleRepository.findScheduleDetailBy(scheduleNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE,
+                        String.format("ScheduleNo=[%d]", scheduleNo)));
+        final Optional<ParticipantState> state = scheduleParticipationRepository.findStateBy(userNo, scheduleNo);
+        final StateResult stateResult = StateResult.getScheduleState(state,
+                scheduleDetail.isDone(LocalDate.now(clock)),
+                scheduleDetail.isFull());
+
+        return ScheduleDetailSearchResult.of(scheduleDetail, stateResult);
     }
 
     @Override
-    public ScheduleDetailSearchResult searchClosestScheduleDetail(final Long recruitmentNo, LocalDate now) {
-        if (!scheduleRepository.existNearestSchedule(recruitmentNo, now)) {
+    public ScheduleDetailSearchResult searchClosestScheduleDetail(final Long userNo, final Long recruitmentNo) {
+        if (!scheduleRepository.existNearestSchedule(recruitmentNo, LocalDate.now(clock))) {
             return ScheduleDetailSearchResult.createEmpty();
         }
-        return scheduleRepository.findNearestScheduleDetailBy(recruitmentNo, now);
+
+        final ScheduleDetail scheduleDetail = scheduleRepository.findNearestScheduleDetailBy(recruitmentNo,
+                LocalDate.now(clock));
+        final Optional<ParticipantState> state = scheduleParticipationRepository.findStateBy(userNo,
+                scheduleDetail.getNo());
+        final StateResult stateResult = StateResult.getScheduleState(state,
+                scheduleDetail.isDone(LocalDate.now(clock)),
+                scheduleDetail.isFull());
+
+        return ScheduleDetailSearchResult.of(scheduleDetail, stateResult);
     }
 
     @Override

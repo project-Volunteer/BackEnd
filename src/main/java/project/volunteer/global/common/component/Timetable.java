@@ -1,5 +1,6 @@
 package project.volunteer.global.common.component;
 
+import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +19,8 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Embeddable
 public class Timetable {
+    private final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+    private final static DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     @Column(name = "start_day", nullable = false)
     private LocalDate startDay;
@@ -35,15 +38,23 @@ public class Timetable {
     @Column(name = "progress_time", columnDefinition = "TINYINT", nullable = false)
     private Integer progressTime; //(1~24시간)
 
+    public static Timetable of(String startDate, String endDate, String hourFormat, String startTime,
+                               int progressTime) {
+        return Timetable.builder()
+                .startDay(LocalDate.parse(startDate, DATE_FORMATTER))
+                .endDay(LocalDate.parse(endDate, DATE_FORMATTER))
+                .hourFormat(HourFormat.ofName(hourFormat))
+                .startTime(LocalTime.parse(startTime, TIME_FORMATTER))
+                .progressTime(progressTime)
+                .build();
+    }
 
-    public static Timetable createTimetable(LocalDate startDay, LocalDate endDay, HourFormat hourFormat, LocalTime startTime, int progressTime){
-        Timetable timetable = new Timetable();
-        timetable.startDay = startDay;
-        timetable.endDay = endDay;
-        timetable.hourFormat = hourFormat;
-        timetable.startTime = startTime;
-        timetable.progressTime = progressTime;
-        return timetable;
+    public boolean isDoneByStartDate(LocalDate now) {
+        return startDay.isBefore(now);
+    }
+
+    public boolean isDoneByEndDate(LocalDate now) {
+        return endDay.isBefore(now);
     }
 
 }

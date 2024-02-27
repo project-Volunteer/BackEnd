@@ -35,7 +35,7 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 				.select(
 						new QUserRecruitmentJoinRequestQuery(
 								recruitment.recruitmentNo, storage.imagePath,
-								recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay,
+								recruitment.timetable.startDay, recruitment.timetable.endDay,
 								recruitment.title, recruitment.address.sido, recruitment.address.sigungu,
 								recruitment.volunteeringCategory, recruitment.volunteeringType, recruitment.isIssued,
 								recruitment.volunteerType))
@@ -56,10 +56,10 @@ public class UserQueryDtoRepositoryImpl implements UserQueryDtoRepository{
 		return jpaQueryFactory
 				.select(new QUserRecruitingQuery(
 							recruitment.recruitmentNo, storage.imagePath,
-							recruitment.VolunteeringTimeTable.startDay, recruitment.VolunteeringTimeTable.endDay,
+							recruitment.timetable.startDay, recruitment.timetable.endDay,
 							recruitment.title, recruitment.address.sido, recruitment.address.sigungu,
 							recruitment.volunteeringCategory, recruitment.volunteeringType, recruitment.isIssued,
-							recruitment.volunteerType, recruitment.volunteerNum,
+							recruitment.volunteerType, recruitment.maxParticipationNum,
 							ExpressionUtils.as(
 								JPAExpressions
 									.select(participant1.count())

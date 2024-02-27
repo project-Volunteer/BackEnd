@@ -1,5 +1,6 @@
 package project.volunteer.domain.image.application;
 
+import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
+import project.volunteer.domain.recruitment.domain.VolunteerType;
+import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
+import project.volunteer.global.common.component.Address;
+import project.volunteer.global.common.component.Coordinate;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.recruitment.application.RecruitmentService;
-import project.volunteer.domain.recruitment.application.dto.RecruitmentParam;
+import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
+import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.image.domain.Storage;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -24,6 +29,7 @@ import project.volunteer.domain.user.domain.Role;
 import project.volunteer.domain.user.domain.User;
 import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
+import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.infra.s3.FileService;
 
 import javax.persistence.EntityManager;
@@ -40,7 +46,8 @@ class ImageServiceImplTestForEdit {
 
     @Autowired EntityManager em;
     @Autowired UserRepository userRepository;
-    @Autowired RecruitmentService recruitmentService;
+    @Autowired
+    RecruitmentCommandUseCase recruitmentService;
     @Autowired ImageService imageService;
     @Autowired ImageRepository imageRepository;
     @Autowired FileService fileService;
@@ -53,27 +60,14 @@ class ImageServiceImplTestForEdit {
         em.clear();
     }
     private void setRecruitment(){
-        String category = "001";
-        String organizationName ="name";
-        String sido = "11";
-        String sigungu = "11011";
-        String details = "details";
-        String fullName = "fullName";
-        Float latitude = 3.2F , longitude = 3.2F;
-        Boolean isIssued = true;
-        String volunteerType = "1"; //all
-        Integer volunteerNum = 5;
-        String volunteeringType = VolunteeringType.IRREG.name();
-        String startDay = "01-01-2000";
-        String endDay = "01-01-2000";
-        String hourFormat = HourFormat.AM.name();
-        String startTime = "01:01";
-        Integer progressTime = 3;
-        String title = "title", content = "content";
-        Boolean isPublished = true;
-        RecruitmentParam saveRecruitDto = new RecruitmentParam(category, organizationName, sido,sigungu, details, fullName, latitude, longitude,
-                isIssued, volunteerType, volunteerNum, volunteeringType, startDay, endDay, hourFormat, startTime, progressTime, title, content, isPublished);
-        saveRecruitmentNo = recruitmentService.addRecruitment(writer, saveRecruitDto).getRecruitmentNo();
+        final Address address = new Address("111", "11", "test", "test");
+        final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
+        final Timetable timetable = new Timetable(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 2, 1), HourFormat.AM,
+                LocalTime.now(), 10);
+        final RecruitmentCreateCommand saveRecruitDto = new RecruitmentCreateCommand("title", "content", VolunteeringCategory.EDUCATION,
+                VolunteeringType.IRREG, VolunteerType.ADULT, 10, true, "organization", true,
+                address, coordinate, timetable, null, true, null);
+        saveRecruitmentNo = recruitmentService.addRecruitment(writer, saveRecruitDto);
     }
     private void setUploadImage(RealWorkCode realWorkCode, Long no) throws IOException {
         ImageParam imageParam = ImageParam.builder()

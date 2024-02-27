@@ -64,7 +64,7 @@ public class ScheduleController {
     public ResponseEntity scheduleDelete(@PathVariable("scheduleNo") Long scheduleNo,
                                          @PathVariable("recruitmentNo") Long recruitmentNo) {
 
-        scheduleCommandFacade.deleteSchedule(recruitmentNo, scheduleNo);
+        scheduleCommandFacade.deleteSchedule(scheduleNo);
         return ResponseEntity.ok().build();
     }
 
@@ -89,7 +89,7 @@ public class ScheduleController {
             @PathVariable("scheduleNo") Long scheduleNo) {
 
         ScheduleDetailSearchResult result = scheduleQueryFacade.findScheduleDetail(SecurityUtil.getLoginUserNo(),
-                scheduleNo);
+                recruitmentNo, scheduleNo);
         return ResponseEntity.ok(result);
     }
 }

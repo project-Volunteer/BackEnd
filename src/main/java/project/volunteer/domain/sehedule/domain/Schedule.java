@@ -155,7 +155,7 @@ public class Schedule extends BaseTimeEntity {
 
         if (recruitment.isLessParticipationNumThan(participationNum)) {
             throw new BusinessException(ErrorCode.EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM,
-                    String.format("Recruitment = [%d], Schedule = [%d]", recruitment.getVolunteerNum(),
+                    String.format("Recruitment = [%d], Schedule = [%d]", recruitment.getMaxParticipationNum(),
                             participationNum));
         }
     }

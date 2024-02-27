@@ -31,7 +31,7 @@ public class Image extends BaseTimeEntity {
     @Column(nullable = false)
     private Long no; //로그 번호, 모집글 번호, 유저 번호
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "storageno")
     private Storage storage; //upload
 
