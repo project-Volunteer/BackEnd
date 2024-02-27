@@ -59,8 +59,9 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
 
     @Override
     public RecruitmentDetailSearchResult searchRecruitmentDetail(final Long recruitmentNo) {
-        final RecruitmentAndUserDetail recruitmentDetail = recruitmentRepository.findRecruitmentAndUserDetailBy(
-                recruitmentNo);
+        final RecruitmentAndUserDetail recruitmentDetail = recruitmentRepository.findRecruitmentAndUserDetailBy(recruitmentNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
+                        String.format("RecruitmentNo = [%d]", recruitmentNo)));
         final RepeatPeriodDetail repeatPeriodDetail = findRepeatPeriodDetail(recruitmentDetail.getVolunteeringType(),
                 recruitmentNo);
         final List<RecruitmentParticipantDetail> participantsDetail = participantRepository.findParticipantsDetailBy(

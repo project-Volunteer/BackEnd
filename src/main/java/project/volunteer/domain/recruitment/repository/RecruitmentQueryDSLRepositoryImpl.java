@@ -9,6 +9,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -25,8 +26,6 @@ import project.volunteer.domain.recruitment.repository.dto.RecruitmentAndUserDet
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentList;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,14 +38,14 @@ public class RecruitmentQueryDSLRepositoryImpl implements RecruitmentQueryDSLRep
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public RecruitmentAndUserDetail findRecruitmentAndUserDetailBy(Long recruitmentNo) {
-        RecruitmentAndUserDetail result = queryFactory.select(
-                        Projections.constructor(RecruitmentAndUserDetail.class, recruitment.recruitmentNo,
-                                recruitment.volunteeringCategory, recruitment.organizationName, recruitment.isIssued,
-                                recruitment.volunteeringType, recruitment.volunteerType, recruitment.maxParticipationNum,
-                                recruitment.timetable, recruitment.title, recruitment.content, recruitment.address,
-                                recruitment.coordinate,
-                                recruitmentImageStorage.imagePath, user.nickName, user.picture, userImageStorage.imagePath))
+    public Optional<RecruitmentAndUserDetail> findRecruitmentAndUserDetailBy(Long recruitmentNo) {
+        return Optional.ofNullable(queryFactory
+                .select(Projections.constructor(RecruitmentAndUserDetail.class, recruitment.recruitmentNo,
+                        recruitment.volunteeringCategory, recruitment.organizationName, recruitment.isIssued,
+                        recruitment.volunteeringType, recruitment.volunteerType, recruitment.maxParticipationNum,
+                        recruitment.timetable, recruitment.title, recruitment.content, recruitment.address,
+                        recruitment.coordinate,
+                        recruitmentImageStorage.imagePath, user.nickName, user.picture, userImageStorage.imagePath))
                 .from(recruitment)
                 .innerJoin(recruitment.writer, user)
                 .leftJoin(recruitmentImage)
@@ -61,14 +60,7 @@ public class RecruitmentQueryDSLRepositoryImpl implements RecruitmentQueryDSLRep
                 .leftJoin(userImage.storage, userImageStorage)
                 .where(recruitment.recruitmentNo.eq(recruitmentNo),
                         recruitment.isDeleted.eq(IsDeleted.N))
-                .fetchOne();
-
-        if (Objects.isNull(result)) {
-            throw new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT,
-                    String.format("RecruitmentNo = [%d]", recruitmentNo));
-        }
-
-        return result;
+                .fetchOne());
     }
 
     @Override
