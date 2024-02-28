@@ -44,7 +44,7 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
-import project.volunteer.support.DatabaseCleaner;
+import project.volunteer.support.H2DatabaseCleaner;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -64,7 +64,7 @@ public class ConcurrentScheduleParticipationTest {
     @SpyBean
     private Clock clock;
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private H2DatabaseCleaner databaseCleaner;
 
     @AfterEach
     void tearDown() {

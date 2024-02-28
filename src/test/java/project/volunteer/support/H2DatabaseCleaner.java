@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class DatabaseCleaner {
+public class H2DatabaseCleaner {
     private static final String FOREIGN_KEY_CHECK_FORMAT = "SET REFERENTIAL_INTEGRITY %s";
     private static final String TRUNCATE_TABLE_FORMAT = "TRUNCATE TABLE %s";
     private List<String> tableNames;
