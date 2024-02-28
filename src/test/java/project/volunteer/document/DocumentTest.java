@@ -109,6 +109,7 @@ public abstract class DocumentTest {
     protected User teamUser4;
     protected User teamUser5;
     protected User teamUser6;
+    protected User teamUser7;
     protected User basicUser;
     protected Recruitment recruitment1;
     protected Recruitment recruitment2;
@@ -118,12 +119,14 @@ public abstract class DocumentTest {
     protected RecruitmentParticipation recruitmentParticipation4;
     protected RecruitmentParticipation recruitmentParticipation5;
     protected RecruitmentParticipation recruitmentParticipation6;
+    protected RecruitmentParticipation recruitmentParticipation7;
     protected Schedule schedule1;
     protected Schedule schedule2;
     protected Schedule schedule3;
     protected ScheduleParticipation scheduleParticipation4;
     protected ScheduleParticipation scheduleParticipation5;
     protected ScheduleParticipation scheduleParticipation6;
+    protected ScheduleParticipation scheduleParticipation7;
 
 
     @BeforeEach
@@ -243,6 +246,13 @@ public abstract class DocumentTest {
                 new RecruitmentParticipation(recruitment1, teamUser6, ParticipantState.JOIN_APPROVAL));
         recruitment1.increaseParticipationNum(1);
 
+        teamUser7 = userRepository.save(
+                new User("umm1234", "password", "umm", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
+        recruitmentParticipation7 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser7, ParticipantState.JOIN_APPROVAL));
+        recruitment1.increaseParticipationNum(1);
+
         // 봉사 일정 참여 유저 정보 저장
         scheduleParticipation4 = scheduleParticipationRepository.save(
                 new ScheduleParticipation(schedule1, recruitmentParticipation4, ParticipantState.PARTICIPATING));
@@ -254,6 +264,10 @@ public abstract class DocumentTest {
 
         scheduleParticipation6 = scheduleParticipationRepository.save(
                 new ScheduleParticipation(schedule1, recruitmentParticipation6, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
+        schedule1.increaseParticipationNum(1);
+
+        scheduleParticipation7 = scheduleParticipationRepository.save(
+                new ScheduleParticipation(schedule1, recruitmentParticipation7, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
         schedule1.increaseParticipationNum(1);
 
         // 일반 로그인 유저 정보 저장

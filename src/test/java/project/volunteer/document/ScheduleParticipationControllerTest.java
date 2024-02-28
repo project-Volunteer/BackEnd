@@ -3,9 +3,11 @@ package project.volunteer.document;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -142,6 +144,111 @@ public class ScheduleParticipationControllerTest extends DocumentTest {
                                 requestFields(
                                         fieldWithPath("scheduleParticipationNos").type(JsonFieldType.ARRAY)
                                                 .description("일정 참여자 고유키 PK")
+                                )
+                        )
+                );
+    }
+
+    @DisplayName("일정 참여자 리스트 조회에 성공하다.")
+    @Test
+    void findActiveParticipants() throws Exception {
+        //given & when
+        ResultActions result = mockMvc.perform(
+                get("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/participating", recruitment1.getRecruitmentNo(),
+                        schedule1.getScheduleNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken));
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("participating[].nickname").type(JsonFieldType.STRING)
+                                                .description("참여자 닉네임"),
+                                        fieldWithPath("participating[].email").type(JsonFieldType.STRING)
+                                                .description("참여자 이메일"),
+                                        fieldWithPath("participating[].profile").type(JsonFieldType.STRING)
+                                                .description("참여자 프로필 URL")
+                                )
+                        )
+                );
+    }
+
+    @DisplayName("일정 취소자 리스트 조회에 성공하다.")
+    @Test
+    void findCancelledParticipants() throws Exception {
+        //given when
+        ResultActions result = mockMvc.perform(
+                get("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", recruitment1.getRecruitmentNo(),
+                        schedule1.getScheduleNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken));
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("cancelling[].scheduleParticipationNo").type(JsonFieldType.NUMBER)
+                                                .description("일정 참여자 고유키 PK"),
+                                        fieldWithPath("cancelling[].nickname").type(JsonFieldType.STRING)
+                                                .description("참여자 닉네임"),
+                                        fieldWithPath("cancelling[].email").type(JsonFieldType.STRING)
+                                                .description("참여자 이메일"),
+                                        fieldWithPath("cancelling[].profile").type(JsonFieldType.STRING)
+                                                .description("참여자 프로필 URL")
+                                )
+                        )
+                );
+    }
+
+    @DisplayName("일정 참여 완료자 리스트 조회에 성공하다.")
+    @Test
+    void findCompletedParticipants() throws Exception {
+        //given & when
+        ResultActions result = mockMvc.perform(
+                get("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/completion", recruitment1.getRecruitmentNo(),
+                        schedule1.getScheduleNo())
+                        .header(AUTHORIZATION_HEADER, recruitmentOwnerAccessToken));
+
+        //then
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
+                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
+                                ),
+                                responseFields(
+                                        fieldWithPath("done[].scheduleParticipationNo").type(JsonFieldType.NUMBER)
+                                                .description("일정 참여자 고유키 PK"),
+                                        fieldWithPath("done[].nickname").type(JsonFieldType.STRING)
+                                                .description("참여자 닉네임"),
+                                        fieldWithPath("done[].email").type(JsonFieldType.STRING)
+                                                .description("참여자 이메일"),
+                                        fieldWithPath("done[].profile").type(JsonFieldType.STRING)
+                                                .description("참여자 URL"),
+                                        fieldWithPath("done[].isApproved").type(JsonFieldType.BOOLEAN)
+                                                .description("참여 완료 승인 여부")
                                 )
                         )
                 );

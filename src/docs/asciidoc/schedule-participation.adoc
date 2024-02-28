@@ -130,20 +130,20 @@ include::{snippets}/schedule-participation-controller-test/approve-participation
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/response-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/response-fields.adoc[]
 
 
 === 봉사 일정 참가 취소자 리스트 조회
@@ -158,20 +158,20 @@ include::{snippets}/schedule-participant-controller-test/find-list-participant-s
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/response-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/response-fields.adoc[]
 
 
 === 봉사 일정 참가 완료자 리스트 조회
@@ -186,17 +186,17 @@ include::{snippets}/schedule-participant-controller-test/find-list-cancellation-
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/response-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/response-fields.adoc[]
