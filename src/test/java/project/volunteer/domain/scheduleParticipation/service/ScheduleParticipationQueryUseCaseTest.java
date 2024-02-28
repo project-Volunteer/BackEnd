@@ -15,9 +15,9 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
-import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantsSearchResult;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -93,7 +93,7 @@ class ScheduleParticipationQueryUseCaseTest extends ServiceTest {
         scheduleParticipationRepository.saveAll(List.of(scheduleParticipation1, scheduleParticipation2));
 
         //when
-        ActiveParticipantSearchResult result = scheduleParticipationQueryUseCase.searchActiveParticipationList(
+        ActiveParticipantsSearchResult result = scheduleParticipationQueryUseCase.searchActiveParticipationList(
                 schedule.getScheduleNo());
 
         //then
@@ -124,6 +124,30 @@ class ScheduleParticipationQueryUseCaseTest extends ServiceTest {
         assertThat(result.getCancelling()).hasSize(2)
                 .extracting("scheduleParticipationNo")
                 .containsExactlyInAnyOrder(scheduleParticipation1.getId(), scheduleParticipation2.getId());
+    }
+
+    @DisplayName("일정 참여에 완료한 사용자들을 조회한다.")
+    @Test
+    void searchCompletedParticipantList() {
+        //given
+        final ScheduleParticipation scheduleParticipation1 = new ScheduleParticipation(schedule,
+                firstRecruitmentParticipation, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
+        final ScheduleParticipation scheduleParticipation2 = new ScheduleParticipation(schedule,
+                secondRecruitmentParticipation, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
+
+        scheduleParticipationRepository.saveAll(List.of(scheduleParticipation1, scheduleParticipation2));
+
+        //when
+        CompletedParticipantsSearchResult result = scheduleParticipationQueryUseCase.searchCompletedParticipationList(
+                schedule.getScheduleNo());
+
+        //then
+        assertThat(result.getDone()).hasSize(2)
+                .extracting("scheduleParticipationNo", "isApproved")
+                .containsExactlyInAnyOrder(
+                        tuple(scheduleParticipation1.getId(), false),
+                        tuple(scheduleParticipation2.getId(), true)
+                );
     }
 
 }

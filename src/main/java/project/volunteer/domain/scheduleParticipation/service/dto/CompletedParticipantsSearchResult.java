@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class ActiveParticipantSearchResult {
-    private List<ActiveParticipantDetail> participating;
+@NoArgsConstructor
+public class CompletedParticipantsSearchResult {
+    private List<CompletedParticipantDetail> done;
 }

@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.scheduleParticipation.api.dto.*;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandFacade;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationQueryFacade;
-import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
-import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantsSearchResult;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.util.SecurityUtil;
 
@@ -56,8 +56,8 @@ public class ScheduleParticipantController {
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @GetMapping("/{recruitmentNo}/schedule/{scheduleNo}/participating")
-    public ResponseEntity<ActiveParticipantSearchResult> scheduleParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
-        ActiveParticipantSearchResult result = scheduleParticipationQueryFacade.findActiveParticipants(scheduleNo);
+    public ResponseEntity<ActiveParticipantsSearchResult> scheduleParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
+        ActiveParticipantsSearchResult result = scheduleParticipationQueryFacade.findActiveParticipants(scheduleNo);
         return ResponseEntity.ok(result);
     }
 
@@ -70,9 +70,9 @@ public class ScheduleParticipantController {
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @GetMapping("/{recruitmentNo}/schedule/{scheduleNo}/completion")
-    public ResponseEntity<CompletedParticipantListResponse> scheduleCompletedParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
+    public ResponseEntity<CompletedParticipantsSearchResult> scheduleCompletedParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
 
-        List<CompletedParticipantList> completedParticipants = scheduleParticipationQueryFacade.findCompletedParticipantsSchedule(scheduleNo);
-        return ResponseEntity.ok(new CompletedParticipantListResponse(completedParticipants));
+        CompletedParticipantsSearchResult result = scheduleParticipationQueryFacade.findCompletedParticipants(scheduleNo);
+        return ResponseEntity.ok(result);
     }
 }

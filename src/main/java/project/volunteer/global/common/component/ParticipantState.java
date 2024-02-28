@@ -1,5 +1,7 @@
 package project.volunteer.global.common.component;
 
+import java.util.Arrays;
+import java.util.List;
 import project.volunteer.global.common.converter.CodeCommonType;
 
 public enum ParticipantState implements CodeCommonType {
@@ -35,5 +37,10 @@ public enum ParticipantState implements CodeCommonType {
     @Override
     public String getDesc() {
         return this.desc;
+    }
+
+    public static List<ParticipantState> getParticipationCompletionState() {
+        return List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL,
+                ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
     }
 }

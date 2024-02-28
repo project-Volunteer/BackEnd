@@ -20,10 +20,10 @@ import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
-import project.volunteer.domain.scheduleParticipation.api.dto.CompletedParticipantListResponse;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantsSearchResult;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponse;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
@@ -158,7 +158,7 @@ public class AcceptanceFixtures {
                 .extract();
     }
 
-    public static List<CompletedParticipantList> 봉사_일정_참여완료_조회(String token, Long recruitmentNo, Long scheduleNo) {
+    public static List<CompletedParticipantDetail> 봉사_일정_참여완료_조회(String token, Long recruitmentNo, Long scheduleNo) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)
@@ -166,7 +166,7 @@ public class AcceptanceFixtures {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(CompletedParticipantListResponse.class)
+                .as(CompletedParticipantsSearchResult.class)
                 .getDone();
     }
 

@@ -1,12 +1,11 @@
 package project.volunteer.domain.scheduleParticipation.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantsSearchResult;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
@@ -17,27 +16,19 @@ public class ScheduleParticipationQueryFacade {
     private final ScheduleQueryUseCase scheduleQueryUsecase;
     private final ScheduleParticipationQueryUseCase scheduleParticipationDtoService;
 
-    public ActiveParticipantSearchResult findActiveParticipants(final Long scheduleNo){
+    public ActiveParticipantsSearchResult findActiveParticipants(final Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
         return scheduleParticipationDtoService.searchActiveParticipationList(schedule.getScheduleNo());
     }
 
-    public CancelledParticipantsSearchResult findCancelledParticipants(Long scheduleNo){
+    public CancelledParticipantsSearchResult findCancelledParticipants(final Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
         return scheduleParticipationDtoService.searchCancelledParticipationList(schedule.getScheduleNo());
     }
 
-
-
-
-
-
-
-
-    public List<CompletedParticipantList> findCompletedParticipantsSchedule(Long scheduleNo){
+    public CompletedParticipantsSearchResult findCompletedParticipants(final Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
-
-        return scheduleParticipationDtoService.findCompletedParticipants(schedule);
+        return scheduleParticipationDtoService.searchCompletedParticipationList(schedule.getScheduleNo());
     }
 
 }

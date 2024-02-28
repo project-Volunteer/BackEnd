@@ -4,15 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
-import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantDetail;
-import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.ParticipantState;
-import project.volunteer.global.common.dto.StateResult;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,7 +24,7 @@ public class ScheduleParticipationQueryService implements ScheduleParticipationQ
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
-    public ActiveParticipantSearchResult searchActiveParticipationList(final Long scheduleNo) {
+    public ActiveParticipantsSearchResult searchActiveParticipationList(final Long scheduleNo) {
         final List<ParticipantState> states = List.of(ParticipantState.PARTICIPATING);
         final List<ActiveParticipantDetail> activeParticipantDetails = scheduleParticipationRepository.findScheduleParticipationDetailBy(
                         scheduleNo, states)
@@ -33,7 +32,7 @@ public class ScheduleParticipationQueryService implements ScheduleParticipationQ
                 .map(ActiveParticipantDetail::from)
                 .collect(Collectors.toList());
 
-        return new ActiveParticipantSearchResult(activeParticipantDetails);
+        return new ActiveParticipantsSearchResult(activeParticipantDetails);
     }
 
     @Override
@@ -48,27 +47,23 @@ public class ScheduleParticipationQueryService implements ScheduleParticipationQ
         return new CancelledParticipantsSearchResult(cancelledParticipantDetails);
     }
 
-
-
-
-
-
-
-
-
     @Override
-    public List<CompletedParticipantList> findCompletedParticipants(Schedule schedule) {
-        return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(),
-                        List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL,
-                                ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)).stream()
-                .map(sp -> {
-                    StateResult state = sp.isEqualParticipantState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)
-                            ? (StateResult.COMPLETE_APPROVED) : (StateResult.COMPLETE_UNAPPROVED);
-                    return new CompletedParticipantList(sp.getScheduleParticipationNo(), sp.getNickname(),
-                            sp.getEmail(), sp.getProfile(), state.getId());
-                })
+    public CompletedParticipantsSearchResult searchCompletedParticipationList(final Long scheduleNo) {
+        final List<ParticipantState> states = ParticipantState.getParticipationCompletionState();
+        final List<CompletedParticipantDetail> completedParticipantDetails = scheduleParticipationRepository.findScheduleParticipationDetailBy(
+                        scheduleNo, states)
+                .stream()
+                .map(CompletedParticipantDetail::from)
                 .collect(Collectors.toList());
+
+        return new CompletedParticipantsSearchResult(completedParticipantDetails);
     }
+
+
+
+
+
+
 
     @Override
     public List<ParsingCompleteSchedule> findCompleteScheduleList(Long loginUserNo, ParticipantState state) {
