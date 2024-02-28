@@ -1,6 +1,7 @@
 package project.volunteer.domain.recruitment.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
@@ -34,6 +35,8 @@ import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
 import project.volunteer.global.common.dto.StateResult;
+import project.volunteer.global.error.exception.BusinessException;
+import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.support.ServiceTest;
 
 class RecruitmentQueryUseCaseTest extends ServiceTest {
@@ -87,6 +90,25 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
                         .extracting("recruitmentParticipationNo", "nickName", "imageUrl")
                         .containsExactlyInAnyOrder(tuple(participant1.getId(), user1.getNickName(), userUploadImagePath1))
         );
+    }
+
+    @DisplayName("삭제된 봉사 모집글을 상세 조회할 경우, 예외가 발생한다.")
+    @Test
+    void searchRecruitmentDetailDeleted() {
+        //given
+        final User writer = userRepository.save(
+                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
+                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
+
+        final Recruitment recruitment = recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.Y, writer));
+
+        //when & then
+        assertThatThrownBy(() -> recruitmentQueryUseCase.searchRecruitmentDetail(recruitment.getRecruitmentNo()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.NOT_EXIST_RECRUITMENT.name());
     }
 
     @DisplayName("봉사 모집글 참여 가능 인원이 가득찰 경우, 요청한 회원 상태는 FULL이 된다.")

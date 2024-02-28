@@ -6,14 +6,12 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import project.volunteer.domain.sehedule.application.dto.query.ScheduleCalendarSearchResult;
 import project.volunteer.domain.sehedule.repository.dao.ScheduleDetail;
 import project.volunteer.global.common.component.IsDeleted;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,21 +32,15 @@ public class ScheduleQueryDSLRepositoryImpl implements ScheduleQueryDSLRepositor
     }
 
     @Override
-    public ScheduleDetail findScheduleDetailBy(Long scheduleNo) {
-        ScheduleDetail result = queryFactory.select(
-                        Projections.constructor(ScheduleDetail.class, schedule.scheduleNo, schedule.content,
-                                schedule.volunteerNum, schedule.currentVolunteerNum, schedule.address,
-                                schedule.scheduleTimeTable))
+    public Optional<ScheduleDetail> findScheduleDetailBy(Long scheduleNo) {
+        return Optional.ofNullable(queryFactory
+                .select(Projections.constructor(ScheduleDetail.class, schedule.scheduleNo, schedule.content,
+                        schedule.volunteerNum, schedule.currentVolunteerNum, schedule.address,
+                        schedule.scheduleTimeTable))
                 .from(schedule)
                 .where(schedule.isDeleted.eq(IsDeleted.N),
                         schedule.scheduleNo.eq(scheduleNo))
-                .fetchOne();
-
-        if (Objects.isNull(result)) {
-            throw new BusinessException(ErrorCode.NOT_EXIST_SCHEDULE, String.format("ScheduleNo=[%d]", scheduleNo));
-        }
-
-        return result;
+                .fetchOne());
     }
 
     @Override

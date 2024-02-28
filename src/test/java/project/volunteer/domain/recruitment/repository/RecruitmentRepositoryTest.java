@@ -30,8 +30,6 @@ import project.volunteer.global.common.component.HourFormat;
 import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.component.RealWorkCode;
 import project.volunteer.global.common.component.Timetable;
-import project.volunteer.global.error.exception.BusinessException;
-import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.support.RepositoryTest;
 
 class RecruitmentRepositoryTest extends RepositoryTest {
@@ -51,7 +49,8 @@ class RecruitmentRepositoryTest extends RepositoryTest {
 
         //when
         RecruitmentAndUserDetail detail = recruitmentRepository.findRecruitmentAndUserDetailBy(
-                recruitment.getRecruitmentNo());
+                        recruitment.getRecruitmentNo())
+                .orElseThrow(() -> new IllegalArgumentException("모집글 정보가 존재하지 않습니다."));
 
         //then
         assertAll(
@@ -79,7 +78,8 @@ class RecruitmentRepositoryTest extends RepositoryTest {
 
         //when
         RecruitmentAndUserDetail detail = recruitmentRepository.findRecruitmentAndUserDetailBy(
-                recruitment.getRecruitmentNo());
+                        recruitment.getRecruitmentNo())
+                .orElseThrow(() -> new IllegalArgumentException("모집글 정보가 존재하지 않습니다."));
 
         //then
         assertAll(
@@ -88,18 +88,6 @@ class RecruitmentRepositoryTest extends RepositoryTest {
                 () -> assertThat(detail.getUserNickName()).isEqualTo(nickName),
                 () -> assertThat(detail.getUserImagePath()).isEqualTo(userUploadImagePath)
         );
-    }
-
-    @DisplayName("삭제된 봉사 모집글을 상세 조회할 경우, 예외가 발생한다.")
-    @Test
-    void findDeletedRecruitmentDetail() {
-        //given
-        Recruitment recruitment = createAndSaveRecruitment(null, IsDeleted.Y);
-
-        //when & then
-        assertThatThrownBy(() -> recruitmentRepository.findRecruitmentAndUserDetailBy(recruitment.getRecruitmentNo()))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.NOT_EXIST_RECRUITMENT.name());
     }
 
     @DisplayName("필터링 조건으로 봉사 모집글 리스트를 조회한다.")
