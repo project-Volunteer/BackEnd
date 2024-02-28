@@ -1,5 +1,6 @@
 package project.volunteer.domain.scheduleParticipation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.domain.Gender;
@@ -95,12 +97,33 @@ class ScheduleParticipationQueryUseCaseTest extends ServiceTest {
                 schedule.getScheduleNo());
 
         //then
-        Assertions.assertThat(participatingParticipantLists).hasSize(2)
+        assertThat(participatingParticipantLists).hasSize(2)
                 .extracting("nickname", "email", "profile")
                 .containsExactlyInAnyOrder(
                         tuple(firstUser.getNickName(), firstUser.getEmail(), firstUser.getPicture()),
                         tuple(secondUser.getNickName(), secondUser.getEmail(), secondUser.getPicture())
                 );
+    }
+
+    @DisplayName("일정 참여를 취소한 리스트를 조회한다.")
+    @Test
+    void searchCancelledParticipantList() {
+        //given
+        final ScheduleParticipation scheduleParticipation1 = new ScheduleParticipation(schedule,
+                firstRecruitmentParticipation, ParticipantState.PARTICIPATION_CANCEL);
+        final ScheduleParticipation scheduleParticipation2 = new ScheduleParticipation(schedule,
+                secondRecruitmentParticipation, ParticipantState.PARTICIPATION_CANCEL);
+
+        scheduleParticipationRepository.saveAll(List.of(scheduleParticipation1, scheduleParticipation2));
+
+        //when
+        CancelledParticipantsSearchResult result = scheduleParticipationQueryUseCase.searchCancelledParticipationList(
+                schedule.getScheduleNo());
+
+        //then
+        assertThat(result.getCancelling()).hasSize(2)
+                .extracting("scheduleParticipationNo")
+                .containsExactlyInAnyOrder(scheduleParticipation1.getId(), scheduleParticipation2.getId());
     }
 
 }

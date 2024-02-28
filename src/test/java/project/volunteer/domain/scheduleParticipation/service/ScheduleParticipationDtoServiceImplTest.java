@@ -15,9 +15,8 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
-import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
-import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -82,34 +81,6 @@ class ScheduleParticipationDtoServiceImplTest {
                 "content", "organization",
                 Address.createAddress("11", "1111", "details", "fullName"), 3);
         saveSchedule = scheduleRepository.save(createSchedule);
-    }
-
-    @Test
-    @DisplayName("일정 취소 요청 리스트 조회 시 2명의 취소 요청자가 조회된다.")
-    public void schedule_cancel_participant_list(){
-        //given
-        User newUser1 = 사용자_등록("rnqhstlr");
-        RecruitmentParticipation newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
-        일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
-
-        User newUser2 = 사용자_등록("didthdms");
-        RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
-        일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_CANCEL);
-
-        User newUser3 = 사용자_등록("didghfhr");
-        RecruitmentParticipation newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
-        일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATION_CANCEL);
-        clear();
-
-        //when
-        List<CancelledParticipantList> findCancellingParticipants = spDtoService.findCancelledParticipants(saveSchedule);
-
-
-        //then
-        assertThat(findCancellingParticipants.size()).isEqualTo(2);
-        for(CancelledParticipantList p : findCancellingParticipants){
-            assertThat(p.getProfile()).isEqualTo("picture");
-        }
     }
 
     @Test

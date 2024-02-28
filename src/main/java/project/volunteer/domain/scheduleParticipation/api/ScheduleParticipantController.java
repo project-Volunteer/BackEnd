@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import project.volunteer.domain.scheduleParticipation.api.dto.*;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandFacade;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationQueryFacade;
-import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.global.Interceptor.OrganizationAuth;
@@ -63,10 +64,9 @@ public class ScheduleParticipantController {
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @GetMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancelling")
-    public ResponseEntity<CancelledParticipantListResponse> scheduleCancelledParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
-
-        List<CancelledParticipantList> cancellingParticipants = scheduleParticipationQueryFacade.findCancelledParticipantsSchedule(scheduleNo);
-        return ResponseEntity.ok(new CancelledParticipantListResponse(cancellingParticipants));
+    public ResponseEntity<CancelledParticipantsSearchResult> scheduleCancelledParticipantList(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
+        CancelledParticipantsSearchResult result = scheduleParticipationQueryFacade.findCancelledParticipants(scheduleNo);
+        return ResponseEntity.ok(result);
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)

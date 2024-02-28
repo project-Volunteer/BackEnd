@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
-import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
@@ -31,40 +32,48 @@ public class ScheduleParticipationQueryService implements ScheduleParticipationQ
                 .collect(Collectors.toList());
     }
 
-
-
-
-
-
-
-
-
     @Override
-    public List<CancelledParticipantList> findCancelledParticipants(Schedule schedule) {
-        return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(), List.of(ParticipantState.PARTICIPATION_CANCEL)).stream()
-                .map(p -> new CancelledParticipantList(p.getScheduleParticipationNo(), p.getNickname(), p.getEmail(), p.getProfile()))
+    public CancelledParticipantsSearchResult searchCancelledParticipationList(final Long scheduleNo) {
+        final List<ParticipantState> states = List.of(ParticipantState.PARTICIPATION_CANCEL);
+        final List<CancelledParticipantDetail> cancelledParticipantDetails = scheduleParticipationRepository.findScheduleParticipationDetailBy(
+                        scheduleNo, states)
+                .stream()
+                .map(CancelledParticipantDetail::from)
                 .collect(Collectors.toList());
+
+        return new CancelledParticipantsSearchResult(cancelledParticipantDetails);
     }
+
+
+
+
+
+
+
+
 
     @Override
     public List<CompletedParticipantList> findCompletedParticipants(Schedule schedule) {
         return scheduleParticipationRepository.findOptimizationParticipantByScheduleAndState(schedule.getScheduleNo(),
-                List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)).stream()
+                        List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL,
+                                ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED)).stream()
                 .map(sp -> {
-                    StateResult state = sp.isEqualParticipantState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)?(StateResult.COMPLETE_APPROVED):(StateResult.COMPLETE_UNAPPROVED);
-                    return new CompletedParticipantList(sp.getScheduleParticipationNo(), sp.getNickname(), sp.getEmail(), sp.getProfile(), state.getId());
+                    StateResult state = sp.isEqualParticipantState(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL)
+                            ? (StateResult.COMPLETE_APPROVED) : (StateResult.COMPLETE_UNAPPROVED);
+                    return new CompletedParticipantList(sp.getScheduleParticipationNo(), sp.getNickname(),
+                            sp.getEmail(), sp.getProfile(), state.getId());
                 })
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<ParsingCompleteSchedule> findCompleteScheduleList(Long loginUserNo, ParticipantState state) {
-    	return scheduleParticipationRepository.findCompletedSchedules(loginUserNo, state).stream()
-    			.map(cs -> {
-    				return new ParsingCompleteSchedule(cs.getScheduleNo()
-                                                     , cs.getRecruitmentTitle()
-                                                     , cs.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")));
-    			})
-    			.collect(Collectors.toList());
+        return scheduleParticipationRepository.findCompletedSchedules(loginUserNo, state).stream()
+                .map(cs -> {
+                    return new ParsingCompleteSchedule(cs.getScheduleNo()
+                            , cs.getRecruitmentTitle()
+                            , cs.getEndDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")));
+                })
+                .collect(Collectors.toList());
     }
 }

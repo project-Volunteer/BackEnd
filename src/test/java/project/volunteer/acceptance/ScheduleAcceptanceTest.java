@@ -32,7 +32,7 @@ import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
 import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
-import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
@@ -756,12 +756,12 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         봉사_일정_참여_취소요청(soeunToken, recruitmentNo, scheduleNo2);
 
-        final List<CancelledParticipantList> cancelledParticipants =
+        final List<CancelledParticipantDetail> cancelledParticipants =
                 봉사_일정_취소요청_조회(bonsikToken, recruitmentNo, scheduleNo2);
 
         final CancelApproval cancelApprovalRequest = new CancelApproval(
                 cancelledParticipants.stream()
-                        .map(CancelledParticipantList::getScheduleParticipationNo)
+                        .map(CancelledParticipantDetail::getScheduleParticipationNo)
                         .collect(Collectors.toList()));
         봉사_일정_참여_취소승인(bonsikToken, recruitmentNo, scheduleNo2, cancelApprovalRequest);
 
