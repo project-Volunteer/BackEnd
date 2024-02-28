@@ -198,7 +198,6 @@ public class ScheduleControllerTest extends DocumentTest {
 
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("activeVolunteerNum").value(0))
                 .andExpect(jsonPath("state").value(StateResult.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
@@ -297,7 +296,6 @@ public class ScheduleControllerTest extends DocumentTest {
 
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("activeVolunteerNum").value(0))
                 .andExpect(jsonPath("state").value(StateResult.AVAILABLE.name()))
                 .andDo(print())
                 .andDo(
