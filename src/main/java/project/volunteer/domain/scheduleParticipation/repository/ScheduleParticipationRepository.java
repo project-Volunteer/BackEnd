@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.repository.dto.CompletedScheduleDetail;
-import project.volunteer.domain.scheduleParticipation.repository.dto.ScheduleParticipationDetail;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.ParticipantState;
@@ -67,22 +66,6 @@ public interface ScheduleParticipationRepository extends JpaRepository<ScheduleP
     Optional<ScheduleParticipation> findByUserNoAndScheduleNoAndState(@Param("userNo") Long userNo,
                                                                       @Param("scheduleNo") Long scheduleNo,
                                                                       @Param("state") ParticipantState state);
-
-    //N+1 문제를 막기 위해서 Projection + Join 방식 사용
-    @Query("select new project.volunteer.domain.scheduleParticipation.repository.dto.ScheduleParticipationDetail(sp.id,u.nickName,u.email,coalesce(s.imagePath,u.picture),sp.state) "
-            +
-            "from ScheduleParticipation sp " +
-            "join sp.recruitmentParticipation p " +
-            "join p.user u " +
-            "left join Image i " +
-            "on i.no=u.userNo " +
-            "and i.realWorkCode=project.volunteer.global.common.component.RealWorkCode.USER " +
-            "and i.isDeleted=project.volunteer.global.common.component.IsDeleted.N " +
-            "left join i.storage s " +
-            "where sp.schedule.scheduleNo=:scheduleNo " +
-            "and sp.state in :states ")
-    List<ScheduleParticipationDetail> findOptimizationParticipantByScheduleAndState(@Param("scheduleNo") Long scheduleNo,
-                                                                                    @Param("states") List<ParticipantState> states);
 
     @Query("select new project.volunteer.domain.scheduleParticipation.repository.dto.CompletedScheduleDetail" +
             "(sp.schedule.scheduleNo " +

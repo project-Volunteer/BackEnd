@@ -1,6 +1,5 @@
 package project.volunteer.global.common.component;
 
-import java.util.Arrays;
 import java.util.List;
 import project.volunteer.global.common.converter.CodeCommonType;
 
