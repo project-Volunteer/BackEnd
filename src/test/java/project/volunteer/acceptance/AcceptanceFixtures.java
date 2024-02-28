@@ -18,8 +18,8 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
-import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
-import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
+import project.volunteer.domain.scheduleParticipation.api.dto.CancellationApprovalRequest;
+import project.volunteer.domain.scheduleParticipation.api.dto.ParticipationCompletionApproveRequest;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
@@ -147,7 +147,7 @@ public class AcceptanceFixtures {
     }
 
     public static ExtractableResponse<Response> 봉사_일정_참여_취소승인(String token, Long recruitmentNo, Long scheduleNo,
-                                                              CancelApproval request) {
+                                                              CancellationApprovalRequest request) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)
@@ -183,7 +183,7 @@ public class AcceptanceFixtures {
     }
 
     public static ExtractableResponse<Response> 봉사_일정_참여완료_승인(String token, Long recruitmentNo, Long scheduleNo,
-                                                              CompleteApproval request) {
+                                                              ParticipationCompletionApproveRequest request) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)

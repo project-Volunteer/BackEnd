@@ -1,17 +1,17 @@
 package project.volunteer.domain.scheduleParticipation.api.dto;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CancelApproval {
+public class ParticipationCompletionApproveRequest {
 
     @NotNull
-    private List<Long> no;
+    private List<Long> scheduleParticipationNos;
 }

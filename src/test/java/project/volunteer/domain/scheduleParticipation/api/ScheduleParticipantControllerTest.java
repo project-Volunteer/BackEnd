@@ -30,8 +30,8 @@ import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
-import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
-import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
+import project.volunteer.domain.scheduleParticipation.api.dto.CancellationApprovalRequest;
+import project.volunteer.domain.scheduleParticipation.api.dto.ParticipationCompletionApproveRequest;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandUseCase;
@@ -134,36 +134,6 @@ class ScheduleParticipantControllerTest {
         }
     }
 
-    @Test
-    @DisplayName("일정 참가 신청에 성공하다.")
-    @Transactional
-    @WithUserDetails(value = "spct_test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void participateSchedule() throws Exception {
-        //given
-        봉사모집글_팀원_등록(saveRecruitment, loginUser);
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/join",
-                        saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
-                .header(AUTHORIZATION_HEADER, "access Token")
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
-                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @Test
     @DisplayName("팀원이 아닌 사용자가 일정 참가 신청을 시도하다.")
@@ -176,74 +146,6 @@ class ScheduleParticipantControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @DisplayName("일정 참가 취소 요청에 성공하다.")
-    @Transactional
-    @WithUserDetails(value = "spct_test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void cancelParticipationSchedule() throws Exception {
-        //given
-        RecruitmentParticipation participant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        일정_참여상태_추가(saveSchedule, participant, ParticipantState.PARTICIPATING);
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancel", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
-                .header(AUTHORIZATION_HEADER, "access Token")
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
-                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
-                                )
-                        )
-                );
-    }
-
-
-    @Test
-    @DisplayName("일정 참가 취소 요청 승인에 성공하다.")
-    @Transactional
-    @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void approveCancellationSchedule() throws Exception {
-        //given
-        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        CancelApproval dto = new CancelApproval(List.of(newSp.getId()));
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling",
-                        saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .content(toJson(dto))
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
-                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
-                                ),
-                                requestFields(
-                                        fieldWithPath("no").type(JsonFieldType.NUMBER).description("취소 요청자 고유키 PK")
-                                )
-                        )
-                );
-    }
-
     @Disabled
     @Test
     @DisplayName("방장이 아닌 사용자가 일정 참가 취소 요청 승인을 시도하다.")
@@ -253,7 +155,7 @@ class ScheduleParticipantControllerTest {
         //given
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        CancelApproval dto = new CancelApproval(List.of(newSp.getId()));
+        CancellationApprovalRequest dto = new CancellationApprovalRequest(List.of(newSp.getId()));
 
         //when & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
@@ -272,7 +174,7 @@ class ScheduleParticipantControllerTest {
         //given
         RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
-        CancelApproval dto = new CancelApproval(null); //필수 파라미터 누락
+        CancellationApprovalRequest dto = new CancellationApprovalRequest(null); //필수 파라미터 누락
 
         //when & then
         mockMvc.perform(put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancelling", saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
@@ -281,44 +183,6 @@ class ScheduleParticipantControllerTest {
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
-
-    @Test
-    @DisplayName("일정 참가 완료 승인에 성공하다.")
-    @Transactional
-    @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    public void approvalCompletionSchedule() throws Exception {
-        //given
-        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
-        ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
-        CompleteApproval dto = new CompleteApproval(List.of(newSp.getId()));
-
-        //when
-        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/complete",
-                        saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo())
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION_HEADER, "access Token")
-                .content(toJson(dto))
-        );
-
-        //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION_HEADER).description("JWT Access Token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("recruitmentNo").description("봉사 모집글 고유키 PK"),
-                                        parameterWithName("scheduleNo").description("봉사 일정 고유키 PK")
-                                ),
-                                requestFields(
-                                        fieldWithPath("completedList").type(JsonFieldType.ARRAY).description("참가 완료자 고유키 PK")
-                                )
-                        )
-                );
-    }
-
 
     @Test
     @DisplayName("일정 참가자 리스트 조회에 성공하다.")

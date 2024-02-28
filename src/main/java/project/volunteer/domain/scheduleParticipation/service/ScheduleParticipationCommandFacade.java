@@ -30,9 +30,9 @@ public class ScheduleParticipationCommandFacade {
         scheduleParticipationService.cancelParticipation(schedule, recruitmentParticipation);
     }
 
-    public void approvalCancellationSchedule(Long scheduleNo, List<Long> scheduleParticipantNo){
+    public void approvalCancellationSchedule(Long scheduleNo, List<Long> scheduleParticipantNos){
         Schedule schedule = scheduleQueryUsecase.findScheduleInProgress(scheduleNo);
-        scheduleParticipationService.approvalCancellation(schedule, scheduleParticipantNo);
+        scheduleParticipationService.approvalCancellation(schedule, scheduleParticipantNos);
     }
 
     public void approvalParticipationCompletionSchedule(Long scheduleNo, List<Long> scheduleParticipantNos){

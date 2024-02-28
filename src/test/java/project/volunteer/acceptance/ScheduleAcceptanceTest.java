@@ -30,8 +30,8 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
-import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
-import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
+import project.volunteer.domain.scheduleParticipation.api.dto.CancellationApprovalRequest;
+import project.volunteer.domain.scheduleParticipation.api.dto.ParticipationCompletionApproveRequest;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
@@ -661,7 +661,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         final List<CompletedParticipantDetail> completedScheduleParticipants =
                 봉사_일정_참여완료_조회(bonsikToken, recruitmentNo, scheduleNo2);
 
-        final CompleteApproval completeApprovalRequest = new CompleteApproval(
+        final ParticipationCompletionApproveRequest completeApprovalRequest = new ParticipationCompletionApproveRequest(
                 completedScheduleParticipants.stream()
                         .map(CompletedParticipantDetail::getScheduleParticipationNo)
                         .collect(Collectors.toList())
@@ -763,7 +763,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         final List<CancelledParticipantDetail> cancelledParticipants =
                 봉사_일정_취소요청_조회(bonsikToken, recruitmentNo, scheduleNo2);
 
-        final CancelApproval cancelApprovalRequest = new CancelApproval(
+        final CancellationApprovalRequest cancelApprovalRequest = new CancellationApprovalRequest(
                 cancelledParticipants.stream()
                         .map(CancelledParticipantDetail::getScheduleParticipationNo)
                         .collect(Collectors.toList()));

@@ -8,49 +8,47 @@ import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipat
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationQueryFacade;
 import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantsSearchResult;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.util.SecurityUtil;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
-public class ScheduleParticipantController {
+public class ScheduleParticipationController {
     private final ScheduleParticipationCommandFacade scheduleParticipationCommandFacade;
     private final ScheduleParticipationQueryFacade scheduleParticipationQueryFacade;
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/join")
-    public ResponseEntity scheduleParticipation(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
+    public ResponseEntity<Void> scheduleParticipation(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
         scheduleParticipationCommandFacade.participateSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_TEAM)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancel")
-    public ResponseEntity scheduleCancelRequest(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
+    public ResponseEntity<Void> scheduleCancelRequest(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo){
         scheduleParticipationCommandFacade.cancelParticipationSchedule(SecurityUtil.getLoginUserNo(), recruitmentNo, scheduleNo);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/cancelling")
-    public ResponseEntity scheduleCancelApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
-                                                 @RequestBody @Valid CancelApproval dto){
-        scheduleParticipationCommandFacade.approvalCancellationSchedule(scheduleNo, dto.getNo());
+    public ResponseEntity<Void> scheduleCancelApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
+                                                 @RequestBody @Valid CancellationApprovalRequest request){
+        scheduleParticipationCommandFacade.approvalCancellationSchedule(scheduleNo, request.getScheduleParticipationNos());
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = OrganizationAuth.Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/schedule/{scheduleNo}/complete")
-    public ResponseEntity scheduleCompleteApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
-                                                   @RequestBody @Valid CompleteApproval dto){
+    public ResponseEntity<Void> scheduleCompleteApproval(@PathVariable Long recruitmentNo, @PathVariable Long scheduleNo,
+                                                   @RequestBody @Valid ParticipationCompletionApproveRequest request){
 
-        scheduleParticipationCommandFacade.approvalParticipationCompletionSchedule(scheduleNo, dto.getCompletedList());
+        scheduleParticipationCommandFacade.approvalParticipationCompletionSchedule(scheduleNo, request.getScheduleParticipationNos());
         return ResponseEntity.ok().build();
     }
 
