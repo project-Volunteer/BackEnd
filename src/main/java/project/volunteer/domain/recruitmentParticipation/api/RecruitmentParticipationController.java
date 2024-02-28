@@ -16,7 +16,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
-public class ParticipationController {
+public class RecruitmentParticipationController {
     private final RecruitmentParticipationFacade participationFacade;
 
     @PutMapping("/{recruitmentNo}/join")
