@@ -41,10 +41,10 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.global.common.component.Address;
 import project.volunteer.global.common.component.Coordinate;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.application.dto.command.RecruitmentCreateCommand;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
@@ -68,7 +68,8 @@ import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 @Import(RestDocsConfiguration.class)
 public class UserControllerRecruitingTest {
 	@Autowired UserRepository userRepository;
-	@Autowired ParticipantRepository participantRepository;
+	@Autowired
+    RecruitmentParticipationRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
 	@Autowired
@@ -196,34 +197,34 @@ public class UserControllerRecruitingTest {
 
 		// 참여자 저장
 		Recruitment recruitment1 = recruitmentRepository.findById(no1).get();
-		Participant participant1 = Participant.builder().participant(saveUser).recruitment(recruitment1)
+		RecruitmentParticipation participant1 = RecruitmentParticipation.builder().participant(saveUser).recruitment(recruitment1)
 				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant1);
 
 		Recruitment recruitment2 = recruitmentRepository.findById(no2).get();
-		Participant participant2 = Participant.builder().participant(saveUser).recruitment(recruitment2)
+		RecruitmentParticipation participant2 = RecruitmentParticipation.builder().participant(saveUser).recruitment(recruitment2)
 				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant2);
 
 
 		Recruitment recruitment3 = recruitmentRepository.findById(no2).get();
-		Participant participant3 = Participant.builder().participant(userNo2).recruitment(recruitment3)
+		RecruitmentParticipation participant3 = RecruitmentParticipation.builder().participant(userNo2).recruitment(recruitment3)
 				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant3);
 
 
 		Recruitment recruitment4 = recruitmentRepository.findById(no1).get();
-		Participant participant4 = Participant.builder().participant(userNo3).recruitment(recruitment4)
+		RecruitmentParticipation participant4 = RecruitmentParticipation.builder().participant(userNo3).recruitment(recruitment4)
 				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant4);
 
 
 		Recruitment recruitment5 = recruitmentRepository.findById(no1).get();
-		Participant participant5 = Participant.builder().participant(userNo4).recruitment(recruitment5)
+		RecruitmentParticipation participant5 = RecruitmentParticipation.builder().participant(userNo4).recruitment(recruitment5)
 				.state(ParticipantState.JOIN_REQUEST)
 				.build();
 		participantRepository.save(participant5);
@@ -231,7 +232,7 @@ public class UserControllerRecruitingTest {
 
 
 		Recruitment recruitment6 = recruitmentRepository.findById(no2).get();
-		Participant participant6 = Participant.builder().participant(userNo3).recruitment(recruitment6)
+		RecruitmentParticipation participant6 = RecruitmentParticipation.builder().participant(userNo3).recruitment(recruitment6)
 				.state(ParticipantState.JOIN_APPROVAL)
 				.build();
 		participantRepository.save(participant6);

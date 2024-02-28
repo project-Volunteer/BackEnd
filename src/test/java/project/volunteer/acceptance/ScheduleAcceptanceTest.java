@@ -24,7 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
@@ -218,7 +218,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         Long participantNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
         Long participantNo2 = 봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo1, participantNo2)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo1, participantNo2)));
 
         final ScheduleUpsertRequest insertRequest = new ScheduleUpsertRequest(
                 new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
@@ -423,7 +423,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo)));
 
         final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
         final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
@@ -465,7 +465,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo)));
 
         final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);
         final Long lastCalendarScheduleNo = calendarSchedules.get(calendarSchedules.size() - 1).getNo();
@@ -509,7 +509,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -554,7 +554,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         Long participantNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
         Long participantNo2 = 봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo1, participantNo2)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo1, participantNo2)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -599,7 +599,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -647,7 +647,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -704,7 +704,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 
@@ -750,7 +750,7 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         Long participantNo = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo)));
 
         봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo2);
 

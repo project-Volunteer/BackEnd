@@ -213,6 +213,66 @@ class RecruitmentTest {
                 .hasMessage(ErrorCode.EXPIRED_PERIOD_RECRUITMENT.name());
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {3, 4, 5, 6})
+    @DisplayName("참여 승인된 인원수가 최대 참여 인원수를 초과할 경우 예외가 발생한다.")
+    void throwExceptionWhenExceedMaxCurrentParticipationNum(int invalidAddParticipationNum) {
+        //given
+        final Recruitment recruitment = Recruitment.builder()
+                .title("title")
+                .content("content")
+                .volunteeringCategory(VolunteeringCategory.EDUCATION)
+                .volunteerType(VolunteerType.ADULT)
+                .volunteeringType(VolunteeringType.IRREG)
+                .maxParticipationNum(10)
+                .currentVolunteerNum(8)
+                .isIssued(true)
+                .organizationName("organization")
+                .address(address)
+                .coordinate(coordinate)
+                .timetable(timetable)
+                .viewCount(0)
+                .likeCount(0)
+                .isPublished(true)
+                .isDeleted(IsDeleted.N)
+                .build();
+
+        //when & then
+        assertThatThrownBy(() -> recruitment.increaseParticipationNum(invalidAddParticipationNum))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_CURRENT_PARTICIPATION_NUM.name());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {3, 4, 5, 6})
+    @DisplayName("참여 승인된 인원수가 0명 미만일 경우 예외가 발생한다.")
+    void throwExceptionWhenLessMinCurrentParticipationNum(int invalidAddParticipationNum) {
+        //given
+        final Recruitment recruitment = Recruitment.builder()
+                .title("title")
+                .content("content")
+                .volunteeringCategory(VolunteeringCategory.EDUCATION)
+                .volunteerType(VolunteerType.ADULT)
+                .volunteeringType(VolunteeringType.IRREG)
+                .maxParticipationNum(10)
+                .currentVolunteerNum(2)
+                .isIssued(true)
+                .organizationName("organization")
+                .address(address)
+                .coordinate(coordinate)
+                .timetable(timetable)
+                .viewCount(0)
+                .likeCount(0)
+                .isPublished(true)
+                .isDeleted(IsDeleted.N)
+                .build();
+
+        //when & then
+        assertThatThrownBy(() -> recruitment.decreaseParticipationNum(invalidAddParticipationNum))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_CURRENT_PARTICIPATION_NUM.name());
+    }
+
     private LocalDate toLocalDate(String date) {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }

@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.dao.dto.UserRecruitmentDetails;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.dto.UserRecruitmentDetails;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
@@ -28,7 +28,7 @@ import project.volunteer.global.common.component.ParticipantState;
 @RequiredArgsConstructor
 public class UserDtoServiceImpl implements UserDtoService{
 	private final UserQueryDtoRepository userQueryDtoRepository;
-	private final ParticipantRepository participantRepository;
+	private final RecruitmentParticipationRepository participantRepository;
 	private final RecruitmentRepository recruitmentRepository;
 	private final LogboardRepository logboardRepository;
 	private final ScheduleParticipationRepository scheduleParticipationRepository;
@@ -65,8 +65,8 @@ public class UserDtoServiceImpl implements UserDtoService{
 		int joinRequestCnt = 0;
 		int tempSavingCnt = 0;
 
-		List <Participant> participantList = participantRepository.findJoinStatusByTeamUserno(loginUserNo);
-		for(Participant p : participantList){
+		List <RecruitmentParticipation> participantList = participantRepository.findJoinStatusByTeamUserno(loginUserNo);
+		for(RecruitmentParticipation p : participantList){
 			if(p.getState().equals(ParticipantState.JOIN_APPROVAL)){
 				joinApprovalCnt+=1;
 			} else if(p.getState().equals(ParticipantState.JOIN_REQUEST)){

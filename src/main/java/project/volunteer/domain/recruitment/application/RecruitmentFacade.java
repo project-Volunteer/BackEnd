@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.confirmation.application.ConfirmationService;
 import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.notice.application.NoticeService;
-import project.volunteer.domain.participation.application.ParticipationService;
+import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationUseCase;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
 import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
@@ -25,10 +25,11 @@ public class RecruitmentFacade {
     private final RecruitmentCommandUseCase recruitmentCommandUseCase;
     private final RecruitmentQueryUseCase recruitmentQueryUseCase;
     private final ScheduleCommandUseCase scheduleCommandUseCase;
+    private final RecruitmentParticipationUseCase recruitmentParticipationUseCase;
+
 
 
     private final ImageService imageService;
-    private final ParticipationService participationService;
     private final ScheduleParticipationService scheduleParticipationService;
     private final NoticeService noticeService;
     private final ConfirmationService confirmationService;
@@ -45,6 +46,10 @@ public class RecruitmentFacade {
 
         scheduleCommandUseCase.deleteAllSchedule(recruitmentNo);
 
+        recruitmentParticipationUseCase.deleteRecruitmentParticipations(recruitmentNo);
+
+
+
 
 
         //이미지 삭제
@@ -58,9 +63,6 @@ public class RecruitmentFacade {
 
         //일정 참여자 삭제
         scheduleParticipationService.deleteAllScheduleParticipation(recruitmentNo);
-
-        //봉사 참여자 삭제
-        participationService.deleteParticipations(recruitmentNo);
     }
 
     public StateResult findState(Long recruitmentNo, Long userNo){

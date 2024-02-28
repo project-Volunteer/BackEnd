@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
@@ -24,7 +24,7 @@ import project.volunteer.global.error.exception.ErrorCode;
 public class ParticipationServiceConcurrent {
 
     private final ScheduleRepository scheduleRepository;
-    private final ParticipantRepository participantRepository;
+    private final RecruitmentParticipationRepository participantRepository;
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Transactional
@@ -47,7 +47,7 @@ public class ParticipationServiceConcurrent {
                         sp -> {
                             //중복 신청 검증(일정 참여중, 일정 참여 취소 요청)
                             if(sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL)){
-                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+                                throw new BusinessException(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION,
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", findSchedule.getScheduleNo(), loginUserNo, sp.getState().name()));
                             }
 
@@ -56,9 +56,9 @@ public class ParticipationServiceConcurrent {
                         },
                         () ->{
                             //신규 신청
-                            Participant findParticipant =
-                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
-                                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
+                            RecruitmentParticipation findParticipant =
+                                    participantRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, loginUserNo)
+                                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT_PARTICIPANT,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
                             ScheduleParticipation createSP =
@@ -83,7 +83,7 @@ public class ParticipationServiceConcurrent {
                         sp -> {
                             //중복 신청 검증(일정 참여중, 일정 참여 취소 요청)
                             if (sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL)) {
-                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+                                throw new BusinessException(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION,
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", findSchedule.getScheduleNo(), loginUserNo, sp.getState().name()));
                             }
                             //재신청
@@ -91,9 +91,9 @@ public class ParticipationServiceConcurrent {
                             },
                         () -> {
                             //신규 신청
-                            Participant findParticipant =
-                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
-                                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
+                            RecruitmentParticipation findParticipant =
+                                    participantRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, loginUserNo)
+                                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT_PARTICIPANT,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
                             ScheduleParticipation createSP =
@@ -119,7 +119,7 @@ public class ParticipationServiceConcurrent {
                         sp -> {
                             //중복 신청 검증(일정 참여중, 일정 참여 취소 요청)
                             if (sp.isEqualState(ParticipantState.PARTICIPATING) || sp.isEqualState(ParticipantState.PARTICIPATION_CANCEL)) {
-                                throw new BusinessException(ErrorCode.DUPLICATE_PARTICIPATION,
+                                throw new BusinessException(ErrorCode.DUPLICATE_RECRUITMENT_PARTICIPATION,
                                         String.format("ScheduleNo = [%d], UserNo = [%d], State = [%s]", findSchedule.getScheduleNo(), loginUserNo, sp.getState().name()));
                             }
                             //재신청
@@ -127,9 +127,9 @@ public class ParticipationServiceConcurrent {
                         },
                         () -> {
                             //신규 신청
-                            Participant findParticipant =
-                                    participantRepository.findByRecruitment_RecruitmentNoAndParticipant_UserNo(recruitmentNo, loginUserNo)
-                                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_PARTICIPATION,
+                            RecruitmentParticipation findParticipant =
+                                    participantRepository.findByRecruitment_RecruitmentNoAndUser_UserNo(recruitmentNo, loginUserNo)
+                                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_RECRUITMENT_PARTICIPANT,
                                                     String.format("ScheduleNo = [%d], UserNo = [%d]", scheduleNo, loginUserNo)));
 
                             ScheduleParticipation createSP =

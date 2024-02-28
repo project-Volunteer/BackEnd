@@ -48,8 +48,8 @@ import project.volunteer.domain.like.dao.LikeRepository;
 import project.volunteer.domain.like.domain.Like;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -85,7 +85,8 @@ import project.volunteer.document.restdocs.config.RestDocsConfiguration;
 public class LogboardQueryControllerTest {
 	@Autowired MockMvc mockMvc;
 	@Autowired UserRepository userRepository;
-	@Autowired ParticipantRepository participantRepository;
+	@Autowired
+	RecruitmentParticipationRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
 	@Autowired
@@ -165,7 +166,7 @@ public class LogboardQueryControllerTest {
 
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
-		Participant participant1 = Participant.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
+		RecruitmentParticipation participant1 = RecruitmentParticipation.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
 		participantRepository.save(participant1);
 
 

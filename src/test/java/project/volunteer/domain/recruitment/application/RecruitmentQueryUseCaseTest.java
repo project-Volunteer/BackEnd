@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.Storage;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
@@ -63,10 +63,10 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         User user2 = createAndSaveUser("user2", "http://user2...");
         createAndSaveUploadImage(RealWorkCode.USER, user1.getUserNo(), userUploadImagePath1);
         createAndSaveUploadImage(RealWorkCode.USER, user2.getUserNo(), userUploadImagePath2);
-        Participant participant1 = participantRepository.save(
-                new Participant(recruitment, user1, ParticipantState.JOIN_REQUEST));
-        Participant participant2 = participantRepository.save(
-                new Participant(recruitment, user2, ParticipantState.JOIN_APPROVAL));
+        RecruitmentParticipation participant1 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_REQUEST));
+        RecruitmentParticipation participant2 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_APPROVAL));
 
         //when
         RecruitmentDetailSearchResult result = recruitmentQueryUseCase.searchRecruitmentDetail(
@@ -85,12 +85,10 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
                         .containsExactlyInAnyOrder(Day.MON.getId(), Day.TUES.getId()),
                 () -> assertThat(result.getApprovedParticipant()).hasSize(1)
                         .extracting("recruitmentParticipationNo", "nickName", "imageUrl")
-                        .containsExactlyInAnyOrder(
-                                tuple(participant2.getParticipantNo(), user2.getNickName(), userUploadImagePath2)),
+                        .containsExactlyInAnyOrder(tuple(participant2.getId(), user2.getNickName(), userUploadImagePath2)),
                 () -> assertThat(result.getRequiredParticipant()).hasSize(1)
                         .extracting("recruitmentParticipationNo", "nickName", "imageUrl")
-                        .containsExactlyInAnyOrder(
-                                tuple(participant1.getParticipantNo(), user1.getNickName(), userUploadImagePath1))
+                        .containsExactlyInAnyOrder(tuple(participant1.getId(), user1.getNickName(), userUploadImagePath1))
         );
     }
 
@@ -174,7 +172,7 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         User user = userRepository.save(
                 new User("user", "user", "user", "user@email.com", Gender.M, LocalDate.now(),
                         "http://", true, true, true, Role.USER, "kakao", "4567", null));
-        participantRepository.save(new Participant(recruitment, user, ParticipantState.JOIN_APPROVAL));
+        recruitmentParticipationRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
 
         //when
         StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(),

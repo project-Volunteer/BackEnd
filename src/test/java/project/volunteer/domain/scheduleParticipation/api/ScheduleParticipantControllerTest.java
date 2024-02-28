@@ -23,9 +23,9 @@ import project.volunteer.domain.image.application.dto.ImageParam;
 import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.global.common.component.RealWorkCode;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -76,7 +76,8 @@ class ScheduleParticipantControllerTest {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired ParticipantRepository participantRepository;
+    @Autowired
+    RecruitmentParticipationRepository participantRepository;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
     @Autowired ScheduleParticipationService spService;
     @Autowired ImageService imageService;
@@ -180,7 +181,7 @@ class ScheduleParticipantControllerTest {
     @WithUserDetails(value = "spct_test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void cancelParticipationSchedule() throws Exception {
         //given
-        Participant participant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        RecruitmentParticipation participant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         일정_참여상태_추가(saveSchedule, participant, ParticipantState.PARTICIPATING);
 
         //when
@@ -211,7 +212,7 @@ class ScheduleParticipantControllerTest {
     @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void approveCancellationSchedule() throws Exception {
         //given
-        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
         CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
 
@@ -249,7 +250,7 @@ class ScheduleParticipantControllerTest {
     @WithUserDetails(value = "spct_test", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void cancelApprove_forbidden() throws Exception {
         //given
-        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
         CancelApproval dto = new CancelApproval(newSp.getScheduleParticipationNo());
 
@@ -268,7 +269,7 @@ class ScheduleParticipantControllerTest {
     @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void cancelApprove_notValid() throws Exception {
         //given
-        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_CANCEL);
         CancelApproval dto = new CancelApproval(null); //필수 파라미터 누락
 
@@ -286,7 +287,7 @@ class ScheduleParticipantControllerTest {
     @WithUserDetails(value = "spct1234", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void approvalCompletionSchedule() throws Exception {
         //given
-        Participant newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
+        RecruitmentParticipation newParticipant = 봉사모집글_팀원_등록(saveRecruitment, loginUser);
         ScheduleParticipation newSp = 일정_참여상태_추가(saveSchedule, newParticipant, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
         CompleteApproval dto = new CompleteApproval(List.of(newSp.getScheduleParticipationNo()));
 
@@ -325,11 +326,11 @@ class ScheduleParticipantControllerTest {
     public void findListParticipantSchedule() throws Exception {
         //given
         User test1 = 사용자_등록("test1", "test1", "test1@naver.com");
-        Participant participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
+        RecruitmentParticipation participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
         일정_참여상태_추가(saveSchedule, participant1, ParticipantState.PARTICIPATING);
 
         User test2 = 사용자_등록("test2", "test2", "test2@naver.com");
-        Participant participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
+        RecruitmentParticipation participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
         일정_참여상태_추가(saveSchedule, participant2, ParticipantState.PARTICIPATING);
 
         //when
@@ -372,12 +373,12 @@ class ScheduleParticipantControllerTest {
     public void findListCancellationRequesterSchedule() throws Exception {
         //given
         User test1 = 사용자_등록("test1", "test1", "test1@naver.com");
-        Participant participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
+        RecruitmentParticipation participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
         ScheduleParticipation scheduleParticipation1 = 일정_참여상태_추가(saveSchedule, participant1,
                 ParticipantState.PARTICIPATION_CANCEL);
 
         User test2 = 사용자_등록("test2", "test2", "test2@naver.com");
-        Participant participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
+        RecruitmentParticipation participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
         ScheduleParticipation scheduleParticipation2 =
                 일정_참여상태_추가(saveSchedule, participant2, ParticipantState.PARTICIPATION_CANCEL);
 
@@ -424,12 +425,12 @@ class ScheduleParticipantControllerTest {
     public void findListParticipantCompletedSchedule() throws Exception {
         //given
         User test1 = 사용자_등록("test1", "test1", "test1@naver.com");
-        Participant participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
+        RecruitmentParticipation participant1 = 봉사모집글_팀원_등록(saveRecruitment, test1);
         일정_참여상태_추가(saveSchedule, participant1, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
 
         User test2 = 사용자_등록("test2", "test2", "test2@naver.com");
         Image uploadImage = 업로드_이미지_등록(test2.getUserNo(), RealWorkCode.USER);
-        Participant participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
+        RecruitmentParticipation participant2 = 봉사모집글_팀원_등록(saveRecruitment, test2);
         일정_참여상태_추가(saveSchedule, participant2, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
         //when
@@ -475,11 +476,11 @@ class ScheduleParticipantControllerTest {
                 true, true, true, Role.USER, "kakao", id, null);
         return userRepository.save(createUser);
     }
-    private Participant 봉사모집글_팀원_등록(Recruitment recruitment, User user){
-        Participant participant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_APPROVAL);
+    private RecruitmentParticipation 봉사모집글_팀원_등록(Recruitment recruitment, User user){
+        RecruitmentParticipation participant = RecruitmentParticipation.createParticipant(recruitment, user, ParticipantState.JOIN_APPROVAL);
         return participantRepository.save(participant);
     }
-    private ScheduleParticipation 일정_참여상태_추가(Schedule schedule, Participant participant, ParticipantState state){
+    private ScheduleParticipation 일정_참여상태_추가(Schedule schedule, RecruitmentParticipation participant, ParticipantState state){
         ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(saveSchedule, participant, state);
         return scheduleParticipationRepository.save(sp);
     }

@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail;
 import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RepeatPeriodDetail;
 import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
@@ -38,7 +38,7 @@ import java.util.List;
 public class RecruitmentQueryService implements RecruitmentQueryUseCase {
     private final RecruitmentRepository recruitmentRepository;
     private final RepeatPeriodRepository repeatPeriodRepository;
-    private final ParticipantRepository participantRepository;
+    private final RecruitmentParticipationRepository participantRepository;
     private final Clock clock;
 
     @Override

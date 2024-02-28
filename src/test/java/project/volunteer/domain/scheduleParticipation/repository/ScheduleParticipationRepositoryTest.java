@@ -8,8 +8,8 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.support.RepositoryTest;
-import project.volunteer.domain.participation.domain.Participant;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -53,8 +53,8 @@ class ScheduleParticipationRepositoryTest extends RepositoryTest {
             true, true, true, Role.USER, "test", "test", null);
     private final User user2 = new User("test2", "test2", "test2", "test2@test.com", Gender.M, LocalDate.now(), "test",
             true, true, true, Role.USER, "test", "test", null);
-    private final Participant participant1 = new Participant(recruitment, user1, ParticipantState.JOIN_APPROVAL);
-    private final Participant participant2 = new Participant(recruitment, user2, ParticipantState.JOIN_APPROVAL);
+    private final RecruitmentParticipation participant1 = new RecruitmentParticipation(recruitment, user1, ParticipantState.JOIN_APPROVAL);
+    private final RecruitmentParticipation participant2 = new RecruitmentParticipation(recruitment, user2, ParticipantState.JOIN_APPROVAL);
 
     @BeforeEach
     void setUp() {
@@ -117,7 +117,7 @@ class ScheduleParticipationRepositoryTest extends RepositoryTest {
         return scheduleRepository.save(schedule);
     }
 
-    private Long createAndSaveScheduleParticipation(Schedule schedule, Participant participant) {
+    private Long createAndSaveScheduleParticipation(Schedule schedule, RecruitmentParticipation participant) {
         ScheduleParticipation scheduleParticipation = new ScheduleParticipation(schedule, participant,
                 ParticipantState.PARTICIPATING);
         return scheduleParticipationRepository.save(scheduleParticipation).getScheduleParticipationNo();

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
 import project.volunteer.domain.recruitment.api.dto.response.StatusResponse;
 import project.volunteer.domain.recruitment.application.dto.query.RecruitmentCountResult;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
@@ -123,7 +123,7 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
         Long participantNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
         Long participantNo2 = 봉사_게시물_팀원_가입_요청(changHoeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participantNo1)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participantNo1)));
 
         RecruitmentDetailSearchResult response = given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -293,7 +293,7 @@ public class RecruitmentAcceptanceTest extends AcceptanceTest {
 
         Long participationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
 
-        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddParam(List.of(participationNo1)));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, new ParticipantAddRequest(List.of(participationNo1)));
 
         StatusResponse response = given().log().all()
                 .header(AUTHORIZATION_HEADER, changHoeunToken)

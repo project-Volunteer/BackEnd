@@ -27,8 +27,8 @@ import project.volunteer.domain.image.dao.ImageRepository;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -60,7 +60,8 @@ import project.volunteer.global.infra.s3.FileService;
 @SpringBootTest
 public class LogboardServiceImplTestForSave {
 	@Autowired UserRepository userRepository;
-	@Autowired ParticipantRepository participantRepository;
+	@Autowired
+    RecruitmentParticipationRepository participantRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
 	@Autowired
@@ -80,8 +81,8 @@ public class LogboardServiceImplTestForSave {
 	private static User saveUser;
 	private static User saveUser2;
 	private static Schedule createSchedule;
-	private static Participant createParticipant;
-	private static Participant createParticipant2;
+	private static RecruitmentParticipation createParticipant;
+	private static RecruitmentParticipation createParticipant2;
 	
 	private void clear() {
 		em.flush();
@@ -149,7 +150,7 @@ public class LogboardServiceImplTestForSave {
 		Long no = createRecruitment.getRecruitmentNo();
 
 		// 방장 참여자 저장
-		createParticipant = Participant.builder()
+		createParticipant = RecruitmentParticipation.builder()
 				.recruitment(createRecruitment)
 				.participant(saveUser)
 				.state(ParticipantState.JOIN_APPROVAL)
@@ -158,7 +159,7 @@ public class LogboardServiceImplTestForSave {
 		
 
 		// 신규 참여자 저장
-		createParticipant2 = Participant.builder()
+		createParticipant2 = RecruitmentParticipation.builder()
 				.recruitment(createRecruitment)
 				.participant(saveUser2)
 				.state(ParticipantState.JOIN_REQUEST)
@@ -250,7 +251,7 @@ public class LogboardServiceImplTestForSave {
 	}
 	
 	
-	private ScheduleParticipation 일정_참여상태_추가(Participant participant, ParticipantState state){
+	private ScheduleParticipation 일정_참여상태_추가(RecruitmentParticipation participant, ParticipantState state){
 		ScheduleParticipation sp = ScheduleParticipation.createScheduleParticipation(createSchedule, participant, state);
 		return scheduleParticipationRepository.save(sp);
 	}

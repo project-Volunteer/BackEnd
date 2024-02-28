@@ -1,4 +1,4 @@
-package project.volunteer.domain.participation.api.dto.request;
+package project.volunteer.domain.recruitmentParticipation.api.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParticipantAddParam {
+public class ParticipantAddRequest {
 
     @NotEmpty
     private List<Long> recruitmentParticipationNos;

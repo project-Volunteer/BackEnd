@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
-import project.volunteer.domain.participation.api.dto.response.JoinResponse;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
+import project.volunteer.domain.recruitmentParticipation.api.dto.response.JoinResponse;
 import project.volunteer.domain.recruitment.api.dto.response.RecruitmentSaveResponse;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -94,7 +94,7 @@ public class AcceptanceFixtures {
     }
 
     public static ExtractableResponse<Response> 봉사_게시물_팀원_가입_승인(String token, Long recruitmentNo,
-                                                                ParticipantAddParam request) {
+                                                                ParticipantAddRequest request) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)

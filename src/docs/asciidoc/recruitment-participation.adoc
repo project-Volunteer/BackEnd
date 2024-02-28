@@ -1,0 +1,115 @@
+[[Recruitment-Participation-API]]
+== Recruitment Participation API
+
+=== 봉사 모집글 팀원 가입 신청
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집 기간이 종료되었습니다. +
+- 모집인원이 마감되었습니다. +
+- 중복 신청을 할 수 없습니다. 신청 현황을 확인해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-participation-controller-test/join-recruitment-team/http-response.adoc[]
+
+
+=== 봉사 모집글 팀원 가입 신청 취소
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집 기간이 종료되었습니다. +
+- 해당 작업을 진행할 수 없습니다. 신청 상태를 다시 확인해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-participation-controller-test/cancel-join-recruitment-team/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-participation-controller-test/cancel-join-recruitment-team/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/recruitment-participation-controller-test/cancel-join-recruitment-team/path-parameters.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-participation-controller-test/cancel-join-recruitment-team/http-response.adoc[]
+
+
+=== 봉사 모집글 팀원 가입 신청 승인
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집 기간이 종료되었습니다. +
+- 해당 작업을 진행할 수 없습니다. 신청 상태를 다시 확인해주십시오. +
+- 승인 가능한 최대 인원은 {0}명입니다.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-participation-controller-test/approve-join-recruitment-team/http-response.adoc[]
+
+
+=== 봉사 모집글 팀원 강제 방출
+==== 발생 가능 예외
+|===
+|HTTP 상태코드|메시지
+|400| - 입력한 데이터가 요구 사항을 충족하지 않습니다. 필수 항목을 확인하고 다시 시도해주십시오. +
+- 해당 모집글 정보를 찾을 수 없습니다. +
+- 봉사 모집 기간이 종료되었습니다. +
+- 해당 작업을 진행할 수 없습니다. 신청 상태를 다시 확인해주십시오.
+|401| - 인증이 필요합니다. 로그인 후 다시 시도하십시오.
+|500| -
+|===
+
+==== 요청
+*HTTP Request*
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/http-request.adoc[]
+
+*Request Header*
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/request-headers.adoc[]
+
+*Request Path*
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/path-parameters.adoc[]
+
+*Request Body*
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/request-fields.adoc[]
+
+==== 응답
+*HTTP Response*
+include::{snippets}/recruitment-participation-controller-test/deport-recruitment-team/http-response.adoc[]

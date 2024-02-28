@@ -48,8 +48,8 @@ import project.volunteer.global.common.component.IsDeleted;
 import project.volunteer.global.common.dto.CommentContentParam;
 import project.volunteer.domain.logboard.dao.LogboardRepository;
 import project.volunteer.domain.logboard.domain.Logboard;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.application.RecruitmentCommandUseCase;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -93,7 +93,8 @@ public class LogboardCommentControllerTest {
 	@Autowired UserRepository userRepository;
 	@Autowired RecruitmentRepository recruitmentRepository;
 	@Autowired ImageRepository imageRepository;
-	@Autowired ParticipantRepository participantRepository;
+	@Autowired
+	RecruitmentParticipationRepository participantRepository;
 	@Autowired ScheduleRepository scheduleRepository;
 	@Autowired LogboardRepository logboardRepository;
 	@Autowired ReplyRepository replyRepository;
@@ -176,7 +177,7 @@ public class LogboardCommentControllerTest {
 
 		// 방장 참여자 저장
 		Recruitment recruitment = recruitmentRepository.findById(no).get();
-		Participant participant1 = Participant.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
+		RecruitmentParticipation participant1 = RecruitmentParticipation.createParticipant(recruitment, saveUser, ParticipantState.JOIN_APPROVAL);
 		participantRepository.save(participant1);
 		
 

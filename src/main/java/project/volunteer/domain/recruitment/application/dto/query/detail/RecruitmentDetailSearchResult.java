@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
-import project.volunteer.domain.participation.dao.dto.RecruitmentParticipantDetail;
+import project.volunteer.domain.recruitmentParticipation.repository.dto.RecruitmentParticipantDetail;
 import project.volunteer.domain.recruitment.repository.dto.RecruitmentAndUserDetail;
 import project.volunteer.global.common.component.ParticipantState;
 

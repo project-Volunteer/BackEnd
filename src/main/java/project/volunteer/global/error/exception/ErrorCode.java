@@ -21,7 +21,8 @@ public enum ErrorCode {
     INVALID_TITLE_SIZE(HttpStatus.BAD_REQUEST, "invalid.title.size"),
     INVALID_PERIOD_PARAMETER(HttpStatus.BAD_REQUEST, "invalid.period.parameter"),
     NOT_EXIST_RECRUITMENT(HttpStatus.BAD_REQUEST, "notExist.recruitment"),
-
+    INVALID_PARTICIPATION_NUM(HttpStatus.BAD_REQUEST, "invalid.participation.num"),
+    INVALID_CURRENT_PARTICIPATION_NUM(HttpStatus.BAD_REQUEST, "invalid.current.participation.num"),
 
 
     EXPIRED_PERIOD_RECRUITMENT(HttpStatus.BAD_REQUEST, "expired.period.recruitment"),
@@ -39,16 +40,14 @@ public enum ErrorCode {
     S3_UPLOAD_IO_EX(HttpStatus.INTERNAL_SERVER_ERROR, "io.file.upload"),
 
     //모집글 팀원 관련
-    NOT_EXIST_PARTICIPATION(HttpStatus.BAD_REQUEST, "notExist.participation"),
-    DUPLICATE_PARTICIPATION(HttpStatus.BAD_REQUEST, "duplicate.participation"),
+    NOT_EXIST_RECRUITMENT_PARTICIPANT(HttpStatus.BAD_REQUEST, "notExist.recruitment.participant"),
+    DUPLICATE_RECRUITMENT_PARTICIPATION(HttpStatus.BAD_REQUEST, "duplicate.recruitment.participation"),
     INVALID_STATE(HttpStatus.BAD_REQUEST, "invalid.state"),
     INSUFFICIENT_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.capacity"),
-    INSUFFICIENT_APPROVAL_CAPACITY(HttpStatus.BAD_REQUEST, "insufficient.approval.capacity"),
 
     //일정 관련
     INVALID_ORGANIZATION_NAME_SIZE(HttpStatus.BAD_REQUEST, "invalid.organizationName.size"),
     INVALID_CONTENT_SIZE(HttpStatus.BAD_REQUEST, "invalid.content.size"),
-    INVALID_PARTICIPATION_NUM(HttpStatus.BAD_REQUEST, "invalid.participation.num"),
     EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM(HttpStatus.BAD_REQUEST,
             "exceed.participation.num.than.recruitment.participation.num"),
     LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT(HttpStatus.BAD_REQUEST,

@@ -3,8 +3,8 @@ package project.volunteer.domain.scheduleParticipation.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.volunteer.domain.participation.converter.StateConverter;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.converter.StateConverter;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.auditing.BaseEntity;
 import project.volunteer.global.common.component.ParticipantState;
@@ -28,19 +28,19 @@ public class ScheduleParticipation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "participantno")
-    private Participant participant;
+    private RecruitmentParticipation participant;
 
     @Convert(converter = StateConverter.class)
     @Column(length = 3, nullable = false)
     private ParticipantState state;
 
-    public ScheduleParticipation(Schedule schedule, Participant participant, ParticipantState state) {
+    public ScheduleParticipation(Schedule schedule, RecruitmentParticipation participant, ParticipantState state) {
         this.schedule = schedule;
         this.participant = participant;
         this.state = state;
     }
 
-    public static ScheduleParticipation createScheduleParticipation(Schedule schedule, Participant participant, ParticipantState state){
+    public static ScheduleParticipation createScheduleParticipation(Schedule schedule, RecruitmentParticipation participant, ParticipantState state){
         ScheduleParticipation createScheduleParticipation = new ScheduleParticipation();
         createScheduleParticipation.schedule = schedule;
         createScheduleParticipation.participant = participant;

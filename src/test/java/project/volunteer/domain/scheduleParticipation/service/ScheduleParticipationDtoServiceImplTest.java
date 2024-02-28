@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -47,7 +47,7 @@ class ScheduleParticipationDtoServiceImplTest {
     @Autowired
     ScheduleRepository scheduleRepository;
     @Autowired
-    ParticipantRepository participantRepository;
+    RecruitmentParticipationRepository participantRepository;
     @Autowired
     ScheduleParticipationRepository scheduleParticipationRepository;
     @Autowired ScheduleParticipationDtoService spDtoService;
@@ -88,15 +88,15 @@ class ScheduleParticipationDtoServiceImplTest {
     public void schedule_participant_list(){
         //given
         User newUser1 = 사용자_등록("rnqhstlr");
-        Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
+        RecruitmentParticipation newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
 
         User newUser2 = 사용자_등록("didthdms");
-        Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
+        RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATING);
 
         User newUser3 = 사용자_등록("didghfhr");
-        Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
+        RecruitmentParticipation newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
         일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATING);
         clear();
 
@@ -115,15 +115,15 @@ class ScheduleParticipationDtoServiceImplTest {
     public void schedule_cancel_participant_list(){
         //given
         User newUser1 = 사용자_등록("rnqhstlr");
-        Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
+        RecruitmentParticipation newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATING);
 
         User newUser2 = 사용자_등록("didthdms");
-        Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
+        RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_CANCEL);
 
         User newUser3 = 사용자_등록("didghfhr");
-        Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
+        RecruitmentParticipation newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
         일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATION_CANCEL);
         clear();
 
@@ -143,15 +143,15 @@ class ScheduleParticipationDtoServiceImplTest {
     public void schedule_completed_participant_list(){
         //given
         User newUser1 = 사용자_등록("ku");
-        Participant newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
+        RecruitmentParticipation newParticipant1 = 봉사모집글_팀원_등록(saveRecruitment, newUser1);
         일정_참여자_상태_추가(saveSchedule, newParticipant1, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
         User newUser2 = 사용자_등록("yangsoeun");
-        Participant newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
+        RecruitmentParticipation newParticipant2 = 봉사모집글_팀원_등록(saveRecruitment, newUser2);
         일정_참여자_상태_추가(saveSchedule, newParticipant2, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
 
         User newUser3 = 사용자_등록("yanghorok");
-        Participant newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
+        RecruitmentParticipation newParticipant3 = 봉사모집글_팀원_등록(saveRecruitment, newUser3);
         일정_참여자_상태_추가(saveSchedule, newParticipant3, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL);
         clear();
 
@@ -272,11 +272,11 @@ class ScheduleParticipationDtoServiceImplTest {
                 true, true, true, Role.USER, "kakao", username, null);
         return userRepository.save(createUser);
     }
-    private Participant 봉사모집글_팀원_등록(Recruitment recruitment, User user){
-        Participant participant = Participant.createParticipant(recruitment, user, ParticipantState.JOIN_APPROVAL);
+    private RecruitmentParticipation 봉사모집글_팀원_등록(Recruitment recruitment, User user){
+        RecruitmentParticipation participant = RecruitmentParticipation.createParticipant(recruitment, user, ParticipantState.JOIN_APPROVAL);
         return participantRepository.save(participant);
     }
-    private ScheduleParticipation 일정_참여자_상태_추가(Schedule schedule, Participant participant, ParticipantState state){
+    private ScheduleParticipation 일정_참여자_상태_추가(Schedule schedule, RecruitmentParticipation participant, ParticipantState state){
         ScheduleParticipation scheduleParticipation = ScheduleParticipation.createScheduleParticipation(schedule, participant, state);
         return scheduleParticipationRepository.save(scheduleParticipation);
     }

@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -295,7 +295,7 @@ class ScheduleQueryUseCaseTest extends ServiceTest {
     }
 
     private void createAndSaveScheduleParticipation(User user, Schedule schedule, ParticipantState state) {
-        Participant participant = participantRepository.save(new Participant(recruitment, user, ParticipantState.JOIN_APPROVAL));
+        RecruitmentParticipation participant = recruitmentParticipationRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
         scheduleParticipationRepository.save(new ScheduleParticipation(schedule, participant, state));
     }
 

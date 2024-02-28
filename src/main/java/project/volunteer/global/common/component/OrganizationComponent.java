@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerMapping;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.repository.RecruitmentRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.reply.domain.Reply;
@@ -27,7 +27,7 @@ public class OrganizationComponent {
     private final String RECRUITMENT_LIST = "recruitmentList";
 
     private final RecruitmentRepository recruitmentRepository;
-    private final ParticipantRepository participantRepository;
+    private final RecruitmentParticipationRepository participantRepository;
     private final ReplyValidate replyValidate;
 
     //봉사 모집글 방장 검증 메서드

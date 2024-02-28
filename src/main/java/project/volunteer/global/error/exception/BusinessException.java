@@ -22,6 +22,10 @@ public class BusinessException extends RuntimeException{
         this.args = args;
         this.details = details;
     }
+    public BusinessException(ErrorCode errorCode, Object[] args) {
+        this.errorCode = errorCode;
+        this.args = args;
+    }
     public BusinessException(ErrorCode errorCode, String details){
         this.errorCode = errorCode;
         this.details = details;

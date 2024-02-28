@@ -1,4 +1,4 @@
-package project.volunteer.domain.participation.dao.dto;
+package project.volunteer.domain.recruitmentParticipation.repository.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

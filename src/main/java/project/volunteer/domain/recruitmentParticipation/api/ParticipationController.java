@@ -1,12 +1,12 @@
-package project.volunteer.domain.participation.api;
+package project.volunteer.domain.recruitmentParticipation.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.volunteer.domain.participation.api.dto.request.ParticipantAddParam;
-import project.volunteer.domain.participation.api.dto.request.ParticipantRemoveParam;
-import project.volunteer.domain.participation.api.dto.response.JoinResponse;
-import project.volunteer.domain.participation.mapper.ParticipationFacade;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
+import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantRemoveRequest;
+import project.volunteer.domain.recruitmentParticipation.api.dto.response.JoinResponse;
+import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationFacade;
 import project.volunteer.global.Interceptor.OrganizationAuth;
 import project.volunteer.global.Interceptor.OrganizationAuth.Auth;
 import project.volunteer.global.util.SecurityUtil;
@@ -17,34 +17,34 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/recruitment")
 public class ParticipationController {
-    private final ParticipationFacade participationFacade;
+    private final RecruitmentParticipationFacade participationFacade;
 
     @PutMapping("/{recruitmentNo}/join")
     public ResponseEntity<JoinResponse> participationRequest(@PathVariable("recruitmentNo") Long no) {
-        Long recruitmentParticipationNo = participationFacade.participateVolunteerTeam(SecurityUtil.getLoginUserNo(),
+        Long recruitmentParticipationNo = participationFacade.joinRecruitmentTeam(SecurityUtil.getLoginUserNo(),
                 no);
         return ResponseEntity.ok(new JoinResponse(recruitmentParticipationNo));
     }
 
     @PutMapping("/{recruitmentNo}/cancel")
-    public ResponseEntity participationCancel(@PathVariable("recruitmentNo") Long no) {
-        participationFacade.cancelParticipationVolunteerTeam(SecurityUtil.getLoginUserNo(), no);
+    public ResponseEntity<Void> participationCancel(@PathVariable("recruitmentNo") Long no) {
+        participationFacade.cancelJoinRecruitmentTeam(SecurityUtil.getLoginUserNo(), no);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/approval")
-    public ResponseEntity participantAdd(@RequestBody @Valid ParticipantAddParam dto,
+    public ResponseEntity<Void> participantAdd(@RequestBody @Valid ParticipantAddRequest request,
                                          @PathVariable("recruitmentNo") Long no) {
-        participationFacade.approvalParticipantVolunteerTeam(dto.getRecruitmentParticipationNos(), no);
+        participationFacade.approveJoinRecruitmentTeam(request.getRecruitmentParticipationNos(), no);
         return ResponseEntity.ok().build();
     }
 
     @OrganizationAuth(auth = Auth.ORGANIZATION_ADMIN)
     @PutMapping("/{recruitmentNo}/kick")
-    public ResponseEntity participantRemove(@RequestBody @Valid ParticipantRemoveParam dto,
+    public ResponseEntity<Void> participantRemove(@RequestBody @Valid ParticipantRemoveRequest request,
                                             @PathVariable("recruitmentNo") Long no) {
-        participationFacade.deportParticipantVolunteerTeam(dto.getRecruitmentParticipationNo(), no);
+        participationFacade.deportRecruitmentTeam(request.getRecruitmentParticipationNos(), no);
         return ResponseEntity.ok().build();
     }
 

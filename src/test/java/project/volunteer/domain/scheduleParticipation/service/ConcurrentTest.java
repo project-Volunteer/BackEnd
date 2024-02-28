@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import project.volunteer.domain.participation.dao.ParticipantRepository;
-import project.volunteer.domain.participation.domain.Participant;
+import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
+import project.volunteer.domain.recruitmentParticipation.repository.RecruitmentParticipationRepository;
 import project.volunteer.domain.recruitment.domain.Recruitment;
 import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
@@ -42,7 +42,8 @@ public class ConcurrentTest {
     @Autowired UserRepository userRepository;
     @Autowired RecruitmentRepository recruitmentRepository;
     @Autowired ScheduleRepository scheduleRepository;
-    @Autowired ParticipantRepository participantRepository;
+    @Autowired
+    RecruitmentParticipationRepository participantRepository;
     @Autowired
     ParticipationServiceConcurrent participateService;
     @Autowired ScheduleParticipationRepository scheduleParticipationRepository;
@@ -87,15 +88,15 @@ public class ConcurrentTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-        List<Participant> participants = addTeamMember(numberOfThreads);
+        List<RecruitmentParticipation> participants = addTeamMember(numberOfThreads);
 
         //when
         for(int i=0;i<numberOfThreads;i++){
-            Participant participant = participants.get(i);
+            RecruitmentParticipation participant = participants.get(i);
 
             executorService.execute(() -> {
                 try{
-                    participateService.participateWithoutLock(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), participant.getParticipant().getUserNo());
+                    participateService.participateWithoutLock(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), participant.getUser().getUserNo());
                 }finally {
                     countDownLatch.countDown();
                 }
@@ -117,15 +118,15 @@ public class ConcurrentTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-        List<Participant> participants = addTeamMember(numberOfThreads);
+        List<RecruitmentParticipation> participants = addTeamMember(numberOfThreads);
 
         //when
         for(int i=0;i<numberOfThreads;i++){
-            Participant participant = participants.get(i);
+            RecruitmentParticipation participant = participants.get(i);
 
             executorService.execute(() -> {
                 try{
-                    participateService.participateWithOPTIMSTICLock(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), participant.getParticipant().getUserNo());
+                    participateService.participateWithOPTIMSTICLock(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), participant.getUser().getUserNo());
                 }catch (ObjectOptimisticLockingFailureException e){
                     log.info("동시성 문제 발견");
                     /**
@@ -160,15 +161,15 @@ public class ConcurrentTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-        List<Participant> participants = addTeamMember(numberOfThreads);
+        List<RecruitmentParticipation> participants = addTeamMember(numberOfThreads);
 
         //when
         for(int i=0;i<numberOfThreads;i++){
-            Participant participant = participants.get(i);
+            RecruitmentParticipation participant = participants.get(i);
 
             executorService.execute(() -> {
                 try{
-                    participateService.participateWithPERSSIMITIC_WRITE_Lock(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), participant.getParticipant().getUserNo());
+                    participateService.participateWithPERSSIMITIC_WRITE_Lock(saveRecruitment.getRecruitmentNo(), saveSchedule.getScheduleNo(), participant.getUser().getUserNo());
                 }catch (BusinessException e){
                     log.info("인원 마감 : {}", e.getMessage());
                     //인원 마감 "INSUFFICIENT_CAPACITY" 예외가 발생해야 함.
@@ -188,15 +189,15 @@ public class ConcurrentTest {
     }
 
 
-    private List<Participant> addTeamMember(int num){
-        List<Participant> participants = new ArrayList<>();
+    private List<RecruitmentParticipation> addTeamMember(int num){
+        List<RecruitmentParticipation> participants = new ArrayList<>();
         for(int i=0;i<num;i++){
             User createUser = User.createUser("test" + i, "test" + i, "test" + i, "test" + i, Gender.M, LocalDate.now(), "picture",
                     true, true, true, Role.USER, "kakao", "test" + i, null);
             User saveUser = userRepository.save(createUser);
 
-            Participant createParticipant = Participant.createParticipant(saveRecruitment, saveUser, ParticipantState.JOIN_APPROVAL);
-            Participant saveParticipant = participantRepository.save(createParticipant);
+            RecruitmentParticipation createParticipant = RecruitmentParticipation.createParticipant(saveRecruitment, saveUser, ParticipantState.JOIN_APPROVAL);
+            RecruitmentParticipation saveParticipant = participantRepository.save(createParticipant);
 
             participants.add(saveParticipant);
         }
