@@ -1,16 +1,16 @@
 package project.volunteer.domain.scheduleParticipation.service;
 
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
-import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.ParticipantState;
 
 import java.util.List;
 
 public interface ScheduleParticipationQueryUseCase {
-    List<ParticipatingParticipantList> searchParticipatingList(Long scheduleNo);
+    ActiveParticipantSearchResult searchActiveParticipationList(Long scheduleNo);
 
     CancelledParticipantsSearchResult searchCancelledParticipationList(Long scheduleNo);
 

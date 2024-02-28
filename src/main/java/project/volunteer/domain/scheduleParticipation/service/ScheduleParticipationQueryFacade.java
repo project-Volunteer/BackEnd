@@ -4,9 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
-import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
 import project.volunteer.domain.sehedule.application.ScheduleQueryUseCase;
 import project.volunteer.domain.sehedule.domain.Schedule;
 
@@ -17,9 +17,9 @@ public class ScheduleParticipationQueryFacade {
     private final ScheduleQueryUseCase scheduleQueryUsecase;
     private final ScheduleParticipationQueryUseCase scheduleParticipationDtoService;
 
-    public List<ParticipatingParticipantList> findScheduleParticipatingList(final Long scheduleNo){
+    public ActiveParticipantSearchResult findActiveParticipants(final Long scheduleNo){
         Schedule schedule = scheduleQueryUsecase.findActivitedSchedule(scheduleNo);
-        return scheduleParticipationDtoService.searchParticipatingList(schedule.getScheduleNo());
+        return scheduleParticipationDtoService.searchActiveParticipationList(schedule.getScheduleNo());
     }
 
     public CancelledParticipantsSearchResult findCancelledParticipants(Long scheduleNo){

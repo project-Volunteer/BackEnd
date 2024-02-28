@@ -6,7 +6,6 @@ import static org.assertj.core.groups.Tuple.tuple;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,8 +15,9 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
-import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantDetail;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.user.domain.Gender;
 import project.volunteer.domain.user.domain.Role;
@@ -93,11 +93,11 @@ class ScheduleParticipationQueryUseCaseTest extends ServiceTest {
         scheduleParticipationRepository.saveAll(List.of(scheduleParticipation1, scheduleParticipation2));
 
         //when
-        List<ParticipatingParticipantList> participatingParticipantLists = scheduleParticipationQueryUseCase.searchParticipatingList(
+        ActiveParticipantSearchResult result = scheduleParticipationQueryUseCase.searchActiveParticipationList(
                 schedule.getScheduleNo());
 
         //then
-        assertThat(participatingParticipantLists).hasSize(2)
+        assertThat(result.getParticipating()).hasSize(2)
                 .extracting("nickname", "email", "profile")
                 .containsExactlyInAnyOrder(
                         tuple(firstUser.getNickName(), firstUser.getEmail(), firstUser.getPicture()),

@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.ParsingCompleteSchedule;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
-import project.volunteer.domain.scheduleParticipation.service.dto.ParticipatingParticipantList;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantDetail;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.global.common.component.ParticipantState;
 import project.volunteer.global.common.dto.StateResult;
@@ -24,12 +25,15 @@ public class ScheduleParticipationQueryService implements ScheduleParticipationQ
     private final ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Override
-    public List<ParticipatingParticipantList> searchParticipatingList(final Long scheduleNo) {
+    public ActiveParticipantSearchResult searchActiveParticipationList(final Long scheduleNo) {
         final List<ParticipantState> states = List.of(ParticipantState.PARTICIPATING);
-        return scheduleParticipationRepository.findScheduleParticipationDetailBy(scheduleNo, states)
+        final List<ActiveParticipantDetail> activeParticipantDetails = scheduleParticipationRepository.findScheduleParticipationDetailBy(
+                        scheduleNo, states)
                 .stream()
-                .map(ParticipatingParticipantList::from)
+                .map(ActiveParticipantDetail::from)
                 .collect(Collectors.toList());
+
+        return new ActiveParticipantSearchResult(activeParticipantDetails);
     }
 
     @Override

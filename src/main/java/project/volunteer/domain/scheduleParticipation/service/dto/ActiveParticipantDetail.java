@@ -8,13 +8,13 @@ import project.volunteer.domain.scheduleParticipation.repository.dto.SchedulePar
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ParticipatingParticipantList {
+public class ActiveParticipantDetail {
     private String nickname;
     private String email;
     private String profile;
 
-    public static ParticipatingParticipantList from(ScheduleParticipationDetail detail) {
-        return new ParticipatingParticipantList(detail.getNickname(), detail.getEmail(), detail.getProfile());
+    public static ActiveParticipantDetail from(ScheduleParticipationDetail detail) {
+        return new ActiveParticipantDetail(detail.getNickname(), detail.getEmail(), detail.getProfile());
     }
 
 }
