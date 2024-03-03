@@ -185,4 +185,106 @@ public class ScheduleParticipationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    @DisplayName("봉사 일정 취소 요청에 성공한다.")
+    @Test
+    void cancelParticipation() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 10, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        final ParticipantAddRequest participantAddRequest = new ParticipantAddRequest(
+                List.of(recruitmentParticipationNo1));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, participantAddRequest);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-05T10:00:00Z"));
+
+        final ScheduleUpsertRequest scheduleUpsertRequest = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
+                "unicef", 10, "content");
+        final Long scheduleNo = 봉사_일정_등록(bonsikToken, recruitmentNo, scheduleUpsertRequest);
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo);
+
+        given().log().all()
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancel", recruitmentNo, scheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    @DisplayName("봉사 일정에 참여하지 않은 인원은 취소가 불가능하다.")
+    @Test
+    void cancelParticipationWithNotParticipant() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 10, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        final ParticipantAddRequest participantAddRequest = new ParticipantAddRequest(
+                List.of(recruitmentParticipationNo1));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, participantAddRequest);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-05T10:00:00Z"));
+
+        final ScheduleUpsertRequest scheduleUpsertRequest = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
+                "unicef", 10, "content");
+        final Long scheduleNo = 봉사_일정_등록(bonsikToken, recruitmentNo, scheduleUpsertRequest);
+
+        given().log().all()
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancel", recruitmentNo, scheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+    }
+
+    @DisplayName("시작된 일정일 경우, 취소가 불가능하다.")
+    @Test
+    void cancelParticipantWithDoneSchedule() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 10, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+
+        final ParticipantAddRequest participantAddRequest = new ParticipantAddRequest(
+                List.of(recruitmentParticipationNo1));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, participantAddRequest);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-05T10:00:00Z"));
+
+        final ScheduleUpsertRequest scheduleUpsertRequest = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
+                "unicef", 10, "content");
+        final Long scheduleNo = 봉사_일정_등록(bonsikToken, recruitmentNo, scheduleUpsertRequest);
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-11T10:00:00Z"));
+
+        given().log().all()
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when().put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/cancel", recruitmentNo, scheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+    }
+
 }
