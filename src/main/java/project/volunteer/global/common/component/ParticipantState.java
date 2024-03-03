@@ -1,5 +1,6 @@
 package project.volunteer.global.common.component;
 
+import java.util.List;
 import project.volunteer.global.common.converter.CodeCommonType;
 
 public enum ParticipantState implements CodeCommonType {
@@ -17,8 +18,7 @@ public enum ParticipantState implements CodeCommonType {
     PARTICIPATION_COMPLETE_UNAPPROVED("s4", "일정 참여 완료 미승인"),
     PARTICIPATION_COMPLETE_APPROVAL("s5", "일정 참가 완료 승인"),
 
-    DELETED("e1", "삭제")
-    ,;
+    ;
 
     private String code;
     private String desc;
@@ -36,5 +36,10 @@ public enum ParticipantState implements CodeCommonType {
     @Override
     public String getDesc() {
         return this.desc;
+    }
+
+    public static List<ParticipantState> getParticipationCompletionState() {
+        return List.of(ParticipantState.PARTICIPATION_COMPLETE_APPROVAL,
+                ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
     }
 }

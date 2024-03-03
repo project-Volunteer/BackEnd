@@ -90,7 +90,7 @@ public class UserDtoServiceImpl implements UserDtoService{
 		List<ScheduleParticipation> scheduleParticipationList =
 				scheduleParticipationRepository.findScheduleListByUsernoAndStatus(loginUserNo, ParticipantState.PARTICIPATING);
 		return new JoinScheduleListResponse(scheduleParticipationList.stream().map(dto->{
-			return new JoinScheduleList(dto.getScheduleParticipationNo()
+			return new JoinScheduleList(dto.getId()
 					, dto.getSchedule().getScheduleTimeTable().getStartDay().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
 					, dto.getSchedule().getAddress().getSido()
 					, dto.getSchedule().getAddress().getSigungu()

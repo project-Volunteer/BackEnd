@@ -8,12 +8,12 @@ import project.volunteer.global.common.component.ParticipantState;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ParticipantDetails {
-    Long scheduleParticipationNo;
-    String nickname;
-    String email;
-    String profile;
-    ParticipantState state;
+public class ScheduleParticipationDetail {
+    private Long scheduleParticipationNo;
+    private String nickname;
+    private String email;
+    private String profile;
+    private ParticipantState state;
 
     public Boolean isEqualParticipantState(ParticipantState state){
         return this.state.equals(state);

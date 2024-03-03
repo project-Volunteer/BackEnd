@@ -30,10 +30,10 @@ import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
-import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
-import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
-import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
+import project.volunteer.domain.scheduleParticipation.api.dto.CancellationApprovalRequest;
+import project.volunteer.domain.scheduleParticipation.api.dto.ParticipationCompletionApproveRequest;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponse;
@@ -405,6 +405,8 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
     @DisplayName("캘린더를 통한 일정 상세 조회시, 참여가 가능한 일정이면 state필드가 AVAILABLE로 나온다.")
     @Test
     void findScheduleAvailableState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-01T10:00:00Z"));
+
         final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
@@ -447,6 +449,8 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
     @DisplayName("캘린더를 통한 일정 상세 조회시, 모집 기간이 지난 일정이면 state필드가 DONE로 나온다.")
     @Test
     void findScheduleDoneState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-02-02T10:00:00Z"));
+
         final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
                 VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
@@ -654,12 +658,12 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
         given(clock.instant()).willReturn(Instant.parse("2024-02-10T10:00:00Z"));
         봉사_일정_참여완료_미승인_스케줄링();
 
-        final List<CompletedParticipantList> completedScheduleParticipants =
+        final List<CompletedParticipantDetail> completedScheduleParticipants =
                 봉사_일정_참여완료_조회(bonsikToken, recruitmentNo, scheduleNo2);
 
-        final CompleteApproval completeApprovalRequest = new CompleteApproval(
+        final ParticipationCompletionApproveRequest completeApprovalRequest = new ParticipationCompletionApproveRequest(
                 completedScheduleParticipants.stream()
-                        .map(CompletedParticipantList::getScheduleParticipationNo)
+                        .map(CompletedParticipantDetail::getScheduleParticipationNo)
                         .collect(Collectors.toList())
         );
         봉사_일정_참여완료_승인(bonsikToken, recruitmentNo, scheduleNo2, completeApprovalRequest);
@@ -756,11 +760,13 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
 
         봉사_일정_참여_취소요청(soeunToken, recruitmentNo, scheduleNo2);
 
-        final List<CancelledParticipantList> cancelledParticipants =
+        final List<CancelledParticipantDetail> cancelledParticipants =
                 봉사_일정_취소요청_조회(bonsikToken, recruitmentNo, scheduleNo2);
 
-        final CancelApproval cancelApprovalRequest = new CancelApproval(
-                cancelledParticipants.get(0).getScheduleParticipationNo());
+        final CancellationApprovalRequest cancelApprovalRequest = new CancellationApprovalRequest(
+                cancelledParticipants.stream()
+                        .map(CancelledParticipantDetail::getScheduleParticipationNo)
+                        .collect(Collectors.toList()));
         봉사_일정_참여_취소승인(bonsikToken, recruitmentNo, scheduleNo2, cancelApprovalRequest);
 
         final List<ScheduleCalenderSearchResponse> calendarSchedules = 캘린더_일정_조회(soeunToken, recruitmentNo, 2024, 2);

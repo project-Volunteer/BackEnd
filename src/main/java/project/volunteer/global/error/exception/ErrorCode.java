@@ -50,10 +50,12 @@ public enum ErrorCode {
     INVALID_CONTENT_SIZE(HttpStatus.BAD_REQUEST, "invalid.content.size"),
     EXCEED_PARTICIPATION_NUM_THAN_RECRUITMENT_PARTICIPATION_NUM(HttpStatus.BAD_REQUEST,
             "exceed.participation.num.than.recruitment.participation.num"),
-    LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT(HttpStatus.BAD_REQUEST,
-            "less.participation.num.then.current.participant"),
     EXPIRED_PERIOD_SCHEDULE(HttpStatus.BAD_REQUEST, "expired.period.schedule"),
     NOT_EXIST_SCHEDULE(HttpStatus.BAD_REQUEST, "notExist.schedule"),
+
+    // 일정 참여 관련
+    NOT_EXIST_SCHEDULE_PARTICIPATION(HttpStatus.BAD_REQUEST, "notExist.schedule.participation"),
+    DUPLICATE_SCHEDULE_PARTICIPATION(HttpStatus.BAD_REQUEST, "duplicate.schedule.participation"),
 
     
     //로그보드 관련

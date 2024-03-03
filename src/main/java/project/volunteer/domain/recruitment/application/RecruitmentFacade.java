@@ -8,7 +8,7 @@ import project.volunteer.domain.image.application.ImageService;
 import project.volunteer.domain.notice.application.NoticeService;
 import project.volunteer.domain.recruitmentParticipation.application.RecruitmentParticipationUseCase;
 import project.volunteer.domain.recruitment.api.dto.request.RecruitmentRequest;
-import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationService;
+import project.volunteer.domain.scheduleParticipation.service.ScheduleParticipationCommandUseCase;
 import project.volunteer.domain.sehedule.application.ScheduleCommandUseCase;
 import project.volunteer.domain.user.application.UserService;
 import project.volunteer.domain.user.domain.User;
@@ -30,7 +30,7 @@ public class RecruitmentFacade {
 
 
     private final ImageService imageService;
-    private final ScheduleParticipationService scheduleParticipationService;
+    private final ScheduleParticipationCommandUseCase scheduleParticipationService;
     private final NoticeService noticeService;
     private final ConfirmationService confirmationService;
 
@@ -48,6 +48,7 @@ public class RecruitmentFacade {
 
         recruitmentParticipationUseCase.deleteRecruitmentParticipations(recruitmentNo);
 
+        scheduleParticipationService.deleteAllScheduleParticipationByRecruitment(recruitmentNo);
 
 
 
@@ -60,9 +61,6 @@ public class RecruitmentFacade {
 
         //공지사항 확인 리스트 삭제
         confirmationService.deleteAllConfirmation(RealWorkCode.NOTICE, noticeNoList);
-
-        //일정 참여자 삭제
-        scheduleParticipationService.deleteAllScheduleParticipation(recruitmentNo);
     }
 
     public StateResult findState(Long recruitmentNo, Long userNo){

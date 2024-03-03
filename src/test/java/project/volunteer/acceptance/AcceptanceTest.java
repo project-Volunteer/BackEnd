@@ -12,7 +12,7 @@ import project.volunteer.domain.scheduleParticipation.system.SpringScheduler;
 import project.volunteer.domain.signup.api.dto.request.UserSignupRequest;
 import project.volunteer.domain.signup.application.UserSignupService;
 import project.volunteer.global.jwt.util.JwtProvider;
-import project.volunteer.support.DatabaseCleaner;
+import project.volunteer.support.H2DatabaseCleaner;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -27,7 +27,7 @@ public class AcceptanceTest {
     protected JwtProvider jwtProvider;
 
     @Autowired
-    protected DatabaseCleaner databaseCleaner;
+    protected H2DatabaseCleaner databaseCleaner;
 
     @SpyBean
     protected Clock clock;

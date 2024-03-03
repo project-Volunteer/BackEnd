@@ -18,12 +18,12 @@ import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Day;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Period;
 import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
-import project.volunteer.domain.scheduleParticipation.api.dto.CancelApproval;
-import project.volunteer.domain.scheduleParticipation.api.dto.CancelledParticipantListResponse;
-import project.volunteer.domain.scheduleParticipation.api.dto.CompleteApproval;
-import project.volunteer.domain.scheduleParticipation.api.dto.CompletedParticipantListResponse;
-import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantList;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
+import project.volunteer.domain.scheduleParticipation.api.dto.CancellationApprovalRequest;
+import project.volunteer.domain.scheduleParticipation.api.dto.ParticipationCompletionApproveRequest;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantsSearchResult;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantsSearchResult;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleUpsertRequest;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponse;
 import project.volunteer.domain.sehedule.api.dto.response.ScheduleCalenderSearchResponses;
@@ -147,7 +147,7 @@ public class AcceptanceFixtures {
     }
 
     public static ExtractableResponse<Response> 봉사_일정_참여_취소승인(String token, Long recruitmentNo, Long scheduleNo,
-                                                              CancelApproval request) {
+                                                              CancellationApprovalRequest request) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)
@@ -158,7 +158,7 @@ public class AcceptanceFixtures {
                 .extract();
     }
 
-    public static List<CompletedParticipantList> 봉사_일정_참여완료_조회(String token, Long recruitmentNo, Long scheduleNo) {
+    public static List<CompletedParticipantDetail> 봉사_일정_참여완료_조회(String token, Long recruitmentNo, Long scheduleNo) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)
@@ -166,11 +166,11 @@ public class AcceptanceFixtures {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(CompletedParticipantListResponse.class)
+                .as(CompletedParticipantsSearchResult.class)
                 .getDone();
     }
 
-    public static List<CancelledParticipantList> 봉사_일정_취소요청_조회(String token, Long recruitmentNo, Long scheduleNo) {
+    public static List<CancelledParticipantDetail> 봉사_일정_취소요청_조회(String token, Long recruitmentNo, Long scheduleNo) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)
@@ -178,12 +178,12 @@ public class AcceptanceFixtures {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(CancelledParticipantListResponse.class)
+                .as(CancelledParticipantsSearchResult.class)
                 .getCancelling();
     }
 
     public static ExtractableResponse<Response> 봉사_일정_참여완료_승인(String token, Long recruitmentNo, Long scheduleNo,
-                                                              CompleteApproval request) {
+                                                              ParticipationCompletionApproveRequest request) {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION_HEADER, token)

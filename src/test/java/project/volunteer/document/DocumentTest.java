@@ -32,6 +32,8 @@ import project.volunteer.domain.recruitment.domain.VolunteerType;
 import project.volunteer.domain.recruitment.domain.VolunteeringCategory;
 import project.volunteer.domain.recruitment.domain.VolunteeringType;
 import project.volunteer.domain.recruitment.repository.RepeatPeriodRepository;
+import project.volunteer.domain.scheduleParticipation.domain.ScheduleParticipation;
+import project.volunteer.domain.scheduleParticipation.repository.ScheduleParticipationRepository;
 import project.volunteer.domain.sehedule.domain.Schedule;
 import project.volunteer.domain.sehedule.repository.ScheduleRepository;
 import project.volunteer.domain.user.dao.UserRepository;
@@ -82,7 +84,10 @@ public abstract class DocumentTest {
     protected ScheduleRepository scheduleRepository;
 
     @Autowired
-    protected RecruitmentParticipationRepository participantRepository;
+    protected RecruitmentParticipationRepository recruitmentParticipationRepository;
+
+    @Autowired
+    protected ScheduleParticipationRepository scheduleParticipationRepository;
 
     @Autowired
     protected ImageRepository imageRepository;
@@ -93,20 +98,35 @@ public abstract class DocumentTest {
     protected String recruitmentTeamAccessToken1;
     protected String recruitmentTeamAccessToken2;
     protected String recruitmentTeamAccessToken3;
+    protected String recruitmentTeamAccessToken4;
+    protected String recruitmentTeamAccessToken5;
+    protected String recruitmentTeamAccessToken6;
     protected String loginUserAccessToken;
     protected User ownerUser;
     protected User teamUser1;
     protected User teamUser2;
     protected User teamUser3;
-    protected User user;
+    protected User teamUser4;
+    protected User teamUser5;
+    protected User teamUser6;
+    protected User teamUser7;
+    protected User basicUser;
     protected Recruitment recruitment1;
     protected Recruitment recruitment2;
     protected RecruitmentParticipation recruitmentParticipation1;
     protected RecruitmentParticipation recruitmentParticipation2;
     protected RecruitmentParticipation recruitmentParticipation3;
+    protected RecruitmentParticipation recruitmentParticipation4;
+    protected RecruitmentParticipation recruitmentParticipation5;
+    protected RecruitmentParticipation recruitmentParticipation6;
+    protected RecruitmentParticipation recruitmentParticipation7;
     protected Schedule schedule1;
     protected Schedule schedule2;
     protected Schedule schedule3;
+    protected ScheduleParticipation scheduleParticipation4;
+    protected ScheduleParticipation scheduleParticipation5;
+    protected ScheduleParticipation scheduleParticipation6;
+    protected ScheduleParticipation scheduleParticipation7;
 
 
     @BeforeEach
@@ -116,17 +136,23 @@ public abstract class DocumentTest {
         recruitmentTeamAccessToken1 = jwtProvider.createAccessToken(teamUser1.getId());
         recruitmentTeamAccessToken2 = jwtProvider.createAccessToken(teamUser2.getId());
         recruitmentTeamAccessToken3 = jwtProvider.createAccessToken(teamUser3.getId());
-        loginUserAccessToken = jwtProvider.createAccessToken(user.getId());
+        recruitmentTeamAccessToken4 = jwtProvider.createAccessToken(teamUser4.getId());
+        recruitmentTeamAccessToken5 = jwtProvider.createAccessToken(teamUser5.getId());
+        recruitmentTeamAccessToken6 = jwtProvider.createAccessToken(teamUser6.getId());
+
+        loginUserAccessToken = jwtProvider.createAccessToken(basicUser.getId());
     }
 
     private void saveBaseData() {
+        // 봉사 모집글 정보 저장
         ownerUser = userRepository.save(
                 new User("bonsik1234", "password", "bonsik", "test@email.com", Gender.M, LocalDate.of(1999, 7, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
 
         recruitment1 = recruitmentRepository.save(
-                new Recruitment("title1", "content", VolunteeringCategory.ADMINSTRATION_ASSISTANCE, VolunteeringType.REG,
-                        VolunteerType.TEENAGER, 9999,1,true, "unicef",
+                new Recruitment("title1", "content", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.REG,
+                        VolunteerType.TEENAGER, 9999, 1, true, "unicef",
                         new Address("11", "1111", "test", "test"),
                         new Coordinate(1.2F, 2.2F),
                         new Timetable(LocalDate.of(2024, 1, 10), LocalDate.of(2024, 3, 3), HourFormat.AM,
@@ -141,7 +167,7 @@ public abstract class DocumentTest {
 
         recruitment2 = recruitmentRepository.save(
                 new Recruitment("2title2", "content", VolunteeringCategory.CULTURAL_EVENT, VolunteeringType.REG,
-                        VolunteerType.TEENAGER, 9999,0,true, "unicef",
+                        VolunteerType.TEENAGER, 9999, 0, true, "unicef",
                         new Address("11", "1111", "test", "test"),
                         new Coordinate(1.2F, 2.2F),
                         new Timetable(LocalDate.of(2024, 2, 10), LocalDate.of(2024, 4, 3), HourFormat.AM,
@@ -154,6 +180,7 @@ public abstract class DocumentTest {
         image2.setStorage(storage2);
         imageRepository.save(image2);
 
+        // 일정 정보 저장
         schedule1 = scheduleRepository.save(
                 new Schedule(new Timetable(LocalDate.of(2024, 2, 10), LocalDate.of(2024, 2, 10), HourFormat.AM,
                         LocalTime.now(), 10),
@@ -178,25 +205,75 @@ public abstract class DocumentTest {
                         100, IsDeleted.N, 0, recruitment1)
         );
 
+        // 봉사 모집글 참여 유저 저장
         teamUser1 = userRepository.save(
                 new User("soeun1234", "password", "soeun", "test@email.com", Gender.M, LocalDate.of(2001, 6, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        recruitmentParticipation1 = participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser1, ParticipantState.JOIN_APPROVAL));
+        recruitmentParticipation1 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser1, ParticipantState.JOIN_APPROVAL));
+        recruitment1.increaseParticipationNum(1);
 
         teamUser2 = userRepository.save(
                 new User("chang1234", "password", "chang", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        recruitmentParticipation2 = participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser2, ParticipantState.JOIN_REQUEST));
+        recruitmentParticipation2 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser2, ParticipantState.JOIN_REQUEST));
 
         teamUser3 = userRepository.save(
                 new User("mong1234", "password", "mong", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-        recruitmentParticipation3 = participantRepository.save(new RecruitmentParticipation(recruitment1, teamUser3, ParticipantState.JOIN_REQUEST));
+        recruitmentParticipation3 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser3, ParticipantState.JOIN_REQUEST));
 
-        user = userRepository.save(
+        teamUser4 = userRepository.save(
+                new User("sik1234", "password", "sik", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
+        recruitmentParticipation4 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser4, ParticipantState.JOIN_APPROVAL));
+        recruitment1.increaseParticipationNum(1);
+
+        teamUser5 = userRepository.save(
+                new User("kkk1234", "password", "kkk", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
+        recruitmentParticipation5 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser5, ParticipantState.JOIN_APPROVAL));
+        recruitment1.increaseParticipationNum(1);
+
+        teamUser6 = userRepository.save(
+                new User("zibra1234", "password", "zibra", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
+        recruitmentParticipation6 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser6, ParticipantState.JOIN_APPROVAL));
+        recruitment1.increaseParticipationNum(1);
+
+        teamUser7 = userRepository.save(
+                new User("umm1234", "password", "umm", "test@email.com", Gender.M, LocalDate.of(2005, 8, 27),
+                        "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
+        recruitmentParticipation7 = recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment1, teamUser7, ParticipantState.JOIN_APPROVAL));
+        recruitment1.increaseParticipationNum(1);
+
+        // 봉사 일정 참여 유저 정보 저장
+        scheduleParticipation4 = scheduleParticipationRepository.save(
+                new ScheduleParticipation(schedule1, recruitmentParticipation4, ParticipantState.PARTICIPATING));
+        schedule1.increaseParticipationNum(1);
+
+        scheduleParticipation5 = scheduleParticipationRepository.save(
+                new ScheduleParticipation(schedule1, recruitmentParticipation5, ParticipantState.PARTICIPATION_CANCEL));
+        schedule1.increaseParticipationNum(1);
+
+        scheduleParticipation6 = scheduleParticipationRepository.save(
+                new ScheduleParticipation(schedule1, recruitmentParticipation6, ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED));
+        schedule1.increaseParticipationNum(1);
+
+        scheduleParticipation7 = scheduleParticipationRepository.save(
+                new ScheduleParticipation(schedule1, recruitmentParticipation7, ParticipantState.PARTICIPATION_COMPLETE_APPROVAL));
+        schedule1.increaseParticipationNum(1);
+
+        // 일반 로그인 유저 정보 저장
+        basicUser = userRepository.save(
                 new User("user1234", "password", "user", "test@email.com", Gender.M, LocalDate.of(2001, 6, 27),
                         "http://www...", true, true, true, Role.USER, "kakao", "kakao1234", null));
-
     }
 
     protected <T> String toJson(T data) throws JsonProcessingException {

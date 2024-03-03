@@ -8,7 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import project.volunteer.domain.recruitmentParticipation.api.ParticipationController;
+import project.volunteer.domain.recruitmentParticipation.api.RecruitmentParticipationController;
 import project.volunteer.global.error.exception.BusinessException;
 import project.volunteer.global.error.exception.ErrorCode;
 import project.volunteer.global.error.response.BaseErrorResponse;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackageClasses = ParticipationController.class)
+@RestControllerAdvice(basePackageClasses = RecruitmentParticipationController.class)
 public class ParticipationControllerAdvice {
 
     private final MessageSource ms;

@@ -40,4 +40,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, Sched
     @Lock(LockModeType.OPTIMISTIC)
     Optional<Schedule> findNotDeletedScheduleByOPTIMSTIC_LOCK(@Param("no") Long scheduleNo);
 
+    @Query("SELECT s.scheduleNo "
+            + "FROM Schedule s "
+            + "WHERE s.recruitment.recruitmentNo = :recruitmentNo")
+    List<Long> findScheduleNosByRecruitmentNo(@Param("recruitmentNo") Long recruitmentNo);
 }

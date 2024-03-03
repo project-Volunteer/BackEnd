@@ -222,7 +222,7 @@ class ScheduleTest {
         assertThatThrownBy(
                 () -> schedule.change(recruitment, timetable, "test", "test", address, invalidParticipationNum))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.LESS_PARTICIPATION_NUM_THAN_CURRENT_PARTICIPANT.name());
+                .hasMessage(ErrorCode.INVALID_CURRENT_PARTICIPATION_NUM.name());
     }
 
     @ParameterizedTest

@@ -13,50 +13,80 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-@Table(name = "vlt_schedule_participant")
+@Table(name = "vlt_schedule_participation")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScheduleParticipation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schedule_participant_no")
-    private Long scheduleParticipationNo;
+    @Column(name = "schedule_participation_no")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scheduleno")
     private Schedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "participantno")
-    private RecruitmentParticipation participant;
+    @JoinColumn(name = "recruitment_participation_no")
+    private RecruitmentParticipation recruitmentParticipation;
 
     @Convert(converter = StateConverter.class)
     @Column(length = 3, nullable = false)
     private ParticipantState state;
 
-    public ScheduleParticipation(Schedule schedule, RecruitmentParticipation participant, ParticipantState state) {
+    public ScheduleParticipation(Schedule schedule, RecruitmentParticipation recruitmentParticipation, ParticipantState state) {
         this.schedule = schedule;
-        this.participant = participant;
+        this.recruitmentParticipation = recruitmentParticipation;
         this.state = state;
     }
 
-    public static ScheduleParticipation createScheduleParticipation(Schedule schedule, RecruitmentParticipation participant, ParticipantState state){
+    public Boolean canReParticipation() {
+        return state.equals(ParticipantState.PARTICIPATION_CANCEL_APPROVAL);
+    }
+
+    public Boolean canCancel() {
+        return state.equals(ParticipantState.PARTICIPATING);
+    }
+
+    public Boolean canApproveCancellation() {
+        return state.equals(ParticipantState.PARTICIPATION_CANCEL);
+    }
+
+    public Boolean canApproveParticipationCompletion() {
+        return state.equals(ParticipantState.PARTICIPATION_COMPLETE_UNAPPROVED);
+    }
+
+    public void changeState(ParticipantState state) {
+        this.state = state;
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduleParticipation{" +
+                "scheduleParticipationNo=" + id +
+                ", scheduleNo=" + schedule.getScheduleNo() +
+                ", recruitmentParticipationNo=" + recruitmentParticipation.getId() +
+                ", state=" + state +
+                '}';
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    public static ScheduleParticipation createScheduleParticipation(Schedule schedule, RecruitmentParticipation recruitmentParticipation, ParticipantState state){
         ScheduleParticipation createScheduleParticipation = new ScheduleParticipation();
         createScheduleParticipation.schedule = schedule;
-        createScheduleParticipation.participant = participant;
+        createScheduleParticipation.recruitmentParticipation = recruitmentParticipation;
         createScheduleParticipation.state = state;
         return createScheduleParticipation;
     }
-
-    public void delete(){
-        this.state = ParticipantState.DELETED;
-    }
-    public void removeScheduleAndParticipant(){
-        this.schedule = null;
-        this.participant = null;
-    }
-    public void updateState(ParticipantState state) {this.state = state;}
-
-    public Boolean isEqualState(ParticipantState state) {return this.state.equals(state);}
 
 }

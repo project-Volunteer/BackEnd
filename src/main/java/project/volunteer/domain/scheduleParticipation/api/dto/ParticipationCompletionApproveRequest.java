@@ -3,13 +3,15 @@ package project.volunteer.domain.scheduleParticipation.api.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantList;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-public class CompletedParticipantListResponse {
-    List<CompletedParticipantList> done;
+public class ParticipationCompletionApproveRequest {
+
+    @NotNull
+    private List<Long> scheduleParticipationNos;
 }

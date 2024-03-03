@@ -17,7 +17,7 @@ include::recruitment-participation.adoc[]
 
 include::schedule.adoc[]
 
-include::schedule-management.adoc[]
+include::schedule-participation.adoc[]
 
 include::notice.adoc[]
 

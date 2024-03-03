@@ -1,19 +1,13 @@
 package project.volunteer.domain.scheduleParticipation.service.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class CompletedParticipantList {
-
-    Long scheduleParticipationNo;
-    String nickname;
-    String email;
-    String profile;
-    String status;
+public class CompletedParticipantsSearchResult {
+    private List<CompletedParticipantDetail> done;
 }

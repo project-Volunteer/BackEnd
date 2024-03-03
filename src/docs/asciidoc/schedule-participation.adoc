@@ -1,5 +1,5 @@
-[[Schedlue-Management-API]]
-== Schedule Management API
+[[Schedlue-Participation-API]]
+== Schedule Participation API
 
 === 봉사 일정 참여
 ==== 발생 가능 예외
@@ -17,17 +17,17 @@
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/participate-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/participate-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/participate-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/participate-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/participate-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/participate-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/participate-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/participate-schedule/http-response.adoc[]
 
 
 === 봉사 일정 참여 취소 요청
@@ -44,17 +44,17 @@ include::{snippets}/schedule-participant-controller-test/participate-schedule/ht
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/cancel-participation-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/cancel-participation-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/cancel-participation-schedule/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/cancel-participation-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/cancel-participation-schedule/http-response.adoc[]
 
 
 === 봉사 일정 취소 요청 승인
@@ -72,20 +72,20 @@ include::{snippets}/schedule-participant-controller-test/cancel-participation-sc
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-cancellation-schedule/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-cancellation-schedule/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-cancellation-schedule/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/request-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-cancellation-schedule/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/approve-cancellation-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-cancellation-schedule/http-response.adoc[]
 
 
 === 봉사 일정 참여 완료 승인
@@ -102,20 +102,20 @@ include::{snippets}/schedule-participant-controller-test/approve-cancellation-sc
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-participation-completion/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-participation-completion/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-participation-completion/path-parameters.adoc[]
 
 *Request Body*
-include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/request-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-participation-completion/request-fields.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/approval-completion-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/approve-participation-completion/http-response.adoc[]
 
 
 === 봉사 일정 참여자 리스트 조회
@@ -130,20 +130,20 @@ include::{snippets}/schedule-participant-controller-test/approval-completion-sch
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-schedule/response-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-active-participants/response-fields.adoc[]
 
 
 === 봉사 일정 참가 취소자 리스트 조회
@@ -158,20 +158,20 @@ include::{snippets}/schedule-participant-controller-test/find-list-participant-s
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-participant-controller-test/find-list-cancellation-requester-schedule/response-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-cancelled-participants/response-fields.adoc[]
 
 
 === 봉사 일정 참가 완료자 리스트 조회
@@ -186,17 +186,17 @@ include::{snippets}/schedule-participant-controller-test/find-list-cancellation-
 
 ==== 요청
 *HTTP Request*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-request.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/http-request.adoc[]
 
 *Request Header*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/request-headers.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/request-headers.adoc[]
 
 *Request Path*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/path-parameters.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/path-parameters.adoc[]
 
 ==== 응답
 *HTTP Response*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/http-response.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/http-response.adoc[]
 
 *Response Body*
-include::{snippets}/schedule-participant-controller-test/find-list-participant-completed-schedule/response-fields.adoc[]
+include::{snippets}/schedule-participation-controller-test/find-completed-participants/response-fields.adoc[]

@@ -18,12 +18,8 @@ public interface RecruitmentParticipationUseCase {
 
     void deleteRecruitmentParticipations(Long recruitmentNo);
 
-
-
+    RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo);
 
 
     //팀 탈퇴(미정)
-
-    RecruitmentParticipation findParticipation(Long recruitmentNo, Long userNo);
-
 }
