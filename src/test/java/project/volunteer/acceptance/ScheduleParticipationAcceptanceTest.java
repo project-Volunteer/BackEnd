@@ -1,6 +1,7 @@
 package project.volunteer.acceptance;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_등록;
 import static project.volunteer.acceptance.AcceptanceFixtures.봉사_게시물_팀원_가입_승인;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,8 @@ import project.volunteer.domain.recruitment.domain.repeatPeriod.Week;
 import project.volunteer.domain.recruitmentParticipation.api.dto.request.ParticipantAddRequest;
 import project.volunteer.domain.scheduleParticipation.api.dto.CancellationApprovalRequest;
 import project.volunteer.domain.scheduleParticipation.api.dto.ParticipationCompletionApproveRequest;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantDetail;
+import project.volunteer.domain.scheduleParticipation.service.dto.ActiveParticipantsSearchResult;
 import project.volunteer.domain.scheduleParticipation.service.dto.CancelledParticipantDetail;
 import project.volunteer.domain.scheduleParticipation.service.dto.CompletedParticipantDetail;
 import project.volunteer.domain.sehedule.api.dto.request.ScheduleAddressRequest;
@@ -485,6 +489,85 @@ public class ScheduleParticipationAcceptanceTest extends AcceptanceTest {
                 .when().put("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/complete", recruitmentNo, scheduleNo)
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+    }
+
+    @DisplayName("봉사 일정 참여 리스트 조회에 성공한다.")
+    @Test
+    void findActiveParticipant() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 10, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        final Long recruitmentParticipationNo2 = 봉사_게시물_팀원_가입_요청(bongbongToken, recruitmentNo);
+
+        final ParticipantAddRequest participantAddRequest = new ParticipantAddRequest(
+                List.of(recruitmentParticipationNo1, recruitmentParticipationNo2));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, participantAddRequest);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-05T10:00:00Z"));
+
+        final ScheduleUpsertRequest scheduleUpsertRequest = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
+                "unicef", 10, "content");
+        final Long scheduleNo = 봉사_일정_등록(bonsikToken, recruitmentNo, scheduleUpsertRequest);
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo);
+        봉사_일정_참여(bongbongToken, recruitmentNo, scheduleNo);
+
+        List<ActiveParticipantDetail> response = given().log().all()
+                .header(AUTHORIZATION_HEADER, bonsikToken)
+                .when()
+                .get("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/participating", recruitmentNo, scheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(ActiveParticipantsSearchResult.class)
+                .getParticipating();
+        assertThat(response).hasSize(2)
+                .extracting("nickname")
+                .containsExactlyInAnyOrder("soeun", "bongbong");
+    }
+
+    @DisplayName("방장이 아닐 경우, 참여 리스트를 조회할 수 없다.")
+    @Test
+    void findActiveParticipantWithNotOwner() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-29T10:00:00Z"));
+
+        final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
+                VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
+                VolunteerType.ADULT, 10, VolunteeringType.IRREG, "01-01-2024", "02-01-2024", HourFormat.AM, "10:00",
+                10, Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
+                new File("src/main/resources/static/test/file.PNG"));
+
+        final Long recruitmentParticipationNo1 = 봉사_게시물_팀원_가입_요청(soeunToken, recruitmentNo);
+        final Long recruitmentParticipationNo2 = 봉사_게시물_팀원_가입_요청(bongbongToken, recruitmentNo);
+
+        final ParticipantAddRequest participantAddRequest = new ParticipantAddRequest(
+                List.of(recruitmentParticipationNo1, recruitmentParticipationNo2));
+        봉사_게시물_팀원_가입_승인(bonsikToken, recruitmentNo, participantAddRequest);
+
+        given(clock.instant()).willReturn(Instant.parse("2024-02-05T10:00:00Z"));
+
+        final ScheduleUpsertRequest scheduleUpsertRequest = new ScheduleUpsertRequest(
+                new ScheduleAddressRequest("1", "1111", "1111", "1111"), "02-10-2024", "AM", "10:00", 2,
+                "unicef", 10, "content");
+        final Long scheduleNo = 봉사_일정_등록(bonsikToken, recruitmentNo, scheduleUpsertRequest);
+
+        봉사_일정_참여(soeunToken, recruitmentNo, scheduleNo);
+        봉사_일정_참여(bongbongToken, recruitmentNo, scheduleNo);
+
+        given().log().all()
+                .header(AUTHORIZATION_HEADER, soeunToken)
+                .when()
+                .get("/recruitment/{recruitmentNo}/schedule/{scheduleNo}/participating", recruitmentNo, scheduleNo)
+                .then().log().all()
+                .statusCode(HttpStatus.FORBIDDEN.value())
                 .extract();
     }
 
