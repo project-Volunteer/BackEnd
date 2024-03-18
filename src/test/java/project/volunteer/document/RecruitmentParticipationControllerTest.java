@@ -1,5 +1,6 @@
 package project.volunteer.document;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -10,6 +11,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,8 @@ public class RecruitmentParticipationControllerTest extends DocumentTest {
     @Test
     public void joinRecruitmentTeam() throws Exception {
         //given & when
+        given(clock.instant()).willReturn(Instant.parse("2024-01-05T10:00:00Z"));
+
         ResultActions result = mockMvc.perform(
                 put("/recruitment/{recruitmentNo}/join", recruitment1.getRecruitmentNo())
                         .header(AUTHORIZATION_HEADER, loginUserAccessToken)
@@ -49,6 +53,8 @@ public class RecruitmentParticipationControllerTest extends DocumentTest {
     @Test
     public void cancelJoinRecruitmentTeam() throws Exception {
         //given & when
+        given(clock.instant()).willReturn(Instant.parse("2024-01-05T10:00:00Z"));
+
         ResultActions result = mockMvc.perform(
                 put("/recruitment/{recruitmentNo}/cancel", recruitment1.getRecruitmentNo())
                         .header(AUTHORIZATION_HEADER, recruitmentTeamAccessToken2)

@@ -405,9 +405,11 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
     @DisplayName("캘린더를 통한 일정 상세 조회시, 참여가 가능한 일정이면 state필드가 AVAILABLE로 나온다.")
     @Test
     void findScheduleAvailableState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-01T10:00:00Z"));
+
         final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
-                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-02-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
                 Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
@@ -447,9 +449,11 @@ public class ScheduleAcceptanceTest extends AcceptanceTest {
     @DisplayName("캘린더를 통한 일정 상세 조회시, 모집 기간이 지난 일정이면 state필드가 DONE로 나온다.")
     @Test
     void findScheduleDoneState() {
+        given(clock.instant()).willReturn(Instant.parse("2024-01-01T10:00:00Z"));
+
         final Long recruitmentNo = 봉사_게시물_등록(bonsikToken,
                 VolunteeringCategory.EDUCATION, "unicef", "11", "1111", "detail", "fullName", 3.2F, 3.2F, true,
-                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-01-2024", "02-20-2024", HourFormat.AM, "10:00",
+                VolunteerType.ADULT, 100, VolunteeringType.IRREG, "01-02-2024", "02-20-2024", HourFormat.AM, "10:00",
                 10,
                 Period.NONE, Week.NONE, List.of(), "title", "content", true, false,
                 new File("src/main/resources/static/test/file.PNG"));
