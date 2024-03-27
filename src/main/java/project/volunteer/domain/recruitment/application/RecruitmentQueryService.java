@@ -85,15 +85,13 @@ public class RecruitmentQueryService implements RecruitmentQueryUseCase {
     public RecruitmentListSearchResult searchRecruitmentList(final Pageable pageable,
                                                              final RecruitmentSearchCond searchCond) {
         Slice<RecruitmentList> result = recruitmentRepository.findRecruitmentListBy(pageable, searchCond);
-        return new RecruitmentListSearchResult(result.getContent(), result.isLast(),
-                result.getContent().get(result.getContent().size() - 1).getNo());
+        return RecruitmentListSearchResult.from(result);
     }
 
     @Override
     public RecruitmentListSearchResult searchRecruitmentList(final Pageable pageable, final String keyWord) {
         Slice<RecruitmentList> result = recruitmentRepository.findRecruitmentListByTitle(pageable, keyWord);
-        return new RecruitmentListSearchResult(result.getContent(), result.isLast(),
-                result.getContent().get(result.getContent().size() - 1).getNo());
+        return RecruitmentListSearchResult.from(result);
     }
 
     @Override

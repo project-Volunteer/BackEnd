@@ -2,35 +2,30 @@
 
 ![image](https://github.com/project-Volunteer/BackEnd/assets/96917871/c3e3975b-7899-43cb-a64f-2564d41558d0)
 
-2023.03 ~ 진행중
+# 프로젝트 소개 
+Volunteer는 봉사 팀 매칭 서비스입니다. 봉사 공고와 팀원 모집을 찾는 사용자의 프로세스를 줄이고자 기획했습니다. <br>
+Volunteer 프로젝트를 통해 봉사 팀원을 모집해보세요!
 
-## 팀 구성
+🔴 **서비스 이용은 잠시만 기다려주세요.** <br>
+[📃Rest Docs API](http://43.200.179.10:8888/docs/index.html) , [Google API sheet](https://docs.google.com/spreadsheets/d/1wjlkv3vQutHx7B-Mc7HFubns3YgLAbVzRSHHG__IrjU/edit#gid=2004277248)
+
+### 리팩토링 ⚙
+[V1.0.0 리팩토링 기록(24.3)]()
+
+### 팀 구성 👩‍👩‍👧‍👦
 |이름| 깃허브 주소|포지션|
 |------------|-----------------------------------|------------|
-|정종찬☘|[https://github.com/YouHaveToDo](https://github.com/YouHaveToDo)|기획,프론트엔드(현직)|
-|진정수|[https://github.com/youhavetosleep](https://github.com/youhavetosleep)|프론트엔드(현직)|
-|신항민|[https://github.com/ssinking91](https://github.com/ssinking91)|프론트엔드(현직)|
-|안진우|[https://github.com/ojino88](https://github.com/ojino88)|백엔드(현직)|
-|구본식|[https://github.com/BonSik-Koo](https://github.com/BonSik-Koo)|백엔드(학생)|
-|기하은||UI/UX 디자이너(취준생)|
+|정종찬☘|[https://github.com/YouHaveToDo](https://github.com/YouHaveToDo)|기획,프론트엔드|
+|진정수|[https://github.com/youhavetosleep](https://github.com/youhavetosleep)|프론트엔드|
+|안진우|[https://github.com/ojino88](https://github.com/ojino88)|백엔드|
+|구본식|[https://github.com/BonSik-Koo](https://github.com/BonSik-Koo)|백엔드|
+|기하은||UI/UX 디자이너|
 
-## 프로젝트 관심 사항
-* 관심 사항 분리
-* 체계적인 DTO 관리와 계층간 의존성 최소화
-* 직관적인 코드 및 지루한 코드 최소화
-* 확장성과 재사용성을 고려한 코드 작성
-* 약속된 Git 컨벤션을 통한 일관된 커밋 메시지 작성
-* Git flow 전략을 통한 체계적인 브랜치 관리 
+# 아키텍처
+### 백엔드 기술스택 아키텍처 🛠️
+![image](https://github.com/project-Volunteer/BackEnd/assets/96917871/005c4595-c37a-4c21-87fb-106f0ef88ec0)
 
-## More info
-<details>
-  <summary>ERD</summary>
-  
-  ![volunteer (3)](https://github.com/project-Volunteer/BackEnd/assets/96917871/7544e53d-fd54-4301-a9e9-873880225e1e)
-</details>
+### 백엔드 프로젝트 아키텍처 ⛏️
 
-## Links
-* [Front-End Repository](https://github.com/project-Volunteer/Front)
-* [Figma](https://www.figma.com/file/LyqEvyuASlb77S11K4mMkt/%EC%82%AC%EC%9D%B4%EB%93%9C%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_Volunteer?node-id=7-3&t=fUhPyp84S8xJShOB-0)
-* [Rest Docs API](http://43.200.179.10:8888/docs/index.html)
-* [Google API sheet](https://docs.google.com/spreadsheets/d/1wjlkv3vQutHx7B-Mc7HFubns3YgLAbVzRSHHG__IrjU/edit#gid=2004277248)
+### ERD 📁
+![volunteer (3)](https://github.com/project-Volunteer/BackEnd/assets/96917871/7544e53d-fd54-4301-a9e9-873880225e1e)
