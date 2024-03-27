@@ -10,10 +10,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
 import project.volunteer.domain.image.domain.Image;
 import project.volunteer.domain.image.domain.Storage;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentListSearchResult;
+import project.volunteer.domain.recruitment.application.dto.query.list.RecruitmentSearchCond;
 import project.volunteer.domain.recruitmentParticipation.domain.RecruitmentParticipation;
 import project.volunteer.domain.recruitment.application.dto.query.detail.RecruitmentDetailSearchResult;
 import project.volunteer.domain.recruitment.domain.Recruitment;
@@ -44,6 +48,13 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
     private final Coordinate coordinate = new Coordinate(1.2F, 2.2F);
     private final Timetable timetable = new Timetable(LocalDate.now(), LocalDate.now(), HourFormat.AM, LocalTime.now(),
             10);
+    private final User writer = new User("writer", "writer", "writer", "writer@email.com", Gender.M, LocalDate.now(),
+            "http://", true, true, true, Role.USER, "kakao", "1234", null);
+
+    @BeforeEach
+    void setUp() {
+        userRepository.save(writer);
+    }
 
     @DisplayName("봉사 모집글 정보를 상세조회 한다.")
     @Test
@@ -53,7 +64,6 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         final String userUploadImagePath1 = "http://s3-user1...";
         final String userUploadImagePath2 = "http://s3-user2...";
 
-        User writer = createAndSaveUser("writer", "http://writer...");
         Recruitment recruitment = createAndSaveRecruitment(writer, VolunteeringType.REG,
                 List.of(new RepeatPeriod(Period.WEEK, Week.NONE, Day.MON, null, IsDeleted.N),
                         new RepeatPeriod(Period.WEEK, Week.NONE, Day.TUES, null, IsDeleted.N)));
@@ -85,10 +95,12 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
                         .containsExactlyInAnyOrder(Day.MON.getId(), Day.TUES.getId()),
                 () -> assertThat(result.getApprovedParticipant()).hasSize(1)
                         .extracting("recruitmentParticipationNo", "nickName", "imageUrl")
-                        .containsExactlyInAnyOrder(tuple(participant2.getId(), user2.getNickName(), userUploadImagePath2)),
+                        .containsExactlyInAnyOrder(
+                                tuple(participant2.getId(), user2.getNickName(), userUploadImagePath2)),
                 () -> assertThat(result.getRequiredParticipant()).hasSize(1)
                         .extracting("recruitmentParticipationNo", "nickName", "imageUrl")
-                        .containsExactlyInAnyOrder(tuple(participant1.getId(), user1.getNickName(), userUploadImagePath1))
+                        .containsExactlyInAnyOrder(
+                                tuple(participant1.getId(), user1.getNickName(), userUploadImagePath1))
         );
     }
 
@@ -96,10 +108,6 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
     @Test
     void searchRecruitmentDetailDeleted() {
         //given
-        final User writer = userRepository.save(
-                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
-                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
-
         final Recruitment recruitment = recruitmentRepository.save(
                 new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
                         VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
@@ -111,20 +119,44 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
                 .hasMessage(ErrorCode.NOT_EXIST_RECRUITMENT.name());
     }
 
+    @DisplayName("필터링 조건을 만족하는 봉사 모집글이 하나도 존재하지 않는다.")
+    @Test
+    void searchRecruitmentListWithEmpty() {
+        //given
+        PageRequest page = PageRequest.of(0, 10);
+
+        RecruitmentSearchCond searchCond = new RecruitmentSearchCond(
+                List.of(VolunteeringCategory.ADMINSTRATION_ASSISTANCE), null, null, null, null, null);
+
+        recruitmentRepository.save(
+                new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
+                        timetable, 0, 0, true, IsDeleted.Y, writer));
+
+        //when
+        RecruitmentListSearchResult result = recruitmentQueryUseCase.searchRecruitmentList(page, searchCond);
+
+        //then
+        assertAll(
+                () -> assertThat(result.getRecruitmentList()).isEmpty(),
+                () -> assertThat(result.getIsLast()).isTrue(),
+                () -> assertThat(result.getLastId()).isEqualTo(0L)
+        );
+    }
+
     @DisplayName("봉사 모집글 참여 가능 인원이 가득찰 경우, 요청한 회원 상태는 FULL이 된다.")
     @Test
     void searchStateWithFullRecruitment() {
         //given
-        User writer = userRepository.save(
-                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
-                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
         Recruitment recruitment = recruitmentRepository.save(
                 new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
                         VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
                         timetable, 0, 0, true, IsDeleted.N, writer));
 
+        User user = createAndSaveUser("user", "http://user...");
+
         //when
-        StateResult stateResponse = recruitmentQueryUseCase.searchState(writer.getUserNo(),
+        StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(),
                 recruitment.getRecruitmentNo());
 
         //then
@@ -135,20 +167,19 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
     @Test
     void searchStateWithDoneRecruitment() {
         //given
-        User writer = userRepository.save(
-                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
-                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
         Recruitment recruitment = recruitmentRepository.save(
                 new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
-                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
+                        VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 5, true, "unicef", address, coordinate,
                         new Timetable(LocalDate.of(2024, 2, 11), LocalDate.of(2024, 2, 13), HourFormat.AM,
                                 LocalTime.now(), 10),
                         0, 0, true, IsDeleted.N, writer));
 
+        User user = createAndSaveUser("user", "http://user...");
+
         given(clock.instant()).willReturn(Instant.parse("2024-02-14T10:00:00Z"));
 
         //when
-        StateResult stateResponse = recruitmentQueryUseCase.searchState(writer.getUserNo(),
+        StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(),
                 recruitment.getRecruitmentNo());
 
         //then
@@ -159,9 +190,6 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
     @Test
     void searchStateWithApprovedRecruitment() {
         //given
-        User writer = userRepository.save(
-                new User("test", "test", "test", "test@email.com", Gender.M, LocalDate.now(),
-                        "http://", true, true, true, Role.USER, "kakao", "1234", null));
         Recruitment recruitment = recruitmentRepository.save(
                 new Recruitment("title1", "content1", VolunteeringCategory.ADMINSTRATION_ASSISTANCE,
                         VolunteeringType.IRREG, VolunteerType.TEENAGER, 10, 10, true, "unicef", address, coordinate,
@@ -172,7 +200,8 @@ class RecruitmentQueryUseCaseTest extends ServiceTest {
         User user = userRepository.save(
                 new User("user", "user", "user", "user@email.com", Gender.M, LocalDate.now(),
                         "http://", true, true, true, Role.USER, "kakao", "4567", null));
-        recruitmentParticipationRepository.save(new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
+        recruitmentParticipationRepository.save(
+                new RecruitmentParticipation(recruitment, user, ParticipantState.JOIN_APPROVAL));
 
         //when
         StateResult stateResponse = recruitmentQueryUseCase.searchState(user.getUserNo(),
